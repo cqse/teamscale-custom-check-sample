@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root>
+  <setting name="task-tab">
+    <setting name="show-description" value="true"/>
+  </setting>
+  <setting name="favorites-tab"/>
+  <setting name="command_line-tab"/>
+  <setting name="setup-tab">
+    <setting name="setup">
+      <setting name="custom-gradle-executor"/>
+      <setting name="current-directory" value="/home/kinnen/projects/custom-checks"/>
+      <setting name="log-level" value="LIFECYCLE"/>
+      <setting name="show-output-on-error" value="true"/>
+    </setting>
+  </setting>
+  <setting name="SinglePaneUIInstance_splitter-id">
+    <setting name="divider_location" value="651"/>
+  </setting>
+  <setting name="main_panel">
+    <setting name="current-tab" value="Task Tree"/>
+  </setting>
+  <setting name="Application_window-id">
+    <setting name="window_x" value="0"/>
+    <setting name="window_y" value="30"/>
+    <setting name="window_width" value="1920"/>
+    <setting name="window_height" value="1050"/>
+    <setting name="extended-state" value="6"/>
+  </setting>
+</root>

@@ -1,0 +1,43 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/'
+        }
+        output.classesDir = 'build/classes/'
+    }
+    test {
+        java {
+            srcDir 'test-src/'
+        }
+        output.classesDir = 'build/classes/'
+    }
+
+}
+
+test {
+    // It's sometimes useful to see the stdout during testing
+    testLogging.showStandardStreams = true
+}
+
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+    compile files('lib/eu.cqse.check.jar')
+    
+	testCompile 'junit:junit:4.3.1'    
+	testCompile 'log4j:log4j:1.2.17'
+	testCompile 'jaxen:jaxen:1.1.6'
+}
+
+eclipse {
+    classpath {
+        defaultOutputDir = file('build/classes')
+    }
+}
+
