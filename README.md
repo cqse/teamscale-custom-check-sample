@@ -1,7 +1,7 @@
 The Teamscale Custom Check Sample Repository
 ============================================
 
-This repository is meant to serve as a starting point for developing custom checks for Teamscale[www.teamscale.com].
+This repository is meant to serve as a starting point for developing custom checks for [Teamscale](www.teamscale.com).
 
 Getting Started
 ---------------
