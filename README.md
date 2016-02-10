@@ -13,7 +13,7 @@ Getting Started
 
 Creating your own checks
 ------------------------
-Use ```gradle eclips``` to create eclipse project files, afterwards you can easily import the project into Eclipse. You will find the sample custom check in the ```src/``` directory.
+Use ```gradle eclipse``` to create Eclipse project files, afterwards you can easily import the project into Eclipse. You will find the sample custom check in the ```src/``` directory.
 
 Get Help
 --------
