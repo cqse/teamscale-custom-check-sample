@@ -1,19 +1,19 @@
-This is the Teamscale Custom Check Sample Repository
-====================================================
+The Teamscale Custom Check Sample Repository
+============================================
 
 This repository is meant to serve as a starting point for developing custom checks for Teamscale[www.teamscale.com].
 
 Getting Started
 ---------------
 - Clone the repository
-- Run ```gradle jar'''
-- Copy the jar from ```build/libs/custom-checks.jar''' to the 'custom-checks' folder in your Teamscale installation root.
+- Run ```gradle jar```
+- Copy the jar from ```build/libs/custom-checks.jar``` to the 'custom-checks' folder in your Teamscale installation root.
 - Restart Teamscale
 - You should now be able to see the sample check when creating a new JAVA analysis profile. It can be found inside the Bad Practice group.
 
 Creating your own checks
 ------------------------
-Use ```gradle eclips''' to create eclipse project files, afterwards you can easily import the project into Eclipse. You will find the sample custom check in the ```src/''' directory.
+Use ```gradle eclips``` to create eclipse project files, afterwards you can easily import the project into Eclipse. You will find the sample custom check in the ```src/``` directory.
 
 Get Help
 --------
