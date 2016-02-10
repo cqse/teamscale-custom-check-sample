@@ -1,3 +1,7 @@
 test-tmp
 .gradle
 build
+.classpath
+.settings
+.project
+bin
