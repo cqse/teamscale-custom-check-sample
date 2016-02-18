@@ -7,8 +7,8 @@ Creating your own checks with Eclipse
 -------------------------------------
 Use ```gradlew eclipse``` (linux/mac) or ```gradlew.bat eclipse``` (Windows) to create Eclipse project files, afterwards you can easily import the project into Eclipse. You will find the sample custom check in the ```src/``` directory.
 
-Building The Custom Checks for Distribution/Use with Teamscale
---------------------------------------------------------------
+Building the checks for use with Teamscale
+------------------------------------------
 - Clone the repository
 - Run ```gradlew jar``` (linux/mac) or ```gradlew.bat jar``` (windows)
 - Copy the jar from ```build/libs/custom-checks.jar``` to the 'custom-checks' folder in your Teamscale installation root.
