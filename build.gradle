@@ -17,6 +17,10 @@ sourceSets {
 
 }
 
+jar {
+    exclude ("**/CheckTest*")
+}
+
 test {
     // It's sometimes useful to see the stdout during testing
     testLogging.showStandardStreams = true
