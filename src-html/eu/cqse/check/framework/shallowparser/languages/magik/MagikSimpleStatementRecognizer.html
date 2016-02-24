@@ -1,0 +1,199 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*-------------------------------------------------------------------------+<a name="line.1"></a>
+<span class="sourceLineNo">002</span>|                                                                          |<a name="line.2"></a>
+<span class="sourceLineNo">003</span>| Copyright 2005-2011 the ConQAT Project                                   |<a name="line.3"></a>
+<span class="sourceLineNo">004</span>|                                                                          |<a name="line.4"></a>
+<span class="sourceLineNo">005</span>| Licensed under the Apache License, Version 2.0 (the "License");          |<a name="line.5"></a>
+<span class="sourceLineNo">006</span>| you may not use this file except in compliance with the License.         |<a name="line.6"></a>
+<span class="sourceLineNo">007</span>| You may obtain a copy of the License at                                  |<a name="line.7"></a>
+<span class="sourceLineNo">008</span>|                                                                          |<a name="line.8"></a>
+<span class="sourceLineNo">009</span>|    http://www.apache.org/licenses/LICENSE-2.0                            |<a name="line.9"></a>
+<span class="sourceLineNo">010</span>|                                                                          |<a name="line.10"></a>
+<span class="sourceLineNo">011</span>| Unless required by applicable law or agreed to in writing, software      |<a name="line.11"></a>
+<span class="sourceLineNo">012</span>| distributed under the License is distributed on an "AS IS" BASIS,        |<a name="line.12"></a>
+<span class="sourceLineNo">013</span>| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. |<a name="line.13"></a>
+<span class="sourceLineNo">014</span>| See the License for the specific language governing permissions and      |<a name="line.14"></a>
+<span class="sourceLineNo">015</span>| limitations under the License.                                           |<a name="line.15"></a>
+<span class="sourceLineNo">016</span>+-------------------------------------------------------------------------*/<a name="line.16"></a>
+<span class="sourceLineNo">017</span>package eu.cqse.check.framework.shallowparser.languages.magik;<a name="line.17"></a>
+<span class="sourceLineNo">018</span><a name="line.18"></a>
+<span class="sourceLineNo">019</span>import static eu.cqse.check.framework.shallowparser.languages.magik.MagikShallowParser.EMagikParserStates.ANY;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import static eu.cqse.check.framework.scanner.ETokenType.BLOCK;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import static eu.cqse.check.framework.scanner.ETokenType.CATCH;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import static eu.cqse.check.framework.scanner.ETokenType.CLONE;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import static eu.cqse.check.framework.scanner.ETokenType.CONTINUE;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import static eu.cqse.check.framework.scanner.ETokenType.ELIF;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import static eu.cqse.check.framework.scanner.ETokenType.ELSE;<a name="line.25"></a>
+<span class="sourceLineNo">026</span>import static eu.cqse.check.framework.scanner.ETokenType.ENDCATCH;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import static eu.cqse.check.framework.scanner.ETokenType.ENDLOOP;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import static eu.cqse.check.framework.scanner.ETokenType.ENDMETHOD;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>import static eu.cqse.check.framework.scanner.ETokenType.ENDTRY;<a name="line.29"></a>
+<span class="sourceLineNo">030</span>import static eu.cqse.check.framework.scanner.ETokenType.END_BLOCK;<a name="line.30"></a>
+<span class="sourceLineNo">031</span>import static eu.cqse.check.framework.scanner.ETokenType.END_IF;<a name="line.31"></a>
+<span class="sourceLineNo">032</span>import static eu.cqse.check.framework.scanner.ETokenType.END_LOCK;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import static eu.cqse.check.framework.scanner.ETokenType.END_PROC;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import static eu.cqse.check.framework.scanner.ETokenType.END_PROTECT;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import static eu.cqse.check.framework.scanner.ETokenType.FOR;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import static eu.cqse.check.framework.scanner.ETokenType.IF;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import static eu.cqse.check.framework.scanner.ETokenType.LEAVE;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import static eu.cqse.check.framework.scanner.ETokenType.LOCK;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import static eu.cqse.check.framework.scanner.ETokenType.LOOP;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import static eu.cqse.check.framework.scanner.ETokenType.OVER;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>import static eu.cqse.check.framework.scanner.ETokenType.PROC;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>import static eu.cqse.check.framework.scanner.ETokenType.PROTECT;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>import static eu.cqse.check.framework.scanner.ETokenType.RETURN;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>import static eu.cqse.check.framework.scanner.ETokenType.SELF;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>import static eu.cqse.check.framework.scanner.ETokenType.THROW;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>import static eu.cqse.check.framework.scanner.ETokenType.TRY;<a name="line.46"></a>
+<span class="sourceLineNo">047</span>import static eu.cqse.check.framework.scanner.ETokenType.UNSET;<a name="line.47"></a>
+<span class="sourceLineNo">048</span><a name="line.48"></a>
+<span class="sourceLineNo">049</span>import java.util.EnumSet;<a name="line.49"></a>
+<span class="sourceLineNo">050</span>import java.util.List;<a name="line.50"></a>
+<span class="sourceLineNo">051</span>import java.util.Set;<a name="line.51"></a>
+<span class="sourceLineNo">052</span><a name="line.52"></a>
+<span class="sourceLineNo">053</span>import eu.cqse.check.framework.shallowparser.languages.base.LineBasedStatementRecognizerBase;<a name="line.53"></a>
+<span class="sourceLineNo">054</span>import eu.cqse.check.framework.shallowparser.languages.magik.MagikShallowParser.EMagikParserStates;<a name="line.54"></a>
+<span class="sourceLineNo">055</span>import eu.cqse.check.framework.scanner.ETokenType;<a name="line.55"></a>
+<span class="sourceLineNo">056</span>import eu.cqse.check.framework.scanner.ETokenType.ETokenClass;<a name="line.56"></a>
+<span class="sourceLineNo">057</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.57"></a>
+<span class="sourceLineNo">058</span><a name="line.58"></a>
+<span class="sourceLineNo">059</span>/**<a name="line.59"></a>
+<span class="sourceLineNo">060</span> * Recognizer for simple statements in Magik. This handles the statements ending<a name="line.60"></a>
+<span class="sourceLineNo">061</span> * at the end of line and allows parsing into sub expressions, such as local<a name="line.61"></a>
+<span class="sourceLineNo">062</span> * procedures within statements.<a name="line.62"></a>
+<span class="sourceLineNo">063</span> * <a name="line.63"></a>
+<span class="sourceLineNo">064</span> * @author $Author: hummelb $<a name="line.64"></a>
+<span class="sourceLineNo">065</span> * @version $Rev: 52657 $<a name="line.65"></a>
+<span class="sourceLineNo">066</span> * @ConQAT.Rating GREEN Hash: 6C6D875E5041F4B16DD027734623A94D<a name="line.66"></a>
+<span class="sourceLineNo">067</span> */<a name="line.67"></a>
+<span class="sourceLineNo">068</span>public class MagikSimpleStatementRecognizer extends<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                LineBasedStatementRecognizerBase&lt;EMagikParserStates&gt; {<a name="line.69"></a>
+<span class="sourceLineNo">070</span><a name="line.70"></a>
+<span class="sourceLineNo">071</span>        /**<a name="line.71"></a>
+<span class="sourceLineNo">072</span>         * Token types that end a statement when at the end of line even though they<a name="line.72"></a>
+<span class="sourceLineNo">073</span>         * are keywords.<a name="line.73"></a>
+<span class="sourceLineNo">074</span>         */<a name="line.74"></a>
+<span class="sourceLineNo">075</span>        private static final Set&lt;ETokenType&gt; VALID_STATEMENT_END_TOKEN_TYPES = EnumSet<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                        .of(LEAVE, RETURN, THROW, CONTINUE, SELF, CLONE, UNSET, END_BLOCK,<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                                        ENDCATCH, END_IF, END_LOCK, ENDLOOP, ENDMETHOD, END_PROC,<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                                        END_PROTECT, ENDTRY);<a name="line.78"></a>
+<span class="sourceLineNo">079</span><a name="line.79"></a>
+<span class="sourceLineNo">080</span>        /** Token types that end a statement even in the same line. */<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        private static final Set&lt;ETokenType&gt; SAME_LINE_STATEMENT_DELIMITER_TOKEN_TYPES = EnumSet<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                        .of(ELIF, ELSE, END_BLOCK, ENDCATCH, END_IF, END_LOCK, ENDLOOP,<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                                        ENDMETHOD, END_PROC, END_PROTECT, ENDTRY);<a name="line.83"></a>
+<span class="sourceLineNo">084</span><a name="line.84"></a>
+<span class="sourceLineNo">085</span>        /** Token types that start a sub parse. */<a name="line.85"></a>
+<span class="sourceLineNo">086</span>        private static final Set&lt;ETokenType&gt; SUB_PARSE_TOKEN_TYPES = EnumSet.of(IF,<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                        FOR, OVER, LOOP, BLOCK, PROC, TRY, CATCH, PROTECT, LOCK);<a name="line.87"></a>
+<span class="sourceLineNo">088</span><a name="line.88"></a>
+<span class="sourceLineNo">089</span>        /** {@inheritDoc} */<a name="line.89"></a>
+<span class="sourceLineNo">090</span>        @Override<a name="line.90"></a>
+<span class="sourceLineNo">091</span>        protected EMagikParserStates getSubParseState() {<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                return ANY;<a name="line.92"></a>
+<span class="sourceLineNo">093</span>        }<a name="line.93"></a>
+<span class="sourceLineNo">094</span><a name="line.94"></a>
+<span class="sourceLineNo">095</span>        /** {@inheritDoc} */<a name="line.95"></a>
+<span class="sourceLineNo">096</span>        @Override<a name="line.96"></a>
+<span class="sourceLineNo">097</span>        protected boolean tokenStartsSubParse(ETokenType tokenType,<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                        List&lt;IToken&gt; tokens, int offset) {<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                return SUB_PARSE_TOKEN_TYPES.contains(tokenType);<a name="line.99"></a>
+<span class="sourceLineNo">100</span>        }<a name="line.100"></a>
+<span class="sourceLineNo">101</span><a name="line.101"></a>
+<span class="sourceLineNo">102</span>        /** {@inheritDoc} */<a name="line.102"></a>
+<span class="sourceLineNo">103</span>        @Override<a name="line.103"></a>
+<span class="sourceLineNo">104</span>        protected boolean startsNewStatement(IToken token, IToken lastToken) {<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                if (lastToken == null) {<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                        return false;<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                }<a name="line.107"></a>
+<span class="sourceLineNo">108</span><a name="line.108"></a>
+<span class="sourceLineNo">109</span>                // same line =&gt; usually no new statement<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                if (lastToken.getLineNumber() == token.getLineNumber()) {<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                        return SAME_LINE_STATEMENT_DELIMITER_TOKEN_TYPES.contains(token<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                                        .getType());<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                }<a name="line.113"></a>
+<span class="sourceLineNo">114</span><a name="line.114"></a>
+<span class="sourceLineNo">115</span>                // if the previous line ended in an operator or a keyword, we can not<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                // end here<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                ETokenType lastTokenType = lastToken.getType();<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                ETokenClass lastTokenClass = lastTokenType.getTokenClass();<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                if (lastTokenClass == ETokenClass.OPERATOR<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                                || lastTokenClass == ETokenClass.KEYWORD<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                                || lastTokenType == ETokenType.DOT) {<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                        return VALID_STATEMENT_END_TOKEN_TYPES.contains(lastTokenType);<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                }<a name="line.123"></a>
+<span class="sourceLineNo">124</span><a name="line.124"></a>
+<span class="sourceLineNo">125</span>                return true;<a name="line.125"></a>
+<span class="sourceLineNo">126</span>        }<a name="line.126"></a>
+<span class="sourceLineNo">127</span>}<a name="line.127"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>
