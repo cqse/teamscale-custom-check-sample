@@ -5,7 +5,13 @@ This repository is meant to serve as a starting point for developing custom chec
 
 Creating your own checks with Eclipse
 -------------------------------------
-Use ```gradlew eclipse``` (linux/mac) or ```gradlew.bat eclipse``` (Windows) to create Eclipse project files, afterwards you can easily import the project into Eclipse. You will find the sample custom check in the ```src/``` directory.
+Use ```gradlew eclipse``` (linux/mac) or ```gradlew.bat eclipse``` (Windows) to create Eclipse project files, afterwards you can easily import the project into Eclipse. You will find the sample custom check (```SampleCheck```) in the ```src/``` directory.
+
+Documentation
+-------------
+Javadoc: http://cqse.github.io/teamscale-custom-check-sample
+
+The javadoc documentation also contains more sample checks which you can use as examples/base for your own checks.
 
 Building the checks for use with Teamscale
 ------------------------------------------
