@@ -35,31 +35,24 @@
 <span class="sourceLineNo">027</span><a name="line.27"></a>
 <span class="sourceLineNo">028</span>/**<a name="line.28"></a>
 <span class="sourceLineNo">029</span> * {@ConQAT.Doc}<a name="line.29"></a>
-<span class="sourceLineNo">030</span> * <a name="line.30"></a>
-<span class="sourceLineNo">031</span> * @author $Author: kupka $<a name="line.31"></a>
-<span class="sourceLineNo">032</span> * @version $Rev: 54715 $<a name="line.32"></a>
-<span class="sourceLineNo">033</span> * @ConQAT.Rating YELLOW Hash: 8612DE2F258AFE359FB964164295069C<a name="line.33"></a>
-<span class="sourceLineNo">034</span> */<a name="line.34"></a>
-<span class="sourceLineNo">035</span>@ACheck(name = "Exception not caught by reference", description = "Exceptions should always be caught by reference to avoid unnecessary "<a name="line.35"></a>
-<span class="sourceLineNo">036</span>                + "copies.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.YELLOW, languages = {<a name="line.36"></a>
-<span class="sourceLineNo">037</span>                                ELanguage.CPP }, parameters = {<a name="line.37"></a>
-<span class="sourceLineNo">038</span>                                                ECheckParameter.ABSTRACT_SYNTAX_TREE })<a name="line.38"></a>
-<span class="sourceLineNo">039</span>public class CatchExceptionByReferenceCheck<a name="line.39"></a>
-<span class="sourceLineNo">040</span>                extends EntityFirstLineFindingCheckBase {<a name="line.40"></a>
+<span class="sourceLineNo">030</span> */<a name="line.30"></a>
+<span class="sourceLineNo">031</span>@ACheck(name = "Exception not caught by reference", description = "Exceptions should always be caught by reference to avoid unnecessary "<a name="line.31"></a>
+<span class="sourceLineNo">032</span>                + "copies.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.YELLOW, languages = {<a name="line.32"></a>
+<span class="sourceLineNo">033</span>                                ELanguage.CPP }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })<a name="line.33"></a>
+<span class="sourceLineNo">034</span>public class CatchExceptionByReferenceCheck extends EntityFirstLineFindingCheckBase {<a name="line.34"></a>
+<span class="sourceLineNo">035</span><a name="line.35"></a>
+<span class="sourceLineNo">036</span>        /** {@inheritDoc} */<a name="line.36"></a>
+<span class="sourceLineNo">037</span>        @Override<a name="line.37"></a>
+<span class="sourceLineNo">038</span>        protected String getXPathSelectionString() {<a name="line.38"></a>
+<span class="sourceLineNo">039</span>                return "//STATEMENT[subtype('" + SubTypeNames.CATCH + "') and not(anytoken('ELLIPSIS', 'AND', 'XOR'))]";<a name="line.39"></a>
+<span class="sourceLineNo">040</span>        }<a name="line.40"></a>
 <span class="sourceLineNo">041</span><a name="line.41"></a>
 <span class="sourceLineNo">042</span>        /** {@inheritDoc} */<a name="line.42"></a>
 <span class="sourceLineNo">043</span>        @Override<a name="line.43"></a>
-<span class="sourceLineNo">044</span>        protected String getXPathSelectionString() {<a name="line.44"></a>
-<span class="sourceLineNo">045</span>                return "//STATEMENT[subtype('" + SubTypeNames.CATCH<a name="line.45"></a>
-<span class="sourceLineNo">046</span>                                + "') and not(anytoken('ELLIPSIS', 'AND'))]";<a name="line.46"></a>
-<span class="sourceLineNo">047</span>        }<a name="line.47"></a>
-<span class="sourceLineNo">048</span><a name="line.48"></a>
-<span class="sourceLineNo">049</span>        /** {@inheritDoc} */<a name="line.49"></a>
-<span class="sourceLineNo">050</span>        @Override<a name="line.50"></a>
-<span class="sourceLineNo">051</span>        protected String getFindingMessage(ShallowEntity entity) {<a name="line.51"></a>
-<span class="sourceLineNo">052</span>                return "Exception must be caught by reference!";<a name="line.52"></a>
-<span class="sourceLineNo">053</span>        }<a name="line.53"></a>
-<span class="sourceLineNo">054</span>}<a name="line.54"></a>
+<span class="sourceLineNo">044</span>        protected String getFindingMessage(ShallowEntity entity) {<a name="line.44"></a>
+<span class="sourceLineNo">045</span>                return "Exception must be caught by reference!";<a name="line.45"></a>
+<span class="sourceLineNo">046</span>        }<a name="line.46"></a>
+<span class="sourceLineNo">047</span>}<a name="line.47"></a>
 
 
 

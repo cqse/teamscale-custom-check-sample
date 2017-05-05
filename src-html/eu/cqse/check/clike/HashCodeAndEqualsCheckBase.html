@@ -32,62 +32,57 @@
 <span class="sourceLineNo">024</span>/**<a name="line.24"></a>
 <span class="sourceLineNo">025</span> * Base class for hash-code and equals checks. A class must either implement<a name="line.25"></a>
 <span class="sourceLineNo">026</span> * both methods or none of them.<a name="line.26"></a>
-<span class="sourceLineNo">027</span> * <a name="line.27"></a>
-<span class="sourceLineNo">028</span> * @author $Author: hummelb $<a name="line.28"></a>
-<span class="sourceLineNo">029</span> * @version $Rev: 55271 $<a name="line.29"></a>
-<span class="sourceLineNo">030</span> * @ConQAT.Rating GREEN Hash: 8AA0A635D3D1F7C81393B5412BDBE4B1<a name="line.30"></a>
-<span class="sourceLineNo">031</span> */<a name="line.31"></a>
-<span class="sourceLineNo">032</span>public abstract class HashCodeAndEqualsCheckBase extends EntityCheckBase {<a name="line.32"></a>
-<span class="sourceLineNo">033</span><a name="line.33"></a>
-<span class="sourceLineNo">034</span>        /** Returns the name of the hash-code method. */<a name="line.34"></a>
-<span class="sourceLineNo">035</span>        protected abstract String getHashCodeName();<a name="line.35"></a>
-<span class="sourceLineNo">036</span><a name="line.36"></a>
-<span class="sourceLineNo">037</span>        /** Returns the name of the equals method. */<a name="line.37"></a>
-<span class="sourceLineNo">038</span>        protected abstract String getEqualsName();<a name="line.38"></a>
-<span class="sourceLineNo">039</span><a name="line.39"></a>
-<span class="sourceLineNo">040</span>        /** {@inheritDoc} */<a name="line.40"></a>
-<span class="sourceLineNo">041</span>        @Override<a name="line.41"></a>
-<span class="sourceLineNo">042</span>        protected String getXPathSelectionString() {<a name="line.42"></a>
-<span class="sourceLineNo">043</span>                return "//TYPE";<a name="line.43"></a>
-<span class="sourceLineNo">044</span>        }<a name="line.44"></a>
-<span class="sourceLineNo">045</span><a name="line.45"></a>
-<span class="sourceLineNo">046</span>        /** {@inheritDoc} */<a name="line.46"></a>
-<span class="sourceLineNo">047</span>        @Override<a name="line.47"></a>
-<span class="sourceLineNo">048</span>        protected void processEntity(ShallowEntity entity) throws CheckException {<a name="line.48"></a>
-<span class="sourceLineNo">049</span>                ShallowEntity equalsEntity = getMethodEntity(entity, getEqualsName(),<a name="line.49"></a>
-<span class="sourceLineNo">050</span>                                1);<a name="line.50"></a>
-<span class="sourceLineNo">051</span>                ShallowEntity hashCodeEntity = getMethodEntity(entity,<a name="line.51"></a>
-<span class="sourceLineNo">052</span>                                getHashCodeName(), 0);<a name="line.52"></a>
-<span class="sourceLineNo">053</span><a name="line.53"></a>
-<span class="sourceLineNo">054</span>                if (equalsEntity != null &amp;&amp; hashCodeEntity == null) {<a name="line.54"></a>
-<span class="sourceLineNo">055</span>                        createFindingOnFirstLine(<a name="line.55"></a>
-<span class="sourceLineNo">056</span>                                        getEqualsName() + "() but not " + getHashCodeName()<a name="line.56"></a>
-<span class="sourceLineNo">057</span>                                                        + "() implemented in class " + entity.getName(),<a name="line.57"></a>
-<span class="sourceLineNo">058</span>                                        equalsEntity);<a name="line.58"></a>
-<span class="sourceLineNo">059</span>                } else if (equalsEntity == null &amp;&amp; hashCodeEntity != null) {<a name="line.59"></a>
-<span class="sourceLineNo">060</span>                        createFindingOnFirstLine(<a name="line.60"></a>
-<span class="sourceLineNo">061</span>                                        getHashCodeName() + "() but not " + getEqualsName()<a name="line.61"></a>
-<span class="sourceLineNo">062</span>                                                        + "() implemented in class " + entity.getName(),<a name="line.62"></a>
-<span class="sourceLineNo">063</span>                                        hashCodeEntity);<a name="line.63"></a>
-<span class="sourceLineNo">064</span>                }<a name="line.64"></a>
-<span class="sourceLineNo">065</span>        }<a name="line.65"></a>
-<span class="sourceLineNo">066</span><a name="line.66"></a>
-<span class="sourceLineNo">067</span>        /**<a name="line.67"></a>
-<span class="sourceLineNo">068</span>         * Returns the first method entity of the given type, that has the given<a name="line.68"></a>
-<span class="sourceLineNo">069</span>         * name and parameter count.<a name="line.69"></a>
-<span class="sourceLineNo">070</span>         */<a name="line.70"></a>
-<span class="sourceLineNo">071</span>        private ShallowEntity getMethodEntity(ShallowEntity type, String name,<a name="line.71"></a>
-<span class="sourceLineNo">072</span>                        int parameterCount) throws CheckException {<a name="line.72"></a>
-<span class="sourceLineNo">073</span>                for (ShallowEntity methodEntity : select(type,<a name="line.73"></a>
-<span class="sourceLineNo">074</span>                                "METHOD[subtype('method') and name-matches('" + name + "')]")) {<a name="line.74"></a>
-<span class="sourceLineNo">075</span>                        if (ShallowParsingUtils.extractParameterNameTokens(methodEntity)<a name="line.75"></a>
-<span class="sourceLineNo">076</span>                                        .size() == parameterCount) {<a name="line.76"></a>
-<span class="sourceLineNo">077</span>                                return methodEntity;<a name="line.77"></a>
-<span class="sourceLineNo">078</span>                        }<a name="line.78"></a>
-<span class="sourceLineNo">079</span>                }<a name="line.79"></a>
-<span class="sourceLineNo">080</span>                return null;<a name="line.80"></a>
-<span class="sourceLineNo">081</span>        }<a name="line.81"></a>
-<span class="sourceLineNo">082</span>}<a name="line.82"></a>
+<span class="sourceLineNo">027</span> */<a name="line.27"></a>
+<span class="sourceLineNo">028</span>public abstract class HashCodeAndEqualsCheckBase extends EntityCheckBase {<a name="line.28"></a>
+<span class="sourceLineNo">029</span><a name="line.29"></a>
+<span class="sourceLineNo">030</span>        /** Returns the name of the hash-code method. */<a name="line.30"></a>
+<span class="sourceLineNo">031</span>        protected abstract String getHashCodeName();<a name="line.31"></a>
+<span class="sourceLineNo">032</span><a name="line.32"></a>
+<span class="sourceLineNo">033</span>        /** Returns the name of the equals method. */<a name="line.33"></a>
+<span class="sourceLineNo">034</span>        protected abstract String getEqualsName();<a name="line.34"></a>
+<span class="sourceLineNo">035</span><a name="line.35"></a>
+<span class="sourceLineNo">036</span>        /** {@inheritDoc} */<a name="line.36"></a>
+<span class="sourceLineNo">037</span>        @Override<a name="line.37"></a>
+<span class="sourceLineNo">038</span>        protected String getXPathSelectionString() {<a name="line.38"></a>
+<span class="sourceLineNo">039</span>                return "//TYPE";<a name="line.39"></a>
+<span class="sourceLineNo">040</span>        }<a name="line.40"></a>
+<span class="sourceLineNo">041</span><a name="line.41"></a>
+<span class="sourceLineNo">042</span>        /** {@inheritDoc} */<a name="line.42"></a>
+<span class="sourceLineNo">043</span>        @Override<a name="line.43"></a>
+<span class="sourceLineNo">044</span>        protected void processEntity(ShallowEntity entity) throws CheckException {<a name="line.44"></a>
+<span class="sourceLineNo">045</span>                ShallowEntity equalsEntity = getMethodEntity(entity, getEqualsName(), 1);<a name="line.45"></a>
+<span class="sourceLineNo">046</span>                ShallowEntity hashCodeEntity = getMethodEntity(entity, getHashCodeName(), 0);<a name="line.46"></a>
+<span class="sourceLineNo">047</span><a name="line.47"></a>
+<span class="sourceLineNo">048</span>                if (equalsEntity != null &amp;&amp; hashCodeEntity == null) {<a name="line.48"></a>
+<span class="sourceLineNo">049</span>                        createFindingOnFirstLine(<a name="line.49"></a>
+<span class="sourceLineNo">050</span>                                        getEqualsName() + "() but not " + getHashCodeName() + "() implemented in class " + entity.getName(),<a name="line.50"></a>
+<span class="sourceLineNo">051</span>                                        equalsEntity);<a name="line.51"></a>
+<span class="sourceLineNo">052</span>                } else if (equalsEntity == null &amp;&amp; hashCodeEntity != null) {<a name="line.52"></a>
+<span class="sourceLineNo">053</span>                        createFindingOnFirstLine(<a name="line.53"></a>
+<span class="sourceLineNo">054</span>                                        getHashCodeName() + "() but not " + getEqualsName() + "() implemented in class " + entity.getName(),<a name="line.54"></a>
+<span class="sourceLineNo">055</span>                                        hashCodeEntity);<a name="line.55"></a>
+<span class="sourceLineNo">056</span>                }<a name="line.56"></a>
+<span class="sourceLineNo">057</span>        }<a name="line.57"></a>
+<span class="sourceLineNo">058</span><a name="line.58"></a>
+<span class="sourceLineNo">059</span>        /** Returns a method selector. */<a name="line.59"></a>
+<span class="sourceLineNo">060</span>        protected String getMethodSelector(String name) {<a name="line.60"></a>
+<span class="sourceLineNo">061</span>                return "METHOD[subtype('method') and name-matches('" + name + "')]";<a name="line.61"></a>
+<span class="sourceLineNo">062</span>        }<a name="line.62"></a>
+<span class="sourceLineNo">063</span><a name="line.63"></a>
+<span class="sourceLineNo">064</span>        /**<a name="line.64"></a>
+<span class="sourceLineNo">065</span>         * Returns the first method entity of the given type, that has the given<a name="line.65"></a>
+<span class="sourceLineNo">066</span>         * name and parameter count.<a name="line.66"></a>
+<span class="sourceLineNo">067</span>         */<a name="line.67"></a>
+<span class="sourceLineNo">068</span>        protected ShallowEntity getMethodEntity(ShallowEntity type, String name, int parameterCount) throws CheckException {<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                String methodSelector = getMethodSelector(name);<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                for (ShallowEntity methodEntity : select(type, methodSelector)) {<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                        if (ShallowParsingUtils.extractParameterNameTokens(methodEntity).size() == parameterCount) {<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                                return methodEntity;<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                        }<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                }<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                return null;<a name="line.75"></a>
+<span class="sourceLineNo">076</span>        }<a name="line.76"></a>
+<span class="sourceLineNo">077</span>}<a name="line.77"></a>
 
 
 

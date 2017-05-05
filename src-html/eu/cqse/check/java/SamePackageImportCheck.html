@@ -40,36 +40,28 @@
 <span class="sourceLineNo">032</span><a name="line.32"></a>
 <span class="sourceLineNo">033</span>/**<a name="line.33"></a>
 <span class="sourceLineNo">034</span> * {@ConQAT.Doc}<a name="line.34"></a>
-<span class="sourceLineNo">035</span> *<a name="line.35"></a>
-<span class="sourceLineNo">036</span> * @author $Author: heinemann $<a name="line.36"></a>
-<span class="sourceLineNo">037</span> * @version $Rev: 55467 $<a name="line.37"></a>
-<span class="sourceLineNo">038</span> * @ConQAT.Rating GREEN Hash: 9BDF3A929917C4FB7193CDB1D31F5A71<a name="line.38"></a>
-<span class="sourceLineNo">039</span> */<a name="line.39"></a>
-<span class="sourceLineNo">040</span>@ACheck(name = "Same Package Import", description = "Must not import types from own package, as they are accessible without import.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.YELLOW, languages = {<a name="line.40"></a>
-<span class="sourceLineNo">041</span>                ELanguage.JAVA, ELanguage.XTEND }, parameters = {<a name="line.41"></a>
-<span class="sourceLineNo">042</span>                                ECheckParameter.ABSTRACT_SYNTAX_TREE })<a name="line.42"></a>
-<span class="sourceLineNo">043</span>public class SamePackageImportCheck extends EntityCheckBase {<a name="line.43"></a>
-<span class="sourceLineNo">044</span><a name="line.44"></a>
-<span class="sourceLineNo">045</span>        /** {@inheritDoc} */<a name="line.45"></a>
-<span class="sourceLineNo">046</span>        @Override<a name="line.46"></a>
-<span class="sourceLineNo">047</span>        protected String getXPathSelectionString() {<a name="line.47"></a>
-<span class="sourceLineNo">048</span>                return "/META[subtype('" + SubTypeNames.PACKAGE + "')]";<a name="line.48"></a>
-<span class="sourceLineNo">049</span>        }<a name="line.49"></a>
-<span class="sourceLineNo">050</span><a name="line.50"></a>
-<span class="sourceLineNo">051</span>        /** {@inheritDoc} */<a name="line.51"></a>
-<span class="sourceLineNo">052</span>        @Override<a name="line.52"></a>
-<span class="sourceLineNo">053</span>        protected void processEntity(ShallowEntity entity) throws CheckException {<a name="line.53"></a>
-<span class="sourceLineNo">054</span>                List&lt;ShallowEntity&gt; imports = select(<a name="line.54"></a>
-<span class="sourceLineNo">055</span>                                "/META[subtype('" + SubTypeNames.IMPORT + "')]");<a name="line.55"></a>
-<span class="sourceLineNo">056</span>                for (ShallowEntity importEntity : imports) {<a name="line.56"></a>
-<span class="sourceLineNo">057</span>                        if (StringUtils.removeLastPart(importEntity.getName(), '.')<a name="line.57"></a>
-<span class="sourceLineNo">058</span>                                        .equals(entity.getName())) {<a name="line.58"></a>
-<span class="sourceLineNo">059</span>                                createFinding("Unnecessary import of class from own package: "<a name="line.59"></a>
-<span class="sourceLineNo">060</span>                                                + entity.getName(), importEntity);<a name="line.60"></a>
-<span class="sourceLineNo">061</span>                        }<a name="line.61"></a>
-<span class="sourceLineNo">062</span>                }<a name="line.62"></a>
-<span class="sourceLineNo">063</span>        }<a name="line.63"></a>
-<span class="sourceLineNo">064</span>}<a name="line.64"></a>
+<span class="sourceLineNo">035</span> */<a name="line.35"></a>
+<span class="sourceLineNo">036</span>@ACheck(name = "Same package import", description = "Must not import types from own package, as they are accessible without import.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.YELLOW, languages = {<a name="line.36"></a>
+<span class="sourceLineNo">037</span>                ELanguage.JAVA, ELanguage.XTEND }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })<a name="line.37"></a>
+<span class="sourceLineNo">038</span>public class SamePackageImportCheck extends EntityCheckBase {<a name="line.38"></a>
+<span class="sourceLineNo">039</span><a name="line.39"></a>
+<span class="sourceLineNo">040</span>        /** {@inheritDoc} */<a name="line.40"></a>
+<span class="sourceLineNo">041</span>        @Override<a name="line.41"></a>
+<span class="sourceLineNo">042</span>        protected String getXPathSelectionString() {<a name="line.42"></a>
+<span class="sourceLineNo">043</span>                return "/META[subtype('" + SubTypeNames.PACKAGE + "')]";<a name="line.43"></a>
+<span class="sourceLineNo">044</span>        }<a name="line.44"></a>
+<span class="sourceLineNo">045</span><a name="line.45"></a>
+<span class="sourceLineNo">046</span>        /** {@inheritDoc} */<a name="line.46"></a>
+<span class="sourceLineNo">047</span>        @Override<a name="line.47"></a>
+<span class="sourceLineNo">048</span>        protected void processEntity(ShallowEntity entity) throws CheckException {<a name="line.48"></a>
+<span class="sourceLineNo">049</span>                List&lt;ShallowEntity&gt; imports = select("/META[subtype('" + SubTypeNames.IMPORT + "')]");<a name="line.49"></a>
+<span class="sourceLineNo">050</span>                for (ShallowEntity importEntity : imports) {<a name="line.50"></a>
+<span class="sourceLineNo">051</span>                        if (StringUtils.removeLastPart(importEntity.getName(), '.').equals(entity.getName())) {<a name="line.51"></a>
+<span class="sourceLineNo">052</span>                                createFinding("Unnecessary import of class from own package: " + entity.getName(), importEntity);<a name="line.52"></a>
+<span class="sourceLineNo">053</span>                        }<a name="line.53"></a>
+<span class="sourceLineNo">054</span>                }<a name="line.54"></a>
+<span class="sourceLineNo">055</span>        }<a name="line.55"></a>
+<span class="sourceLineNo">056</span>}<a name="line.56"></a>
 
 
 

@@ -9,7 +9,7 @@
 <pre><span class="sourceLineNo">001</span>/*-----------------------------------------------------------------------+<a name="line.1"></a>
 <span class="sourceLineNo">002</span> | com.teamscale.checks<a name="line.2"></a>
 <span class="sourceLineNo">003</span> |                                                                       |<a name="line.3"></a>
-<span class="sourceLineNo">004</span>   $Id: TokenFunctionBase.java 52960 2015-06-18 11:26:01Z hummelb $            <a name="line.4"></a>
+<span class="sourceLineNo">004</span>   $Id$            <a name="line.4"></a>
 <span class="sourceLineNo">005</span> |                                                                       |<a name="line.5"></a>
 <span class="sourceLineNo">006</span> | Copyright (c)  2009-2015 CQSE GmbH                                 |<a name="line.6"></a>
 <span class="sourceLineNo">007</span> +-----------------------------------------------------------------------*/<a name="line.7"></a>
@@ -26,41 +26,33 @@
 <span class="sourceLineNo">018</span>/**<a name="line.18"></a>
 <span class="sourceLineNo">019</span> * Base class for functions that use an array of {@link ETokenType} as<a name="line.19"></a>
 <span class="sourceLineNo">020</span> * arguments.<a name="line.20"></a>
-<span class="sourceLineNo">021</span> * <a name="line.21"></a>
-<span class="sourceLineNo">022</span> * @author $Author: hummelb $<a name="line.22"></a>
-<span class="sourceLineNo">023</span> * @version $Rev: 52960 $<a name="line.23"></a>
-<span class="sourceLineNo">024</span> * @ConQAT.Rating GREEN Hash: B580BA32AA560C5ECC882FE995DCC362<a name="line.24"></a>
-<span class="sourceLineNo">025</span> */<a name="line.25"></a>
-<span class="sourceLineNo">026</span>public abstract class TokenFunctionBase extends FunctionBase&lt;ETokenType[]&gt; {<a name="line.26"></a>
-<span class="sourceLineNo">027</span><a name="line.27"></a>
-<span class="sourceLineNo">028</span>        /** {@inheritDoc} */<a name="line.28"></a>
-<span class="sourceLineNo">029</span>        @Override<a name="line.29"></a>
-<span class="sourceLineNo">030</span>        protected ETokenType[] parseArguments(List&lt;?&gt; args)<a name="line.30"></a>
-<span class="sourceLineNo">031</span>                        throws FunctionCallException {<a name="line.31"></a>
-<span class="sourceLineNo">032</span>                if (args.size() &lt; 1) {<a name="line.32"></a>
-<span class="sourceLineNo">033</span>                        throw new FunctionCallException(<a name="line.33"></a>
-<span class="sourceLineNo">034</span>                                        getArgumentSizeInvalidErrorMessage());<a name="line.34"></a>
-<span class="sourceLineNo">035</span>                }<a name="line.35"></a>
-<span class="sourceLineNo">036</span><a name="line.36"></a>
-<span class="sourceLineNo">037</span>                List&lt;ETokenType&gt; tokenTypes = new ArrayList&lt;&gt;();<a name="line.37"></a>
-<span class="sourceLineNo">038</span>                for (Object tokenTypeName : args) {<a name="line.38"></a>
-<span class="sourceLineNo">039</span>                        ETokenType tokenType = EnumUtils.valueOf(ETokenType.class,<a name="line.39"></a>
-<span class="sourceLineNo">040</span>                                        (tokenTypeName.toString()).toUpperCase());<a name="line.40"></a>
-<span class="sourceLineNo">041</span>                        if (tokenType == null) {<a name="line.41"></a>
-<span class="sourceLineNo">042</span>                                throw new FunctionCallException("Argument " + tokenTypeName<a name="line.42"></a>
-<span class="sourceLineNo">043</span>                                                + " is no valid token.");<a name="line.43"></a>
-<span class="sourceLineNo">044</span>                        }<a name="line.44"></a>
-<span class="sourceLineNo">045</span>                        tokenTypes.add(tokenType);<a name="line.45"></a>
-<span class="sourceLineNo">046</span>                }<a name="line.46"></a>
-<span class="sourceLineNo">047</span>                return tokenTypes.toArray(new ETokenType[tokenTypes.size()]);<a name="line.47"></a>
-<span class="sourceLineNo">048</span>        }<a name="line.48"></a>
-<span class="sourceLineNo">049</span><a name="line.49"></a>
-<span class="sourceLineNo">050</span>        /**<a name="line.50"></a>
-<span class="sourceLineNo">051</span>         * Returns the error message that is displayed if the number of arguments<a name="line.51"></a>
-<span class="sourceLineNo">052</span>         * does not match.<a name="line.52"></a>
-<span class="sourceLineNo">053</span>         */<a name="line.53"></a>
-<span class="sourceLineNo">054</span>        protected abstract String getArgumentSizeInvalidErrorMessage();<a name="line.54"></a>
-<span class="sourceLineNo">055</span>}<a name="line.55"></a>
+<span class="sourceLineNo">021</span> */<a name="line.21"></a>
+<span class="sourceLineNo">022</span>public abstract class TokenFunctionBase extends FunctionBase&lt;ETokenType[]&gt; {<a name="line.22"></a>
+<span class="sourceLineNo">023</span><a name="line.23"></a>
+<span class="sourceLineNo">024</span>        /** {@inheritDoc} */<a name="line.24"></a>
+<span class="sourceLineNo">025</span>        @Override<a name="line.25"></a>
+<span class="sourceLineNo">026</span>        protected ETokenType[] parseArguments(List&lt;?&gt; args) throws FunctionCallException {<a name="line.26"></a>
+<span class="sourceLineNo">027</span>                if (args.size() &lt; 1) {<a name="line.27"></a>
+<span class="sourceLineNo">028</span>                        throw new FunctionCallException(getArgumentSizeInvalidErrorMessage());<a name="line.28"></a>
+<span class="sourceLineNo">029</span>                }<a name="line.29"></a>
+<span class="sourceLineNo">030</span><a name="line.30"></a>
+<span class="sourceLineNo">031</span>                List&lt;ETokenType&gt; tokenTypes = new ArrayList&lt;&gt;();<a name="line.31"></a>
+<span class="sourceLineNo">032</span>                for (Object tokenTypeName : args) {<a name="line.32"></a>
+<span class="sourceLineNo">033</span>                        ETokenType tokenType = EnumUtils.valueOf(ETokenType.class, (tokenTypeName.toString()).toUpperCase());<a name="line.33"></a>
+<span class="sourceLineNo">034</span>                        if (tokenType == null) {<a name="line.34"></a>
+<span class="sourceLineNo">035</span>                                throw new FunctionCallException("Argument " + tokenTypeName + " is no valid token.");<a name="line.35"></a>
+<span class="sourceLineNo">036</span>                        }<a name="line.36"></a>
+<span class="sourceLineNo">037</span>                        tokenTypes.add(tokenType);<a name="line.37"></a>
+<span class="sourceLineNo">038</span>                }<a name="line.38"></a>
+<span class="sourceLineNo">039</span>                return tokenTypes.toArray(new ETokenType[tokenTypes.size()]);<a name="line.39"></a>
+<span class="sourceLineNo">040</span>        }<a name="line.40"></a>
+<span class="sourceLineNo">041</span><a name="line.41"></a>
+<span class="sourceLineNo">042</span>        /**<a name="line.42"></a>
+<span class="sourceLineNo">043</span>         * Returns the error message that is displayed if the number of arguments<a name="line.43"></a>
+<span class="sourceLineNo">044</span>         * does not match.<a name="line.44"></a>
+<span class="sourceLineNo">045</span>         */<a name="line.45"></a>
+<span class="sourceLineNo">046</span>        protected abstract String getArgumentSizeInvalidErrorMessage();<a name="line.46"></a>
+<span class="sourceLineNo">047</span>}<a name="line.47"></a>
 
 
 

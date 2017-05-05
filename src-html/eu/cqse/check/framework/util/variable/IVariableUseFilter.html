@@ -31,23 +31,27 @@
 <span class="sourceLineNo">023</span>/**<a name="line.23"></a>
 <span class="sourceLineNo">024</span> * Interface for filters that filter variable uses within token lists for some<a name="line.24"></a>
 <span class="sourceLineNo">025</span> * criteria.<a name="line.25"></a>
-<span class="sourceLineNo">026</span> * <a name="line.26"></a>
-<span class="sourceLineNo">027</span> * @author $Author: heinemann $<a name="line.27"></a>
-<span class="sourceLineNo">028</span> * @version $Rev: 55647 $<a name="line.28"></a>
-<span class="sourceLineNo">029</span> * @ConQAT.Rating RED Hash: D85E5328733CE3A9CE6A5087C4CE5874<a name="line.29"></a>
-<span class="sourceLineNo">030</span> */<a name="line.30"></a>
-<span class="sourceLineNo">031</span>public interface IVariableUseFilter {<a name="line.31"></a>
-<span class="sourceLineNo">032</span><a name="line.32"></a>
-<span class="sourceLineNo">033</span>        // TODO (LH) Please clarify if this filter means that the use should be<a name="line.33"></a>
-<span class="sourceLineNo">034</span>        // considered or not (filtered out)<a name="line.34"></a>
-<span class="sourceLineNo">035</span>        /**<a name="line.35"></a>
-<span class="sourceLineNo">036</span>         * Returns whether the variable used at the given index is filtered.<a name="line.36"></a>
-<span class="sourceLineNo">037</span>         * <a name="line.37"></a>
-<span class="sourceLineNo">038</span>         * @param isField<a name="line.38"></a>
-<span class="sourceLineNo">039</span>         *            true if the given variable use is a field use<a name="line.39"></a>
-<span class="sourceLineNo">040</span>         */<a name="line.40"></a>
-<span class="sourceLineNo">041</span>        public boolean isFiltered(List&lt;IToken&gt; tokens, int index, boolean isField);<a name="line.41"></a>
-<span class="sourceLineNo">042</span>}<a name="line.42"></a>
+<span class="sourceLineNo">026</span> */<a name="line.26"></a>
+<span class="sourceLineNo">027</span>public interface IVariableUseFilter {<a name="line.27"></a>
+<span class="sourceLineNo">028</span><a name="line.28"></a>
+<span class="sourceLineNo">029</span>        /** A variable use filter that accepts all uses. */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>        public final static IVariableUseFilter ACCEPT_ALL = new IVariableUseFilter() {<a name="line.30"></a>
+<span class="sourceLineNo">031</span>                /** {@inheritDoc} */<a name="line.31"></a>
+<span class="sourceLineNo">032</span>                @Override<a name="line.32"></a>
+<span class="sourceLineNo">033</span>                public boolean isFiltered(List&lt;IToken&gt; tokens, int index, boolean isField) {<a name="line.33"></a>
+<span class="sourceLineNo">034</span>                        return true;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>                }<a name="line.35"></a>
+<span class="sourceLineNo">036</span>        };<a name="line.36"></a>
+<span class="sourceLineNo">037</span><a name="line.37"></a>
+<span class="sourceLineNo">038</span>        /**<a name="line.38"></a>
+<span class="sourceLineNo">039</span>         * Returns whether the variable used at the given index is filtered. If the<a name="line.39"></a>
+<span class="sourceLineNo">040</span>         * variable use is filtered it should be considered.<a name="line.40"></a>
+<span class="sourceLineNo">041</span>         * <a name="line.41"></a>
+<span class="sourceLineNo">042</span>         * @param isField<a name="line.42"></a>
+<span class="sourceLineNo">043</span>         *            true if the given variable use is a field use<a name="line.43"></a>
+<span class="sourceLineNo">044</span>         */<a name="line.44"></a>
+<span class="sourceLineNo">045</span>        public boolean isFiltered(List&lt;IToken&gt; tokens, int index, boolean isField);<a name="line.45"></a>
+<span class="sourceLineNo">046</span>}<a name="line.46"></a>
 
 
 

@@ -28,68 +28,63 @@
 <span class="sourceLineNo">020</span><a name="line.20"></a>
 <span class="sourceLineNo">021</span>/**<a name="line.21"></a>
 <span class="sourceLineNo">022</span> * {@ConQAT.Doc}<a name="line.22"></a>
-<span class="sourceLineNo">023</span> * <a name="line.23"></a>
-<span class="sourceLineNo">024</span> * @author $Author: kinnen $<a name="line.24"></a>
-<span class="sourceLineNo">025</span> * @version $Rev: 53185 $<a name="line.25"></a>
-<span class="sourceLineNo">026</span> * @ConQAT.Rating GREEN Hash: 419ADFB5FA08633D2305911C898AF9D5<a name="line.26"></a>
-<span class="sourceLineNo">027</span> */<a name="line.27"></a>
-<span class="sourceLineNo">028</span>@ACheck(name = "Test for NaN correctly", description = "An expression tests a value against Single.Nan "<a name="line.28"></a>
-<span class="sourceLineNo">029</span>                + "or Double.Nan.", groupName = CheckGroupNames.CORRECTNESS, languages = { ELanguage.CS }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })<a name="line.29"></a>
-<span class="sourceLineNo">030</span>public class TestForNaNCorrectlyCheck extends EntityTokenCheckBase {<a name="line.30"></a>
-<span class="sourceLineNo">031</span><a name="line.31"></a>
-<span class="sourceLineNo">032</span>        /**<a name="line.32"></a>
-<span class="sourceLineNo">033</span>         * The token offset of a NaN sequence as left operand of a binary operator.<a name="line.33"></a>
-<span class="sourceLineNo">034</span>         */<a name="line.34"></a>
-<span class="sourceLineNo">035</span>        private static final int LEFT_OPERAND_OFFSET = -3;<a name="line.35"></a>
-<span class="sourceLineNo">036</span><a name="line.36"></a>
-<span class="sourceLineNo">037</span>        /**<a name="line.37"></a>
-<span class="sourceLineNo">038</span>         * The token offset of a NaN sequence as right operand of a binary operator.<a name="line.38"></a>
-<span class="sourceLineNo">039</span>         */<a name="line.39"></a>
-<span class="sourceLineNo">040</span>        private static final int RIGHT_OPERAND_OFFSET = 1;<a name="line.40"></a>
-<span class="sourceLineNo">041</span><a name="line.41"></a>
-<span class="sourceLineNo">042</span>        /** Token text sequences that represent the NaN value. */<a name="line.42"></a>
-<span class="sourceLineNo">043</span>        private static final Set&lt;String[]&gt; NAN_SEQUENCES = CollectionUtils<a name="line.43"></a>
-<span class="sourceLineNo">044</span>                        .asHashSet(new String[] { "Single", ".", "NaN" }, new String[] {<a name="line.44"></a>
-<span class="sourceLineNo">045</span>                                        "Double", ".", "NaN" });<a name="line.45"></a>
-<span class="sourceLineNo">046</span><a name="line.46"></a>
-<span class="sourceLineNo">047</span>        /** {@inheritDoc} */<a name="line.47"></a>
-<span class="sourceLineNo">048</span>        @Override<a name="line.48"></a>
-<span class="sourceLineNo">049</span>        protected String getXPathSelectionString() {<a name="line.49"></a>
-<span class="sourceLineNo">050</span>                return "//STATEMENT | //ATTRIBUTE";<a name="line.50"></a>
-<span class="sourceLineNo">051</span>        }<a name="line.51"></a>
-<span class="sourceLineNo">052</span><a name="line.52"></a>
-<span class="sourceLineNo">053</span>        /** Tests if the given tokens contain a test against NaN. */<a name="line.53"></a>
-<span class="sourceLineNo">054</span>        @Override<a name="line.54"></a>
-<span class="sourceLineNo">055</span>        protected void processTokens(List&lt;IToken&gt; tokens) throws CheckException {<a name="line.55"></a>
-<span class="sourceLineNo">056</span>                List&lt;Integer&gt; operatorIndices = TokenStreamUtils.findAll(tokens,<a name="line.56"></a>
-<span class="sourceLineNo">057</span>                                EnumSet.of(ETokenType.EQEQ, ETokenType.NOTEQ));<a name="line.57"></a>
-<span class="sourceLineNo">058</span><a name="line.58"></a>
-<span class="sourceLineNo">059</span>                for (Integer operatorIndex : operatorIndices) {<a name="line.59"></a>
-<span class="sourceLineNo">060</span>                        if (!checkIndexForNaN(tokens, operatorIndex + LEFT_OPERAND_OFFSET)) {<a name="line.60"></a>
-<span class="sourceLineNo">061</span>                                checkIndexForNaN(tokens, operatorIndex + RIGHT_OPERAND_OFFSET);<a name="line.61"></a>
-<span class="sourceLineNo">062</span>                        }<a name="line.62"></a>
-<span class="sourceLineNo">063</span>                }<a name="line.63"></a>
-<span class="sourceLineNo">064</span>        }<a name="line.64"></a>
-<span class="sourceLineNo">065</span><a name="line.65"></a>
-<span class="sourceLineNo">066</span>        /**<a name="line.66"></a>
-<span class="sourceLineNo">067</span>         * Checks and reports a finding, if one of the NaN text sequences is found<a name="line.67"></a>
-<span class="sourceLineNo">068</span>         * at the given index.<a name="line.68"></a>
-<span class="sourceLineNo">069</span>         */<a name="line.69"></a>
-<span class="sourceLineNo">070</span>        private boolean checkIndexForNaN(List&lt;IToken&gt; tokens, int index)<a name="line.70"></a>
-<span class="sourceLineNo">071</span>                        throws CheckException {<a name="line.71"></a>
-<span class="sourceLineNo">072</span>                for (String[] nanSequence : NAN_SEQUENCES) {<a name="line.72"></a>
-<span class="sourceLineNo">073</span>                        if (TokenStreamTextUtils.hasSequence(tokens, index, nanSequence)) {<a name="line.73"></a>
-<span class="sourceLineNo">074</span>                                createFinding(<a name="line.74"></a>
-<span class="sourceLineNo">075</span>                                                "A value must not be tested against '"<a name="line.75"></a>
-<span class="sourceLineNo">076</span>                                                                + StringUtils.concat(nanSequence,<a name="line.76"></a>
-<span class="sourceLineNo">077</span>                                                                                StringUtils.EMPTY_STRING) + "'.",<a name="line.77"></a>
-<span class="sourceLineNo">078</span>                                                tokens.get(index));<a name="line.78"></a>
-<span class="sourceLineNo">079</span>                                return true;<a name="line.79"></a>
-<span class="sourceLineNo">080</span>                        }<a name="line.80"></a>
-<span class="sourceLineNo">081</span>                }<a name="line.81"></a>
-<span class="sourceLineNo">082</span>                return false;<a name="line.82"></a>
-<span class="sourceLineNo">083</span>        }<a name="line.83"></a>
-<span class="sourceLineNo">084</span>}<a name="line.84"></a>
+<span class="sourceLineNo">023</span> */<a name="line.23"></a>
+<span class="sourceLineNo">024</span>@ACheck(name = "Test for NaN correctly", description = "Creates a finding if an expression tests a value against Single.Nan "<a name="line.24"></a>
+<span class="sourceLineNo">025</span>                + "or Double.Nan.", groupName = CheckGroupNames.CORRECTNESS, languages = {<a name="line.25"></a>
+<span class="sourceLineNo">026</span>                                ELanguage.CS }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })<a name="line.26"></a>
+<span class="sourceLineNo">027</span>public class TestForNaNCorrectlyCheck extends EntityTokenCheckBase {<a name="line.27"></a>
+<span class="sourceLineNo">028</span><a name="line.28"></a>
+<span class="sourceLineNo">029</span>        /**<a name="line.29"></a>
+<span class="sourceLineNo">030</span>         * The token offset of a NaN sequence as left operand of a binary operator.<a name="line.30"></a>
+<span class="sourceLineNo">031</span>         */<a name="line.31"></a>
+<span class="sourceLineNo">032</span>        private static final int LEFT_OPERAND_OFFSET = -3;<a name="line.32"></a>
+<span class="sourceLineNo">033</span><a name="line.33"></a>
+<span class="sourceLineNo">034</span>        /**<a name="line.34"></a>
+<span class="sourceLineNo">035</span>         * The token offset of a NaN sequence as right operand of a binary operator.<a name="line.35"></a>
+<span class="sourceLineNo">036</span>         */<a name="line.36"></a>
+<span class="sourceLineNo">037</span>        private static final int RIGHT_OPERAND_OFFSET = 1;<a name="line.37"></a>
+<span class="sourceLineNo">038</span><a name="line.38"></a>
+<span class="sourceLineNo">039</span>        /** Token text sequences that represent the NaN value. */<a name="line.39"></a>
+<span class="sourceLineNo">040</span>        private static final Set&lt;String[]&gt; NAN_SEQUENCES = CollectionUtils.asHashSet(new String[] { "Single", ".", "NaN" },<a name="line.40"></a>
+<span class="sourceLineNo">041</span>                        new String[] { "Double", ".", "NaN" });<a name="line.41"></a>
+<span class="sourceLineNo">042</span><a name="line.42"></a>
+<span class="sourceLineNo">043</span>        /** {@inheritDoc} */<a name="line.43"></a>
+<span class="sourceLineNo">044</span>        @Override<a name="line.44"></a>
+<span class="sourceLineNo">045</span>        protected String getXPathSelectionString() {<a name="line.45"></a>
+<span class="sourceLineNo">046</span>                return "//STATEMENT | //ATTRIBUTE";<a name="line.46"></a>
+<span class="sourceLineNo">047</span>        }<a name="line.47"></a>
+<span class="sourceLineNo">048</span><a name="line.48"></a>
+<span class="sourceLineNo">049</span>        /** Tests if the given tokens contain a test against NaN. */<a name="line.49"></a>
+<span class="sourceLineNo">050</span>        @Override<a name="line.50"></a>
+<span class="sourceLineNo">051</span>        protected void processTokens(List&lt;IToken&gt; tokens) throws CheckException {<a name="line.51"></a>
+<span class="sourceLineNo">052</span>                List&lt;Integer&gt; operatorIndices = TokenStreamUtils.findAll(tokens, EnumSet.of(ETokenType.EQEQ, ETokenType.NOTEQ));<a name="line.52"></a>
+<span class="sourceLineNo">053</span><a name="line.53"></a>
+<span class="sourceLineNo">054</span>                for (Integer operatorIndex : operatorIndices) {<a name="line.54"></a>
+<span class="sourceLineNo">055</span>                        int leftOperandIndex = operatorIndex + LEFT_OPERAND_OFFSET;<a name="line.55"></a>
+<span class="sourceLineNo">056</span>                        if (leftOperandIndex &lt; 0 || !checkIndexForNaN(tokens, leftOperandIndex)) {<a name="line.56"></a>
+<span class="sourceLineNo">057</span>                                int rightOperandIndex = operatorIndex + RIGHT_OPERAND_OFFSET;<a name="line.57"></a>
+<span class="sourceLineNo">058</span>                                if (rightOperandIndex &lt; tokens.size()) {<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                                        checkIndexForNaN(tokens, rightOperandIndex);<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                                }<a name="line.60"></a>
+<span class="sourceLineNo">061</span>                        }<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                }<a name="line.62"></a>
+<span class="sourceLineNo">063</span>        }<a name="line.63"></a>
+<span class="sourceLineNo">064</span><a name="line.64"></a>
+<span class="sourceLineNo">065</span>        /**<a name="line.65"></a>
+<span class="sourceLineNo">066</span>         * Checks and reports a finding, if one of the NaN text sequences is found<a name="line.66"></a>
+<span class="sourceLineNo">067</span>         * at the given index.<a name="line.67"></a>
+<span class="sourceLineNo">068</span>         */<a name="line.68"></a>
+<span class="sourceLineNo">069</span>        private boolean checkIndexForNaN(List&lt;IToken&gt; tokens, int index) throws CheckException {<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                for (String[] nanSequence : NAN_SEQUENCES) {<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                        if (TokenStreamTextUtils.hasSequence(tokens, index, nanSequence)) {<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                                createFinding("A value must not be tested against '"<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                                                + StringUtils.concat(nanSequence, StringUtils.EMPTY_STRING) + "'.", tokens.get(index));<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                                return true;<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                        }<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                }<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                return false;<a name="line.77"></a>
+<span class="sourceLineNo">078</span>        }<a name="line.78"></a>
+<span class="sourceLineNo">079</span>}<a name="line.79"></a>
 
 
 

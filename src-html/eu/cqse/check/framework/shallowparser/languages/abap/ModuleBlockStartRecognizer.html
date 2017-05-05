@@ -56,46 +56,37 @@
 <span class="sourceLineNo">048</span> * module) from module declarations (matched by this recognizer).<a name="line.48"></a>
 <span class="sourceLineNo">049</span> * &lt;p&gt;<a name="line.49"></a>
 <span class="sourceLineNo">050</span> * Note that module statements cannot appear inside module blocks.<a name="line.50"></a>
-<span class="sourceLineNo">051</span> * <a name="line.51"></a>
-<span class="sourceLineNo">052</span> * @author $Author: goeb $<a name="line.52"></a>
-<span class="sourceLineNo">053</span> * @version $Rev: 53086 $<a name="line.53"></a>
-<span class="sourceLineNo">054</span> * @ConQAT.Rating GREEN Hash: 55C3799D8499F0C4AB2366B90A3B38F8<a name="line.54"></a>
-<span class="sourceLineNo">055</span> */<a name="line.55"></a>
-<span class="sourceLineNo">056</span>public class ModuleBlockStartRecognizer extends<a name="line.56"></a>
-<span class="sourceLineNo">057</span>                RecognizerBase&lt;EAbapParserStates&gt; {<a name="line.57"></a>
-<span class="sourceLineNo">058</span><a name="line.58"></a>
-<span class="sourceLineNo">059</span>        /** {@inheritDoc} */<a name="line.59"></a>
-<span class="sourceLineNo">060</span>        @Override<a name="line.60"></a>
-<span class="sourceLineNo">061</span>        protected int matchesLocally(ParserState&lt;EAbapParserStates&gt; parserState,<a name="line.61"></a>
-<span class="sourceLineNo">062</span>                        List&lt;IToken&gt; tokens, int startOffset) {<a name="line.62"></a>
-<span class="sourceLineNo">063</span>                if (tokens.size() &lt; startOffset + 3) {<a name="line.63"></a>
-<span class="sourceLineNo">064</span>                        return NO_MATCH;<a name="line.64"></a>
-<span class="sourceLineNo">065</span>                }<a name="line.65"></a>
-<span class="sourceLineNo">066</span><a name="line.66"></a>
-<span class="sourceLineNo">067</span>                if (tokens.get(startOffset).getType() != MODULE) {<a name="line.67"></a>
-<span class="sourceLineNo">068</span>                        return NO_MATCH;<a name="line.68"></a>
-<span class="sourceLineNo">069</span>                }<a name="line.69"></a>
-<span class="sourceLineNo">070</span><a name="line.70"></a>
-<span class="sourceLineNo">071</span>                if (!EnumSet.of(DOT, INPUT, OUTPUT).contains(<a name="line.71"></a>
-<span class="sourceLineNo">072</span>                                tokens.get(startOffset + 2).getType())) {<a name="line.72"></a>
-<span class="sourceLineNo">073</span>                        return NO_MATCH;<a name="line.73"></a>
-<span class="sourceLineNo">074</span>                }<a name="line.74"></a>
-<span class="sourceLineNo">075</span><a name="line.75"></a>
-<span class="sourceLineNo">076</span>                int endModuleIndex = TokenStreamUtils.find(tokens, startOffset,<a name="line.76"></a>
-<span class="sourceLineNo">077</span>                                ENDMODULE);<a name="line.77"></a>
-<span class="sourceLineNo">078</span>                if (endModuleIndex == -1) {<a name="line.78"></a>
-<span class="sourceLineNo">079</span>                        return NO_MATCH;<a name="line.79"></a>
-<span class="sourceLineNo">080</span>                }<a name="line.80"></a>
-<span class="sourceLineNo">081</span><a name="line.81"></a>
-<span class="sourceLineNo">082</span>                int moduleIndex = TokenStreamUtils<a name="line.82"></a>
-<span class="sourceLineNo">083</span>                                .find(tokens, startOffset + 1, MODULE);<a name="line.83"></a>
-<span class="sourceLineNo">084</span>                if (moduleIndex != -1 &amp;&amp; moduleIndex &lt; endModuleIndex) {<a name="line.84"></a>
-<span class="sourceLineNo">085</span>                        return NO_MATCH;<a name="line.85"></a>
-<span class="sourceLineNo">086</span>                }<a name="line.86"></a>
-<span class="sourceLineNo">087</span><a name="line.87"></a>
-<span class="sourceLineNo">088</span>                return startOffset;<a name="line.88"></a>
-<span class="sourceLineNo">089</span>        }<a name="line.89"></a>
-<span class="sourceLineNo">090</span>}<a name="line.90"></a>
+<span class="sourceLineNo">051</span> */<a name="line.51"></a>
+<span class="sourceLineNo">052</span>public class ModuleBlockStartRecognizer extends RecognizerBase&lt;EAbapParserStates&gt; {<a name="line.52"></a>
+<span class="sourceLineNo">053</span><a name="line.53"></a>
+<span class="sourceLineNo">054</span>        /** {@inheritDoc} */<a name="line.54"></a>
+<span class="sourceLineNo">055</span>        @Override<a name="line.55"></a>
+<span class="sourceLineNo">056</span>        protected int matchesLocally(ParserState&lt;EAbapParserStates&gt; parserState, List&lt;IToken&gt; tokens, int startOffset) {<a name="line.56"></a>
+<span class="sourceLineNo">057</span>                if (tokens.size() &lt; startOffset + 3) {<a name="line.57"></a>
+<span class="sourceLineNo">058</span>                        return NO_MATCH;<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                }<a name="line.59"></a>
+<span class="sourceLineNo">060</span><a name="line.60"></a>
+<span class="sourceLineNo">061</span>                if (tokens.get(startOffset).getType() != MODULE) {<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                        return NO_MATCH;<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                }<a name="line.63"></a>
+<span class="sourceLineNo">064</span><a name="line.64"></a>
+<span class="sourceLineNo">065</span>                if (!EnumSet.of(DOT, INPUT, OUTPUT).contains(tokens.get(startOffset + 2).getType())) {<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                        return NO_MATCH;<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                }<a name="line.67"></a>
+<span class="sourceLineNo">068</span><a name="line.68"></a>
+<span class="sourceLineNo">069</span>                int endModuleIndex = TokenStreamUtils.firstTokenOfType(tokens, startOffset, ENDMODULE);<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                if (endModuleIndex == -1) {<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                        return NO_MATCH;<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                }<a name="line.72"></a>
+<span class="sourceLineNo">073</span><a name="line.73"></a>
+<span class="sourceLineNo">074</span>                int moduleIndex = TokenStreamUtils.firstTokenOfType(tokens, startOffset + 1, MODULE);<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                if (moduleIndex != -1 &amp;&amp; moduleIndex &lt; endModuleIndex) {<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                        return NO_MATCH;<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                }<a name="line.77"></a>
+<span class="sourceLineNo">078</span><a name="line.78"></a>
+<span class="sourceLineNo">079</span>                return startOffset;<a name="line.79"></a>
+<span class="sourceLineNo">080</span>        }<a name="line.80"></a>
+<span class="sourceLineNo">081</span>}<a name="line.81"></a>
 
 
 

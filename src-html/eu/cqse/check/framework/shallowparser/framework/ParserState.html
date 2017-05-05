@@ -41,143 +41,139 @@
 <span class="sourceLineNo">033</span> * in separate threads.<a name="line.33"></a>
 <span class="sourceLineNo">034</span> *<a name="line.34"></a>
 <span class="sourceLineNo">035</span> * @see ShallowParserBase<a name="line.35"></a>
-<span class="sourceLineNo">036</span> *<a name="line.36"></a>
-<span class="sourceLineNo">037</span> * @author $Author: kinnen $<a name="line.37"></a>
-<span class="sourceLineNo">038</span> * @version $Rev: 53424 $<a name="line.38"></a>
-<span class="sourceLineNo">039</span> * @ConQAT.Rating GREEN Hash: 4E35D63A476A4E10B330965A8E3E99A5<a name="line.39"></a>
-<span class="sourceLineNo">040</span> */<a name="line.40"></a>
-<span class="sourceLineNo">041</span>public class ParserState&lt;STATE extends Enum&lt;STATE&gt;&gt; {<a name="line.41"></a>
-<span class="sourceLineNo">042</span><a name="line.42"></a>
-<span class="sourceLineNo">043</span>        /**<a name="line.43"></a>
-<span class="sourceLineNo">044</span>         * Pairs of states (for which the recognizer is active) and the recognizer.<a name="line.44"></a>
-<span class="sourceLineNo">045</span>         */<a name="line.45"></a>
-<span class="sourceLineNo">046</span>        private final PairList&lt;Set&lt;STATE&gt;, RecognizerBase&lt;STATE&gt;&gt; recognizers;<a name="line.46"></a>
-<span class="sourceLineNo">047</span><a name="line.47"></a>
-<span class="sourceLineNo">048</span>        /** Constructor. */<a name="line.48"></a>
-<span class="sourceLineNo">049</span>        /* package */ParserState(<a name="line.49"></a>
-<span class="sourceLineNo">050</span>                        PairList&lt;Set&lt;STATE&gt;, RecognizerBase&lt;STATE&gt;&gt; recognizers) {<a name="line.50"></a>
-<span class="sourceLineNo">051</span>                this.recognizers = recognizers;<a name="line.51"></a>
-<span class="sourceLineNo">052</span>        }<a name="line.52"></a>
-<span class="sourceLineNo">053</span><a name="line.53"></a>
-<span class="sourceLineNo">054</span>        /**<a name="line.54"></a>
-<span class="sourceLineNo">055</span>         * Stack of entities created. If there are multiple top-level entities, this<a name="line.55"></a>
-<span class="sourceLineNo">056</span>         * only contains the most recently created.<a name="line.56"></a>
-<span class="sourceLineNo">057</span>         */<a name="line.57"></a>
-<span class="sourceLineNo">058</span>        private final Stack&lt;ShallowEntity&gt; entities = new Stack&lt;ShallowEntity&gt;();<a name="line.58"></a>
-<span class="sourceLineNo">059</span><a name="line.59"></a>
-<span class="sourceLineNo">060</span>        /** Stack of start positions for nested parses. */<a name="line.60"></a>
-<span class="sourceLineNo">061</span>        private final Stack&lt;Integer&gt; currentMatchStart = new Stack&lt;Integer&gt;();<a name="line.61"></a>
-<span class="sourceLineNo">062</span><a name="line.62"></a>
-<span class="sourceLineNo">063</span>        /** Stack of reference positions used for naming. */<a name="line.63"></a>
-<span class="sourceLineNo">064</span>        private final Stack&lt;Integer&gt; currentReferencePosition = new Stack&lt;Integer&gt;();<a name="line.64"></a>
-<span class="sourceLineNo">065</span><a name="line.65"></a>
-<span class="sourceLineNo">066</span>        /** The result list of all created top-level entities. */<a name="line.66"></a>
-<span class="sourceLineNo">067</span>        final List&lt;ShallowEntity&gt; result = new ArrayList&lt;ShallowEntity&gt;();<a name="line.67"></a>
-<span class="sourceLineNo">068</span><a name="line.68"></a>
-<span class="sourceLineNo">069</span>        /** Sets the given shallow entity as new target for adding children. */<a name="line.69"></a>
-<span class="sourceLineNo">070</span>        public void setNode(ShallowEntity shallowEntity) {<a name="line.70"></a>
-<span class="sourceLineNo">071</span>                if (entities.isEmpty()) {<a name="line.71"></a>
-<span class="sourceLineNo">072</span>                        result.add(shallowEntity);<a name="line.72"></a>
-<span class="sourceLineNo">073</span>                } else {<a name="line.73"></a>
-<span class="sourceLineNo">074</span>                        entities.peek().addChild(shallowEntity);<a name="line.74"></a>
-<span class="sourceLineNo">075</span>                }<a name="line.75"></a>
-<span class="sourceLineNo">076</span>                entities.push(shallowEntity);<a name="line.76"></a>
-<span class="sourceLineNo">077</span>        }<a name="line.77"></a>
-<span class="sourceLineNo">078</span><a name="line.78"></a>
-<span class="sourceLineNo">079</span>        /** Marks the current node as completed. */<a name="line.79"></a>
-<span class="sourceLineNo">080</span>        public void endNode(boolean expectsContinuation) {<a name="line.80"></a>
-<span class="sourceLineNo">081</span>                CCSMAssert.isFalse(entities.isEmpty(),<a name="line.81"></a>
-<span class="sourceLineNo">082</span>                                "Must have setNode() before each endNode()!");<a name="line.82"></a>
-<span class="sourceLineNo">083</span>                entities.peek().setComplete(expectsContinuation);<a name="line.83"></a>
+<span class="sourceLineNo">036</span> */<a name="line.36"></a>
+<span class="sourceLineNo">037</span>public class ParserState&lt;STATE extends Enum&lt;STATE&gt;&gt; {<a name="line.37"></a>
+<span class="sourceLineNo">038</span><a name="line.38"></a>
+<span class="sourceLineNo">039</span>        /**<a name="line.39"></a>
+<span class="sourceLineNo">040</span>         * Pairs of states (for which the recognizer is active) and the recognizer.<a name="line.40"></a>
+<span class="sourceLineNo">041</span>         */<a name="line.41"></a>
+<span class="sourceLineNo">042</span>        private final PairList&lt;Set&lt;STATE&gt;, RecognizerBase&lt;STATE&gt;&gt; recognizers;<a name="line.42"></a>
+<span class="sourceLineNo">043</span><a name="line.43"></a>
+<span class="sourceLineNo">044</span>        /** Constructor. */<a name="line.44"></a>
+<span class="sourceLineNo">045</span>        /* package */ ParserState(PairList&lt;Set&lt;STATE&gt;, RecognizerBase&lt;STATE&gt;&gt; recognizers) {<a name="line.45"></a>
+<span class="sourceLineNo">046</span>                this.recognizers = recognizers;<a name="line.46"></a>
+<span class="sourceLineNo">047</span>        }<a name="line.47"></a>
+<span class="sourceLineNo">048</span><a name="line.48"></a>
+<span class="sourceLineNo">049</span>        /**<a name="line.49"></a>
+<span class="sourceLineNo">050</span>         * Stack of entities created. If there are multiple top-level entities, this<a name="line.50"></a>
+<span class="sourceLineNo">051</span>         * only contains the most recently created.<a name="line.51"></a>
+<span class="sourceLineNo">052</span>         */<a name="line.52"></a>
+<span class="sourceLineNo">053</span>        private final Stack&lt;ShallowEntity&gt; entities = new Stack&lt;ShallowEntity&gt;();<a name="line.53"></a>
+<span class="sourceLineNo">054</span><a name="line.54"></a>
+<span class="sourceLineNo">055</span>        /** Stack of start positions for nested parses. */<a name="line.55"></a>
+<span class="sourceLineNo">056</span>        private final Stack&lt;Integer&gt; currentMatchStart = new Stack&lt;Integer&gt;();<a name="line.56"></a>
+<span class="sourceLineNo">057</span><a name="line.57"></a>
+<span class="sourceLineNo">058</span>        /** Stack of reference positions used for naming. */<a name="line.58"></a>
+<span class="sourceLineNo">059</span>        private final Stack&lt;Integer&gt; currentReferencePosition = new Stack&lt;Integer&gt;();<a name="line.59"></a>
+<span class="sourceLineNo">060</span><a name="line.60"></a>
+<span class="sourceLineNo">061</span>        /** The result list of all created top-level entities. */<a name="line.61"></a>
+<span class="sourceLineNo">062</span>        final List&lt;ShallowEntity&gt; result = new ArrayList&lt;ShallowEntity&gt;();<a name="line.62"></a>
+<span class="sourceLineNo">063</span><a name="line.63"></a>
+<span class="sourceLineNo">064</span>        /** Sets the given shallow entity as new target for adding children. */<a name="line.64"></a>
+<span class="sourceLineNo">065</span>        public void setNode(ShallowEntity shallowEntity) {<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                if (entities.isEmpty()) {<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                        result.add(shallowEntity);<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                } else {<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                        entities.peek().addChild(shallowEntity);<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                }<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                entities.push(shallowEntity);<a name="line.71"></a>
+<span class="sourceLineNo">072</span>        }<a name="line.72"></a>
+<span class="sourceLineNo">073</span><a name="line.73"></a>
+<span class="sourceLineNo">074</span>        /** Marks the current node as completed. */<a name="line.74"></a>
+<span class="sourceLineNo">075</span>        public void endNode(boolean expectsContinuation) {<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                CCSMAssert.isFalse(entities.isEmpty(), "Must have setNode() before each endNode()!");<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                entities.peek().setComplete(expectsContinuation);<a name="line.77"></a>
+<span class="sourceLineNo">078</span>        }<a name="line.78"></a>
+<span class="sourceLineNo">079</span><a name="line.79"></a>
+<span class="sourceLineNo">080</span>        /** Sets the name of the current node. */<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        public void setNodeName(String name) {<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                CCSMAssert.isFalse(entities.isEmpty(), "Must have setNode() before setNodeName()!");<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                entities.peek().setName(name);<a name="line.83"></a>
 <span class="sourceLineNo">084</span>        }<a name="line.84"></a>
 <span class="sourceLineNo">085</span><a name="line.85"></a>
-<span class="sourceLineNo">086</span>        /** Sets the name of the current node. */<a name="line.86"></a>
-<span class="sourceLineNo">087</span>        public void setNodeName(String name) {<a name="line.87"></a>
-<span class="sourceLineNo">088</span>                CCSMAssert.isFalse(entities.isEmpty(),<a name="line.88"></a>
-<span class="sourceLineNo">089</span>                                "Must have setNode() before setNodeName()!");<a name="line.89"></a>
-<span class="sourceLineNo">090</span>                entities.peek().setName(name);<a name="line.90"></a>
-<span class="sourceLineNo">091</span>        }<a name="line.91"></a>
-<span class="sourceLineNo">092</span><a name="line.92"></a>
-<span class="sourceLineNo">093</span>        /** Returns the type of the top-most ShallowEntity. */<a name="line.93"></a>
-<span class="sourceLineNo">094</span>        public EShallowEntityType getCurrentEntityType() {<a name="line.94"></a>
-<span class="sourceLineNo">095</span>                CCSMAssert<a name="line.95"></a>
-<span class="sourceLineNo">096</span>                                .isFalse(entities.isEmpty(),<a name="line.96"></a>
-<span class="sourceLineNo">097</span>                                                "May not access entity type when no nodes have been created before!");<a name="line.97"></a>
-<span class="sourceLineNo">098</span>                return entities.peek().getType();<a name="line.98"></a>
-<span class="sourceLineNo">099</span>        }<a name="line.99"></a>
-<span class="sourceLineNo">100</span><a name="line.100"></a>
-<span class="sourceLineNo">101</span>        /**<a name="line.101"></a>
-<span class="sourceLineNo">102</span>         * Attempts to parse exactly one entity in the given state. If the created<a name="line.102"></a>
-<span class="sourceLineNo">103</span>         * entity is a continued node, this automatically continues parsing.<a name="line.103"></a>
-<span class="sourceLineNo">104</span>         *<a name="line.104"></a>
-<span class="sourceLineNo">105</span>         * @return Either the new parsing offset or {@link RecognizerBase#NO_MATCH}.<a name="line.105"></a>
-<span class="sourceLineNo">106</span>         */<a name="line.106"></a>
-<span class="sourceLineNo">107</span>        public int parse(STATE state, List&lt;IToken&gt; tokens, int startOffset) {<a name="line.107"></a>
-<span class="sourceLineNo">108</span>                int entitiesSize = entities.size();<a name="line.108"></a>
-<span class="sourceLineNo">109</span><a name="line.109"></a>
-<span class="sourceLineNo">110</span>                int resultOffset = RecognizerBase.NO_MATCH;<a name="line.110"></a>
-<span class="sourceLineNo">111</span>                for (int i = 0; i &lt; recognizers.size(); ++i) {<a name="line.111"></a>
-<span class="sourceLineNo">112</span>                        if (recognizers.getFirst(i).contains(state)) {<a name="line.112"></a>
-<span class="sourceLineNo">113</span>                                currentMatchStart.push(startOffset);<a name="line.113"></a>
-<span class="sourceLineNo">114</span>                                currentReferencePosition.push(startOffset);<a name="line.114"></a>
-<span class="sourceLineNo">115</span><a name="line.115"></a>
-<span class="sourceLineNo">116</span>                                int match = recognizers.getSecond(i).matches(this, tokens,<a name="line.116"></a>
-<span class="sourceLineNo">117</span>                                                startOffset);<a name="line.117"></a>
-<span class="sourceLineNo">118</span><a name="line.118"></a>
-<span class="sourceLineNo">119</span>                                currentReferencePosition.pop();<a name="line.119"></a>
-<span class="sourceLineNo">120</span>                                currentMatchStart.pop();<a name="line.120"></a>
-<span class="sourceLineNo">121</span><a name="line.121"></a>
-<span class="sourceLineNo">122</span>                                if (match != RecognizerBase.NO_MATCH) {<a name="line.122"></a>
-<span class="sourceLineNo">123</span>                                        resultOffset = match;<a name="line.123"></a>
-<span class="sourceLineNo">124</span>                                        break;<a name="line.124"></a>
-<span class="sourceLineNo">125</span>                                }<a name="line.125"></a>
-<span class="sourceLineNo">126</span>                        }<a name="line.126"></a>
-<span class="sourceLineNo">127</span>                }<a name="line.127"></a>
-<span class="sourceLineNo">128</span><a name="line.128"></a>
-<span class="sourceLineNo">129</span>                // there was an entity created that needs completion<a name="line.129"></a>
-<span class="sourceLineNo">130</span>                if (entities.size() &gt; entitiesSize) {<a name="line.130"></a>
-<span class="sourceLineNo">131</span>                        ShallowEntity entity = entities.pop();<a name="line.131"></a>
-<span class="sourceLineNo">132</span>                        entity.setEndTokenIndex(resultOffset);<a name="line.132"></a>
-<span class="sourceLineNo">133</span><a name="line.133"></a>
-<span class="sourceLineNo">134</span>                        // continue parsing if this is a continued entity (such as an<a name="line.134"></a>
-<span class="sourceLineNo">135</span>                        // "if" followed by an "else").<a name="line.135"></a>
-<span class="sourceLineNo">136</span>                        if (entity.isContinued() &amp;&amp; resultOffset != RecognizerBase.NO_MATCH) {<a name="line.136"></a>
-<span class="sourceLineNo">137</span>                                int nextOffset = parse(state, tokens, resultOffset);<a name="line.137"></a>
-<span class="sourceLineNo">138</span><a name="line.138"></a>
-<span class="sourceLineNo">139</span>                                if (nextOffset != RecognizerBase.NO_MATCH) {<a name="line.139"></a>
-<span class="sourceLineNo">140</span>                                        return nextOffset;<a name="line.140"></a>
-<span class="sourceLineNo">141</span>                                        // otherwise fall through and use last parsing position<a name="line.141"></a>
-<span class="sourceLineNo">142</span>                                }<a name="line.142"></a>
-<span class="sourceLineNo">143</span>                        }<a name="line.143"></a>
-<span class="sourceLineNo">144</span>                }<a name="line.144"></a>
-<span class="sourceLineNo">145</span><a name="line.145"></a>
-<span class="sourceLineNo">146</span>                return resultOffset;<a name="line.146"></a>
-<span class="sourceLineNo">147</span>        }<a name="line.147"></a>
-<span class="sourceLineNo">148</span><a name="line.148"></a>
-<span class="sourceLineNo">149</span>        /** Returns the start position of the currently running match. */<a name="line.149"></a>
-<span class="sourceLineNo">150</span>        public int getCurrentMatchStart() {<a name="line.150"></a>
-<span class="sourceLineNo">151</span>                return currentMatchStart.peek();<a name="line.151"></a>
-<span class="sourceLineNo">152</span>        }<a name="line.152"></a>
-<span class="sourceLineNo">153</span><a name="line.153"></a>
-<span class="sourceLineNo">154</span>        /** Returns the reference position of the currently running match. */<a name="line.154"></a>
-<span class="sourceLineNo">155</span>        public int getCurrentReferencePosition() {<a name="line.155"></a>
-<span class="sourceLineNo">156</span>                return currentReferencePosition.peek();<a name="line.156"></a>
-<span class="sourceLineNo">157</span>        }<a name="line.157"></a>
-<span class="sourceLineNo">158</span><a name="line.158"></a>
-<span class="sourceLineNo">159</span>        /** Stores the given position as match start. */<a name="line.159"></a>
-<span class="sourceLineNo">160</span>        public void markReferencePosition(int offset) {<a name="line.160"></a>
-<span class="sourceLineNo">161</span>                currentReferencePosition.pop();<a name="line.161"></a>
-<span class="sourceLineNo">162</span>                currentReferencePosition.push(offset);<a name="line.162"></a>
-<span class="sourceLineNo">163</span>        }<a name="line.163"></a>
-<span class="sourceLineNo">164</span><a name="line.164"></a>
-<span class="sourceLineNo">165</span>        /**<a name="line.165"></a>
-<span class="sourceLineNo">166</span>         * Returns the size of the current entity stack. This can be used to<a name="line.166"></a>
-<span class="sourceLineNo">167</span>         * determine the depth we are currently parsing at.<a name="line.167"></a>
-<span class="sourceLineNo">168</span>         */<a name="line.168"></a>
-<span class="sourceLineNo">169</span>        public int getEntityStackSize() {<a name="line.169"></a>
-<span class="sourceLineNo">170</span>                return entities.size();<a name="line.170"></a>
-<span class="sourceLineNo">171</span>        }<a name="line.171"></a>
-<span class="sourceLineNo">172</span>}<a name="line.172"></a>
+<span class="sourceLineNo">086</span>        /** Returns the name of the top-most ShallowEntity. */<a name="line.86"></a>
+<span class="sourceLineNo">087</span>        public String getCurrentEntityName() {<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                CCSMAssert.isFalse(entities.isEmpty(), "May not access entity name when no nodes have been created before!");<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                return entities.peek().getName();<a name="line.89"></a>
+<span class="sourceLineNo">090</span>        }<a name="line.90"></a>
+<span class="sourceLineNo">091</span><a name="line.91"></a>
+<span class="sourceLineNo">092</span>        /** Returns the type of the top-most ShallowEntity. */<a name="line.92"></a>
+<span class="sourceLineNo">093</span>        public EShallowEntityType getCurrentEntityType() {<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                CCSMAssert.isFalse(entities.isEmpty(), "May not access entity type when no nodes have been created before!");<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                return entities.peek().getType();<a name="line.95"></a>
+<span class="sourceLineNo">096</span>        }<a name="line.96"></a>
+<span class="sourceLineNo">097</span><a name="line.97"></a>
+<span class="sourceLineNo">098</span>        /**<a name="line.98"></a>
+<span class="sourceLineNo">099</span>         * Attempts to parse exactly one entity in the given state. If the created<a name="line.99"></a>
+<span class="sourceLineNo">100</span>         * entity is a continued node, this automatically continues parsing.<a name="line.100"></a>
+<span class="sourceLineNo">101</span>         *<a name="line.101"></a>
+<span class="sourceLineNo">102</span>         * @return Either the new parsing offset or {@link RecognizerBase#NO_MATCH}.<a name="line.102"></a>
+<span class="sourceLineNo">103</span>         */<a name="line.103"></a>
+<span class="sourceLineNo">104</span>        public int parse(STATE state, List&lt;IToken&gt; tokens, int startOffset) {<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                int entitiesSize = entities.size();<a name="line.105"></a>
+<span class="sourceLineNo">106</span><a name="line.106"></a>
+<span class="sourceLineNo">107</span>                int resultOffset = RecognizerBase.NO_MATCH;<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                for (int i = 0; i &lt; recognizers.size(); ++i) {<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                        if (recognizers.getFirst(i).contains(state)) {<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                                currentMatchStart.push(startOffset);<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                                currentReferencePosition.push(startOffset);<a name="line.111"></a>
+<span class="sourceLineNo">112</span><a name="line.112"></a>
+<span class="sourceLineNo">113</span>                                int match = recognizers.getSecond(i).matches(this, tokens, startOffset);<a name="line.113"></a>
+<span class="sourceLineNo">114</span><a name="line.114"></a>
+<span class="sourceLineNo">115</span>                                currentReferencePosition.pop();<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                                currentMatchStart.pop();<a name="line.116"></a>
+<span class="sourceLineNo">117</span><a name="line.117"></a>
+<span class="sourceLineNo">118</span>                                if (match != RecognizerBase.NO_MATCH) {<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                                        resultOffset = match;<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                                        break;<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                                }<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                        }<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                }<a name="line.123"></a>
+<span class="sourceLineNo">124</span><a name="line.124"></a>
+<span class="sourceLineNo">125</span>                // there was an entity created that needs completion<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                if (entities.size() &gt; entitiesSize) {<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                        ShallowEntity entity = entities.pop();<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                        entity.setEndTokenIndex(resultOffset);<a name="line.128"></a>
+<span class="sourceLineNo">129</span><a name="line.129"></a>
+<span class="sourceLineNo">130</span>                        // continue parsing if this is a continued entity (such as an<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                        // "if" followed by an "else").<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                        if (entity.isContinued() &amp;&amp; resultOffset != RecognizerBase.NO_MATCH) {<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                                int nextOffset = parse(state, tokens, resultOffset);<a name="line.133"></a>
+<span class="sourceLineNo">134</span><a name="line.134"></a>
+<span class="sourceLineNo">135</span>                                if (nextOffset != RecognizerBase.NO_MATCH) {<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                                        return nextOffset;<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                                        // otherwise fall through and use last parsing position<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                                }<a name="line.138"></a>
+<span class="sourceLineNo">139</span>                        }<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                }<a name="line.140"></a>
+<span class="sourceLineNo">141</span><a name="line.141"></a>
+<span class="sourceLineNo">142</span>                return resultOffset;<a name="line.142"></a>
+<span class="sourceLineNo">143</span>        }<a name="line.143"></a>
+<span class="sourceLineNo">144</span><a name="line.144"></a>
+<span class="sourceLineNo">145</span>        /** Returns the start position of the currently running match. */<a name="line.145"></a>
+<span class="sourceLineNo">146</span>        public int getCurrentMatchStart() {<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                return currentMatchStart.peek();<a name="line.147"></a>
+<span class="sourceLineNo">148</span>        }<a name="line.148"></a>
+<span class="sourceLineNo">149</span><a name="line.149"></a>
+<span class="sourceLineNo">150</span>        /** Returns the reference position of the currently running match. */<a name="line.150"></a>
+<span class="sourceLineNo">151</span>        public int getCurrentReferencePosition() {<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                return currentReferencePosition.peek();<a name="line.152"></a>
+<span class="sourceLineNo">153</span>        }<a name="line.153"></a>
+<span class="sourceLineNo">154</span><a name="line.154"></a>
+<span class="sourceLineNo">155</span>        /** Stores the given position as match start. */<a name="line.155"></a>
+<span class="sourceLineNo">156</span>        public void markReferencePosition(int offset) {<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                currentReferencePosition.pop();<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                currentReferencePosition.push(offset);<a name="line.158"></a>
+<span class="sourceLineNo">159</span>        }<a name="line.159"></a>
+<span class="sourceLineNo">160</span><a name="line.160"></a>
+<span class="sourceLineNo">161</span>        /**<a name="line.161"></a>
+<span class="sourceLineNo">162</span>         * Returns the size of the current entity stack. This can be used to<a name="line.162"></a>
+<span class="sourceLineNo">163</span>         * determine the depth we are currently parsing at.<a name="line.163"></a>
+<span class="sourceLineNo">164</span>         */<a name="line.164"></a>
+<span class="sourceLineNo">165</span>        public int getEntityStackSize() {<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                return entities.size();<a name="line.166"></a>
+<span class="sourceLineNo">167</span>        }<a name="line.167"></a>
+<span class="sourceLineNo">168</span>}<a name="line.168"></a>
 
 
 

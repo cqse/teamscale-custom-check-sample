@@ -32,24 +32,20 @@
 <span class="sourceLineNo">024</span><a name="line.24"></a>
 <span class="sourceLineNo">025</span>/**<a name="line.25"></a>
 <span class="sourceLineNo">026</span> * Base class for checks creating a finding for certain token text sequences.<a name="line.26"></a>
-<span class="sourceLineNo">027</span> *<a name="line.27"></a>
-<span class="sourceLineNo">028</span> * @author $Author: heinemann $<a name="line.28"></a>
-<span class="sourceLineNo">029</span> * @version $Rev: 54012 $<a name="line.29"></a>
-<span class="sourceLineNo">030</span> * @ConQAT.Rating YELLOW Hash: E15761A5E4A7DF1D41D0D58B6CCF8058<a name="line.30"></a>
-<span class="sourceLineNo">031</span> */<a name="line.31"></a>
-<span class="sourceLineNo">032</span>public abstract class TokenTextSequenceCheckBase extends EntityCheckBase {<a name="line.32"></a>
-<span class="sourceLineNo">033</span><a name="line.33"></a>
-<span class="sourceLineNo">034</span>        /** Checks the given entity */<a name="line.34"></a>
-<span class="sourceLineNo">035</span>        protected void checkEntity(ShallowEntity entity, String findingMessage,<a name="line.35"></a>
-<span class="sourceLineNo">036</span>                        String... tokenTexts) throws CheckException {<a name="line.36"></a>
-<span class="sourceLineNo">037</span>                int callIndex = TokenStreamTextUtils.findSequence(<a name="line.37"></a>
-<span class="sourceLineNo">038</span>                                entity.ownStartTokens(), 0, ETokenType.IDENTIFIER, tokenTexts);<a name="line.38"></a>
-<span class="sourceLineNo">039</span>                if (callIndex != TokenStreamUtils.NOT_FOUND) {<a name="line.39"></a>
-<span class="sourceLineNo">040</span>                        createFindingOnFirstLine(findingMessage, entity);<a name="line.40"></a>
-<span class="sourceLineNo">041</span>                }<a name="line.41"></a>
-<span class="sourceLineNo">042</span>        }<a name="line.42"></a>
-<span class="sourceLineNo">043</span><a name="line.43"></a>
-<span class="sourceLineNo">044</span>}<a name="line.44"></a>
+<span class="sourceLineNo">027</span> */<a name="line.27"></a>
+<span class="sourceLineNo">028</span>public abstract class TokenTextSequenceCheckBase extends EntityCheckBase {<a name="line.28"></a>
+<span class="sourceLineNo">029</span><a name="line.29"></a>
+<span class="sourceLineNo">030</span>        /** Checks the given entity */<a name="line.30"></a>
+<span class="sourceLineNo">031</span>        protected void checkEntity(ShallowEntity entity, String findingMessage, String... tokenTexts)<a name="line.31"></a>
+<span class="sourceLineNo">032</span>                        throws CheckException {<a name="line.32"></a>
+<span class="sourceLineNo">033</span>                int callIndex = TokenStreamTextUtils.findSequence(entity.ownStartTokens(), 0, ETokenType.IDENTIFIER,<a name="line.33"></a>
+<span class="sourceLineNo">034</span>                                tokenTexts);<a name="line.34"></a>
+<span class="sourceLineNo">035</span>                if (callIndex != TokenStreamUtils.NOT_FOUND) {<a name="line.35"></a>
+<span class="sourceLineNo">036</span>                        createFindingOnFirstLine(findingMessage, entity);<a name="line.36"></a>
+<span class="sourceLineNo">037</span>                }<a name="line.37"></a>
+<span class="sourceLineNo">038</span>        }<a name="line.38"></a>
+<span class="sourceLineNo">039</span><a name="line.39"></a>
+<span class="sourceLineNo">040</span>}<a name="line.40"></a>
 
 
 

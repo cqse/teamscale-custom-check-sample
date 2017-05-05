@@ -42,36 +42,32 @@
 <span class="sourceLineNo">034</span><a name="line.34"></a>
 <span class="sourceLineNo">035</span>/**<a name="line.35"></a>
 <span class="sourceLineNo">036</span> * {@ConQAT.Doc}<a name="line.36"></a>
-<span class="sourceLineNo">037</span> * <a name="line.37"></a>
-<span class="sourceLineNo">038</span> * @author $Author: hummelb $<a name="line.38"></a>
-<span class="sourceLineNo">039</span> * @version $Rev: 54535 $<a name="line.39"></a>
-<span class="sourceLineNo">040</span> * @ConQAT.Rating RED Hash: B95AEB0971AEB7B896D696443E69C4F2<a name="line.40"></a>
-<span class="sourceLineNo">041</span> */<a name="line.41"></a>
-<span class="sourceLineNo">042</span>@ACheck(name = "Package Name Mismatch", description = "Package names must start with one of the configured prefixes.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.OFF, languages = {<a name="line.42"></a>
-<span class="sourceLineNo">043</span>                ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })<a name="line.43"></a>
-<span class="sourceLineNo">044</span>public class PackageNameCheck extends EntityCheckBase {<a name="line.44"></a>
+<span class="sourceLineNo">037</span> */<a name="line.37"></a>
+<span class="sourceLineNo">038</span>@ACheck(name = "Package name mismatch", description = "Package names must start with one of the configured prefixes.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.OFF, languages = {<a name="line.38"></a>
+<span class="sourceLineNo">039</span>                ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })<a name="line.39"></a>
+<span class="sourceLineNo">040</span>public class PackageNameCheck extends EntityCheckBase {<a name="line.40"></a>
+<span class="sourceLineNo">041</span><a name="line.41"></a>
+<span class="sourceLineNo">042</span>        /** {@ConQAT.Doc} */<a name="line.42"></a>
+<span class="sourceLineNo">043</span>        @ACheckOption(name = "Allowed package prefixes", description = "The package prefixes that are allowed to be used.")<a name="line.43"></a>
+<span class="sourceLineNo">044</span>        private List&lt;String&gt; allowedPrefixes = new ArrayList&lt;&gt;();<a name="line.44"></a>
 <span class="sourceLineNo">045</span><a name="line.45"></a>
-<span class="sourceLineNo">046</span>        /** {@ConQAT.Doc} */<a name="line.46"></a>
-<span class="sourceLineNo">047</span>        @ACheckOption(name = "Allowed package prefixes", description = "The package prefixes that are allowed to be used.")<a name="line.47"></a>
-<span class="sourceLineNo">048</span>        private List&lt;String&gt; allowedPrefixes = new ArrayList&lt;&gt;();<a name="line.48"></a>
-<span class="sourceLineNo">049</span><a name="line.49"></a>
-<span class="sourceLineNo">050</span>        /** {@inheritDoc} */<a name="line.50"></a>
-<span class="sourceLineNo">051</span>        @Override<a name="line.51"></a>
-<span class="sourceLineNo">052</span>        protected String getXPathSelectionString() {<a name="line.52"></a>
-<span class="sourceLineNo">053</span>                return "/META[subtype('" + SubTypeNames.PACKAGE + "')]";<a name="line.53"></a>
-<span class="sourceLineNo">054</span>        }<a name="line.54"></a>
-<span class="sourceLineNo">055</span><a name="line.55"></a>
-<span class="sourceLineNo">056</span>        /** {@inheritDoc} */<a name="line.56"></a>
-<span class="sourceLineNo">057</span>        @Override<a name="line.57"></a>
-<span class="sourceLineNo">058</span>        protected void processEntity(ShallowEntity entity) throws CheckException {<a name="line.58"></a>
-<span class="sourceLineNo">059</span>                // TODO (LH) Mention allowed namespaces in message? Developer might not<a name="line.59"></a>
-<span class="sourceLineNo">060</span>                // have access to config<a name="line.60"></a>
-<span class="sourceLineNo">061</span>                if (!StringUtils.startsWithOneOf(entity.getName(), allowedPrefixes)) {<a name="line.61"></a>
-<span class="sourceLineNo">062</span>                        createFinding("Package name does not conform to guidelines: "<a name="line.62"></a>
-<span class="sourceLineNo">063</span>                                        + entity.getName(), entity);<a name="line.63"></a>
-<span class="sourceLineNo">064</span>                }<a name="line.64"></a>
-<span class="sourceLineNo">065</span>        }<a name="line.65"></a>
-<span class="sourceLineNo">066</span>}<a name="line.66"></a>
+<span class="sourceLineNo">046</span>        /** {@inheritDoc} */<a name="line.46"></a>
+<span class="sourceLineNo">047</span>        @Override<a name="line.47"></a>
+<span class="sourceLineNo">048</span>        protected String getXPathSelectionString() {<a name="line.48"></a>
+<span class="sourceLineNo">049</span>                return "/META[subtype('" + SubTypeNames.PACKAGE + "')]";<a name="line.49"></a>
+<span class="sourceLineNo">050</span>        }<a name="line.50"></a>
+<span class="sourceLineNo">051</span><a name="line.51"></a>
+<span class="sourceLineNo">052</span>        /** {@inheritDoc} */<a name="line.52"></a>
+<span class="sourceLineNo">053</span>        @Override<a name="line.53"></a>
+<span class="sourceLineNo">054</span>        protected void processEntity(ShallowEntity entity) throws CheckException {<a name="line.54"></a>
+<span class="sourceLineNo">055</span>                if (!StringUtils.startsWithOneOf(entity.getName(), allowedPrefixes)) {<a name="line.55"></a>
+<span class="sourceLineNo">056</span>                        createFinding(<a name="line.56"></a>
+<span class="sourceLineNo">057</span>                                        "Package name '" + entity.getName()<a name="line.57"></a>
+<span class="sourceLineNo">058</span>                                                        + "' does not conform to the guideline. Allowed package prefixes: " + allowedPrefixes,<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                                        entity);<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                }<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        }<a name="line.61"></a>
+<span class="sourceLineNo">062</span>}<a name="line.62"></a>
 
 
 

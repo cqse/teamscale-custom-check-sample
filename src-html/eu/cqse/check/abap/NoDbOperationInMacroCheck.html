@@ -1,0 +1,371 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*-----------------------------------------------------------------------+<a name="line.1"></a>
+<span class="sourceLineNo">002</span> | de.audi.teamscale.abap_checks<a name="line.2"></a>
+<span class="sourceLineNo">003</span> |                                                                       |<a name="line.3"></a>
+<span class="sourceLineNo">004</span>   $Id: NoDbOperationInMacroCheck.java 12402 2016-08-05 06:23:07Z roehm $<a name="line.4"></a>
+<span class="sourceLineNo">005</span> |                                                                       |<a name="line.5"></a>
+<span class="sourceLineNo">006</span> | Copyright (c)  2009-2015 CQSE GmbH                                    |<a name="line.6"></a>
+<span class="sourceLineNo">007</span> +-----------------------------------------------------------------------*/<a name="line.7"></a>
+<span class="sourceLineNo">008</span>package eu.cqse.check.abap;<a name="line.8"></a>
+<span class="sourceLineNo">009</span><a name="line.9"></a>
+<span class="sourceLineNo">010</span>import java.util.List;<a name="line.10"></a>
+<span class="sourceLineNo">011</span>import java.util.regex.Pattern;<a name="line.11"></a>
+<span class="sourceLineNo">012</span>import java.util.stream.Collectors;<a name="line.12"></a>
+<span class="sourceLineNo">013</span>import java.util.stream.Stream;<a name="line.13"></a>
+<span class="sourceLineNo">014</span><a name="line.14"></a>
+<span class="sourceLineNo">015</span>import org.conqat.lib.commons.assertion.CCSMAssert;<a name="line.15"></a>
+<span class="sourceLineNo">016</span>import org.conqat.lib.commons.string.StringUtils;<a name="line.16"></a>
+<span class="sourceLineNo">017</span><a name="line.17"></a>
+<span class="sourceLineNo">018</span>import eu.cqse.check.base.EntityCheckBase;<a name="line.18"></a>
+<span class="sourceLineNo">019</span>import eu.cqse.check.framework.core.ACheck;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import eu.cqse.check.framework.core.CheckException;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import eu.cqse.check.framework.core.CheckGroupNames;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import eu.cqse.check.framework.core.ECheckParameter;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import eu.cqse.check.framework.scanner.ELanguage;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import eu.cqse.check.framework.scanner.ETokenType;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.25"></a>
+<span class="sourceLineNo">026</span>import eu.cqse.check.framework.shallowparser.TokenStreamUtils;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import eu.cqse.check.framework.util.abap.AbapCheckUtils;<a name="line.28"></a>
+<span class="sourceLineNo">029</span><a name="line.29"></a>
+<span class="sourceLineNo">030</span>/**<a name="line.30"></a>
+<span class="sourceLineNo">031</span> * Checks whether a macro contains database operations.&lt;br&gt;<a name="line.31"></a>
+<span class="sourceLineNo">032</span> * &lt;br&gt;<a name="line.32"></a>
+<span class="sourceLineNo">033</span> *<a name="line.33"></a>
+<span class="sourceLineNo">034</span> * Implemented checks:<a name="line.34"></a>
+<span class="sourceLineNo">035</span> * &lt;ul&gt;<a name="line.35"></a>
+<span class="sourceLineNo">036</span> * &lt;li&gt;Open SQL database operations<a name="line.36"></a>
+<span class="sourceLineNo">037</span> * &lt;li&gt;Native SQL database operations<a name="line.37"></a>
+<span class="sourceLineNo">038</span> * &lt;li&gt;Database operations via Object Services (the custom check for Object<a name="line.38"></a>
+<span class="sourceLineNo">039</span> * Services does not check all possible usages, but the occurrence of<a name="line.39"></a>
+<span class="sourceLineNo">040</span> * "characteristic" methods).<a name="line.40"></a>
+<span class="sourceLineNo">041</span> * &lt;/ul&gt;<a name="line.41"></a>
+<span class="sourceLineNo">042</span> *<a name="line.42"></a>
+<span class="sourceLineNo">043</span> * NOT checked database operations:<a name="line.43"></a>
+<span class="sourceLineNo">044</span> * &lt;ul&gt;<a name="line.44"></a>
+<span class="sourceLineNo">045</span> * &lt;li&gt;Database operations via SQLScript<a name="line.45"></a>
+<span class="sourceLineNo">046</span> * &lt;li&gt;Database operations via ABAP Managed Database Procedures (AMDP)<a name="line.46"></a>
+<span class="sourceLineNo">047</span> * &lt;/ul&gt;<a name="line.47"></a>
+<span class="sourceLineNo">048</span> *<a name="line.48"></a>
+<span class="sourceLineNo">049</span> * Source: http://help.sap.com/abapdocu_750/de/index.htm (Accessed 08.12.15)<a name="line.49"></a>
+<span class="sourceLineNo">050</span> */<a name="line.50"></a>
+<span class="sourceLineNo">051</span>@ACheck(name = "No database operation in macro", description = "A macro should not contain database operations.", groupName = CheckGroupNames.BAD_PRACTICE, languages = ELanguage.ABAP, parameters = {<a name="line.51"></a>
+<span class="sourceLineNo">052</span>                ECheckParameter.ABSTRACT_SYNTAX_TREE, ECheckParameter.TYPE_RESOLUTION })<a name="line.52"></a>
+<span class="sourceLineNo">053</span>public class NoDbOperationInMacroCheck extends EntityCheckBase {<a name="line.53"></a>
+<span class="sourceLineNo">054</span><a name="line.54"></a>
+<span class="sourceLineNo">055</span>        /** General finding message used in all findings. **/<a name="line.55"></a>
+<span class="sourceLineNo">056</span>        private static final String GENERAL_MESSAGE = "A macro should not contain database operations";<a name="line.56"></a>
+<span class="sourceLineNo">057</span><a name="line.57"></a>
+<span class="sourceLineNo">058</span>        /**<a name="line.58"></a>
+<span class="sourceLineNo">059</span>         * Format string for finding messages of object service findings (i.e.<a name="line.59"></a>
+<span class="sourceLineNo">060</span>         * detected database operations via Object Services).<a name="line.60"></a>
+<span class="sourceLineNo">061</span>         */<a name="line.61"></a>
+<span class="sourceLineNo">062</span>        private static final String FINDING_MESSAGE_OBJECT_SERVICES = GENERAL_MESSAGE<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                        + " but found string '%s' indicating a database operation using Object Services.";<a name="line.63"></a>
+<span class="sourceLineNo">064</span><a name="line.64"></a>
+<span class="sourceLineNo">065</span>        /** Format string for finding messages of Native SQL Statements. */<a name="line.65"></a>
+<span class="sourceLineNo">066</span>        private static final String FINDING_MESSAGE_NATIVE_SQL_STATEMENT = GENERAL_MESSAGE<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                        + " but found Native SQL statement '%s'.";<a name="line.67"></a>
+<span class="sourceLineNo">068</span><a name="line.68"></a>
+<span class="sourceLineNo">069</span>        /** Format string for finding messages of Native SQL Classes. */<a name="line.69"></a>
+<span class="sourceLineNo">070</span>        private static final String FINDING_MESSAGE_NATIVE_SQL_CLASS = GENERAL_MESSAGE<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                        + " but found Native SQL class '%s'.";<a name="line.71"></a>
+<span class="sourceLineNo">072</span><a name="line.72"></a>
+<span class="sourceLineNo">073</span>        /** Format string for finding messages of OpenSQL Statements. */<a name="line.73"></a>
+<span class="sourceLineNo">074</span>        private static final String FINDING_MESSAGE_OPEN_SQL_STATEMENT = GENERAL_MESSAGE<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                        + " but found Open SQL statement '%s'.";<a name="line.75"></a>
+<span class="sourceLineNo">076</span><a name="line.76"></a>
+<span class="sourceLineNo">077</span>        /**<a name="line.77"></a>
+<span class="sourceLineNo">078</span>         * Regex 1 used to detect database operations via Persistence service.<a name="line.78"></a>
+<span class="sourceLineNo">079</span>         * Matches methods CREATE_PERSISTENT, GET_PERSISTENT*, DELETE_PERSISTENT.<a name="line.79"></a>
+<span class="sourceLineNo">080</span>         */<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        private static final String REGEX_PERSISTENCE_SERVICE_1 = "(create|get|delete)_persistent";<a name="line.81"></a>
+<span class="sourceLineNo">082</span><a name="line.82"></a>
+<span class="sourceLineNo">083</span>        /**<a name="line.83"></a>
+<span class="sourceLineNo">084</span>         * Regex 2 used to detect database operations via Persistence service.<a name="line.84"></a>
+<span class="sourceLineNo">085</span>         * Matches methods CREATE_TRANSIENT and GET_TRANSIENT.<a name="line.85"></a>
+<span class="sourceLineNo">086</span>         */<a name="line.86"></a>
+<span class="sourceLineNo">087</span>        private static final String REGEX_PERSISTENCE_SERVICE_2 = "(create|get)_transient";<a name="line.87"></a>
+<span class="sourceLineNo">088</span><a name="line.88"></a>
+<span class="sourceLineNo">089</span>        /**<a name="line.89"></a>
+<span class="sourceLineNo">090</span>         * Regex 1 used to detect database operations via Transaction service.<a name="line.90"></a>
+<span class="sourceLineNo">091</span>         * Matches method GET_TRANSACTION_MANAGER.<a name="line.91"></a>
+<span class="sourceLineNo">092</span>         */<a name="line.92"></a>
+<span class="sourceLineNo">093</span>        private static final String REGEX_TRANSACTION_SERVICE_1 = "get_transaction_manager";<a name="line.93"></a>
+<span class="sourceLineNo">094</span><a name="line.94"></a>
+<span class="sourceLineNo">095</span>        /**<a name="line.95"></a>
+<span class="sourceLineNo">096</span>         * Regex 2 used to detect database operations via Transaction service.<a name="line.96"></a>
+<span class="sourceLineNo">097</span>         * Matches methods TRANSACTION_MANAGER~CREATE_TRANSACTION,<a name="line.97"></a>
+<span class="sourceLineNo">098</span>         * TRANSACTION_MANAGER~GET_CURRENT_TRANSACTION,<a name="line.98"></a>
+<span class="sourceLineNo">099</span>         * TRANSACTION_MANAGER~GET_TOP_TRANSACTION.<a name="line.99"></a>
+<span class="sourceLineNo">100</span>         */<a name="line.100"></a>
+<span class="sourceLineNo">101</span>        private static final String REGEX_TRANSACTION_SERVICE_2 = "(create|get_current|get_top)_transaction";<a name="line.101"></a>
+<span class="sourceLineNo">102</span><a name="line.102"></a>
+<span class="sourceLineNo">103</span>        /**<a name="line.103"></a>
+<span class="sourceLineNo">104</span>         * Regex 1 used to detect database operations via Query service. Matches<a name="line.104"></a>
+<span class="sourceLineNo">105</span>         * method GET_QUERY_MANAGER.<a name="line.105"></a>
+<span class="sourceLineNo">106</span>         */<a name="line.106"></a>
+<span class="sourceLineNo">107</span>        private static final String REGEX_QUERY_SERVICE_1 = "get_query_manager";<a name="line.107"></a>
+<span class="sourceLineNo">108</span><a name="line.108"></a>
+<span class="sourceLineNo">109</span>        /**<a name="line.109"></a>
+<span class="sourceLineNo">110</span>         * Regex 2 used to detect database operations via Query Service. Matches<a name="line.110"></a>
+<span class="sourceLineNo">111</span>         * method CREATE_QUERY.<a name="line.111"></a>
+<span class="sourceLineNo">112</span>         */<a name="line.112"></a>
+<span class="sourceLineNo">113</span>        private static final String REGEX_QUERY_SERVICE_2 = "create_query";<a name="line.113"></a>
+<span class="sourceLineNo">114</span><a name="line.114"></a>
+<span class="sourceLineNo">115</span>        /**<a name="line.115"></a>
+<span class="sourceLineNo">116</span>         * Regex 3 used to detect database operations via Query Service. Matches<a name="line.116"></a>
+<span class="sourceLineNo">117</span>         * method GET_EXPR_FACTORY.<a name="line.117"></a>
+<span class="sourceLineNo">118</span>         */<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        private static final String REGEX_QUERY_SERVICE_3 = "get_expr_factory";<a name="line.119"></a>
+<span class="sourceLineNo">120</span><a name="line.120"></a>
+<span class="sourceLineNo">121</span>        /**<a name="line.121"></a>
+<span class="sourceLineNo">122</span>         * Regex 4 used to detect database operations via Query Service. Matches<a name="line.122"></a>
+<span class="sourceLineNo">123</span>         * methods SET_FILTER_EXPR, SET_PARAMETERS_EXPR, SET_ORDERING_EXPR.<a name="line.123"></a>
+<span class="sourceLineNo">124</span>         */<a name="line.124"></a>
+<span class="sourceLineNo">125</span>        private static final String REGEX_QUERY_SERVICE_4 = "set_(filter|parameters|ordering)_expr";<a name="line.125"></a>
+<span class="sourceLineNo">126</span><a name="line.126"></a>
+<span class="sourceLineNo">127</span>        /**<a name="line.127"></a>
+<span class="sourceLineNo">128</span>         * Regex 5 used to detect database operations via Query Service. Matches<a name="line.128"></a>
+<span class="sourceLineNo">129</span>         * methods CREATE_OPERATOR_EXPR, CREATE_LIKE_EXPR, CREATE_ISNULL_EXPR,<a name="line.129"></a>
+<span class="sourceLineNo">130</span>         * CREATE_REF_EXPR, CREATE_AND_EXPR, CREATE_NOT_EXPR, CREATE_OR_EXPR,<a name="line.130"></a>
+<span class="sourceLineNo">131</span>         * CREATE_PARAMETERS_EXPR, CREATE_ORDERING_EXPR.<a name="line.131"></a>
+<span class="sourceLineNo">132</span>         */<a name="line.132"></a>
+<span class="sourceLineNo">133</span>        private static final String REGEX_QUERY_SERVICE_5 = "create_(operator|like|isnull|ref|and|not|or|parameters|ordering)_expr";<a name="line.133"></a>
+<span class="sourceLineNo">134</span><a name="line.134"></a>
+<span class="sourceLineNo">135</span>        /**<a name="line.135"></a>
+<span class="sourceLineNo">136</span>         * Pattern for detection of database operations via Object Services.<a name="line.136"></a>
+<span class="sourceLineNo">137</span>         */<a name="line.137"></a>
+<span class="sourceLineNo">138</span>        private static final Pattern PATTERN_OBJECT_SERVICE_USE = Pattern.compile(<a name="line.138"></a>
+<span class="sourceLineNo">139</span>                        REGEX_PERSISTENCE_SERVICE_1 + "|" + REGEX_PERSISTENCE_SERVICE_2 + "|" + REGEX_QUERY_SERVICE_1 + "|"<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                                        + REGEX_QUERY_SERVICE_2 + "|" + REGEX_QUERY_SERVICE_3 + "|" + REGEX_QUERY_SERVICE_4 + "|"<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                                        + REGEX_QUERY_SERVICE_5 + "|" + REGEX_TRANSACTION_SERVICE_1 + "|" + REGEX_TRANSACTION_SERVICE_2,<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                        Pattern.CASE_INSENSITIVE);<a name="line.142"></a>
+<span class="sourceLineNo">143</span><a name="line.143"></a>
+<span class="sourceLineNo">144</span>        /**<a name="line.144"></a>
+<span class="sourceLineNo">145</span>         * Regex used to detect database operations via Native SQL. Matches classes<a name="line.145"></a>
+<span class="sourceLineNo">146</span>         * CL_SQL_*, CX_SQL_*.<a name="line.146"></a>
+<span class="sourceLineNo">147</span>         */<a name="line.147"></a>
+<span class="sourceLineNo">148</span>        private static final Pattern PATTERN_NATIVE_SQL_CLASSES = Pattern.compile("^C[LX]_SQL_.*",<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                        Pattern.CASE_INSENSITIVE);<a name="line.149"></a>
+<span class="sourceLineNo">150</span><a name="line.150"></a>
+<span class="sourceLineNo">151</span>        /** {@inheritDoc} */<a name="line.151"></a>
+<span class="sourceLineNo">152</span>        @Override<a name="line.152"></a>
+<span class="sourceLineNo">153</span>        protected String getXPathSelectionString() {<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                return "//META[subtype('macro')]";<a name="line.154"></a>
+<span class="sourceLineNo">155</span>        }<a name="line.155"></a>
+<span class="sourceLineNo">156</span><a name="line.156"></a>
+<span class="sourceLineNo">157</span>        /** {@inheritDoc} */<a name="line.157"></a>
+<span class="sourceLineNo">158</span>        @Override<a name="line.158"></a>
+<span class="sourceLineNo">159</span>        protected void processEntity(ShallowEntity entity) throws CheckException {<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                if (AbapCheckUtils.isIgnoredForDatabaseChecks(entity, context.getAbstractSyntaxTree(),<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                                context.getUniformPath())) {<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                        return;<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                }<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                CCSMAssert.isFalse(entity.hasChildren(), "Assumption 'Macro entity has no children' is violated.");<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                List&lt;IToken&gt; tokens = entity.ownStartTokens();<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                List&lt;List&lt;IToken&gt;&gt; tokenLists = TokenStreamUtils.split(tokens, ETokenType.DOT);<a name="line.166"></a>
+<span class="sourceLineNo">167</span><a name="line.167"></a>
+<span class="sourceLineNo">168</span>                checkForOpenSqlOperations(tokenLists, entity);<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                checkForNativeSQLOperation(tokenLists);<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                checkForObjectServiceOperation(tokenLists);<a name="line.170"></a>
+<span class="sourceLineNo">171</span>        }<a name="line.171"></a>
+<span class="sourceLineNo">172</span><a name="line.172"></a>
+<span class="sourceLineNo">173</span>        /**<a name="line.173"></a>
+<span class="sourceLineNo">174</span>         * Check whether a macro contains a database operation via Object Services.<a name="line.174"></a>
+<span class="sourceLineNo">175</span>         *<a name="line.175"></a>
+<span class="sourceLineNo">176</span>         * @param macroStatements<a name="line.176"></a>
+<span class="sourceLineNo">177</span>         *            A list of macro statements where each statement is represented<a name="line.177"></a>
+<span class="sourceLineNo">178</span>         *            as token list.<a name="line.178"></a>
+<span class="sourceLineNo">179</span>         * @throws CheckException<a name="line.179"></a>
+<span class="sourceLineNo">180</span>         *             Raised in case of exception during finding creation.<a name="line.180"></a>
+<span class="sourceLineNo">181</span>         */<a name="line.181"></a>
+<span class="sourceLineNo">182</span>        private void checkForObjectServiceOperation(List&lt;List&lt;IToken&gt;&gt; macroStatements) throws CheckException {<a name="line.182"></a>
+<span class="sourceLineNo">183</span>                for (List&lt;IToken&gt; currentTokenList : macroStatements) {<a name="line.183"></a>
+<span class="sourceLineNo">184</span>                        createFindingsForIdentifiersContainingPattern(currentTokenList, PATTERN_OBJECT_SERVICE_USE,<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                                        FINDING_MESSAGE_OBJECT_SERVICES);<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                }<a name="line.186"></a>
+<span class="sourceLineNo">187</span>        }<a name="line.187"></a>
+<span class="sourceLineNo">188</span><a name="line.188"></a>
+<span class="sourceLineNo">189</span>        /**<a name="line.189"></a>
+<span class="sourceLineNo">190</span>         * Check whether a macro contains a Native SQL database operation.<a name="line.190"></a>
+<span class="sourceLineNo">191</span>         *<a name="line.191"></a>
+<span class="sourceLineNo">192</span>         * @param macroStatements<a name="line.192"></a>
+<span class="sourceLineNo">193</span>         *            A list of macro statements where each statement is represented<a name="line.193"></a>
+<span class="sourceLineNo">194</span>         *            as token list.<a name="line.194"></a>
+<span class="sourceLineNo">195</span>         */<a name="line.195"></a>
+<span class="sourceLineNo">196</span>        private void checkForNativeSQLOperation(List&lt;List&lt;IToken&gt;&gt; macroStatements) throws CheckException {<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                for (List&lt;IToken&gt; currentTokenList : macroStatements) {<a name="line.197"></a>
+<span class="sourceLineNo">198</span>                        findTokenTypeSequenceInTokenListAndCreateFinding(currentTokenList, FINDING_MESSAGE_NATIVE_SQL_STATEMENT,<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                                        ETokenType.EXEC, ETokenType.SQL);<a name="line.199"></a>
+<span class="sourceLineNo">200</span>                        findTokenTypeSequenceInTokenListAndCreateFinding(currentTokenList, FINDING_MESSAGE_NATIVE_SQL_STATEMENT,<a name="line.200"></a>
+<span class="sourceLineNo">201</span>                                        ETokenType.ENDEXEC);<a name="line.201"></a>
+<span class="sourceLineNo">202</span>                        findTokenTypeSequenceInTokenListAndCreateFinding(currentTokenList, FINDING_MESSAGE_NATIVE_SQL_STATEMENT,<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                                        ETokenType.EXIT, ETokenType.FROM, ETokenType.SQL);<a name="line.203"></a>
+<span class="sourceLineNo">204</span><a name="line.204"></a>
+<span class="sourceLineNo">205</span>                        // Use of classes CL_SQL_*, CX_SQL_*.<a name="line.205"></a>
+<span class="sourceLineNo">206</span>                        createFindingsForIdentifiersContainingPattern(currentTokenList, PATTERN_NATIVE_SQL_CLASSES,<a name="line.206"></a>
+<span class="sourceLineNo">207</span>                                        FINDING_MESSAGE_NATIVE_SQL_CLASS);<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                }<a name="line.208"></a>
+<span class="sourceLineNo">209</span>        }<a name="line.209"></a>
+<span class="sourceLineNo">210</span><a name="line.210"></a>
+<span class="sourceLineNo">211</span>        /**<a name="line.211"></a>
+<span class="sourceLineNo">212</span>         * Attempts to find the token type sequence {@code tokenTypes} in token list<a name="line.212"></a>
+<span class="sourceLineNo">213</span>         * {@code tokens} and creates a finding if found.<a name="line.213"></a>
+<span class="sourceLineNo">214</span>         *<a name="line.214"></a>
+<span class="sourceLineNo">215</span>         * @param tokens<a name="line.215"></a>
+<span class="sourceLineNo">216</span>         *            A list of tokens.<a name="line.216"></a>
+<span class="sourceLineNo">217</span>         * @param formatString<a name="line.217"></a>
+<span class="sourceLineNo">218</span>         *            The format of the finding message with one placeholder for<a name="line.218"></a>
+<span class="sourceLineNo">219</span>         *            textual representation of token list.<a name="line.219"></a>
+<span class="sourceLineNo">220</span>         * @param tokenTypes<a name="line.220"></a>
+<span class="sourceLineNo">221</span>         *            A sequence of token types.<a name="line.221"></a>
+<span class="sourceLineNo">222</span>         * @throws CheckException<a name="line.222"></a>
+<span class="sourceLineNo">223</span>         *             Raised in case of exception during finding creation.<a name="line.223"></a>
+<span class="sourceLineNo">224</span>         */<a name="line.224"></a>
+<span class="sourceLineNo">225</span>        private void findTokenTypeSequenceInTokenListAndCreateFinding(List&lt;IToken&gt; tokens, String formatString,<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                        ETokenType... tokenTypes) throws CheckException {<a name="line.226"></a>
+<span class="sourceLineNo">227</span>                int position = TokenStreamUtils.firstTokenOfTypeSequence(tokens, 0, tokenTypes);<a name="line.227"></a>
+<span class="sourceLineNo">228</span>                if (position != TokenStreamUtils.NOT_FOUND) {<a name="line.228"></a>
+<span class="sourceLineNo">229</span>                        String tokenTypesAsString = Stream.of(tokenTypes).map(ETokenType::toString)<a name="line.229"></a>
+<span class="sourceLineNo">230</span>                                        .collect(Collectors.joining(StringUtils.SPACE));<a name="line.230"></a>
+<span class="sourceLineNo">231</span>                        String findingMessage = String.format(formatString, tokenTypesAsString);<a name="line.231"></a>
+<span class="sourceLineNo">232</span>                        createFinding(findingMessage, tokens.get(position));<a name="line.232"></a>
+<span class="sourceLineNo">233</span>                }<a name="line.233"></a>
+<span class="sourceLineNo">234</span>        }<a name="line.234"></a>
+<span class="sourceLineNo">235</span><a name="line.235"></a>
+<span class="sourceLineNo">236</span>        /**<a name="line.236"></a>
+<span class="sourceLineNo">237</span>         * Check whether a macro contains an OpenSQL database operation.<a name="line.237"></a>
+<span class="sourceLineNo">238</span>         *<a name="line.238"></a>
+<span class="sourceLineNo">239</span>         * @param macroStatements<a name="line.239"></a>
+<span class="sourceLineNo">240</span>         *            A list of macro statements where each statement is represented<a name="line.240"></a>
+<span class="sourceLineNo">241</span>         *            as token list.<a name="line.241"></a>
+<span class="sourceLineNo">242</span>         * @throws CheckException<a name="line.242"></a>
+<span class="sourceLineNo">243</span>         *             Raised in case of exception during finding creation.<a name="line.243"></a>
+<span class="sourceLineNo">244</span>         */<a name="line.244"></a>
+<span class="sourceLineNo">245</span>        private void checkForOpenSqlOperations(List&lt;List&lt;IToken&gt;&gt; macroStatements, ShallowEntity macroEntity)<a name="line.245"></a>
+<span class="sourceLineNo">246</span>                        throws CheckException {<a name="line.246"></a>
+<span class="sourceLineNo">247</span><a name="line.247"></a>
+<span class="sourceLineNo">248</span>                for (List&lt;IToken&gt; currentTokenList : macroStatements) {<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                        if (currentTokenList == null || currentTokenList.isEmpty()) {<a name="line.249"></a>
+<span class="sourceLineNo">250</span>                                continue;<a name="line.250"></a>
+<span class="sourceLineNo">251</span>                        }<a name="line.251"></a>
+<span class="sourceLineNo">252</span>                        if (TokenStreamUtils.containsAny(currentTokenList, 0, 1, ETokenType.INSERT, ETokenType.UPDATE,<a name="line.252"></a>
+<span class="sourceLineNo">253</span>                                        ETokenType.MODIFY, ETokenType.DELETE)) {<a name="line.253"></a>
+<span class="sourceLineNo">254</span>                                OpenSqlStatement statement = OpenSqlStatement.create(macroEntity, currentTokenList,<a name="line.254"></a>
+<span class="sourceLineNo">255</span>                                                context.getTypeResolution());<a name="line.255"></a>
+<span class="sourceLineNo">256</span>                                if (statement != null &amp;&amp; !statement.targetsInternalTable()) {<a name="line.256"></a>
+<span class="sourceLineNo">257</span>                                        createFinding(String.format(FINDING_MESSAGE_OPEN_SQL_STATEMENT,<a name="line.257"></a>
+<span class="sourceLineNo">258</span>                                                        statement.getStatementStartToken().getText()), currentTokenList.get(0));<a name="line.258"></a>
+<span class="sourceLineNo">259</span>                                }<a name="line.259"></a>
+<span class="sourceLineNo">260</span>                        }<a name="line.260"></a>
+<span class="sourceLineNo">261</span>                        findTokenTypeSequenceInTokenListAndCreateFinding(currentTokenList, FINDING_MESSAGE_OPEN_SQL_STATEMENT,<a name="line.261"></a>
+<span class="sourceLineNo">262</span>                                        ETokenType.SELECT);<a name="line.262"></a>
+<span class="sourceLineNo">263</span>                        findTokenTypeSequenceInTokenListAndCreateFinding(currentTokenList, FINDING_MESSAGE_OPEN_SQL_STATEMENT,<a name="line.263"></a>
+<span class="sourceLineNo">264</span>                                        ETokenType.END, ETokenType.SELECT);<a name="line.264"></a>
+<span class="sourceLineNo">265</span>                        findTokenTypeSequenceInTokenListAndCreateFinding(currentTokenList, FINDING_MESSAGE_OPEN_SQL_STATEMENT,<a name="line.265"></a>
+<span class="sourceLineNo">266</span>                                        ETokenType.OPEN, ETokenType.CURSOR);<a name="line.266"></a>
+<span class="sourceLineNo">267</span>                        findTokenTypeSequenceInTokenListAndCreateFinding(currentTokenList, FINDING_MESSAGE_OPEN_SQL_STATEMENT,<a name="line.267"></a>
+<span class="sourceLineNo">268</span>                                        ETokenType.FETCH, ETokenType.NEXT, ETokenType.CURSOR);<a name="line.268"></a>
+<span class="sourceLineNo">269</span>                        findTokenTypeSequenceInTokenListAndCreateFinding(currentTokenList, FINDING_MESSAGE_OPEN_SQL_STATEMENT,<a name="line.269"></a>
+<span class="sourceLineNo">270</span>                                        ETokenType.CLOSE, ETokenType.CURSOR);<a name="line.270"></a>
+<span class="sourceLineNo">271</span>                        findTokenTypeSequenceInTokenListAndCreateFinding(currentTokenList, FINDING_MESSAGE_OPEN_SQL_STATEMENT,<a name="line.271"></a>
+<span class="sourceLineNo">272</span>                                        ETokenType.COMMIT, ETokenType.WORK);<a name="line.272"></a>
+<span class="sourceLineNo">273</span>                        findTokenTypeSequenceInTokenListAndCreateFinding(currentTokenList, FINDING_MESSAGE_OPEN_SQL_STATEMENT,<a name="line.273"></a>
+<span class="sourceLineNo">274</span>                                        ETokenType.ROLLBACK, ETokenType.WORK);<a name="line.274"></a>
+<span class="sourceLineNo">275</span>                }<a name="line.275"></a>
+<span class="sourceLineNo">276</span>        }<a name="line.276"></a>
+<span class="sourceLineNo">277</span><a name="line.277"></a>
+<span class="sourceLineNo">278</span>        /**<a name="line.278"></a>
+<span class="sourceLineNo">279</span>         * Attempts to find the {@code pattern} in each {@code IDENTIFIER} token<a name="line.279"></a>
+<span class="sourceLineNo">280</span>         * text in token list and create a finding with message<a name="line.280"></a>
+<span class="sourceLineNo">281</span>         * {@code messageTemplate} for each find.<a name="line.281"></a>
+<span class="sourceLineNo">282</span>         *<a name="line.282"></a>
+<span class="sourceLineNo">283</span>         * @param tokens<a name="line.283"></a>
+<span class="sourceLineNo">284</span>         *            A list of tokens.<a name="line.284"></a>
+<span class="sourceLineNo">285</span>         * @param pattern<a name="line.285"></a>
+<span class="sourceLineNo">286</span>         *            The pattern representing a regex to be matched.<a name="line.286"></a>
+<span class="sourceLineNo">287</span>         * @param messageTemplate<a name="line.287"></a>
+<span class="sourceLineNo">288</span>         *            A format string used as message if a finding is created.<a name="line.288"></a>
+<span class="sourceLineNo">289</span>         */<a name="line.289"></a>
+<span class="sourceLineNo">290</span>        private void createFindingsForIdentifiersContainingPattern(List&lt;IToken&gt; tokens, Pattern pattern,<a name="line.290"></a>
+<span class="sourceLineNo">291</span>                        String messageTemplate) throws CheckException {<a name="line.291"></a>
+<span class="sourceLineNo">292</span>                for (IToken currentToken : tokens) {<a name="line.292"></a>
+<span class="sourceLineNo">293</span>                        if (currentToken.getType().equals(ETokenType.IDENTIFIER)<a name="line.293"></a>
+<span class="sourceLineNo">294</span>                                        &amp;&amp; pattern.matcher(currentToken.getText()).find()) {<a name="line.294"></a>
+<span class="sourceLineNo">295</span>                                createFinding(String.format(messageTemplate, currentToken.getText()), currentToken);<a name="line.295"></a>
+<span class="sourceLineNo">296</span>                        }<a name="line.296"></a>
+<span class="sourceLineNo">297</span>                }<a name="line.297"></a>
+<span class="sourceLineNo">298</span>        }<a name="line.298"></a>
+<span class="sourceLineNo">299</span>}<a name="line.299"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

@@ -32,26 +32,18 @@
 <span class="sourceLineNo">024</span><a name="line.24"></a>
 <span class="sourceLineNo">025</span>/**<a name="line.25"></a>
 <span class="sourceLineNo">026</span> * Filters for variable uses that read the variable's value.<a name="line.26"></a>
-<span class="sourceLineNo">027</span> * <a name="line.27"></a>
-<span class="sourceLineNo">028</span> * @author $Author: heinemann $<a name="line.28"></a>
-<span class="sourceLineNo">029</span> * @version $Rev: 55648 $<a name="line.29"></a>
-<span class="sourceLineNo">030</span> * @ConQAT.Rating RED Hash: 20C1AEDAC78BD86AC77D514B5C1A450C<a name="line.30"></a>
-<span class="sourceLineNo">031</span> */<a name="line.31"></a>
-<span class="sourceLineNo">032</span>public class VariableReadFilter implements IVariableUseFilter {<a name="line.32"></a>
-<span class="sourceLineNo">033</span><a name="line.33"></a>
-<span class="sourceLineNo">034</span>        /** Singleton instance. */<a name="line.34"></a>
-<span class="sourceLineNo">035</span>        public static final VariableReadFilter INSTANCE = new VariableReadFilter();<a name="line.35"></a>
-<span class="sourceLineNo">036</span><a name="line.36"></a>
-<span class="sourceLineNo">037</span>        /** {@inheritDoc} */<a name="line.37"></a>
-<span class="sourceLineNo">038</span>        @Override<a name="line.38"></a>
-<span class="sourceLineNo">039</span>        public boolean isFiltered(List&lt;IToken&gt; tokens, int index, boolean isField) {<a name="line.39"></a>
-<span class="sourceLineNo">040</span>                // TODO (LH) Combine to single return?<a name="line.40"></a>
-<span class="sourceLineNo">041</span>                if (index &gt;= tokens.size() - 1) {<a name="line.41"></a>
-<span class="sourceLineNo">042</span>                        return true;<a name="line.42"></a>
-<span class="sourceLineNo">043</span>                }<a name="line.43"></a>
-<span class="sourceLineNo">044</span>                return !tokens.get(index + 1).getType().equals(EQ);<a name="line.44"></a>
-<span class="sourceLineNo">045</span>        }<a name="line.45"></a>
-<span class="sourceLineNo">046</span>}<a name="line.46"></a>
+<span class="sourceLineNo">027</span> */<a name="line.27"></a>
+<span class="sourceLineNo">028</span>public class VariableReadFilter implements IVariableUseFilter {<a name="line.28"></a>
+<span class="sourceLineNo">029</span><a name="line.29"></a>
+<span class="sourceLineNo">030</span>        /** Singleton instance. */<a name="line.30"></a>
+<span class="sourceLineNo">031</span>        public static final VariableReadFilter INSTANCE = new VariableReadFilter();<a name="line.31"></a>
+<span class="sourceLineNo">032</span><a name="line.32"></a>
+<span class="sourceLineNo">033</span>        /** {@inheritDoc} */<a name="line.33"></a>
+<span class="sourceLineNo">034</span>        @Override<a name="line.34"></a>
+<span class="sourceLineNo">035</span>        public boolean isFiltered(List&lt;IToken&gt; tokens, int index, boolean isField) {<a name="line.35"></a>
+<span class="sourceLineNo">036</span>                return (index &gt;= tokens.size() - 1) || !tokens.get(index + 1).getType().equals(EQ);<a name="line.36"></a>
+<span class="sourceLineNo">037</span>        }<a name="line.37"></a>
+<span class="sourceLineNo">038</span>}<a name="line.38"></a>
 
 
 

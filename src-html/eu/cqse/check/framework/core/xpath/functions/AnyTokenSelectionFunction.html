@@ -31,27 +31,23 @@
 <span class="sourceLineNo">023</span>/**<a name="line.23"></a>
 <span class="sourceLineNo">024</span> * A function that is querying for nodes, that contain any of the given token<a name="line.24"></a>
 <span class="sourceLineNo">025</span> * types.<a name="line.25"></a>
-<span class="sourceLineNo">026</span> * <a name="line.26"></a>
-<span class="sourceLineNo">027</span> * @author $Author: kinnen $<a name="line.27"></a>
-<span class="sourceLineNo">028</span> * @version $Rev: 53930 $<a name="line.28"></a>
-<span class="sourceLineNo">029</span> * @ConQAT.Rating GREEN Hash: C205A466E0C41CA5818A5BD1D11D80CC<a name="line.29"></a>
-<span class="sourceLineNo">030</span> */<a name="line.30"></a>
-<span class="sourceLineNo">031</span>public class AnyTokenSelectionFunction extends ModifierSelectionFunctionBase {<a name="line.31"></a>
-<span class="sourceLineNo">032</span><a name="line.32"></a>
-<span class="sourceLineNo">033</span>        /** The function's name. */<a name="line.33"></a>
-<span class="sourceLineNo">034</span>        public static final String NAME = "anytoken";<a name="line.34"></a>
-<span class="sourceLineNo">035</span><a name="line.35"></a>
-<span class="sourceLineNo">036</span>        /** Constructor. */<a name="line.36"></a>
-<span class="sourceLineNo">037</span>        public AnyTokenSelectionFunction() {<a name="line.37"></a>
-<span class="sourceLineNo">038</span>                super(NAME);<a name="line.38"></a>
-<span class="sourceLineNo">039</span>        }<a name="line.39"></a>
-<span class="sourceLineNo">040</span><a name="line.40"></a>
-<span class="sourceLineNo">041</span>        /** {@inheritDoc} */<a name="line.41"></a>
-<span class="sourceLineNo">042</span>        @Override<a name="line.42"></a>
-<span class="sourceLineNo">043</span>        protected boolean checkNode(ShallowEntity node, ETokenType[] arguments) {<a name="line.43"></a>
-<span class="sourceLineNo">044</span>                return TokenStreamUtils.containsAny(node.ownStartTokens(), arguments);<a name="line.44"></a>
-<span class="sourceLineNo">045</span>        }<a name="line.45"></a>
-<span class="sourceLineNo">046</span>}<a name="line.46"></a>
+<span class="sourceLineNo">026</span> */<a name="line.26"></a>
+<span class="sourceLineNo">027</span>public class AnyTokenSelectionFunction extends ModifierSelectionFunctionBase {<a name="line.27"></a>
+<span class="sourceLineNo">028</span><a name="line.28"></a>
+<span class="sourceLineNo">029</span>        /** The function's name. */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>        public static final String NAME = "anytoken";<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>        /** Constructor. */<a name="line.32"></a>
+<span class="sourceLineNo">033</span>        public AnyTokenSelectionFunction() {<a name="line.33"></a>
+<span class="sourceLineNo">034</span>                super(NAME);<a name="line.34"></a>
+<span class="sourceLineNo">035</span>        }<a name="line.35"></a>
+<span class="sourceLineNo">036</span><a name="line.36"></a>
+<span class="sourceLineNo">037</span>        /** {@inheritDoc} */<a name="line.37"></a>
+<span class="sourceLineNo">038</span>        @Override<a name="line.38"></a>
+<span class="sourceLineNo">039</span>        protected boolean checkNode(ShallowEntity node, ETokenType[] arguments) {<a name="line.39"></a>
+<span class="sourceLineNo">040</span>                return TokenStreamUtils.containsAny(node.ownStartTokens(), arguments);<a name="line.40"></a>
+<span class="sourceLineNo">041</span>        }<a name="line.41"></a>
+<span class="sourceLineNo">042</span>}<a name="line.42"></a>
 
 
 

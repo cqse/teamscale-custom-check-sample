@@ -44,56 +44,48 @@
 <span class="sourceLineNo">036</span><a name="line.36"></a>
 <span class="sourceLineNo">037</span>/**<a name="line.37"></a>
 <span class="sourceLineNo">038</span> * {@ConQAT.Doc}<a name="line.38"></a>
-<span class="sourceLineNo">039</span> * <a name="line.39"></a>
-<span class="sourceLineNo">040</span> * @author $Author: dreier $<a name="line.40"></a>
-<span class="sourceLineNo">041</span> * @version $Rev: 55360 $<a name="line.41"></a>
-<span class="sourceLineNo">042</span> * @ConQAT.Rating GREEN Hash: 092CA874481F8763090C21A7B8ABC03E<a name="line.42"></a>
-<span class="sourceLineNo">043</span> */<a name="line.43"></a>
-<span class="sourceLineNo">044</span>@ACheck(name = "Public class attribute", description = "Classes should not have public attributes as this violates encapsulation. Instead access should be provided using public methods.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.YELLOW, languages = {<a name="line.44"></a>
-<span class="sourceLineNo">045</span>                ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })<a name="line.45"></a>
-<span class="sourceLineNo">046</span>public class PublicClassAttributeCheck extends EntityCheckBase {<a name="line.46"></a>
-<span class="sourceLineNo">047</span><a name="line.47"></a>
-<span class="sourceLineNo">048</span>        /** {@ConQAT.Doc} */<a name="line.48"></a>
-<span class="sourceLineNo">049</span>        @ACheckOption(name = "Annotation filter for public fields", description = "Attributes annotated with an annotation contained in this list will be ignored for the analysis. E.g.: @Inject, @Attribute")<a name="line.49"></a>
-<span class="sourceLineNo">050</span>        private List&lt;String&gt; filterAnnotationNameList = Arrays.asList("@Inject",<a name="line.50"></a>
-<span class="sourceLineNo">051</span>                        "@Rule", "@Mock", "@AConQATFieldParameter",<a name="line.51"></a>
-<span class="sourceLineNo">052</span>                        "@AOptionFieldDescription");<a name="line.52"></a>
-<span class="sourceLineNo">053</span><a name="line.53"></a>
-<span class="sourceLineNo">054</span>        /** Annotation names for filtering public fields. */<a name="line.54"></a>
-<span class="sourceLineNo">055</span>        private Set&lt;String&gt; filterAnnotationNames;<a name="line.55"></a>
-<span class="sourceLineNo">056</span><a name="line.56"></a>
-<span class="sourceLineNo">057</span>        /** {@inheritDoc} */<a name="line.57"></a>
-<span class="sourceLineNo">058</span>        @Override<a name="line.58"></a>
-<span class="sourceLineNo">059</span>        public void initialize() {<a name="line.59"></a>
-<span class="sourceLineNo">060</span>                filterAnnotationNames = new HashSet&lt;String&gt;();<a name="line.60"></a>
-<span class="sourceLineNo">061</span>                for (String filterAnnotationName : filterAnnotationNameList) {<a name="line.61"></a>
-<span class="sourceLineNo">062</span>                        filterAnnotationNames<a name="line.62"></a>
-<span class="sourceLineNo">063</span>                                        .add(StringUtils.stripPrefix(filterAnnotationName, "@"));<a name="line.63"></a>
-<span class="sourceLineNo">064</span>                }<a name="line.64"></a>
+<span class="sourceLineNo">039</span> */<a name="line.39"></a>
+<span class="sourceLineNo">040</span>@ACheck(name = "Public class attribute", description = "Classes should not have public attributes as this violates encapsulation. Instead access should be provided using public methods.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.YELLOW, languages = {<a name="line.40"></a>
+<span class="sourceLineNo">041</span>                ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })<a name="line.41"></a>
+<span class="sourceLineNo">042</span>public class PublicClassAttributeCheck extends EntityCheckBase {<a name="line.42"></a>
+<span class="sourceLineNo">043</span><a name="line.43"></a>
+<span class="sourceLineNo">044</span>        /** {@ConQAT.Doc} */<a name="line.44"></a>
+<span class="sourceLineNo">045</span>        @ACheckOption(name = "Annotation filter for public fields", description = "Attributes annotated with an annotation contained in this list will be ignored for the analysis. E.g.: @Inject, @Attribute")<a name="line.45"></a>
+<span class="sourceLineNo">046</span>        private List&lt;String&gt; filterAnnotationNameList = Arrays.asList("@Inject", "@Rule", "@Mock", "@AConQATFieldParameter",<a name="line.46"></a>
+<span class="sourceLineNo">047</span>                        "@AOptionFieldDescription");<a name="line.47"></a>
+<span class="sourceLineNo">048</span><a name="line.48"></a>
+<span class="sourceLineNo">049</span>        /** Annotation names for filtering public fields. */<a name="line.49"></a>
+<span class="sourceLineNo">050</span>        private Set&lt;String&gt; filterAnnotationNames;<a name="line.50"></a>
+<span class="sourceLineNo">051</span><a name="line.51"></a>
+<span class="sourceLineNo">052</span>        /** {@inheritDoc} */<a name="line.52"></a>
+<span class="sourceLineNo">053</span>        @Override<a name="line.53"></a>
+<span class="sourceLineNo">054</span>        public void initialize() {<a name="line.54"></a>
+<span class="sourceLineNo">055</span>                filterAnnotationNames = new HashSet&lt;String&gt;();<a name="line.55"></a>
+<span class="sourceLineNo">056</span>                for (String filterAnnotationName : filterAnnotationNameList) {<a name="line.56"></a>
+<span class="sourceLineNo">057</span>                        filterAnnotationNames.add(StringUtils.stripPrefix(filterAnnotationName, "@"));<a name="line.57"></a>
+<span class="sourceLineNo">058</span>                }<a name="line.58"></a>
+<span class="sourceLineNo">059</span>        }<a name="line.59"></a>
+<span class="sourceLineNo">060</span><a name="line.60"></a>
+<span class="sourceLineNo">061</span>        /** {@inheritDoc} */<a name="line.61"></a>
+<span class="sourceLineNo">062</span>        @Override<a name="line.62"></a>
+<span class="sourceLineNo">063</span>        protected String getXPathSelectionString() {<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                return "//ATTRIBUTE[modifiers('public') and not(modifiers('static', 'final'))]";<a name="line.64"></a>
 <span class="sourceLineNo">065</span>        }<a name="line.65"></a>
 <span class="sourceLineNo">066</span><a name="line.66"></a>
 <span class="sourceLineNo">067</span>        /** {@inheritDoc} */<a name="line.67"></a>
 <span class="sourceLineNo">068</span>        @Override<a name="line.68"></a>
-<span class="sourceLineNo">069</span>        protected String getXPathSelectionString() {<a name="line.69"></a>
-<span class="sourceLineNo">070</span>                return "//ATTRIBUTE[modifiers('public') and not(modifiers('static', 'final'))]";<a name="line.70"></a>
-<span class="sourceLineNo">071</span>        }<a name="line.71"></a>
-<span class="sourceLineNo">072</span><a name="line.72"></a>
-<span class="sourceLineNo">073</span>        /** {@inheritDoc} */<a name="line.73"></a>
-<span class="sourceLineNo">074</span>        @Override<a name="line.74"></a>
-<span class="sourceLineNo">075</span>        protected void processEntity(ShallowEntity entity) throws CheckException {<a name="line.75"></a>
-<span class="sourceLineNo">076</span>                if (!isFilteredByAnnotation(entity)) {<a name="line.76"></a>
-<span class="sourceLineNo">077</span>                        createFinding("Non-constant public attribute", entity);<a name="line.77"></a>
-<span class="sourceLineNo">078</span>                }<a name="line.78"></a>
+<span class="sourceLineNo">069</span>        protected void processEntity(ShallowEntity entity) throws CheckException {<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                if (!isFilteredByAnnotation(entity)) {<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                        createFinding("Non-constant public attribute", entity);<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                }<a name="line.72"></a>
+<span class="sourceLineNo">073</span>        }<a name="line.73"></a>
+<span class="sourceLineNo">074</span><a name="line.74"></a>
+<span class="sourceLineNo">075</span>        /** Returns whether the given entity is filtered by an annotation. */<a name="line.75"></a>
+<span class="sourceLineNo">076</span>        private boolean isFilteredByAnnotation(ShallowEntity entity) {<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                List&lt;ShallowEntity&gt; annotations = LanguageFeatureParser.JAVA.getAnnotations(entity);<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                return annotations.stream().anyMatch(annotation -&gt; filterAnnotationNames.contains(annotation.getName()));<a name="line.78"></a>
 <span class="sourceLineNo">079</span>        }<a name="line.79"></a>
-<span class="sourceLineNo">080</span><a name="line.80"></a>
-<span class="sourceLineNo">081</span>        /** Returns whether the given entity is filtered by an annotation. */<a name="line.81"></a>
-<span class="sourceLineNo">082</span>        private boolean isFilteredByAnnotation(ShallowEntity entity) {<a name="line.82"></a>
-<span class="sourceLineNo">083</span>                List&lt;ShallowEntity&gt; annotations = LanguageFeatureParser.JAVA<a name="line.83"></a>
-<span class="sourceLineNo">084</span>                                .getAnnotations(entity);<a name="line.84"></a>
-<span class="sourceLineNo">085</span>                return annotations.stream().anyMatch(annotation -&gt; filterAnnotationNames<a name="line.85"></a>
-<span class="sourceLineNo">086</span>                                .contains(annotation.getName()));<a name="line.86"></a>
-<span class="sourceLineNo">087</span>        }<a name="line.87"></a>
-<span class="sourceLineNo">088</span>}<a name="line.88"></a>
+<span class="sourceLineNo">080</span>}<a name="line.80"></a>
 
 
 

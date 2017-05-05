@@ -24,34 +24,254 @@
 <span class="sourceLineNo">016</span>+-------------------------------------------------------------------------*/<a name="line.16"></a>
 <span class="sourceLineNo">017</span>package eu.cqse.check.framework.util;<a name="line.17"></a>
 <span class="sourceLineNo">018</span><a name="line.18"></a>
-<span class="sourceLineNo">019</span>import static eu.cqse.check.framework.scanner.ETokenType.VIRTUAL;<a name="line.19"></a>
-<span class="sourceLineNo">020</span><a name="line.20"></a>
-<span class="sourceLineNo">021</span>import eu.cqse.check.framework.scanner.ELanguage;<a name="line.21"></a>
-<span class="sourceLineNo">022</span>import eu.cqse.check.framework.shallowparser.TokenStreamUtils;<a name="line.22"></a>
-<span class="sourceLineNo">023</span>import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;<a name="line.23"></a>
-<span class="sourceLineNo">024</span><a name="line.24"></a>
-<span class="sourceLineNo">025</span>/**<a name="line.25"></a>
-<span class="sourceLineNo">026</span> * Language feature parser for C/C++. In the future this class may be a subclass<a name="line.26"></a>
-<span class="sourceLineNo">027</span> * of {@link CLikeLanguageFeatureParserBase}.<a name="line.27"></a>
-<span class="sourceLineNo">028</span> * <a name="line.28"></a>
-<span class="sourceLineNo">029</span> * @author $Author: heinemann $<a name="line.29"></a>
-<span class="sourceLineNo">030</span> * @version $Rev: 55643 $<a name="line.30"></a>
-<span class="sourceLineNo">031</span> * @ConQAT.Rating GREEN Hash: 401E7F2D1DEF0C5F463C30F9D799C7B1<a name="line.31"></a>
-<span class="sourceLineNo">032</span> */<a name="line.32"></a>
-<span class="sourceLineNo">033</span>public class CppLanguageFeatureParser implements ILanguageFeatureParser {<a name="line.33"></a>
-<span class="sourceLineNo">034</span><a name="line.34"></a>
-<span class="sourceLineNo">035</span>        /** Returns whether the given shallow entity is virtual. */<a name="line.35"></a>
-<span class="sourceLineNo">036</span>        public boolean isVirtual(ShallowEntity entity) {<a name="line.36"></a>
-<span class="sourceLineNo">037</span>                return TokenStreamUtils.tokenStreamContains(entity.ownStartTokens(),<a name="line.37"></a>
-<span class="sourceLineNo">038</span>                                VIRTUAL);<a name="line.38"></a>
-<span class="sourceLineNo">039</span>        }<a name="line.39"></a>
+<span class="sourceLineNo">019</span>import static eu.cqse.check.framework.scanner.ETokenType.AUTO;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import static eu.cqse.check.framework.scanner.ETokenType.BOOL;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import static eu.cqse.check.framework.scanner.ETokenType.CHAR;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import static eu.cqse.check.framework.scanner.ETokenType.CONST;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import static eu.cqse.check.framework.scanner.ETokenType.DOT;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import static eu.cqse.check.framework.scanner.ETokenType.DOUBLE;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import static eu.cqse.check.framework.scanner.ETokenType.ELLIPSIS;<a name="line.25"></a>
+<span class="sourceLineNo">026</span>import static eu.cqse.check.framework.scanner.ETokenType.FLOAT;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import static eu.cqse.check.framework.scanner.ETokenType.GT;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import static eu.cqse.check.framework.scanner.ETokenType.IDENTIFIER;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>import static eu.cqse.check.framework.scanner.ETokenType.INT;<a name="line.29"></a>
+<span class="sourceLineNo">030</span>import static eu.cqse.check.framework.scanner.ETokenType.LONG;<a name="line.30"></a>
+<span class="sourceLineNo">031</span>import static eu.cqse.check.framework.scanner.ETokenType.NAMESPACE;<a name="line.31"></a>
+<span class="sourceLineNo">032</span>import static eu.cqse.check.framework.scanner.ETokenType.POINTERTO;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import static eu.cqse.check.framework.scanner.ETokenType.SCOPE;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import static eu.cqse.check.framework.scanner.ETokenType.SHORT;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import static eu.cqse.check.framework.scanner.ETokenType.SIGNED;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import static eu.cqse.check.framework.scanner.ETokenType.STATIC;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import static eu.cqse.check.framework.scanner.ETokenType.UNSIGNED;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import static eu.cqse.check.framework.scanner.ETokenType.VIRTUAL;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import static eu.cqse.check.framework.scanner.ETokenType.VOID;<a name="line.39"></a>
 <span class="sourceLineNo">040</span><a name="line.40"></a>
-<span class="sourceLineNo">041</span>        /** {@inheritDoc} */<a name="line.41"></a>
-<span class="sourceLineNo">042</span>        @Override<a name="line.42"></a>
-<span class="sourceLineNo">043</span>        public ELanguage getLanguage() {<a name="line.43"></a>
-<span class="sourceLineNo">044</span>                return ELanguage.CPP;<a name="line.44"></a>
-<span class="sourceLineNo">045</span>        }<a name="line.45"></a>
-<span class="sourceLineNo">046</span>}<a name="line.46"></a>
+<span class="sourceLineNo">041</span>import java.util.EnumSet;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>import java.util.List;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>import java.util.Set;<a name="line.43"></a>
+<span class="sourceLineNo">044</span><a name="line.44"></a>
+<span class="sourceLineNo">045</span>import org.conqat.lib.commons.assertion.CCSMAssert;<a name="line.45"></a>
+<span class="sourceLineNo">046</span><a name="line.46"></a>
+<span class="sourceLineNo">047</span>import eu.cqse.check.framework.scanner.ELanguage;<a name="line.47"></a>
+<span class="sourceLineNo">048</span>import eu.cqse.check.framework.scanner.ETokenType;<a name="line.48"></a>
+<span class="sourceLineNo">049</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.49"></a>
+<span class="sourceLineNo">050</span>import eu.cqse.check.framework.shallowparser.SubTypeNames;<a name="line.50"></a>
+<span class="sourceLineNo">051</span>import eu.cqse.check.framework.shallowparser.TokenStreamTextUtils;<a name="line.51"></a>
+<span class="sourceLineNo">052</span>import eu.cqse.check.framework.shallowparser.TokenStreamUtils;<a name="line.52"></a>
+<span class="sourceLineNo">053</span>import eu.cqse.check.framework.shallowparser.framework.EShallowEntityType;<a name="line.53"></a>
+<span class="sourceLineNo">054</span>import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;<a name="line.54"></a>
+<span class="sourceLineNo">055</span>import eu.cqse.check.framework.util.variable.CLikeVariableUseExtractor;<a name="line.55"></a>
+<span class="sourceLineNo">056</span><a name="line.56"></a>
+<span class="sourceLineNo">057</span>/**<a name="line.57"></a>
+<span class="sourceLineNo">058</span> * Language feature parser for C/C++.<a name="line.58"></a>
+<span class="sourceLineNo">059</span> */<a name="line.59"></a>
+<span class="sourceLineNo">060</span>public class CppLanguageFeatureParser extends CLikeLanguageFeatureParserBase {<a name="line.60"></a>
+<span class="sourceLineNo">061</span><a name="line.61"></a>
+<span class="sourceLineNo">062</span>        /** All token types that can be used to specify a type. */<a name="line.62"></a>
+<span class="sourceLineNo">063</span>        public static final EnumSet&lt;ETokenType&gt; ADDITIONAL_TYPE_TOKENS = EnumSet.of(IDENTIFIER, AUTO);<a name="line.63"></a>
+<span class="sourceLineNo">064</span><a name="line.64"></a>
+<span class="sourceLineNo">065</span>        /** All token types that can be used to specify a type. */<a name="line.65"></a>
+<span class="sourceLineNo">066</span>        public static final EnumSet&lt;ETokenType&gt; PRIMITIVE_TYPE_TOKENS = EnumSet.of(SIGNED, UNSIGNED, BOOL, CHAR, SHORT, INT,<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                        LONG, FLOAT, DOUBLE, VOID);<a name="line.67"></a>
+<span class="sourceLineNo">068</span><a name="line.68"></a>
+<span class="sourceLineNo">069</span>        /** All token types that can be used as identifier. */<a name="line.69"></a>
+<span class="sourceLineNo">070</span>        public static final EnumSet&lt;ETokenType&gt; VALID_IDENTIFIERS = EnumSet.of(IDENTIFIER, ETokenType.OPERATOR);<a name="line.70"></a>
+<span class="sourceLineNo">071</span><a name="line.71"></a>
+<span class="sourceLineNo">072</span>        /**<a name="line.72"></a>
+<span class="sourceLineNo">073</span>         * All tokens that should prevent a LT to be interpreted as template (if<a name="line.73"></a>
+<span class="sourceLineNo">074</span>         * seen before).<a name="line.74"></a>
+<span class="sourceLineNo">075</span>         */<a name="line.75"></a>
+<span class="sourceLineNo">076</span>        private static final Set&lt;ETokenType&gt; NON_GENERIC_PREFIX_TOKENS = EnumSet.of(ETokenType.LT, ETokenType.OPERATOR);<a name="line.76"></a>
+<span class="sourceLineNo">077</span><a name="line.77"></a>
+<span class="sourceLineNo">078</span>        /** Constructor. */<a name="line.78"></a>
+<span class="sourceLineNo">079</span>        public CppLanguageFeatureParser() {<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                super(ELanguage.CPP, VALID_IDENTIFIERS, PRIMITIVE_TYPE_TOKENS, ADDITIONAL_TYPE_TOKENS, SCOPE, "::");<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        }<a name="line.81"></a>
+<span class="sourceLineNo">082</span><a name="line.82"></a>
+<span class="sourceLineNo">083</span>        /** {@inheritDoc} */<a name="line.83"></a>
+<span class="sourceLineNo">084</span>        @Override<a name="line.84"></a>
+<span class="sourceLineNo">085</span>        public boolean isImport(ShallowEntity entity) {<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                if (!(entity.getType().equals(EShallowEntityType.META) &amp;&amp; entity.getSubtype().equals(SubTypeNames.USING))) {<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                        return false;<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                }<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                List&lt;IToken&gt; tokens = entity.ownStartTokens();<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                return tokens.size() &gt;= 4 &amp;&amp; tokens.get(1).getType().equals(NAMESPACE);<a name="line.90"></a>
+<span class="sourceLineNo">091</span>        }<a name="line.91"></a>
+<span class="sourceLineNo">092</span><a name="line.92"></a>
+<span class="sourceLineNo">093</span>        /** {@inheritDoc} */<a name="line.93"></a>
+<span class="sourceLineNo">094</span>        @Override<a name="line.94"></a>
+<span class="sourceLineNo">095</span>        public String getImportName(ShallowEntity entity) {<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                CCSMAssert.isTrue(isImport(entity), "entity.getType() must be equal to EShallowEntityType.META and "<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                                + "entity.getSubtype() must be equal to SubTypeNames.USING");<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                List&lt;IToken&gt; tokens = entity.ownStartTokens();<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                return TokenStreamTextUtils.concatTokenTexts(tokens.subList(2, tokens.size() - 1));<a name="line.99"></a>
+<span class="sourceLineNo">100</span>        }<a name="line.100"></a>
+<span class="sourceLineNo">101</span><a name="line.101"></a>
+<span class="sourceLineNo">102</span>        /** {@inheritDoc} */<a name="line.102"></a>
+<span class="sourceLineNo">103</span>        @Override<a name="line.103"></a>
+<span class="sourceLineNo">104</span>        public boolean hasVariableLengthArgumentList(ShallowEntity method) {<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                return TokenStreamUtils.containsAll(method.ownStartTokens(), ELLIPSIS);<a name="line.105"></a>
+<span class="sourceLineNo">106</span>        }<a name="line.106"></a>
+<span class="sourceLineNo">107</span><a name="line.107"></a>
+<span class="sourceLineNo">108</span>        /** Returns whether the given shallow entity is virtual. */<a name="line.108"></a>
+<span class="sourceLineNo">109</span>        public boolean isVirtual(ShallowEntity entity) {<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                return TokenStreamUtils.tokenStreamContains(entity.ownStartTokens(), VIRTUAL);<a name="line.110"></a>
+<span class="sourceLineNo">111</span>        }<a name="line.111"></a>
+<span class="sourceLineNo">112</span><a name="line.112"></a>
+<span class="sourceLineNo">113</span>        /** Returns whether the given entity is static and const. */<a name="line.113"></a>
+<span class="sourceLineNo">114</span>        public boolean isStaticConst(ShallowEntity entity) {<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                return TokenStreamUtils.containsAll(entity.ownStartTokens(), STATIC, CONST);<a name="line.115"></a>
+<span class="sourceLineNo">116</span>        }<a name="line.116"></a>
+<span class="sourceLineNo">117</span><a name="line.117"></a>
+<span class="sourceLineNo">118</span>        /** Returns whether the given entity is a class or a struct. */<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        public boolean isClassOrStruct(ShallowEntity entity) {<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                return entity.getType() == EShallowEntityType.TYPE<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                                &amp;&amp; (SubTypeNames.CLASS.equals(entity.getSubtype()) || SubTypeNames.STRUCT.equals(entity.getSubtype()));<a name="line.121"></a>
+<span class="sourceLineNo">122</span>        }<a name="line.122"></a>
+<span class="sourceLineNo">123</span><a name="line.123"></a>
+<span class="sourceLineNo">124</span>        /** Returns whether the given entity is a top-level class or struct. */<a name="line.124"></a>
+<span class="sourceLineNo">125</span>        public boolean isTopLevelClassOrStruct(ShallowEntity entity) {<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                ShallowEntity parent = entity.getParent();<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                boolean isTopLevel = parent == null || parent.getType().equals(EShallowEntityType.MODULE);<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                return isTopLevel &amp;&amp; isClassOrStruct(entity);<a name="line.128"></a>
+<span class="sourceLineNo">129</span>        }<a name="line.129"></a>
+<span class="sourceLineNo">130</span><a name="line.130"></a>
+<span class="sourceLineNo">131</span>        /** {@inheritDoc} */<a name="line.131"></a>
+<span class="sourceLineNo">132</span>        @Override<a name="line.132"></a>
+<span class="sourceLineNo">133</span>        protected CLikeVariableUseExtractor getVariableUseExtractor() {<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                return new CLikeVariableUseExtractor(EnumSet.of(DOT, POINTERTO, SCOPE), noVariableSuccessorTypes);<a name="line.134"></a>
+<span class="sourceLineNo">135</span>        }<a name="line.135"></a>
+<span class="sourceLineNo">136</span><a name="line.136"></a>
+<span class="sourceLineNo">137</span>        /** {@inheritDoc} */<a name="line.137"></a>
+<span class="sourceLineNo">138</span>        @Override<a name="line.138"></a>
+<span class="sourceLineNo">139</span>        protected int reverseSkipToType(List&lt;IToken&gt; tokens) {<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                int endIndex = super.reverseSkipToType(tokens);<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                if (endIndex &lt; 0) {<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                        return endIndex;<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                }<a name="line.143"></a>
+<span class="sourceLineNo">144</span><a name="line.144"></a>
+<span class="sourceLineNo">145</span>                return reverseSkipScope(tokens, endIndex);<a name="line.145"></a>
+<span class="sourceLineNo">146</span>        }<a name="line.146"></a>
+<span class="sourceLineNo">147</span><a name="line.147"></a>
+<span class="sourceLineNo">148</span>        /**<a name="line.148"></a>
+<span class="sourceLineNo">149</span>         * Skips a scope specification in front of an attribute/method. E. g. the<a name="line.149"></a>
+<span class="sourceLineNo">150</span>         * scope specification in "int Foo::test;" is "Foo::". Returns the index<a name="line.150"></a>
+<span class="sourceLineNo">151</span>         * pointing to the first token of the scope specification. This method is<a name="line.151"></a>
+<span class="sourceLineNo">152</span>         * aware of template specifications within the scope specification.<a name="line.152"></a>
+<span class="sourceLineNo">153</span>         */<a name="line.153"></a>
+<span class="sourceLineNo">154</span>        private int reverseSkipScope(List&lt;IToken&gt; tokens, int endIndex) {<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                while (endIndex &gt; 1 &amp;&amp; tokens.get(endIndex - 1).getType() == SCOPE) {<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                        if (tokens.get(endIndex - 2).getType() == GT) {<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                                endIndex = skipGenericReverse(tokens, endIndex - 2);<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                        } else {<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                                endIndex -= 1;<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                        }<a name="line.160"></a>
+<span class="sourceLineNo">161</span><a name="line.161"></a>
+<span class="sourceLineNo">162</span>                        if (endIndex &lt;= 0 || !validIdentifiers.contains(tokens.get(endIndex - 1).getType())) {<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                                return -1;<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                        }<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                        endIndex = endIndex - 1;<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                }<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                return endIndex;<a name="line.167"></a>
+<span class="sourceLineNo">168</span>        }<a name="line.168"></a>
+<span class="sourceLineNo">169</span><a name="line.169"></a>
+<span class="sourceLineNo">170</span>        /**<a name="line.170"></a>
+<span class="sourceLineNo">171</span>         * {@inheritDoc}<a name="line.171"></a>
+<span class="sourceLineNo">172</span>         * <a name="line.172"></a>
+<span class="sourceLineNo">173</span>         * In C++ constructs like "std::vector&amp;lt;SomeType&amp;lt;(1&amp;gt;2)&amp;gt;&amp;gt;" are<a name="line.173"></a>
+<span class="sourceLineNo">174</span>         * allowed, thus we cannot simply skip to the matching closing token.<a name="line.174"></a>
+<span class="sourceLineNo">175</span>         */<a name="line.175"></a>
+<span class="sourceLineNo">176</span>        @Override<a name="line.176"></a>
+<span class="sourceLineNo">177</span>        public int skipGeneric(List&lt;IToken&gt; tokens, int startIndex) {<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                int angleDepth = 1;<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                int parenDepth = 0;<a name="line.179"></a>
+<span class="sourceLineNo">180</span><a name="line.180"></a>
+<span class="sourceLineNo">181</span>                for (int i = startIndex + 1; i &lt; tokens.size(); i++) {<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                        switch (tokens.get(i).getType()) {<a name="line.182"></a>
+<span class="sourceLineNo">183</span>                        case LPAREN:<a name="line.183"></a>
+<span class="sourceLineNo">184</span>                                parenDepth++;<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                                break;<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                        case RPAREN:<a name="line.186"></a>
+<span class="sourceLineNo">187</span>                                parenDepth--;<a name="line.187"></a>
+<span class="sourceLineNo">188</span>                                break;<a name="line.188"></a>
+<span class="sourceLineNo">189</span>                        case LT:<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                                if (parenDepth &lt;= 0) {<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                                        angleDepth++;<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                                }<a name="line.192"></a>
+<span class="sourceLineNo">193</span>                                break;<a name="line.193"></a>
+<span class="sourceLineNo">194</span>                        case GT:<a name="line.194"></a>
+<span class="sourceLineNo">195</span>                                if (parenDepth &lt;= 0) {<a name="line.195"></a>
+<span class="sourceLineNo">196</span>                                        angleDepth--;<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                                        if (angleDepth == 0) {<a name="line.197"></a>
+<span class="sourceLineNo">198</span>                                                return i;<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                                        }<a name="line.199"></a>
+<span class="sourceLineNo">200</span>                                }<a name="line.200"></a>
+<span class="sourceLineNo">201</span>                                break;<a name="line.201"></a>
+<span class="sourceLineNo">202</span>                        }<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                }<a name="line.203"></a>
+<span class="sourceLineNo">204</span><a name="line.204"></a>
+<span class="sourceLineNo">205</span>                return -1;<a name="line.205"></a>
+<span class="sourceLineNo">206</span>        }<a name="line.206"></a>
+<span class="sourceLineNo">207</span><a name="line.207"></a>
+<span class="sourceLineNo">208</span>        /**<a name="line.208"></a>
+<span class="sourceLineNo">209</span>         * {@inheritDoc}<a name="line.209"></a>
+<span class="sourceLineNo">210</span>         * <a name="line.210"></a>
+<span class="sourceLineNo">211</span>         * In C++ constructs like "std::vector&amp;lt;SomeType&amp;lt;(1&amp;gt;2)&amp;gt;&amp;gt;" are<a name="line.211"></a>
+<span class="sourceLineNo">212</span>         * allowed, thus we cannot simply skip to the matching closing token.<a name="line.212"></a>
+<span class="sourceLineNo">213</span>         */<a name="line.213"></a>
+<span class="sourceLineNo">214</span>        @Override<a name="line.214"></a>
+<span class="sourceLineNo">215</span>        public int skipGenericReverse(List&lt;IToken&gt; tokens, int startIndex) {<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                int angleDepth = 1;<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                int parenDepth = 0;<a name="line.217"></a>
+<span class="sourceLineNo">218</span><a name="line.218"></a>
+<span class="sourceLineNo">219</span>                for (int i = startIndex - 1; i &gt;= 0; i--) {<a name="line.219"></a>
+<span class="sourceLineNo">220</span>                        switch (tokens.get(i).getType()) {<a name="line.220"></a>
+<span class="sourceLineNo">221</span>                        case LPAREN:<a name="line.221"></a>
+<span class="sourceLineNo">222</span>                                parenDepth--;<a name="line.222"></a>
+<span class="sourceLineNo">223</span>                                break;<a name="line.223"></a>
+<span class="sourceLineNo">224</span>                        case RPAREN:<a name="line.224"></a>
+<span class="sourceLineNo">225</span>                                parenDepth++;<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                                break;<a name="line.226"></a>
+<span class="sourceLineNo">227</span>                        case LT:<a name="line.227"></a>
+<span class="sourceLineNo">228</span>                                if (parenDepth &lt;= 0) {<a name="line.228"></a>
+<span class="sourceLineNo">229</span>                                        angleDepth--;<a name="line.229"></a>
+<span class="sourceLineNo">230</span>                                        if (angleDepth == 0) {<a name="line.230"></a>
+<span class="sourceLineNo">231</span>                                                return i;<a name="line.231"></a>
+<span class="sourceLineNo">232</span>                                        }<a name="line.232"></a>
+<span class="sourceLineNo">233</span>                                }<a name="line.233"></a>
+<span class="sourceLineNo">234</span>                                break;<a name="line.234"></a>
+<span class="sourceLineNo">235</span>                        case GT:<a name="line.235"></a>
+<span class="sourceLineNo">236</span>                                if (parenDepth &lt;= 0) {<a name="line.236"></a>
+<span class="sourceLineNo">237</span>                                        angleDepth++;<a name="line.237"></a>
+<span class="sourceLineNo">238</span>                                }<a name="line.238"></a>
+<span class="sourceLineNo">239</span>                                break;<a name="line.239"></a>
+<span class="sourceLineNo">240</span>                        default:<a name="line.240"></a>
+<span class="sourceLineNo">241</span>                                break;<a name="line.241"></a>
+<span class="sourceLineNo">242</span>                        }<a name="line.242"></a>
+<span class="sourceLineNo">243</span>                }<a name="line.243"></a>
+<span class="sourceLineNo">244</span>                return -1;<a name="line.244"></a>
+<span class="sourceLineNo">245</span>        }<a name="line.245"></a>
+<span class="sourceLineNo">246</span><a name="line.246"></a>
+<span class="sourceLineNo">247</span>        /** {@inheritDoc} */<a name="line.247"></a>
+<span class="sourceLineNo">248</span>        @Override<a name="line.248"></a>
+<span class="sourceLineNo">249</span>        protected int getMethodOpeningParenthesisIndex(List&lt;IToken&gt; methodTokens) {<a name="line.249"></a>
+<span class="sourceLineNo">250</span>                for (int i = 0; i &lt; methodTokens.size(); i++) {<a name="line.250"></a>
+<span class="sourceLineNo">251</span>                        switch (methodTokens.get(i).getType()) {<a name="line.251"></a>
+<span class="sourceLineNo">252</span>                        case LT:<a name="line.252"></a>
+<span class="sourceLineNo">253</span>                                if (i == 0 || !NON_GENERIC_PREFIX_TOKENS.contains(methodTokens.get(i - 1).getType())) {<a name="line.253"></a>
+<span class="sourceLineNo">254</span>                                        i = skipGeneric(methodTokens, i);<a name="line.254"></a>
+<span class="sourceLineNo">255</span>                                        if (i &lt; 0) {<a name="line.255"></a>
+<span class="sourceLineNo">256</span>                                                return -1;<a name="line.256"></a>
+<span class="sourceLineNo">257</span>                                        }<a name="line.257"></a>
+<span class="sourceLineNo">258</span>                                }<a name="line.258"></a>
+<span class="sourceLineNo">259</span>                                break;<a name="line.259"></a>
+<span class="sourceLineNo">260</span>                        case LPAREN:<a name="line.260"></a>
+<span class="sourceLineNo">261</span>                                return i;<a name="line.261"></a>
+<span class="sourceLineNo">262</span>                        }<a name="line.262"></a>
+<span class="sourceLineNo">263</span>                }<a name="line.263"></a>
+<span class="sourceLineNo">264</span>                return -1;<a name="line.264"></a>
+<span class="sourceLineNo">265</span>        }<a name="line.265"></a>
+<span class="sourceLineNo">266</span>}<a name="line.266"></a>
 
 
 

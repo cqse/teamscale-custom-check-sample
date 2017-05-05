@@ -34,27 +34,23 @@
 <span class="sourceLineNo">026</span><a name="line.26"></a>
 <span class="sourceLineNo">027</span>/**<a name="line.27"></a>
 <span class="sourceLineNo">028</span> * {@ConQAT.Doc}<a name="line.28"></a>
-<span class="sourceLineNo">029</span> * <a name="line.29"></a>
-<span class="sourceLineNo">030</span> * @author $Author: kupka$<a name="line.30"></a>
-<span class="sourceLineNo">031</span> * @version $Rev: 54535 $<a name="line.31"></a>
-<span class="sourceLineNo">032</span> * @ConQAT.Rating GREEN Hash: 3C9580A8DC4D12B09623F8F8681BC089<a name="line.32"></a>
-<span class="sourceLineNo">033</span> */<a name="line.33"></a>
-<span class="sourceLineNo">034</span>@ACheck(name = "Inner Type Visiblity", description = "Inner types must have private or protected visibility. If the type must be public, move it to its own file.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.OFF, languages = {<a name="line.34"></a>
-<span class="sourceLineNo">035</span>                ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })<a name="line.35"></a>
-<span class="sourceLineNo">036</span>public class InnerTypeVisibilityCheck extends EntityFindingCheckBase {<a name="line.36"></a>
-<span class="sourceLineNo">037</span><a name="line.37"></a>
-<span class="sourceLineNo">038</span>        /** {@inheritDoc} */<a name="line.38"></a>
-<span class="sourceLineNo">039</span>        @Override<a name="line.39"></a>
-<span class="sourceLineNo">040</span>        protected String getXPathSelectionString() {<a name="line.40"></a>
-<span class="sourceLineNo">041</span>                return "/TYPE//TYPE[modifiers('public')]";<a name="line.41"></a>
-<span class="sourceLineNo">042</span>        }<a name="line.42"></a>
-<span class="sourceLineNo">043</span><a name="line.43"></a>
-<span class="sourceLineNo">044</span>        /** {@inheritDoc} */<a name="line.44"></a>
-<span class="sourceLineNo">045</span>        @Override<a name="line.45"></a>
-<span class="sourceLineNo">046</span>        protected String getFindingMessage(ShallowEntity entity) {<a name="line.46"></a>
-<span class="sourceLineNo">047</span>                return "Inner type '" + entity.getName() + "' may not be public.";<a name="line.47"></a>
-<span class="sourceLineNo">048</span>        }<a name="line.48"></a>
-<span class="sourceLineNo">049</span>}<a name="line.49"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>@ACheck(name = "Inner type visiblity", description = "Inner types must have private or protected visibility. If the type must be public, move it to its own file.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.OFF, languages = {<a name="line.30"></a>
+<span class="sourceLineNo">031</span>                ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })<a name="line.31"></a>
+<span class="sourceLineNo">032</span>public class InnerTypeVisibilityCheck extends EntityFindingCheckBase {<a name="line.32"></a>
+<span class="sourceLineNo">033</span><a name="line.33"></a>
+<span class="sourceLineNo">034</span>        /** {@inheritDoc} */<a name="line.34"></a>
+<span class="sourceLineNo">035</span>        @Override<a name="line.35"></a>
+<span class="sourceLineNo">036</span>        protected String getXPathSelectionString() {<a name="line.36"></a>
+<span class="sourceLineNo">037</span>                return "/TYPE//TYPE[modifiers('public')]";<a name="line.37"></a>
+<span class="sourceLineNo">038</span>        }<a name="line.38"></a>
+<span class="sourceLineNo">039</span><a name="line.39"></a>
+<span class="sourceLineNo">040</span>        /** {@inheritDoc} */<a name="line.40"></a>
+<span class="sourceLineNo">041</span>        @Override<a name="line.41"></a>
+<span class="sourceLineNo">042</span>        protected String getFindingMessage(ShallowEntity entity) {<a name="line.42"></a>
+<span class="sourceLineNo">043</span>                return "Inner type '" + entity.getName() + "' may not be public.";<a name="line.43"></a>
+<span class="sourceLineNo">044</span>        }<a name="line.44"></a>
+<span class="sourceLineNo">045</span>}<a name="line.45"></a>
 
 
 

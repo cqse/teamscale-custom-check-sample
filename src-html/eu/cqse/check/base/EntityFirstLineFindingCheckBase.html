@@ -9,7 +9,7 @@
 <pre><span class="sourceLineNo">001</span>/*-----------------------------------------------------------------------+<a name="line.1"></a>
 <span class="sourceLineNo">002</span> | com.teamscale.checks<a name="line.2"></a>
 <span class="sourceLineNo">003</span> |                                                                       |<a name="line.3"></a>
-<span class="sourceLineNo">004</span>   $Id: EntityFirstLineFindingCheckBase.java 53935 2015-08-24 08:36:00Z kinnen $            <a name="line.4"></a>
+<span class="sourceLineNo">004</span>   $Id$            <a name="line.4"></a>
 <span class="sourceLineNo">005</span> |                                                                       |<a name="line.5"></a>
 <span class="sourceLineNo">006</span> | Copyright (c)  2009-2015 CQSE GmbH                                 |<a name="line.6"></a>
 <span class="sourceLineNo">007</span> +-----------------------------------------------------------------------*/<a name="line.7"></a>
@@ -21,22 +21,18 @@
 <span class="sourceLineNo">013</span>/**<a name="line.13"></a>
 <span class="sourceLineNo">014</span> * Base class for checks that select a set of entities via xPath and create a<a name="line.14"></a>
 <span class="sourceLineNo">015</span> * finding on the first line for each selected entity.<a name="line.15"></a>
-<span class="sourceLineNo">016</span> * <a name="line.16"></a>
-<span class="sourceLineNo">017</span> * @author $Author: kinnen $<a name="line.17"></a>
-<span class="sourceLineNo">018</span> * @version $Rev: 53935 $<a name="line.18"></a>
-<span class="sourceLineNo">019</span> * @ConQAT.Rating GREEN Hash: 210EB488EF995588FAF109015855E1B8<a name="line.19"></a>
-<span class="sourceLineNo">020</span> */<a name="line.20"></a>
-<span class="sourceLineNo">021</span>public abstract class EntityFirstLineFindingCheckBase extends EntityCheckBase {<a name="line.21"></a>
-<span class="sourceLineNo">022</span><a name="line.22"></a>
-<span class="sourceLineNo">023</span>        /** {@inheritDoc} */<a name="line.23"></a>
-<span class="sourceLineNo">024</span>        @Override<a name="line.24"></a>
-<span class="sourceLineNo">025</span>        protected void processEntity(ShallowEntity entity) throws CheckException {<a name="line.25"></a>
-<span class="sourceLineNo">026</span>                createFindingOnFirstLine(getFindingMessage(entity), entity);<a name="line.26"></a>
-<span class="sourceLineNo">027</span>        }<a name="line.27"></a>
-<span class="sourceLineNo">028</span><a name="line.28"></a>
-<span class="sourceLineNo">029</span>        /** Creates a finding message for the given entity. */<a name="line.29"></a>
-<span class="sourceLineNo">030</span>        protected abstract String getFindingMessage(ShallowEntity entity);<a name="line.30"></a>
-<span class="sourceLineNo">031</span>}<a name="line.31"></a>
+<span class="sourceLineNo">016</span> */<a name="line.16"></a>
+<span class="sourceLineNo">017</span>public abstract class EntityFirstLineFindingCheckBase extends EntityCheckBase {<a name="line.17"></a>
+<span class="sourceLineNo">018</span><a name="line.18"></a>
+<span class="sourceLineNo">019</span>        /** {@inheritDoc} */<a name="line.19"></a>
+<span class="sourceLineNo">020</span>        @Override<a name="line.20"></a>
+<span class="sourceLineNo">021</span>        protected void processEntity(ShallowEntity entity) throws CheckException {<a name="line.21"></a>
+<span class="sourceLineNo">022</span>                createFindingOnFirstLine(getFindingMessage(entity), entity);<a name="line.22"></a>
+<span class="sourceLineNo">023</span>        }<a name="line.23"></a>
+<span class="sourceLineNo">024</span><a name="line.24"></a>
+<span class="sourceLineNo">025</span>        /** Creates a finding message for the given entity. */<a name="line.25"></a>
+<span class="sourceLineNo">026</span>        protected abstract String getFindingMessage(ShallowEntity entity);<a name="line.26"></a>
+<span class="sourceLineNo">027</span>}<a name="line.27"></a>
 
 
 

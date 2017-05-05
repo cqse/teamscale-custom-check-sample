@@ -28,44 +28,41 @@
 <span class="sourceLineNo">020</span><a name="line.20"></a>
 <span class="sourceLineNo">021</span>import org.conqat.lib.commons.collections.CollectionUtils;<a name="line.21"></a>
 <span class="sourceLineNo">022</span><a name="line.22"></a>
-<span class="sourceLineNo">023</span>import eu.cqse.check.framework.shallowparser.SubTypeNames;<a name="line.23"></a>
-<span class="sourceLineNo">024</span>import eu.cqse.check.framework.typetracker.ScopedTypeLookup;<a name="line.24"></a>
-<span class="sourceLineNo">025</span>import eu.cqse.check.framework.typetracker.clike.CLikeTypeTracker;<a name="line.25"></a>
-<span class="sourceLineNo">026</span>import eu.cqse.check.framework.util.LanguageFeatureParser;<a name="line.26"></a>
-<span class="sourceLineNo">027</span><a name="line.27"></a>
-<span class="sourceLineNo">028</span>/**<a name="line.28"></a>
-<span class="sourceLineNo">029</span> * A Java type tracker attaches type information to Java shallow entities.<a name="line.29"></a>
-<span class="sourceLineNo">030</span> * <a name="line.30"></a>
-<span class="sourceLineNo">031</span> * @author $Author: dreier $<a name="line.31"></a>
-<span class="sourceLineNo">032</span> * @version $Rev: 55360 $<a name="line.32"></a>
-<span class="sourceLineNo">033</span> * @ConQAT.Rating YELLOW Hash: 548B297FF9630BECDC10CB7F722DCEE7<a name="line.33"></a>
-<span class="sourceLineNo">034</span> */<a name="line.34"></a>
-<span class="sourceLineNo">035</span>public class JavaTypeTracker extends CLikeTypeTracker {<a name="line.35"></a>
+<span class="sourceLineNo">023</span>import eu.cqse.check.framework.scanner.ELanguage;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import eu.cqse.check.framework.shallowparser.SubTypeNames;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import eu.cqse.check.framework.typetracker.ScopedTypeLookup;<a name="line.25"></a>
+<span class="sourceLineNo">026</span>import eu.cqse.check.framework.typetracker.clike.CLikeTypeTracker;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import eu.cqse.check.framework.util.LanguageFeatureParser;<a name="line.27"></a>
+<span class="sourceLineNo">028</span><a name="line.28"></a>
+<span class="sourceLineNo">029</span>/**<a name="line.29"></a>
+<span class="sourceLineNo">030</span> * Attaches type information to Java shallow entities.<a name="line.30"></a>
+<span class="sourceLineNo">031</span> */<a name="line.31"></a>
+<span class="sourceLineNo">032</span>public class JavaTypeTracker extends CLikeTypeTracker {<a name="line.32"></a>
+<span class="sourceLineNo">033</span><a name="line.33"></a>
+<span class="sourceLineNo">034</span>        /** Name of the java.lang package. */<a name="line.34"></a>
+<span class="sourceLineNo">035</span>        private static final String JAVA_LANG = "java.lang";<a name="line.35"></a>
 <span class="sourceLineNo">036</span><a name="line.36"></a>
-<span class="sourceLineNo">037</span>        /** Name of the java.lang package. */<a name="line.37"></a>
-<span class="sourceLineNo">038</span>        private static final String JAVA_LANG = "java.lang";<a name="line.38"></a>
-<span class="sourceLineNo">039</span><a name="line.39"></a>
-<span class="sourceLineNo">040</span>        /** All sub-types that need a separate lookup scope. */<a name="line.40"></a>
-<span class="sourceLineNo">041</span>        private static final Set&lt;String&gt; SEPARATE_SCOPE_SUBTYPES = CollectionUtils<a name="line.41"></a>
-<span class="sourceLineNo">042</span>                        .asHashSet(SubTypeNames.FOR, SubTypeNames.CATCH, SubTypeNames.TRY);<a name="line.42"></a>
-<span class="sourceLineNo">043</span><a name="line.43"></a>
-<span class="sourceLineNo">044</span>        /** Constructor. */<a name="line.44"></a>
-<span class="sourceLineNo">045</span>        public JavaTypeTracker() {<a name="line.45"></a>
-<span class="sourceLineNo">046</span>                super(new JavaTypeInfoExtractor(), LanguageFeatureParser.JAVA);<a name="line.46"></a>
-<span class="sourceLineNo">047</span>        }<a name="line.47"></a>
-<span class="sourceLineNo">048</span><a name="line.48"></a>
-<span class="sourceLineNo">049</span>        /** {@inheritDoc} */<a name="line.49"></a>
-<span class="sourceLineNo">050</span>        @Override<a name="line.50"></a>
-<span class="sourceLineNo">051</span>        protected void addDefaultImports(ScopedTypeLookup variableLookup) {<a name="line.51"></a>
-<span class="sourceLineNo">052</span>                variableLookup.addImportedNamespace(JAVA_LANG);<a name="line.52"></a>
-<span class="sourceLineNo">053</span>        }<a name="line.53"></a>
-<span class="sourceLineNo">054</span><a name="line.54"></a>
-<span class="sourceLineNo">055</span>        /** {@inheritDoc} */<a name="line.55"></a>
-<span class="sourceLineNo">056</span>        @Override<a name="line.56"></a>
-<span class="sourceLineNo">057</span>        protected Set&lt;String&gt; getSeparateScopeSubtypes() {<a name="line.57"></a>
-<span class="sourceLineNo">058</span>                return SEPARATE_SCOPE_SUBTYPES;<a name="line.58"></a>
-<span class="sourceLineNo">059</span>        }<a name="line.59"></a>
-<span class="sourceLineNo">060</span>}<a name="line.60"></a>
+<span class="sourceLineNo">037</span>        /** All sub-types that need a separate lookup scope. */<a name="line.37"></a>
+<span class="sourceLineNo">038</span>        private static final Set&lt;String&gt; SEPARATE_SCOPE_SUBTYPES = CollectionUtils.asHashSet(SubTypeNames.FOR,<a name="line.38"></a>
+<span class="sourceLineNo">039</span>                        SubTypeNames.CATCH, SubTypeNames.TRY);<a name="line.39"></a>
+<span class="sourceLineNo">040</span><a name="line.40"></a>
+<span class="sourceLineNo">041</span>        /** Constructor. */<a name="line.41"></a>
+<span class="sourceLineNo">042</span>        public JavaTypeTracker() {<a name="line.42"></a>
+<span class="sourceLineNo">043</span>                super(ELanguage.JAVA, LanguageFeatureParser.JAVA);<a name="line.43"></a>
+<span class="sourceLineNo">044</span>        }<a name="line.44"></a>
+<span class="sourceLineNo">045</span><a name="line.45"></a>
+<span class="sourceLineNo">046</span>        /** {@inheritDoc} */<a name="line.46"></a>
+<span class="sourceLineNo">047</span>        @Override<a name="line.47"></a>
+<span class="sourceLineNo">048</span>        protected void addDefaultImports(ScopedTypeLookup variableLookup) {<a name="line.48"></a>
+<span class="sourceLineNo">049</span>                variableLookup.addImportedNamespace(JAVA_LANG);<a name="line.49"></a>
+<span class="sourceLineNo">050</span>        }<a name="line.50"></a>
+<span class="sourceLineNo">051</span><a name="line.51"></a>
+<span class="sourceLineNo">052</span>        /** {@inheritDoc} */<a name="line.52"></a>
+<span class="sourceLineNo">053</span>        @Override<a name="line.53"></a>
+<span class="sourceLineNo">054</span>        protected Set&lt;String&gt; getSeparateScopeSubtypes() {<a name="line.54"></a>
+<span class="sourceLineNo">055</span>                return SEPARATE_SCOPE_SUBTYPES;<a name="line.55"></a>
+<span class="sourceLineNo">056</span>        }<a name="line.56"></a>
+<span class="sourceLineNo">057</span>}<a name="line.57"></a>
 
 
 

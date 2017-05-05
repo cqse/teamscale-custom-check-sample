@@ -34,29 +34,24 @@
 <span class="sourceLineNo">026</span><a name="line.26"></a>
 <span class="sourceLineNo">027</span>/**<a name="line.27"></a>
 <span class="sourceLineNo">028</span> * {@ConQAT.Doc}<a name="line.28"></a>
-<span class="sourceLineNo">029</span> * <a name="line.29"></a>
-<span class="sourceLineNo">030</span> * @author $Author: kupka $<a name="line.30"></a>
-<span class="sourceLineNo">031</span> * @version $Rev: 54678 $<a name="line.31"></a>
-<span class="sourceLineNo">032</span> * @ConQAT.Rating YELLOW Hash: 240E8DCD4018473FE13298DAA3BFD0D8<a name="line.32"></a>
-<span class="sourceLineNo">033</span> */<a name="line.33"></a>
-<span class="sourceLineNo">034</span>@ACheck(name = "Usage of goto", description = "The usage of goto is discouraged as it leads to hard to read "<a name="line.34"></a>
-<span class="sourceLineNo">035</span>                + "code.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED, languages = {<a name="line.35"></a>
-<span class="sourceLineNo">036</span>                                ELanguage.CPP, ELanguage.CS }, parameters = {<a name="line.36"></a>
-<span class="sourceLineNo">037</span>                                                ECheckParameter.ABSTRACT_SYNTAX_TREE })<a name="line.37"></a>
-<span class="sourceLineNo">038</span>public class GoToCheck extends EntityFirstLineFindingCheckBase {<a name="line.38"></a>
-<span class="sourceLineNo">039</span><a name="line.39"></a>
-<span class="sourceLineNo">040</span>        /** {@inheritDoc} */<a name="line.40"></a>
-<span class="sourceLineNo">041</span>        @Override<a name="line.41"></a>
-<span class="sourceLineNo">042</span>        protected String getXPathSelectionString() {<a name="line.42"></a>
-<span class="sourceLineNo">043</span>                return "//STATEMENT[name-matches('goto')]";<a name="line.43"></a>
-<span class="sourceLineNo">044</span>        }<a name="line.44"></a>
-<span class="sourceLineNo">045</span><a name="line.45"></a>
-<span class="sourceLineNo">046</span>        /** {@inheritDoc} */<a name="line.46"></a>
-<span class="sourceLineNo">047</span>        @Override<a name="line.47"></a>
-<span class="sourceLineNo">048</span>        protected String getFindingMessage(ShallowEntity entity) {<a name="line.48"></a>
-<span class="sourceLineNo">049</span>                return "goto statement should not be used.";<a name="line.49"></a>
-<span class="sourceLineNo">050</span>        }<a name="line.50"></a>
-<span class="sourceLineNo">051</span>}<a name="line.51"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>@ACheck(name = "Usage of goto", description = "The usage of goto is discouraged as it leads to code that is "<a name="line.30"></a>
+<span class="sourceLineNo">031</span>                + "hard to read.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED, languages = {<a name="line.31"></a>
+<span class="sourceLineNo">032</span>                                ELanguage.CPP, ELanguage.CS }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })<a name="line.32"></a>
+<span class="sourceLineNo">033</span>public class GoToCheck extends EntityFirstLineFindingCheckBase {<a name="line.33"></a>
+<span class="sourceLineNo">034</span><a name="line.34"></a>
+<span class="sourceLineNo">035</span>        /** {@inheritDoc} */<a name="line.35"></a>
+<span class="sourceLineNo">036</span>        @Override<a name="line.36"></a>
+<span class="sourceLineNo">037</span>        protected String getXPathSelectionString() {<a name="line.37"></a>
+<span class="sourceLineNo">038</span>                return "//STATEMENT[name-matches('goto')]";<a name="line.38"></a>
+<span class="sourceLineNo">039</span>        }<a name="line.39"></a>
+<span class="sourceLineNo">040</span><a name="line.40"></a>
+<span class="sourceLineNo">041</span>        /** {@inheritDoc} */<a name="line.41"></a>
+<span class="sourceLineNo">042</span>        @Override<a name="line.42"></a>
+<span class="sourceLineNo">043</span>        protected String getFindingMessage(ShallowEntity entity) {<a name="line.43"></a>
+<span class="sourceLineNo">044</span>                return "goto statement should not be used.";<a name="line.44"></a>
+<span class="sourceLineNo">045</span>        }<a name="line.45"></a>
+<span class="sourceLineNo">046</span>}<a name="line.46"></a>
 
 
 

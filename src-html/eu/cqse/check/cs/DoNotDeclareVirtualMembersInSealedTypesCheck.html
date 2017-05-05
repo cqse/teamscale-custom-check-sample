@@ -17,30 +17,26 @@
 <span class="sourceLineNo">009</span><a name="line.9"></a>
 <span class="sourceLineNo">010</span>/**<a name="line.10"></a>
 <span class="sourceLineNo">011</span> * {@ConQAT.Doc}<a name="line.11"></a>
-<span class="sourceLineNo">012</span> * <a name="line.12"></a>
-<span class="sourceLineNo">013</span> * @author $Author: kinnen $<a name="line.13"></a>
-<span class="sourceLineNo">014</span> * @version $Rev: 53185 $<a name="line.14"></a>
-<span class="sourceLineNo">015</span> * @ConQAT.Rating GREEN Hash: 93FAA08E8FF182DA97F9E7CF8B0677BF<a name="line.15"></a>
-<span class="sourceLineNo">016</span> */<a name="line.16"></a>
-<span class="sourceLineNo">017</span>@ACheck(name = "Do not declare virtual members in sealed types", description = "A public "<a name="line.17"></a>
-<span class="sourceLineNo">018</span>                + "type is sealed and declares a method that is both virtual (Overridable in Visual Basic) "<a name="line.18"></a>
-<span class="sourceLineNo">019</span>                + "and not final. This rule does not report violations for delegate types, which must follow "<a name="line.19"></a>
-<span class="sourceLineNo">020</span>                + "this pattern.", groupName = CheckGroupNames.BAD_PRACTICE, languages = { ELanguage.CS }, parameters = {<a name="line.20"></a>
-<span class="sourceLineNo">021</span>                                ECheckParameter.ABSTRACT_SYNTAX_TREE })<a name="line.21"></a>
-<span class="sourceLineNo">022</span>public class DoNotDeclareVirtualMembersInSealedTypesCheck extends EntityFindingCheckBase {<a name="line.22"></a>
-<span class="sourceLineNo">023</span><a name="line.23"></a>
-<span class="sourceLineNo">024</span>        /** {@inheritDoc} */<a name="line.24"></a>
-<span class="sourceLineNo">025</span>        @Override<a name="line.25"></a>
-<span class="sourceLineNo">026</span>        protected String getXPathSelectionString() {<a name="line.26"></a>
-<span class="sourceLineNo">027</span>                return "//TYPE[modifiers('public','sealed')]/METHOD[subtype('method') and modifiers('virtual') and not(modifiers('sealed'))]";<a name="line.27"></a>
-<span class="sourceLineNo">028</span>        }<a name="line.28"></a>
-<span class="sourceLineNo">029</span><a name="line.29"></a>
-<span class="sourceLineNo">030</span>        /** {@inheritDoc} */<a name="line.30"></a>
-<span class="sourceLineNo">031</span>        @Override<a name="line.31"></a>
-<span class="sourceLineNo">032</span>        protected String getFindingMessage(ShallowEntity entity) {<a name="line.32"></a>
-<span class="sourceLineNo">033</span>                return "A sealed type must not have virtual members.";<a name="line.33"></a>
-<span class="sourceLineNo">034</span>        }<a name="line.34"></a>
-<span class="sourceLineNo">035</span>}<a name="line.35"></a>
+<span class="sourceLineNo">012</span> */<a name="line.12"></a>
+<span class="sourceLineNo">013</span>@ACheck(name = "Do not declare virtual members in sealed types", description = "A public "<a name="line.13"></a>
+<span class="sourceLineNo">014</span>                + "type is sealed and declares a method that is both virtual (Over-ridable in Visual Basic) "<a name="line.14"></a>
+<span class="sourceLineNo">015</span>                + "and not final. This rule does not report violations for delegate types, which must follow "<a name="line.15"></a>
+<span class="sourceLineNo">016</span>                + "this pattern.", groupName = CheckGroupNames.BAD_PRACTICE, languages = {<a name="line.16"></a>
+<span class="sourceLineNo">017</span>                                ELanguage.CS }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })<a name="line.17"></a>
+<span class="sourceLineNo">018</span>public class DoNotDeclareVirtualMembersInSealedTypesCheck extends EntityFindingCheckBase {<a name="line.18"></a>
+<span class="sourceLineNo">019</span><a name="line.19"></a>
+<span class="sourceLineNo">020</span>        /** {@inheritDoc} */<a name="line.20"></a>
+<span class="sourceLineNo">021</span>        @Override<a name="line.21"></a>
+<span class="sourceLineNo">022</span>        protected String getXPathSelectionString() {<a name="line.22"></a>
+<span class="sourceLineNo">023</span>                return "//TYPE[modifiers('public','sealed')]/METHOD[subtype('method') and modifiers('virtual') and not(modifiers('sealed'))]";<a name="line.23"></a>
+<span class="sourceLineNo">024</span>        }<a name="line.24"></a>
+<span class="sourceLineNo">025</span><a name="line.25"></a>
+<span class="sourceLineNo">026</span>        /** {@inheritDoc} */<a name="line.26"></a>
+<span class="sourceLineNo">027</span>        @Override<a name="line.27"></a>
+<span class="sourceLineNo">028</span>        protected String getFindingMessage(ShallowEntity entity) {<a name="line.28"></a>
+<span class="sourceLineNo">029</span>                return "A sealed type must not have virtual members.";<a name="line.29"></a>
+<span class="sourceLineNo">030</span>        }<a name="line.30"></a>
+<span class="sourceLineNo">031</span>}<a name="line.31"></a>
 
 
 
