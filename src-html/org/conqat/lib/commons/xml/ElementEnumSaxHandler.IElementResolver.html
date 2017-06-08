@@ -1,0 +1,368 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*-------------------------------------------------------------------------+<a name="line.1"></a>
+<span class="sourceLineNo">002</span>|                                                                          |<a name="line.2"></a>
+<span class="sourceLineNo">003</span>| Copyright 2005-2011 the ConQAT Project                                   |<a name="line.3"></a>
+<span class="sourceLineNo">004</span>|                                                                          |<a name="line.4"></a>
+<span class="sourceLineNo">005</span>| Licensed under the Apache License, Version 2.0 (the "License");          |<a name="line.5"></a>
+<span class="sourceLineNo">006</span>| you may not use this file except in compliance with the License.         |<a name="line.6"></a>
+<span class="sourceLineNo">007</span>| You may obtain a copy of the License at                                  |<a name="line.7"></a>
+<span class="sourceLineNo">008</span>|                                                                          |<a name="line.8"></a>
+<span class="sourceLineNo">009</span>|    http://www.apache.org/licenses/LICENSE-2.0                            |<a name="line.9"></a>
+<span class="sourceLineNo">010</span>|                                                                          |<a name="line.10"></a>
+<span class="sourceLineNo">011</span>| Unless required by applicable law or agreed to in writing, software      |<a name="line.11"></a>
+<span class="sourceLineNo">012</span>| distributed under the License is distributed on an "AS IS" BASIS,        |<a name="line.12"></a>
+<span class="sourceLineNo">013</span>| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. |<a name="line.13"></a>
+<span class="sourceLineNo">014</span>| See the License for the specific language governing permissions and      |<a name="line.14"></a>
+<span class="sourceLineNo">015</span>| limitations under the License.                                           |<a name="line.15"></a>
+<span class="sourceLineNo">016</span>+-------------------------------------------------------------------------*/<a name="line.16"></a>
+<span class="sourceLineNo">017</span>package org.conqat.lib.commons.xml;<a name="line.17"></a>
+<span class="sourceLineNo">018</span><a name="line.18"></a>
+<span class="sourceLineNo">019</span>import java.util.ArrayDeque;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import java.util.Deque;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import java.util.HashMap;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import java.util.Map;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import java.util.Set;<a name="line.23"></a>
+<span class="sourceLineNo">024</span><a name="line.24"></a>
+<span class="sourceLineNo">025</span>import org.conqat.lib.commons.enums.EnumUtils;<a name="line.25"></a>
+<span class="sourceLineNo">026</span>import org.conqat.lib.commons.xml.ElementEnumSaxHandler.IElementEnum;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import org.xml.sax.Attributes;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import org.xml.sax.SAXException;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>import org.xml.sax.helpers.DefaultHandler;<a name="line.29"></a>
+<span class="sourceLineNo">030</span><a name="line.30"></a>
+<span class="sourceLineNo">031</span>/**<a name="line.31"></a>
+<span class="sourceLineNo">032</span> * SAX XML Parser {@link DefaultHandler} implementation that matches XML<a name="line.32"></a>
+<span class="sourceLineNo">033</span> * elements to enumeration values using the enumeration name. The enumeration<a name="line.33"></a>
+<span class="sourceLineNo">034</span> * has to implement the interface {@link IElementEnum} and thus defines a state<a name="line.34"></a>
+<span class="sourceLineNo">035</span> * graph of an XML element sequence for parsing the document.<a name="line.35"></a>
+<span class="sourceLineNo">036</span> * &lt;p&gt;<a name="line.36"></a>
+<span class="sourceLineNo">037</span> * The parser offers registration of {@link ElementHandler}s for each of the<a name="line.37"></a>
+<span class="sourceLineNo">038</span> * enumeration elements that will be called for the start and end of the<a name="line.38"></a>
+<span class="sourceLineNo">039</span> * element. If capturing the inner text of elements is desired a<a name="line.39"></a>
+<span class="sourceLineNo">040</span> * {@link TextElementHandler} has to be registered.<a name="line.40"></a>
+<span class="sourceLineNo">041</span> * &lt;p&gt;<a name="line.41"></a>
+<span class="sourceLineNo">042</span> * Resolving element names to enum constants is performed using a<a name="line.42"></a>
+<span class="sourceLineNo">043</span> * {@link JavaConstantResolver} but can be altered using<a name="line.43"></a>
+<span class="sourceLineNo">044</span> * {@link #setElementResolver(IElementResolver)}.<a name="line.44"></a>
+<span class="sourceLineNo">045</span> */<a name="line.45"></a>
+<span class="sourceLineNo">046</span>// TODO (FS) as discussed about the enums: we want parent-child relationship and<a name="line.46"></a>
+<span class="sourceLineNo">047</span>// we can<a name="line.47"></a>
+<span class="sourceLineNo">048</span>// simplify the enums by using constructors. also: throw errors when the XML<a name="line.48"></a>
+<span class="sourceLineNo">049</span>// does not fit the state graph<a name="line.49"></a>
+<span class="sourceLineNo">050</span>public class ElementEnumSaxHandler&lt;ELEMENT extends Enum&lt;ELEMENT&gt; &amp; IElementEnum&lt;ELEMENT&gt;&gt; extends DefaultHandler {<a name="line.50"></a>
+<span class="sourceLineNo">051</span><a name="line.51"></a>
+<span class="sourceLineNo">052</span>        /**<a name="line.52"></a>
+<span class="sourceLineNo">053</span>         * The currently parsed element or null if {@link #hasReachedStartElement}<a name="line.53"></a>
+<span class="sourceLineNo">054</span>         * is &lt;code&gt;false&lt;/code&gt;.<a name="line.54"></a>
+<span class="sourceLineNo">055</span>         */<a name="line.55"></a>
+<span class="sourceLineNo">056</span>        private ELEMENT element;<a name="line.56"></a>
+<span class="sourceLineNo">057</span><a name="line.57"></a>
+<span class="sourceLineNo">058</span>        /** Flag that indicates if the start element has been reached yet. */<a name="line.58"></a>
+<span class="sourceLineNo">059</span>        private boolean hasReachedStartElement = false;<a name="line.59"></a>
+<span class="sourceLineNo">060</span><a name="line.60"></a>
+<span class="sourceLineNo">061</span>        /**<a name="line.61"></a>
+<span class="sourceLineNo">062</span>         * The map of registered handler callbacks.<a name="line.62"></a>
+<span class="sourceLineNo">063</span>         */<a name="line.63"></a>
+<span class="sourceLineNo">064</span>        private final Map&lt;ELEMENT, ElementHandler&lt;ELEMENT&gt;&gt; handlers = new HashMap&lt;&gt;();<a name="line.64"></a>
+<span class="sourceLineNo">065</span><a name="line.65"></a>
+<span class="sourceLineNo">066</span>        /**<a name="line.66"></a>
+<span class="sourceLineNo">067</span>         * Stack of opened (and handled) elements. Will be popped from the stack on<a name="line.67"></a>
+<span class="sourceLineNo">068</span>         * close.<a name="line.68"></a>
+<span class="sourceLineNo">069</span>         */<a name="line.69"></a>
+<span class="sourceLineNo">070</span>        // TODO (FS) please use Stack, not ArrayDeque. It is confusing<a name="line.70"></a>
+<span class="sourceLineNo">071</span>        // TODO (FS) you don't need this stack. please remove (see #endElement() for<a name="line.71"></a>
+<span class="sourceLineNo">072</span>        // an explanation)<a name="line.72"></a>
+<span class="sourceLineNo">073</span>        private final Deque&lt;ELEMENT&gt; openedElements = new ArrayDeque&lt;&gt;();<a name="line.73"></a>
+<span class="sourceLineNo">074</span><a name="line.74"></a>
+<span class="sourceLineNo">075</span>        /**<a name="line.75"></a>
+<span class="sourceLineNo">076</span>         * Stack of opened elements a {@link TextElementHandler} is registered for.<a name="line.76"></a>
+<span class="sourceLineNo">077</span>         * Text is always captured for the top element of the stack.<a name="line.77"></a>
+<span class="sourceLineNo">078</span>         */<a name="line.78"></a>
+<span class="sourceLineNo">079</span>        // TODO (FS) please use Stack, not ArrayDeque. It is confusing<a name="line.79"></a>
+<span class="sourceLineNo">080</span>        // TODO (MP) According to java docu Deque is preferred over Stack:<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        // A more complete and consistent set of LIFO stack operations is provided<a name="line.81"></a>
+<span class="sourceLineNo">082</span>        // by the Deque interface and its implementations, which should be used in<a name="line.82"></a>
+<span class="sourceLineNo">083</span>        // preference to this class [=Stack].<a name="line.83"></a>
+<span class="sourceLineNo">084</span>        private final Deque&lt;StringBuffer&gt; textBuffers = new ArrayDeque&lt;&gt;();<a name="line.84"></a>
+<span class="sourceLineNo">085</span><a name="line.85"></a>
+<span class="sourceLineNo">086</span>        /**<a name="line.86"></a>
+<span class="sourceLineNo">087</span>         * Resolver from XML element names to element enum names. &lt;code&gt;null&lt;/code&gt;<a name="line.87"></a>
+<span class="sourceLineNo">088</span>         * if no resolver is used. The default resolver is a<a name="line.88"></a>
+<span class="sourceLineNo">089</span>         * {@link JavaConstantResolver}.<a name="line.89"></a>
+<span class="sourceLineNo">090</span>         */<a name="line.90"></a>
+<span class="sourceLineNo">091</span>        private IElementResolver resolver = new JavaConstantResolver();<a name="line.91"></a>
+<span class="sourceLineNo">092</span><a name="line.92"></a>
+<span class="sourceLineNo">093</span>        /** Constructor. */<a name="line.93"></a>
+<span class="sourceLineNo">094</span>        public ElementEnumSaxHandler(ELEMENT initialElement) {<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                this.element = initialElement;<a name="line.95"></a>
+<span class="sourceLineNo">096</span>        }<a name="line.96"></a>
+<span class="sourceLineNo">097</span><a name="line.97"></a>
+<span class="sourceLineNo">098</span>        /** Sets (or overrides) the element handler for a given element. */<a name="line.98"></a>
+<span class="sourceLineNo">099</span>        public void setElementHandler(ELEMENT element, ElementHandler&lt;ELEMENT&gt; handler) {<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                handlers.put(element, handler);<a name="line.100"></a>
+<span class="sourceLineNo">101</span>        }<a name="line.101"></a>
+<span class="sourceLineNo">102</span><a name="line.102"></a>
+<span class="sourceLineNo">103</span>        /** @see #resolver */<a name="line.103"></a>
+<span class="sourceLineNo">104</span>        public void setElementResolver(IElementResolver resolver) {<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                this.resolver = resolver;<a name="line.105"></a>
+<span class="sourceLineNo">106</span>        }<a name="line.106"></a>
+<span class="sourceLineNo">107</span><a name="line.107"></a>
+<span class="sourceLineNo">108</span>        /** {@inheritDoc} */<a name="line.108"></a>
+<span class="sourceLineNo">109</span>        @Override<a name="line.109"></a>
+<span class="sourceLineNo">110</span>        public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {<a name="line.110"></a>
+<span class="sourceLineNo">111</span><a name="line.111"></a>
+<span class="sourceLineNo">112</span>                ELEMENT nextElement = getEnumForElement(localName);<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                if (nextElement == null) {<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                        return;<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                }<a name="line.115"></a>
+<span class="sourceLineNo">116</span><a name="line.116"></a>
+<span class="sourceLineNo">117</span>                if (!hasReachedStartElement) {<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                        if (element != nextElement) {<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                                return;<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                        }<a name="line.120"></a>
+<span class="sourceLineNo">121</span><a name="line.121"></a>
+<span class="sourceLineNo">122</span>                        hasReachedStartElement = true;<a name="line.122"></a>
+<span class="sourceLineNo">123</span><a name="line.123"></a>
+<span class="sourceLineNo">124</span>                } else if (!element.nextElements().contains(nextElement)) {<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                        return;<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                }<a name="line.126"></a>
+<span class="sourceLineNo">127</span><a name="line.127"></a>
+<span class="sourceLineNo">128</span>                element = nextElement;<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                openedElements.push(element);<a name="line.129"></a>
+<span class="sourceLineNo">130</span><a name="line.130"></a>
+<span class="sourceLineNo">131</span>                // TODO (FS) move inside if. getting it and then checking if the<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                // collection contains it is a weird order of operations^^<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                ElementHandler&lt;ELEMENT&gt; handler = handlers.get(element);<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                if (handlers.containsKey(element)) {<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                        handler.onStartElement(element, attributes);<a name="line.135"></a>
+<span class="sourceLineNo">136</span><a name="line.136"></a>
+<span class="sourceLineNo">137</span>                        if (handler instanceof TextElementHandler) {<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                                textBuffers.push(new StringBuffer());<a name="line.138"></a>
+<span class="sourceLineNo">139</span>                        }<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                }<a name="line.140"></a>
+<span class="sourceLineNo">141</span>        }<a name="line.141"></a>
+<span class="sourceLineNo">142</span><a name="line.142"></a>
+<span class="sourceLineNo">143</span>        /** {@inheritDoc} */<a name="line.143"></a>
+<span class="sourceLineNo">144</span>        @Override<a name="line.144"></a>
+<span class="sourceLineNo">145</span>        public void characters(char[] ch, int start, int length) {<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                // TODO (FS) if I have XML like this:<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                // &lt;a&gt;foo&lt;b&gt;bar&lt;/b&gt;&lt;/a&gt; and the handler for &lt;a&gt; wants to receive onText,<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                // I think it will receive "foobar" instead of "foo" as I would have<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                // expected, because this method will be called for &lt;b&gt; and the text is<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                // then appended to the topmost buffer, i.e. a<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                // TODO (FS) I would also be happy with an implementation that does not<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                // buffer the text but simply forwards the characters() call to onText()<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                // and lets the handler itself concatenate multiple calls in a buffer,<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                // if that can happen in the respective XML format<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                StringBuffer buffer = textBuffers.peek();<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                if (buffer != null) {<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                        buffer.append(ch, start, length);<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                }<a name="line.158"></a>
+<span class="sourceLineNo">159</span>        }<a name="line.159"></a>
+<span class="sourceLineNo">160</span><a name="line.160"></a>
+<span class="sourceLineNo">161</span>        /** {@inheritDoc} */<a name="line.161"></a>
+<span class="sourceLineNo">162</span>        @Override<a name="line.162"></a>
+<span class="sourceLineNo">163</span>        public void endElement(String uri, String localName, String qName) throws SAXException {<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                ELEMENT endedElement = getEnumForElement(localName);<a name="line.164"></a>
+<span class="sourceLineNo">165</span><a name="line.165"></a>
+<span class="sourceLineNo">166</span>                if (endedElement == null || endedElement != openedElements.peek()) {<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                        return;<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                }<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                openedElements.pop();<a name="line.169"></a>
+<span class="sourceLineNo">170</span><a name="line.170"></a>
+<span class="sourceLineNo">171</span>                ElementHandler&lt;ELEMENT&gt; handler = handlers.get(endedElement);<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                if (handler == null) {<a name="line.172"></a>
+<span class="sourceLineNo">173</span>                        return;<a name="line.173"></a>
+<span class="sourceLineNo">174</span>                }<a name="line.174"></a>
+<span class="sourceLineNo">175</span><a name="line.175"></a>
+<span class="sourceLineNo">176</span>                handler.onEndElement(endedElement);<a name="line.176"></a>
+<span class="sourceLineNo">177</span><a name="line.177"></a>
+<span class="sourceLineNo">178</span>                if (handler instanceof TextElementHandler) {<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                        TextElementHandler&lt;ELEMENT&gt; textHandler = (TextElementHandler&lt;ELEMENT&gt;) handler;<a name="line.179"></a>
+<span class="sourceLineNo">180</span><a name="line.180"></a>
+<span class="sourceLineNo">181</span>                        StringBuffer buffer = textBuffers.pop();<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                        textHandler.onText(endedElement, buffer.toString());<a name="line.182"></a>
+<span class="sourceLineNo">183</span>                }<a name="line.183"></a>
+<span class="sourceLineNo">184</span>        }<a name="line.184"></a>
+<span class="sourceLineNo">185</span><a name="line.185"></a>
+<span class="sourceLineNo">186</span>        /**<a name="line.186"></a>
+<span class="sourceLineNo">187</span>         * Returns the enum value for a given element name or &lt;code&gt;null&lt;/code&gt; if<a name="line.187"></a>
+<span class="sourceLineNo">188</span>         * no element with this name exists. Respects normalization rules provided<a name="line.188"></a>
+<span class="sourceLineNo">189</span>         * by {@link #resolver}.<a name="line.189"></a>
+<span class="sourceLineNo">190</span>         */<a name="line.190"></a>
+<span class="sourceLineNo">191</span>        @SuppressWarnings("unchecked")<a name="line.191"></a>
+<span class="sourceLineNo">192</span>        // TODO (FS) please document the error<a name="line.192"></a>
+<span class="sourceLineNo">193</span>        private ELEMENT getEnumForElement(String elementName) throws AssertionError {<a name="line.193"></a>
+<span class="sourceLineNo">194</span>                if (resolver != null) {<a name="line.194"></a>
+<span class="sourceLineNo">195</span>                        elementName = resolver.resolve(elementName);<a name="line.195"></a>
+<span class="sourceLineNo">196</span>                }<a name="line.196"></a>
+<span class="sourceLineNo">197</span><a name="line.197"></a>
+<span class="sourceLineNo">198</span>                Class&lt;ELEMENT&gt; enumClass = null;<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                if (element.getClass().isEnum()) {<a name="line.199"></a>
+<span class="sourceLineNo">200</span>                        // Enum is a top-level enumeration<a name="line.200"></a>
+<span class="sourceLineNo">201</span>                        enumClass = (Class&lt;ELEMENT&gt;) element.getClass();<a name="line.201"></a>
+<span class="sourceLineNo">202</span>                } else {<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                        // Enum constant that overrides methods from the enum class<a name="line.203"></a>
+<span class="sourceLineNo">204</span>                        enumClass = (Class&lt;ELEMENT&gt;) element.getClass().getSuperclass();<a name="line.204"></a>
+<span class="sourceLineNo">205</span>                }<a name="line.205"></a>
+<span class="sourceLineNo">206</span><a name="line.206"></a>
+<span class="sourceLineNo">207</span>                return EnumUtils.valueOf(enumClass, elementName);<a name="line.207"></a>
+<span class="sourceLineNo">208</span>        }<a name="line.208"></a>
+<span class="sourceLineNo">209</span><a name="line.209"></a>
+<span class="sourceLineNo">210</span>        /**<a name="line.210"></a>
+<span class="sourceLineNo">211</span>         * Interface that defines methods for getting the next elements for parsing<a name="line.211"></a>
+<span class="sourceLineNo">212</span>         * the document.<a name="line.212"></a>
+<span class="sourceLineNo">213</span>         */<a name="line.213"></a>
+<span class="sourceLineNo">214</span>        public static interface IElementEnum&lt;E extends Enum&lt;E&gt;&gt; {<a name="line.214"></a>
+<span class="sourceLineNo">215</span>                /**<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                 * Set of elements that are expected to be parsed after this element.<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                 */<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                public Set&lt;E&gt; nextElements();<a name="line.218"></a>
+<span class="sourceLineNo">219</span>        }<a name="line.219"></a>
+<span class="sourceLineNo">220</span><a name="line.220"></a>
+<span class="sourceLineNo">221</span>        /** Handler for start and element callbacks. */<a name="line.221"></a>
+<span class="sourceLineNo">222</span>        @SuppressWarnings("unused")<a name="line.222"></a>
+<span class="sourceLineNo">223</span>        public static class ElementHandler&lt;ELEMENT&gt; {<a name="line.223"></a>
+<span class="sourceLineNo">224</span><a name="line.224"></a>
+<span class="sourceLineNo">225</span>                /**<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                 * Being called each time the handled element is opened.<a name="line.226"></a>
+<span class="sourceLineNo">227</span>                 */<a name="line.227"></a>
+<span class="sourceLineNo">228</span>                public void onStartElement(ELEMENT element, Attributes attributes) throws SAXException {<a name="line.228"></a>
+<span class="sourceLineNo">229</span>                        // stub<a name="line.229"></a>
+<span class="sourceLineNo">230</span>                }<a name="line.230"></a>
+<span class="sourceLineNo">231</span><a name="line.231"></a>
+<span class="sourceLineNo">232</span>                /**<a name="line.232"></a>
+<span class="sourceLineNo">233</span>                 * Being called each time the handled element is closed.<a name="line.233"></a>
+<span class="sourceLineNo">234</span>                 */<a name="line.234"></a>
+<span class="sourceLineNo">235</span>                public void onEndElement(ELEMENT element) throws SAXException {<a name="line.235"></a>
+<span class="sourceLineNo">236</span>                        // stub<a name="line.236"></a>
+<span class="sourceLineNo">237</span>                }<a name="line.237"></a>
+<span class="sourceLineNo">238</span>        }<a name="line.238"></a>
+<span class="sourceLineNo">239</span><a name="line.239"></a>
+<span class="sourceLineNo">240</span>        /**<a name="line.240"></a>
+<span class="sourceLineNo">241</span>         * Handler for text callbacks in addition to the callbacks defined in<a name="line.241"></a>
+<span class="sourceLineNo">242</span>         * {@link org.conqat.lib.commons.xml.ElementEnumSaxHandler.ElementHandler}.<a name="line.242"></a>
+<span class="sourceLineNo">243</span>         * &lt;p&gt;<a name="line.243"></a>
+<span class="sourceLineNo">244</span>         * As capturing text may reduce performance, please consider using<a name="line.244"></a>
+<span class="sourceLineNo">245</span>         * {@link org.conqat.lib.commons.xml.ElementEnumSaxHandler.ElementHandler}<a name="line.245"></a>
+<span class="sourceLineNo">246</span>         * if not interested in text.<a name="line.246"></a>
+<span class="sourceLineNo">247</span>         */<a name="line.247"></a>
+<span class="sourceLineNo">248</span>        @SuppressWarnings("unused")<a name="line.248"></a>
+<span class="sourceLineNo">249</span>        public static class TextElementHandler&lt;ELEMENT&gt; extends ElementHandler&lt;ELEMENT&gt; {<a name="line.249"></a>
+<span class="sourceLineNo">250</span><a name="line.250"></a>
+<span class="sourceLineNo">251</span>                /**<a name="line.251"></a>
+<span class="sourceLineNo">252</span>                 * Will be called exactly once for an element with all the text that has<a name="line.252"></a>
+<span class="sourceLineNo">253</span>                 * occurred in the XML between the start element and end element<a name="line.253"></a>
+<span class="sourceLineNo">254</span>                 * callback. Text of descendant elements is also captured unless a<a name="line.254"></a>
+<span class="sourceLineNo">255</span>                 * {@link org.conqat.lib.commons.xml.ElementEnumSaxHandler.TextElementHandler}<a name="line.255"></a>
+<span class="sourceLineNo">256</span>                 * for these elements is registered.<a name="line.256"></a>
+<span class="sourceLineNo">257</span>                 */<a name="line.257"></a>
+<span class="sourceLineNo">258</span>                // TODO (FS) I find this behaviour a bit strange. I think there might be<a name="line.258"></a>
+<span class="sourceLineNo">259</span>                // parser that don't want this. It especially forces you to have an enum<a name="line.259"></a>
+<span class="sourceLineNo">260</span>                // constant for the child elements, even if you're not at all interested<a name="line.260"></a>
+<span class="sourceLineNo">261</span>                // in them, just to get rid of their text content. I think it would be<a name="line.261"></a>
+<span class="sourceLineNo">262</span>                // better if we did not buffer the text but let the ElementHandlers do<a name="line.262"></a>
+<span class="sourceLineNo">263</span>                // that themselves if they require it. this way, you could also merge<a name="line.263"></a>
+<span class="sourceLineNo">264</span>                // this handler with the ElementHandler<a name="line.264"></a>
+<span class="sourceLineNo">265</span>                public void onText(ELEMENT element, String text) throws SAXException {<a name="line.265"></a>
+<span class="sourceLineNo">266</span>                        // stub<a name="line.266"></a>
+<span class="sourceLineNo">267</span>                }<a name="line.267"></a>
+<span class="sourceLineNo">268</span>        }<a name="line.268"></a>
+<span class="sourceLineNo">269</span><a name="line.269"></a>
+<span class="sourceLineNo">270</span>        /** Resolver from XML element names to enumeration names. */<a name="line.270"></a>
+<span class="sourceLineNo">271</span>        public static interface IElementResolver {<a name="line.271"></a>
+<span class="sourceLineNo">272</span>                /**<a name="line.272"></a>
+<span class="sourceLineNo">273</span>                 * Takes the name of an XML element and resolves it to the name of a<a name="line.273"></a>
+<span class="sourceLineNo">274</span>                 * possible enumeration value.<a name="line.274"></a>
+<span class="sourceLineNo">275</span>                 */<a name="line.275"></a>
+<span class="sourceLineNo">276</span>                public String resolve(String elementName);<a name="line.276"></a>
+<span class="sourceLineNo">277</span>        }<a name="line.277"></a>
+<span class="sourceLineNo">278</span><a name="line.278"></a>
+<span class="sourceLineNo">279</span>        /**<a name="line.279"></a>
+<span class="sourceLineNo">280</span>         * Resolver that normalizes XML element names to valid Java identifiers.<a name="line.280"></a>
+<span class="sourceLineNo">281</span>         */<a name="line.281"></a>
+<span class="sourceLineNo">282</span>        public static class JavaConstantResolver implements IElementResolver {<a name="line.282"></a>
+<span class="sourceLineNo">283</span><a name="line.283"></a>
+<span class="sourceLineNo">284</span>                /**<a name="line.284"></a>
+<span class="sourceLineNo">285</span>                 * {@inheritDoc}<a name="line.285"></a>
+<span class="sourceLineNo">286</span>                 * <a name="line.286"></a>
+<span class="sourceLineNo">287</span>                 * Converts the given string to a valid Java identifier by replacing all<a name="line.287"></a>
+<span class="sourceLineNo">288</span>                 * non word characters by underscores and converting the string to<a name="line.288"></a>
+<span class="sourceLineNo">289</span>                 * uppercase.<a name="line.289"></a>
+<span class="sourceLineNo">290</span>                 */<a name="line.290"></a>
+<span class="sourceLineNo">291</span>                @Override<a name="line.291"></a>
+<span class="sourceLineNo">292</span>                public String resolve(String elementName) {<a name="line.292"></a>
+<span class="sourceLineNo">293</span>                        return elementName.toUpperCase().replaceAll("\\W+", "_");<a name="line.293"></a>
+<span class="sourceLineNo">294</span>                }<a name="line.294"></a>
+<span class="sourceLineNo">295</span>        }<a name="line.295"></a>
+<span class="sourceLineNo">296</span>}<a name="line.296"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

@@ -1,0 +1,407 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*-------------------------------------------------------------------------+<a name="line.1"></a>
+<span class="sourceLineNo">002</span>|                                                                          |<a name="line.2"></a>
+<span class="sourceLineNo">003</span>| Copyright 2005-2011 The ConQAT Project                                   |<a name="line.3"></a>
+<span class="sourceLineNo">004</span>|                                                                          |<a name="line.4"></a>
+<span class="sourceLineNo">005</span>| Licensed under the Apache License, Version 2.0 (the "License");          |<a name="line.5"></a>
+<span class="sourceLineNo">006</span>| you may not use this file except in compliance with the License.         |<a name="line.6"></a>
+<span class="sourceLineNo">007</span>| You may obtain a copy of the License at                                  |<a name="line.7"></a>
+<span class="sourceLineNo">008</span>|                                                                          |<a name="line.8"></a>
+<span class="sourceLineNo">009</span>|    http://www.apache.org/licenses/LICENSE-2.0                            |<a name="line.9"></a>
+<span class="sourceLineNo">010</span>|                                                                          |<a name="line.10"></a>
+<span class="sourceLineNo">011</span>| Unless required by applicable law or agreed to in writing, software      |<a name="line.11"></a>
+<span class="sourceLineNo">012</span>| distributed under the License is distributed on an "AS IS" BASIS,        |<a name="line.12"></a>
+<span class="sourceLineNo">013</span>| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. |<a name="line.13"></a>
+<span class="sourceLineNo">014</span>| See the License for the specific language governing permissions and      |<a name="line.14"></a>
+<span class="sourceLineNo">015</span>| limitations under the License.                                           |<a name="line.15"></a>
+<span class="sourceLineNo">016</span>+-------------------------------------------------------------------------*/<a name="line.16"></a>
+<span class="sourceLineNo">017</span>package org.conqat.lib.commons.html;<a name="line.17"></a>
+<span class="sourceLineNo">018</span><a name="line.18"></a>
+<span class="sourceLineNo">019</span>import java.util.EnumSet;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import java.util.Set;<a name="line.20"></a>
+<span class="sourceLineNo">021</span><a name="line.21"></a>
+<span class="sourceLineNo">022</span>/**<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * Enumeration of all HTML elements.<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * &lt;p&gt;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * Part of this file was generated from the<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * &lt;a href="http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd"&gt;XHTML FrameSet<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * DTD&lt;/a&gt; using the "dtd2enum.pl" perl script in this directory.<a name="line.27"></a>
+<span class="sourceLineNo">028</span> */<a name="line.28"></a>
+<span class="sourceLineNo">029</span>public enum EHTMLElement {<a name="line.29"></a>
+<span class="sourceLineNo">030</span><a name="line.30"></a>
+<span class="sourceLineNo">031</span>        /** The &amp;lt;{@linkplain #HTML}&amp;gt; element. */<a name="line.31"></a>
+<span class="sourceLineNo">032</span>        HTML("html", EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ID, EHTMLAttribute.XMLNS),<a name="line.32"></a>
+<span class="sourceLineNo">033</span><a name="line.33"></a>
+<span class="sourceLineNo">034</span>        /** The &amp;lt;{@linkplain #HEAD}&amp;gt; element. */<a name="line.34"></a>
+<span class="sourceLineNo">035</span>        HEAD("head", EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ID, EHTMLAttribute.PROFILE),<a name="line.35"></a>
+<span class="sourceLineNo">036</span><a name="line.36"></a>
+<span class="sourceLineNo">037</span>        /** The &amp;lt;{@linkplain #TITLE}&amp;gt; element. */<a name="line.37"></a>
+<span class="sourceLineNo">038</span>        TITLE("title", EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ID),<a name="line.38"></a>
+<span class="sourceLineNo">039</span><a name="line.39"></a>
+<span class="sourceLineNo">040</span>        /** The &amp;lt;{@linkplain #BASE}&amp;gt; element. */<a name="line.40"></a>
+<span class="sourceLineNo">041</span>        BASE("base", EHTMLAttribute.ID, EHTMLAttribute.HREF, EHTMLAttribute.TARGET),<a name="line.41"></a>
+<span class="sourceLineNo">042</span><a name="line.42"></a>
+<span class="sourceLineNo">043</span>        /** The &amp;lt;{@linkplain #META}&amp;gt; element. */<a name="line.43"></a>
+<span class="sourceLineNo">044</span>        META("meta", EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ID, EHTMLAttribute.HTTP_EQUIV, EHTMLAttribute.NAME, EHTMLAttribute.CONTENT, EHTMLAttribute.SCHEME, EHTMLAttribute.CHARSET),<a name="line.44"></a>
+<span class="sourceLineNo">045</span><a name="line.45"></a>
+<span class="sourceLineNo">046</span>        /** The &amp;lt;{@linkplain #LINK}&amp;gt; element. */<a name="line.46"></a>
+<span class="sourceLineNo">047</span>        LINK("link", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.CHARSET, EHTMLAttribute.HREF, EHTMLAttribute.HREFLANG, EHTMLAttribute.TYPE, EHTMLAttribute.REL, EHTMLAttribute.REV, EHTMLAttribute.MEDIA, EHTMLAttribute.TARGET),<a name="line.47"></a>
+<span class="sourceLineNo">048</span><a name="line.48"></a>
+<span class="sourceLineNo">049</span>        /** The &amp;lt;{@linkplain #STYLE}&amp;gt; element. */<a name="line.49"></a>
+<span class="sourceLineNo">050</span>        STYLE("style", EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ID, EHTMLAttribute.TYPE, EHTMLAttribute.MEDIA, EHTMLAttribute.TITLE, EHTMLAttribute.XML_SPACE),<a name="line.50"></a>
+<span class="sourceLineNo">051</span><a name="line.51"></a>
+<span class="sourceLineNo">052</span>        /** The &amp;lt;{@linkplain #SCRIPT}&amp;gt; element. */<a name="line.52"></a>
+<span class="sourceLineNo">053</span>        SCRIPT("script", EHTMLAttribute.ID, EHTMLAttribute.CHARSET, EHTMLAttribute.TYPE, EHTMLAttribute.LANGUAGE, EHTMLAttribute.SRC, EHTMLAttribute.DEFER, EHTMLAttribute.XML_SPACE),<a name="line.53"></a>
+<span class="sourceLineNo">054</span><a name="line.54"></a>
+<span class="sourceLineNo">055</span>        /** The &amp;lt;{@linkplain #NOSCRIPT}&amp;gt; element. */<a name="line.55"></a>
+<span class="sourceLineNo">056</span>        NOSCRIPT("noscript", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.56"></a>
+<span class="sourceLineNo">057</span><a name="line.57"></a>
+<span class="sourceLineNo">058</span>        /** The &amp;lt;{@linkplain #FRAMESET}&amp;gt; element. */<a name="line.58"></a>
+<span class="sourceLineNo">059</span>        FRAMESET("frameset", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.ROWS, EHTMLAttribute.COLS, EHTMLAttribute.ONLOAD, EHTMLAttribute.ONUNLOAD),<a name="line.59"></a>
+<span class="sourceLineNo">060</span><a name="line.60"></a>
+<span class="sourceLineNo">061</span>        /** The &amp;lt;{@linkplain #FRAME}&amp;gt; element. */<a name="line.61"></a>
+<span class="sourceLineNo">062</span>        FRAME("frame", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LONGDESC, EHTMLAttribute.NAME, EHTMLAttribute.SRC, EHTMLAttribute.FRAMEBORDER, EHTMLAttribute.MARGINWIDTH, EHTMLAttribute.MARGINHEIGHT, EHTMLAttribute.NORESIZE, EHTMLAttribute.SCROLLING),<a name="line.62"></a>
+<span class="sourceLineNo">063</span><a name="line.63"></a>
+<span class="sourceLineNo">064</span>        /** The &amp;lt;{@linkplain #IFRAME}&amp;gt; element. */<a name="line.64"></a>
+<span class="sourceLineNo">065</span>        IFRAME("iframe", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LONGDESC, EHTMLAttribute.NAME, EHTMLAttribute.SRC, EHTMLAttribute.FRAMEBORDER, EHTMLAttribute.MARGINWIDTH, EHTMLAttribute.MARGINHEIGHT, EHTMLAttribute.SCROLLING, EHTMLAttribute.ALIGN, EHTMLAttribute.HEIGHT, EHTMLAttribute.WIDTH),<a name="line.65"></a>
+<span class="sourceLineNo">066</span><a name="line.66"></a>
+<span class="sourceLineNo">067</span>        /** The &amp;lt;{@linkplain #NOFRAMES}&amp;gt; element. */<a name="line.67"></a>
+<span class="sourceLineNo">068</span>        NOFRAMES("noframes", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.68"></a>
+<span class="sourceLineNo">069</span><a name="line.69"></a>
+<span class="sourceLineNo">070</span>        /** The &amp;lt;{@linkplain #BODY}&amp;gt; element. */<a name="line.70"></a>
+<span class="sourceLineNo">071</span>        BODY("body", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.ONLOAD, EHTMLAttribute.ONUNLOAD, EHTMLAttribute.BACKGROUND, EHTMLAttribute.BGCOLOR, EHTMLAttribute.TEXT, EHTMLAttribute.LINK, EHTMLAttribute.VLINK, EHTMLAttribute.ALINK),<a name="line.71"></a>
+<span class="sourceLineNo">072</span><a name="line.72"></a>
+<span class="sourceLineNo">073</span>        /** The &amp;lt;{@linkplain #DIV}&amp;gt; element. */<a name="line.73"></a>
+<span class="sourceLineNo">074</span>        DIV("div", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.ALIGN),<a name="line.74"></a>
+<span class="sourceLineNo">075</span><a name="line.75"></a>
+<span class="sourceLineNo">076</span>        /** The &amp;lt;{@linkplain #P}&amp;gt; element. */<a name="line.76"></a>
+<span class="sourceLineNo">077</span>        P("p", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.ALIGN),<a name="line.77"></a>
+<span class="sourceLineNo">078</span><a name="line.78"></a>
+<span class="sourceLineNo">079</span>        /** The &amp;lt;{@linkplain #H1}&amp;gt; element. */<a name="line.79"></a>
+<span class="sourceLineNo">080</span>        H1("h1", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.ALIGN),<a name="line.80"></a>
+<span class="sourceLineNo">081</span><a name="line.81"></a>
+<span class="sourceLineNo">082</span>        /** The &amp;lt;{@linkplain #H2}&amp;gt; element. */<a name="line.82"></a>
+<span class="sourceLineNo">083</span>        H2("h2", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.ALIGN),<a name="line.83"></a>
+<span class="sourceLineNo">084</span><a name="line.84"></a>
+<span class="sourceLineNo">085</span>        /** The &amp;lt;{@linkplain #H3}&amp;gt; element. */<a name="line.85"></a>
+<span class="sourceLineNo">086</span>        H3("h3", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.ALIGN),<a name="line.86"></a>
+<span class="sourceLineNo">087</span><a name="line.87"></a>
+<span class="sourceLineNo">088</span>        /** The &amp;lt;{@linkplain #H4}&amp;gt; element. */<a name="line.88"></a>
+<span class="sourceLineNo">089</span>        H4("h4", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.ALIGN),<a name="line.89"></a>
+<span class="sourceLineNo">090</span><a name="line.90"></a>
+<span class="sourceLineNo">091</span>        /** The &amp;lt;{@linkplain #H5}&amp;gt; element. */<a name="line.91"></a>
+<span class="sourceLineNo">092</span>        H5("h5", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.ALIGN),<a name="line.92"></a>
+<span class="sourceLineNo">093</span><a name="line.93"></a>
+<span class="sourceLineNo">094</span>        /** The &amp;lt;{@linkplain #H6}&amp;gt; element. */<a name="line.94"></a>
+<span class="sourceLineNo">095</span>        H6("h6", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.ALIGN),<a name="line.95"></a>
+<span class="sourceLineNo">096</span><a name="line.96"></a>
+<span class="sourceLineNo">097</span>        /** The &amp;lt;{@linkplain #UL}&amp;gt; element. */<a name="line.97"></a>
+<span class="sourceLineNo">098</span>        UL("ul", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.TYPE, EHTMLAttribute.COMPACT),<a name="line.98"></a>
+<span class="sourceLineNo">099</span><a name="line.99"></a>
+<span class="sourceLineNo">100</span>        /** The &amp;lt;{@linkplain #OL}&amp;gt; element. */<a name="line.100"></a>
+<span class="sourceLineNo">101</span>        OL("ol", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.TYPE, EHTMLAttribute.COMPACT, EHTMLAttribute.START),<a name="line.101"></a>
+<span class="sourceLineNo">102</span><a name="line.102"></a>
+<span class="sourceLineNo">103</span>        /** The &amp;lt;{@linkplain #MENU}&amp;gt; element. */<a name="line.103"></a>
+<span class="sourceLineNo">104</span>        MENU("menu", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.COMPACT),<a name="line.104"></a>
+<span class="sourceLineNo">105</span><a name="line.105"></a>
+<span class="sourceLineNo">106</span>        /** The &amp;lt;{@linkplain #DIR}&amp;gt; element. */<a name="line.106"></a>
+<span class="sourceLineNo">107</span>        DIR("dir", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.COMPACT),<a name="line.107"></a>
+<span class="sourceLineNo">108</span><a name="line.108"></a>
+<span class="sourceLineNo">109</span>        /** The &amp;lt;{@linkplain #LI}&amp;gt; element. */<a name="line.109"></a>
+<span class="sourceLineNo">110</span>        LI("li", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.TYPE, EHTMLAttribute.VALUE),<a name="line.110"></a>
+<span class="sourceLineNo">111</span><a name="line.111"></a>
+<span class="sourceLineNo">112</span>        /** The &amp;lt;{@linkplain #DL}&amp;gt; element. */<a name="line.112"></a>
+<span class="sourceLineNo">113</span>        DL("dl", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.COMPACT),<a name="line.113"></a>
+<span class="sourceLineNo">114</span><a name="line.114"></a>
+<span class="sourceLineNo">115</span>        /** The &amp;lt;{@linkplain #DT}&amp;gt; element. */<a name="line.115"></a>
+<span class="sourceLineNo">116</span>        DT("dt", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.116"></a>
+<span class="sourceLineNo">117</span><a name="line.117"></a>
+<span class="sourceLineNo">118</span>        /** The &amp;lt;{@linkplain #DD}&amp;gt; element. */<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        DD("dd", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.119"></a>
+<span class="sourceLineNo">120</span><a name="line.120"></a>
+<span class="sourceLineNo">121</span>        /** The &amp;lt;{@linkplain #ADDRESS}&amp;gt; element. */<a name="line.121"></a>
+<span class="sourceLineNo">122</span>        ADDRESS("address", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.122"></a>
+<span class="sourceLineNo">123</span><a name="line.123"></a>
+<span class="sourceLineNo">124</span>        /** The &amp;lt;{@linkplain #HR}&amp;gt; element. */<a name="line.124"></a>
+<span class="sourceLineNo">125</span>        HR("hr", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.ALIGN, EHTMLAttribute.NOSHADE, EHTMLAttribute.SIZE, EHTMLAttribute.WIDTH),<a name="line.125"></a>
+<span class="sourceLineNo">126</span><a name="line.126"></a>
+<span class="sourceLineNo">127</span>        /** The &amp;lt;{@linkplain #PRE}&amp;gt; element. */<a name="line.127"></a>
+<span class="sourceLineNo">128</span>        PRE("pre", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.WIDTH, EHTMLAttribute.XML_SPACE),<a name="line.128"></a>
+<span class="sourceLineNo">129</span><a name="line.129"></a>
+<span class="sourceLineNo">130</span>        /** The &amp;lt;{@linkplain #BLOCKQUOTE}&amp;gt; element. */<a name="line.130"></a>
+<span class="sourceLineNo">131</span>        BLOCKQUOTE("blockquote", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.CITE),<a name="line.131"></a>
+<span class="sourceLineNo">132</span><a name="line.132"></a>
+<span class="sourceLineNo">133</span>        /** The &amp;lt;{@linkplain #CENTER}&amp;gt; element. */<a name="line.133"></a>
+<span class="sourceLineNo">134</span>        CENTER("center", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.134"></a>
+<span class="sourceLineNo">135</span><a name="line.135"></a>
+<span class="sourceLineNo">136</span>        /** The &amp;lt;{@linkplain #INS}&amp;gt; element. */<a name="line.136"></a>
+<span class="sourceLineNo">137</span>        INS("ins", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.CITE, EHTMLAttribute.DATETIME),<a name="line.137"></a>
+<span class="sourceLineNo">138</span><a name="line.138"></a>
+<span class="sourceLineNo">139</span>        /** The &amp;lt;{@linkplain #DEL}&amp;gt; element. */<a name="line.139"></a>
+<span class="sourceLineNo">140</span>        DEL("del", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.CITE, EHTMLAttribute.DATETIME),<a name="line.140"></a>
+<span class="sourceLineNo">141</span><a name="line.141"></a>
+<span class="sourceLineNo">142</span>        /** The &amp;lt;{@linkplain #A}&amp;gt; element. */<a name="line.142"></a>
+<span class="sourceLineNo">143</span>        A("a", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.ACCESSKEY, EHTMLAttribute.TABINDEX, EHTMLAttribute.ONFOCUS, EHTMLAttribute.ONBLUR, EHTMLAttribute.CHARSET, EHTMLAttribute.TYPE, EHTMLAttribute.NAME, EHTMLAttribute.HREF, EHTMLAttribute.HREFLANG, EHTMLAttribute.REL, EHTMLAttribute.REV, EHTMLAttribute.SHAPE, EHTMLAttribute.COORDS, EHTMLAttribute.TARGET),<a name="line.143"></a>
+<span class="sourceLineNo">144</span><a name="line.144"></a>
+<span class="sourceLineNo">145</span>        /** The &amp;lt;{@linkplain #SPAN}&amp;gt; element. */<a name="line.145"></a>
+<span class="sourceLineNo">146</span>        SPAN("span", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.146"></a>
+<span class="sourceLineNo">147</span><a name="line.147"></a>
+<span class="sourceLineNo">148</span>        /** The &amp;lt;{@linkplain #BDO}&amp;gt; element. */<a name="line.148"></a>
+<span class="sourceLineNo">149</span>        BDO("bdo", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR),<a name="line.149"></a>
+<span class="sourceLineNo">150</span><a name="line.150"></a>
+<span class="sourceLineNo">151</span>        /** The &amp;lt;{@linkplain #BR}&amp;gt; element. */<a name="line.151"></a>
+<span class="sourceLineNo">152</span>        BR("br", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.CLEAR),<a name="line.152"></a>
+<span class="sourceLineNo">153</span><a name="line.153"></a>
+<span class="sourceLineNo">154</span>        /** The &amp;lt;{@linkplain #EM}&amp;gt; element. */<a name="line.154"></a>
+<span class="sourceLineNo">155</span>        EM("em", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.155"></a>
+<span class="sourceLineNo">156</span><a name="line.156"></a>
+<span class="sourceLineNo">157</span>        /** The &amp;lt;{@linkplain #STRONG}&amp;gt; element. */<a name="line.157"></a>
+<span class="sourceLineNo">158</span>        STRONG("strong", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.158"></a>
+<span class="sourceLineNo">159</span><a name="line.159"></a>
+<span class="sourceLineNo">160</span>        /** The &amp;lt;{@linkplain #DFN}&amp;gt; element. */<a name="line.160"></a>
+<span class="sourceLineNo">161</span>        DFN("dfn", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.161"></a>
+<span class="sourceLineNo">162</span><a name="line.162"></a>
+<span class="sourceLineNo">163</span>        /** The &amp;lt;{@linkplain #CODE}&amp;gt; element. */<a name="line.163"></a>
+<span class="sourceLineNo">164</span>        CODE("code", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.164"></a>
+<span class="sourceLineNo">165</span><a name="line.165"></a>
+<span class="sourceLineNo">166</span>        /** The &amp;lt;{@linkplain #SAMP}&amp;gt; element. */<a name="line.166"></a>
+<span class="sourceLineNo">167</span>        SAMP("samp", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.167"></a>
+<span class="sourceLineNo">168</span><a name="line.168"></a>
+<span class="sourceLineNo">169</span>        /** The &amp;lt;{@linkplain #KBD}&amp;gt; element. */<a name="line.169"></a>
+<span class="sourceLineNo">170</span>        KBD("kbd", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.170"></a>
+<span class="sourceLineNo">171</span><a name="line.171"></a>
+<span class="sourceLineNo">172</span>        /** The &amp;lt;{@linkplain #VAR}&amp;gt; element. */<a name="line.172"></a>
+<span class="sourceLineNo">173</span>        VAR("var", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.173"></a>
+<span class="sourceLineNo">174</span><a name="line.174"></a>
+<span class="sourceLineNo">175</span>        /** The &amp;lt;{@linkplain #CITE}&amp;gt; element. */<a name="line.175"></a>
+<span class="sourceLineNo">176</span>        CITE("cite", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.176"></a>
+<span class="sourceLineNo">177</span><a name="line.177"></a>
+<span class="sourceLineNo">178</span>        /** The &amp;lt;{@linkplain #ABBR}&amp;gt; element. */<a name="line.178"></a>
+<span class="sourceLineNo">179</span>        ABBR("abbr", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.179"></a>
+<span class="sourceLineNo">180</span><a name="line.180"></a>
+<span class="sourceLineNo">181</span>        /** The &amp;lt;{@linkplain #ACRONYM}&amp;gt; element. */<a name="line.181"></a>
+<span class="sourceLineNo">182</span>        ACRONYM("acronym", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.182"></a>
+<span class="sourceLineNo">183</span><a name="line.183"></a>
+<span class="sourceLineNo">184</span>        /** The &amp;lt;{@linkplain #Q}&amp;gt; element. */<a name="line.184"></a>
+<span class="sourceLineNo">185</span>        Q("q", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.CITE),<a name="line.185"></a>
+<span class="sourceLineNo">186</span><a name="line.186"></a>
+<span class="sourceLineNo">187</span>        /** The &amp;lt;{@linkplain #SUB}&amp;gt; element. */<a name="line.187"></a>
+<span class="sourceLineNo">188</span>        SUB("sub", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.188"></a>
+<span class="sourceLineNo">189</span><a name="line.189"></a>
+<span class="sourceLineNo">190</span>        /** The &amp;lt;{@linkplain #SUP}&amp;gt; element. */<a name="line.190"></a>
+<span class="sourceLineNo">191</span>        SUP("sup", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.191"></a>
+<span class="sourceLineNo">192</span><a name="line.192"></a>
+<span class="sourceLineNo">193</span>        /** The &amp;lt;{@linkplain #TT}&amp;gt; element. */<a name="line.193"></a>
+<span class="sourceLineNo">194</span>        TT("tt", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.194"></a>
+<span class="sourceLineNo">195</span><a name="line.195"></a>
+<span class="sourceLineNo">196</span>        /** The &amp;lt;{@linkplain #I}&amp;gt; element. */<a name="line.196"></a>
+<span class="sourceLineNo">197</span>        I("i", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.197"></a>
+<span class="sourceLineNo">198</span><a name="line.198"></a>
+<span class="sourceLineNo">199</span>        /** The &amp;lt;{@linkplain #B}&amp;gt; element. */<a name="line.199"></a>
+<span class="sourceLineNo">200</span>        B("b", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.200"></a>
+<span class="sourceLineNo">201</span><a name="line.201"></a>
+<span class="sourceLineNo">202</span>        /** The &amp;lt;{@linkplain #BIG}&amp;gt; element. */<a name="line.202"></a>
+<span class="sourceLineNo">203</span>        BIG("big", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.203"></a>
+<span class="sourceLineNo">204</span><a name="line.204"></a>
+<span class="sourceLineNo">205</span>        /** The &amp;lt;{@linkplain #SMALL}&amp;gt; element. */<a name="line.205"></a>
+<span class="sourceLineNo">206</span>        SMALL("small", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.206"></a>
+<span class="sourceLineNo">207</span><a name="line.207"></a>
+<span class="sourceLineNo">208</span>        /** The &amp;lt;{@linkplain #U}&amp;gt; element. */<a name="line.208"></a>
+<span class="sourceLineNo">209</span>        U("u", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.209"></a>
+<span class="sourceLineNo">210</span><a name="line.210"></a>
+<span class="sourceLineNo">211</span>        /** The &amp;lt;{@linkplain #S}&amp;gt; element. */<a name="line.211"></a>
+<span class="sourceLineNo">212</span>        S("s", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.212"></a>
+<span class="sourceLineNo">213</span><a name="line.213"></a>
+<span class="sourceLineNo">214</span>        /** The &amp;lt;{@linkplain #STRIKE}&amp;gt; element. */<a name="line.214"></a>
+<span class="sourceLineNo">215</span>        STRIKE("strike", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.215"></a>
+<span class="sourceLineNo">216</span><a name="line.216"></a>
+<span class="sourceLineNo">217</span>        /** The &amp;lt;{@linkplain #BASEFONT}&amp;gt; element. */<a name="line.217"></a>
+<span class="sourceLineNo">218</span>        BASEFONT("basefont", EHTMLAttribute.ID, EHTMLAttribute.SIZE, EHTMLAttribute.COLOR, EHTMLAttribute.FACE),<a name="line.218"></a>
+<span class="sourceLineNo">219</span><a name="line.219"></a>
+<span class="sourceLineNo">220</span>        /** The &amp;lt;{@linkplain #FONT}&amp;gt; element. */<a name="line.220"></a>
+<span class="sourceLineNo">221</span>        FONT("font", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.SIZE, EHTMLAttribute.COLOR, EHTMLAttribute.FACE),<a name="line.221"></a>
+<span class="sourceLineNo">222</span><a name="line.222"></a>
+<span class="sourceLineNo">223</span>        /** The &amp;lt;{@linkplain #OBJECT}&amp;gt; element. */<a name="line.223"></a>
+<span class="sourceLineNo">224</span>        OBJECT("object", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.DECLARE, EHTMLAttribute.CLASSID, EHTMLAttribute.CODEBASE, EHTMLAttribute.DATA, EHTMLAttribute.TYPE, EHTMLAttribute.CODETYPE, EHTMLAttribute.ARCHIVE, EHTMLAttribute.STANDBY, EHTMLAttribute.HEIGHT, EHTMLAttribute.WIDTH, EHTMLAttribute.USEMAP, EHTMLAttribute.NAME, EHTMLAttribute.TABINDEX, EHTMLAttribute.ALIGN, EHTMLAttribute.BORDER, EHTMLAttribute.HSPACE, EHTMLAttribute.VSPACE),<a name="line.224"></a>
+<span class="sourceLineNo">225</span><a name="line.225"></a>
+<span class="sourceLineNo">226</span>        /** The &amp;lt;{@linkplain #PARAM}&amp;gt; element. */<a name="line.226"></a>
+<span class="sourceLineNo">227</span>        PARAM("param", EHTMLAttribute.ID, EHTMLAttribute.NAME, EHTMLAttribute.VALUE, EHTMLAttribute.VALUETYPE, EHTMLAttribute.TYPE),<a name="line.227"></a>
+<span class="sourceLineNo">228</span><a name="line.228"></a>
+<span class="sourceLineNo">229</span>        /** The &amp;lt;{@linkplain #APPLET}&amp;gt; element. */<a name="line.229"></a>
+<span class="sourceLineNo">230</span>        APPLET("applet", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.CODEBASE, EHTMLAttribute.ARCHIVE, EHTMLAttribute.CODE, EHTMLAttribute.OBJECT, EHTMLAttribute.ALT, EHTMLAttribute.NAME, EHTMLAttribute.WIDTH, EHTMLAttribute.HEIGHT, EHTMLAttribute.ALIGN, EHTMLAttribute.HSPACE, EHTMLAttribute.VSPACE),<a name="line.230"></a>
+<span class="sourceLineNo">231</span><a name="line.231"></a>
+<span class="sourceLineNo">232</span>        /** The &amp;lt;{@linkplain #IMG}&amp;gt; element. */<a name="line.232"></a>
+<span class="sourceLineNo">233</span>        IMG("img", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.SRC, EHTMLAttribute.ALT, EHTMLAttribute.NAME, EHTMLAttribute.LONGDESC, EHTMLAttribute.HEIGHT, EHTMLAttribute.WIDTH, EHTMLAttribute.USEMAP, EHTMLAttribute.ISMAP, EHTMLAttribute.ALIGN, EHTMLAttribute.BORDER, EHTMLAttribute.HSPACE, EHTMLAttribute.VSPACE),<a name="line.233"></a>
+<span class="sourceLineNo">234</span><a name="line.234"></a>
+<span class="sourceLineNo">235</span>        /** The &amp;lt;{@linkplain #MAP}&amp;gt; element. */<a name="line.235"></a>
+<span class="sourceLineNo">236</span>        MAP("map", EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.NAME),<a name="line.236"></a>
+<span class="sourceLineNo">237</span><a name="line.237"></a>
+<span class="sourceLineNo">238</span>        /** The &amp;lt;{@linkplain #AREA}&amp;gt; element. */<a name="line.238"></a>
+<span class="sourceLineNo">239</span>        AREA("area", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.ACCESSKEY, EHTMLAttribute.TABINDEX, EHTMLAttribute.ONFOCUS, EHTMLAttribute.ONBLUR, EHTMLAttribute.SHAPE, EHTMLAttribute.COORDS, EHTMLAttribute.HREF, EHTMLAttribute.NOHREF, EHTMLAttribute.ALT, EHTMLAttribute.TARGET),<a name="line.239"></a>
+<span class="sourceLineNo">240</span><a name="line.240"></a>
+<span class="sourceLineNo">241</span>        /** The &amp;lt;{@linkplain #FORM}&amp;gt; element. */<a name="line.241"></a>
+<span class="sourceLineNo">242</span>        FORM("form", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.ACTION, EHTMLAttribute.METHOD, EHTMLAttribute.NAME, EHTMLAttribute.ENCTYPE, EHTMLAttribute.ONSUBMIT, EHTMLAttribute.ONRESET, EHTMLAttribute.ACCEPT, EHTMLAttribute.ACCEPT_CHARSET, EHTMLAttribute.TARGET),<a name="line.242"></a>
+<span class="sourceLineNo">243</span><a name="line.243"></a>
+<span class="sourceLineNo">244</span>        /** The &amp;lt;{@linkplain #LABEL}&amp;gt; element. */<a name="line.244"></a>
+<span class="sourceLineNo">245</span>        LABEL("label", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.FOR, EHTMLAttribute.ACCESSKEY, EHTMLAttribute.ONFOCUS, EHTMLAttribute.ONBLUR),<a name="line.245"></a>
+<span class="sourceLineNo">246</span><a name="line.246"></a>
+<span class="sourceLineNo">247</span>        /** The &amp;lt;{@linkplain #INPUT}&amp;gt; element. */<a name="line.247"></a>
+<span class="sourceLineNo">248</span>        INPUT("input", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.ACCESSKEY, EHTMLAttribute.TABINDEX, EHTMLAttribute.ONFOCUS, EHTMLAttribute.ONBLUR, EHTMLAttribute.TYPE, EHTMLAttribute.NAME, EHTMLAttribute.VALUE, EHTMLAttribute.CHECKED, EHTMLAttribute.DISABLED, EHTMLAttribute.READONLY, EHTMLAttribute.SIZE, EHTMLAttribute.MAXLENGTH, EHTMLAttribute.SRC, EHTMLAttribute.ALT, EHTMLAttribute.USEMAP, EHTMLAttribute.ONSELECT, EHTMLAttribute.ONCHANGE, EHTMLAttribute.ACCEPT, EHTMLAttribute.ALIGN, EHTMLAttribute.PLACEHOLDER, EHTMLAttribute.AUTOFOCUS),<a name="line.248"></a>
+<span class="sourceLineNo">249</span><a name="line.249"></a>
+<span class="sourceLineNo">250</span>        /** The &amp;lt;{@linkplain #SELECT}&amp;gt; element. */<a name="line.250"></a>
+<span class="sourceLineNo">251</span>        SELECT("select", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.NAME, EHTMLAttribute.SIZE, EHTMLAttribute.MULTIPLE, EHTMLAttribute.DISABLED, EHTMLAttribute.TABINDEX, EHTMLAttribute.ONFOCUS, EHTMLAttribute.ONBLUR, EHTMLAttribute.ONCHANGE),<a name="line.251"></a>
+<span class="sourceLineNo">252</span><a name="line.252"></a>
+<span class="sourceLineNo">253</span>        /** The &amp;lt;{@linkplain #OPTGROUP}&amp;gt; element. */<a name="line.253"></a>
+<span class="sourceLineNo">254</span>        OPTGROUP("optgroup", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.DISABLED, EHTMLAttribute.LABEL),<a name="line.254"></a>
+<span class="sourceLineNo">255</span><a name="line.255"></a>
+<span class="sourceLineNo">256</span>        /** The &amp;lt;{@linkplain #OPTION}&amp;gt; element. */<a name="line.256"></a>
+<span class="sourceLineNo">257</span>        OPTION("option", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.SELECTED, EHTMLAttribute.DISABLED, EHTMLAttribute.LABEL, EHTMLAttribute.VALUE),<a name="line.257"></a>
+<span class="sourceLineNo">258</span><a name="line.258"></a>
+<span class="sourceLineNo">259</span>        /** The &amp;lt;{@linkplain #TEXTAREA}&amp;gt; element. */<a name="line.259"></a>
+<span class="sourceLineNo">260</span>        TEXTAREA("textarea", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.ACCESSKEY, EHTMLAttribute.TABINDEX, EHTMLAttribute.ONFOCUS, EHTMLAttribute.ONBLUR, EHTMLAttribute.NAME, EHTMLAttribute.ROWS, EHTMLAttribute.COLS, EHTMLAttribute.DISABLED, EHTMLAttribute.READONLY, EHTMLAttribute.ONSELECT, EHTMLAttribute.ONCHANGE),<a name="line.260"></a>
+<span class="sourceLineNo">261</span><a name="line.261"></a>
+<span class="sourceLineNo">262</span>        /** The &amp;lt;{@linkplain #FIELDSET}&amp;gt; element. */<a name="line.262"></a>
+<span class="sourceLineNo">263</span>        FIELDSET("fieldset", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP),<a name="line.263"></a>
+<span class="sourceLineNo">264</span><a name="line.264"></a>
+<span class="sourceLineNo">265</span>        /** The &amp;lt;{@linkplain #LEGEND}&amp;gt; element. */<a name="line.265"></a>
+<span class="sourceLineNo">266</span>        LEGEND("legend", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.ACCESSKEY, EHTMLAttribute.ALIGN),<a name="line.266"></a>
+<span class="sourceLineNo">267</span><a name="line.267"></a>
+<span class="sourceLineNo">268</span>        /** The &amp;lt;{@linkplain #BUTTON}&amp;gt; element. */<a name="line.268"></a>
+<span class="sourceLineNo">269</span>        BUTTON("button", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.ACCESSKEY, EHTMLAttribute.TABINDEX, EHTMLAttribute.ONFOCUS, EHTMLAttribute.ONBLUR, EHTMLAttribute.NAME, EHTMLAttribute.VALUE, EHTMLAttribute.TYPE, EHTMLAttribute.DISABLED),<a name="line.269"></a>
+<span class="sourceLineNo">270</span><a name="line.270"></a>
+<span class="sourceLineNo">271</span>        /** The &amp;lt;{@linkplain #ISINDEX}&amp;gt; element. */<a name="line.271"></a>
+<span class="sourceLineNo">272</span>        ISINDEX("isindex", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.PROMPT),<a name="line.272"></a>
+<span class="sourceLineNo">273</span><a name="line.273"></a>
+<span class="sourceLineNo">274</span>        /** The &amp;lt;{@linkplain #TABLE}&amp;gt; element. */<a name="line.274"></a>
+<span class="sourceLineNo">275</span>        TABLE("table", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.SUMMARY, EHTMLAttribute.WIDTH, EHTMLAttribute.BORDER, EHTMLAttribute.FRAME, EHTMLAttribute.RULES, EHTMLAttribute.CELLSPACING, EHTMLAttribute.CELLPADDING, EHTMLAttribute.ALIGN, EHTMLAttribute.BGCOLOR),<a name="line.275"></a>
+<span class="sourceLineNo">276</span><a name="line.276"></a>
+<span class="sourceLineNo">277</span>        /** The &amp;lt;{@linkplain #CAPTION}&amp;gt; element. */<a name="line.277"></a>
+<span class="sourceLineNo">278</span>        CAPTION("caption", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.ALIGN),<a name="line.278"></a>
+<span class="sourceLineNo">279</span><a name="line.279"></a>
+<span class="sourceLineNo">280</span>        /** The &amp;lt;{@linkplain #COLGROUP}&amp;gt; element. */<a name="line.280"></a>
+<span class="sourceLineNo">281</span>        COLGROUP("colgroup", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.SPAN, EHTMLAttribute.WIDTH, EHTMLAttribute.ALIGN, EHTMLAttribute.CHAR, EHTMLAttribute.CHAROFF, EHTMLAttribute.VALIGN),<a name="line.281"></a>
+<span class="sourceLineNo">282</span><a name="line.282"></a>
+<span class="sourceLineNo">283</span>        /** The &amp;lt;{@linkplain #COL}&amp;gt; element. */<a name="line.283"></a>
+<span class="sourceLineNo">284</span>        COL("col", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.SPAN, EHTMLAttribute.WIDTH, EHTMLAttribute.ALIGN, EHTMLAttribute.CHAR, EHTMLAttribute.CHAROFF, EHTMLAttribute.VALIGN),<a name="line.284"></a>
+<span class="sourceLineNo">285</span><a name="line.285"></a>
+<span class="sourceLineNo">286</span>        /** The &amp;lt;{@linkplain #THEAD}&amp;gt; element. */<a name="line.286"></a>
+<span class="sourceLineNo">287</span>        THEAD("thead", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.ALIGN, EHTMLAttribute.CHAR, EHTMLAttribute.CHAROFF, EHTMLAttribute.VALIGN),<a name="line.287"></a>
+<span class="sourceLineNo">288</span><a name="line.288"></a>
+<span class="sourceLineNo">289</span>        /** The &amp;lt;{@linkplain #TFOOT}&amp;gt; element. */<a name="line.289"></a>
+<span class="sourceLineNo">290</span>        TFOOT("tfoot", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.ALIGN, EHTMLAttribute.CHAR, EHTMLAttribute.CHAROFF, EHTMLAttribute.VALIGN),<a name="line.290"></a>
+<span class="sourceLineNo">291</span><a name="line.291"></a>
+<span class="sourceLineNo">292</span>        /** The &amp;lt;{@linkplain #TBODY}&amp;gt; element. */<a name="line.292"></a>
+<span class="sourceLineNo">293</span>        TBODY("tbody", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.ALIGN, EHTMLAttribute.CHAR, EHTMLAttribute.CHAROFF, EHTMLAttribute.VALIGN),<a name="line.293"></a>
+<span class="sourceLineNo">294</span><a name="line.294"></a>
+<span class="sourceLineNo">295</span>        /** The &amp;lt;{@linkplain #TR}&amp;gt; element. */<a name="line.295"></a>
+<span class="sourceLineNo">296</span>        TR("tr", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.ALIGN, EHTMLAttribute.CHAR, EHTMLAttribute.CHAROFF, EHTMLAttribute.VALIGN, EHTMLAttribute.BGCOLOR),<a name="line.296"></a>
+<span class="sourceLineNo">297</span><a name="line.297"></a>
+<span class="sourceLineNo">298</span>        /** The &amp;lt;{@linkplain #TH}&amp;gt; element. */<a name="line.298"></a>
+<span class="sourceLineNo">299</span>        TH("th", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.ABBR, EHTMLAttribute.AXIS, EHTMLAttribute.HEADERS, EHTMLAttribute.SCOPE, EHTMLAttribute.ROWSPAN, EHTMLAttribute.COLSPAN, EHTMLAttribute.ALIGN, EHTMLAttribute.CHAR, EHTMLAttribute.CHAROFF, EHTMLAttribute.VALIGN, EHTMLAttribute.NOWRAP, EHTMLAttribute.BGCOLOR, EHTMLAttribute.WIDTH, EHTMLAttribute.HEIGHT),<a name="line.299"></a>
+<span class="sourceLineNo">300</span><a name="line.300"></a>
+<span class="sourceLineNo">301</span>        /** The &amp;lt;{@linkplain #TD}&amp;gt; element. */<a name="line.301"></a>
+<span class="sourceLineNo">302</span>        TD("td", EHTMLAttribute.ID, EHTMLAttribute.CLASS, EHTMLAttribute.STYLE, EHTMLAttribute.TITLE, EHTMLAttribute.LANG, EHTMLAttribute.XML_LANG, EHTMLAttribute.DIR, EHTMLAttribute.ONCLICK, EHTMLAttribute.ONDBLCLICK, EHTMLAttribute.ONMOUSEDOWN, EHTMLAttribute.ONMOUSEUP, EHTMLAttribute.ONMOUSEOVER, EHTMLAttribute.ONMOUSEMOVE, EHTMLAttribute.ONMOUSEOUT, EHTMLAttribute.ONKEYPRESS, EHTMLAttribute.ONKEYDOWN, EHTMLAttribute.ONKEYUP, EHTMLAttribute.ABBR, EHTMLAttribute.AXIS, EHTMLAttribute.HEADERS, EHTMLAttribute.SCOPE, EHTMLAttribute.ROWSPAN, EHTMLAttribute.COLSPAN, EHTMLAttribute.ALIGN, EHTMLAttribute.CHAR, EHTMLAttribute.CHAROFF, EHTMLAttribute.VALIGN, EHTMLAttribute.NOWRAP, EHTMLAttribute.BGCOLOR, EHTMLAttribute.WIDTH, EHTMLAttribute.HEIGHT);<a name="line.302"></a>
+<span class="sourceLineNo">303</span><a name="line.303"></a>
+<span class="sourceLineNo">304</span>        /** The "real" name of the element. */<a name="line.304"></a>
+<span class="sourceLineNo">305</span>        private final String name;<a name="line.305"></a>
+<span class="sourceLineNo">306</span><a name="line.306"></a>
+<span class="sourceLineNo">307</span>        /** The attributes acutally allowed for this element. */<a name="line.307"></a>
+<span class="sourceLineNo">308</span>        private final Set&lt;EHTMLAttribute&gt; allowedAttributes;<a name="line.308"></a>
+<span class="sourceLineNo">309</span><a name="line.309"></a>
+<span class="sourceLineNo">310</span>        /** Constructor. */<a name="line.310"></a>
+<span class="sourceLineNo">311</span>        private EHTMLElement(String name, EHTMLAttribute... attributes) {<a name="line.311"></a>
+<span class="sourceLineNo">312</span>                this.name = name;<a name="line.312"></a>
+<span class="sourceLineNo">313</span>                if (attributes.length &gt; 0) {<a name="line.313"></a>
+<span class="sourceLineNo">314</span>                        allowedAttributes = EnumSet.of(attributes[0], attributes);<a name="line.314"></a>
+<span class="sourceLineNo">315</span>                } else {<a name="line.315"></a>
+<span class="sourceLineNo">316</span>                        allowedAttributes = EnumSet.noneOf(EHTMLAttribute.class);<a name="line.316"></a>
+<span class="sourceLineNo">317</span>                }<a name="line.317"></a>
+<span class="sourceLineNo">318</span>        }<a name="line.318"></a>
+<span class="sourceLineNo">319</span><a name="line.319"></a>
+<span class="sourceLineNo">320</span>        /** Returns whether the given attribute is allowed for the element. */<a name="line.320"></a>
+<span class="sourceLineNo">321</span>        public boolean allowsAttribute(EHTMLAttribute attribute) {<a name="line.321"></a>
+<span class="sourceLineNo">322</span>                return allowedAttributes.contains(attribute);<a name="line.322"></a>
+<span class="sourceLineNo">323</span>        }<a name="line.323"></a>
+<span class="sourceLineNo">324</span><a name="line.324"></a>
+<span class="sourceLineNo">325</span>        /** Returns the name as used in the HTML output. */<a name="line.325"></a>
+<span class="sourceLineNo">326</span>        public String getName() {<a name="line.326"></a>
+<span class="sourceLineNo">327</span>                return name;<a name="line.327"></a>
+<span class="sourceLineNo">328</span>        }<a name="line.328"></a>
+<span class="sourceLineNo">329</span><a name="line.329"></a>
+<span class="sourceLineNo">330</span>        /** {@inheritDoc} */<a name="line.330"></a>
+<span class="sourceLineNo">331</span>        @Override<a name="line.331"></a>
+<span class="sourceLineNo">332</span>        public String toString() {<a name="line.332"></a>
+<span class="sourceLineNo">333</span>                return name;<a name="line.333"></a>
+<span class="sourceLineNo">334</span>        }<a name="line.334"></a>
+<span class="sourceLineNo">335</span>}<a name="line.335"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

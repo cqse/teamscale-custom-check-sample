@@ -1,0 +1,227 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*-------------------------------------------------------------------------+<a name="line.1"></a>
+<span class="sourceLineNo">002</span>|                                                                          |<a name="line.2"></a>
+<span class="sourceLineNo">003</span>| Copyright 2005-2011 The ConQAT Project                                   |<a name="line.3"></a>
+<span class="sourceLineNo">004</span>|                                                                          |<a name="line.4"></a>
+<span class="sourceLineNo">005</span>| Licensed under the Apache License, Version 2.0 (the "License");          |<a name="line.5"></a>
+<span class="sourceLineNo">006</span>| you may not use this file except in compliance with the License.         |<a name="line.6"></a>
+<span class="sourceLineNo">007</span>| You may obtain a copy of the License at                                  |<a name="line.7"></a>
+<span class="sourceLineNo">008</span>|                                                                          |<a name="line.8"></a>
+<span class="sourceLineNo">009</span>|    http://www.apache.org/licenses/LICENSE-2.0                            |<a name="line.9"></a>
+<span class="sourceLineNo">010</span>|                                                                          |<a name="line.10"></a>
+<span class="sourceLineNo">011</span>| Unless required by applicable law or agreed to in writing, software      |<a name="line.11"></a>
+<span class="sourceLineNo">012</span>| distributed under the License is distributed on an "AS IS" BASIS,        |<a name="line.12"></a>
+<span class="sourceLineNo">013</span>| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. |<a name="line.13"></a>
+<span class="sourceLineNo">014</span>| See the License for the specific language governing permissions and      |<a name="line.14"></a>
+<span class="sourceLineNo">015</span>| limitations under the License.                                           |<a name="line.15"></a>
+<span class="sourceLineNo">016</span>+-------------------------------------------------------------------------*/<a name="line.16"></a>
+<span class="sourceLineNo">017</span>package org.conqat.lib.commons.filesystem;<a name="line.17"></a>
+<span class="sourceLineNo">018</span><a name="line.18"></a>
+<span class="sourceLineNo">019</span>import java.io.File;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import java.io.IOException;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import java.net.URL;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import java.net.URLDecoder;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import java.util.ArrayList;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import java.util.LinkedHashSet;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import java.util.List;<a name="line.25"></a>
+<span class="sourceLineNo">026</span><a name="line.26"></a>
+<span class="sourceLineNo">027</span>import org.conqat.lib.commons.string.StringUtils;<a name="line.27"></a>
+<span class="sourceLineNo">028</span><a name="line.28"></a>
+<span class="sourceLineNo">029</span>/**<a name="line.29"></a>
+<span class="sourceLineNo">030</span> * Utility class for dealing with class paths.<a name="line.30"></a>
+<span class="sourceLineNo">031</span> */<a name="line.31"></a>
+<span class="sourceLineNo">032</span>public class ClassPathUtils {<a name="line.32"></a>
+<span class="sourceLineNo">033</span><a name="line.33"></a>
+<span class="sourceLineNo">034</span>        /** Suffix for class files. */<a name="line.34"></a>
+<span class="sourceLineNo">035</span>        public static final String CLASS_FILE_SUFFIX = ".class";<a name="line.35"></a>
+<span class="sourceLineNo">036</span><a name="line.36"></a>
+<span class="sourceLineNo">037</span>        /**<a name="line.37"></a>
+<span class="sourceLineNo">038</span>         * This method calls {@link #createClassPath(IURLResolver, Class)} for each<a name="line.38"></a>
+<span class="sourceLineNo">039</span>         * class and concatenates them with {@link File#pathSeparator}.<a name="line.39"></a>
+<span class="sourceLineNo">040</span>         */<a name="line.40"></a>
+<span class="sourceLineNo">041</span>        public static String createClassPathAsString(IURLResolver resolver, Class&lt;?&gt;... anchorClasses) throws IOException {<a name="line.41"></a>
+<span class="sourceLineNo">042</span>                return StringUtils.concat(createClassPathAsSet(resolver, anchorClasses), File.pathSeparator);<a name="line.42"></a>
+<span class="sourceLineNo">043</span>        }<a name="line.43"></a>
+<span class="sourceLineNo">044</span><a name="line.44"></a>
+<span class="sourceLineNo">045</span>        /**<a name="line.45"></a>
+<span class="sourceLineNo">046</span>         * This method calls {@link #createClassPath(IURLResolver, Class)} for each<a name="line.46"></a>
+<span class="sourceLineNo">047</span>         * class and returns the classpath as String array.<a name="line.47"></a>
+<span class="sourceLineNo">048</span>         */<a name="line.48"></a>
+<span class="sourceLineNo">049</span>        public static String[] createClassPathAsArray(IURLResolver resolver, Class&lt;?&gt;... anchorClasses) throws IOException {<a name="line.49"></a>
+<span class="sourceLineNo">050</span>                return createClassPathAsSet(resolver, anchorClasses).toArray(new String[0]);<a name="line.50"></a>
+<span class="sourceLineNo">051</span>        }<a name="line.51"></a>
+<span class="sourceLineNo">052</span><a name="line.52"></a>
+<span class="sourceLineNo">053</span>        /**<a name="line.53"></a>
+<span class="sourceLineNo">054</span>         * This method calls {@link #createClassPath(IURLResolver, Class)} for each<a name="line.54"></a>
+<span class="sourceLineNo">055</span>         * class and returns the classpath as ordered set.<a name="line.55"></a>
+<span class="sourceLineNo">056</span>         *<a name="line.56"></a>
+<span class="sourceLineNo">057</span>         * @param resolver<a name="line.57"></a>
+<span class="sourceLineNo">058</span>         *            an optional resolver (may be null) that can be used to map<a name="line.58"></a>
+<span class="sourceLineNo">059</span>         *            special URLs (for example in the Eclipse context).<a name="line.59"></a>
+<span class="sourceLineNo">060</span>         */<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        public static LinkedHashSet&lt;String&gt; createClassPathAsSet(IURLResolver resolver, Class&lt;?&gt;... anchorClasses)<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                        throws IOException {<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                LinkedHashSet&lt;String&gt; classPath = new LinkedHashSet&lt;String&gt;();<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                for (Class&lt;?&gt; clazz : anchorClasses) {<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                        classPath.add(createClassPath(resolver, clazz));<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                }<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                return classPath;<a name="line.67"></a>
+<span class="sourceLineNo">068</span>        }<a name="line.68"></a>
+<span class="sourceLineNo">069</span><a name="line.69"></a>
+<span class="sourceLineNo">070</span>        /**<a name="line.70"></a>
+<span class="sourceLineNo">071</span>         * Create class path for an anchor class. This method checks were the anchor<a name="line.71"></a>
+<span class="sourceLineNo">072</span>         * class resides, i.e. in a jar file or directory and returns it.<a name="line.72"></a>
+<span class="sourceLineNo">073</span>         *<a name="line.73"></a>
+<span class="sourceLineNo">074</span>         * @param resolver<a name="line.74"></a>
+<span class="sourceLineNo">075</span>         *            an optional resolver (may be null) that can be used to map<a name="line.75"></a>
+<span class="sourceLineNo">076</span>         *            special URLs (for example in the Eclipse context).<a name="line.76"></a>
+<span class="sourceLineNo">077</span>         */<a name="line.77"></a>
+<span class="sourceLineNo">078</span>        public static String createClassPath(IURLResolver resolver, Class&lt;?&gt; anchorClass) throws IOException {<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                // this should be a save way to obtain the location<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                URL url = obtainClassFileURL(anchorClass);<a name="line.80"></a>
+<span class="sourceLineNo">081</span><a name="line.81"></a>
+<span class="sourceLineNo">082</span>                if (url == null) {<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                        throw new AssertionError("Internal assumption violated.");<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                }<a name="line.84"></a>
+<span class="sourceLineNo">085</span><a name="line.85"></a>
+<span class="sourceLineNo">086</span>                // resolve URL if resolver was provided<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                if (resolver != null) {<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                        url = resolver.resolve(url);<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                }<a name="line.89"></a>
+<span class="sourceLineNo">090</span><a name="line.90"></a>
+<span class="sourceLineNo">091</span>                String protocol = url.getProtocol();<a name="line.91"></a>
+<span class="sourceLineNo">092</span><a name="line.92"></a>
+<span class="sourceLineNo">093</span>                if ("file".equals(protocol)) {<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                        return createFileClasspath(url, anchorClass);<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                }<a name="line.95"></a>
+<span class="sourceLineNo">096</span><a name="line.96"></a>
+<span class="sourceLineNo">097</span>                if ("jar".equals(protocol)) {<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                        return FileSystemUtils.extractJarFileFromJarURL(url).getCanonicalPath();<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                }<a name="line.99"></a>
+<span class="sourceLineNo">100</span><a name="line.100"></a>
+<span class="sourceLineNo">101</span>                // If this resides somewhere on the net, we have a problem.<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                throw new IOException("Unsupported protocol: " + protocol);<a name="line.102"></a>
+<span class="sourceLineNo">103</span>        }<a name="line.103"></a>
+<span class="sourceLineNo">104</span><a name="line.104"></a>
+<span class="sourceLineNo">105</span>        /**<a name="line.105"></a>
+<span class="sourceLineNo">106</span>         * Returns the URL for the .class-file of a given class. For inner classes,<a name="line.106"></a>
+<span class="sourceLineNo">107</span>         * the URL of the surrounding class file is returned.<a name="line.107"></a>
+<span class="sourceLineNo">108</span>         */<a name="line.108"></a>
+<span class="sourceLineNo">109</span>        public static URL obtainClassFileURL(Class&lt;?&gt; clazz) {<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                String name = clazz.getSimpleName();<a name="line.110"></a>
+<span class="sourceLineNo">111</span><a name="line.111"></a>
+<span class="sourceLineNo">112</span>                // deal with inner classes<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                while (clazz.getEnclosingClass() != null) {<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                        clazz = clazz.getEnclosingClass();<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                        name = clazz.getSimpleName() + "$" + name;<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                }<a name="line.116"></a>
+<span class="sourceLineNo">117</span><a name="line.117"></a>
+<span class="sourceLineNo">118</span>                return clazz.getResource(name + ".class");<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        }<a name="line.119"></a>
+<span class="sourceLineNo">120</span><a name="line.120"></a>
+<span class="sourceLineNo">121</span>        /** Converts file URL to normal file location. */<a name="line.121"></a>
+<span class="sourceLineNo">122</span>        private static String createFileClasspath(URL url, Class&lt;?&gt; clazz) throws IOException {<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                String path = URLDecoder.decode(url.getPath(), FileSystemUtils.UTF8_ENCODING);<a name="line.123"></a>
+<span class="sourceLineNo">124</span><a name="line.124"></a>
+<span class="sourceLineNo">125</span>                // strip class name and '.class'<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                path = path.substring(0, path.length() - 6 - clazz.getName().length());<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                return new File(path).getCanonicalPath();<a name="line.127"></a>
+<span class="sourceLineNo">128</span>        }<a name="line.128"></a>
+<span class="sourceLineNo">129</span><a name="line.129"></a>
+<span class="sourceLineNo">130</span>        /** Interface for performing URL resolving. */<a name="line.130"></a>
+<span class="sourceLineNo">131</span>        public static interface IURLResolver {<a name="line.131"></a>
+<span class="sourceLineNo">132</span><a name="line.132"></a>
+<span class="sourceLineNo">133</span>                /** Resolves the URL and returns the result. */<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                URL resolve(URL url) throws IOException;<a name="line.134"></a>
+<span class="sourceLineNo">135</span>        }<a name="line.135"></a>
+<span class="sourceLineNo">136</span><a name="line.136"></a>
+<span class="sourceLineNo">137</span>        /**<a name="line.137"></a>
+<span class="sourceLineNo">138</span>         * Returns the fully qualified name of all java classes within the given<a name="line.138"></a>
+<span class="sourceLineNo">139</span>         * directory and subdirectories.<a name="line.139"></a>
+<span class="sourceLineNo">140</span>         */<a name="line.140"></a>
+<span class="sourceLineNo">141</span>        public static List&lt;String&gt; getClassNames(File directory) {<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                List&lt;String&gt; classNames = new ArrayList&lt;&gt;();<a name="line.142"></a>
+<span class="sourceLineNo">143</span><a name="line.143"></a>
+<span class="sourceLineNo">144</span>                List&lt;File&gt; classFiles = FileSystemUtils.listFilesRecursively(directory, new PlainClassFileFilter());<a name="line.144"></a>
+<span class="sourceLineNo">145</span><a name="line.145"></a>
+<span class="sourceLineNo">146</span>                String prefix = directory.getAbsolutePath() + File.separator;<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                for (File classFile : classFiles) {<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                        String path = classFile.getAbsolutePath();<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                        path = StringUtils.stripPrefix(path, prefix);<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                        path = StringUtils.stripSuffix(path, ClassPathUtils.CLASS_FILE_SUFFIX);<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                        classNames.add(path.replace(File.separator, "."));<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                }<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                return classNames;<a name="line.153"></a>
+<span class="sourceLineNo">154</span>        }<a name="line.154"></a>
+<span class="sourceLineNo">155</span>}<a name="line.155"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

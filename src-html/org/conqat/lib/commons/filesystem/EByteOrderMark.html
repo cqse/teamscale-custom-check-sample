@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*-------------------------------------------------------------------------+<a name="line.1"></a>
+<span class="sourceLineNo">002</span>|                                                                          |<a name="line.2"></a>
+<span class="sourceLineNo">003</span>| Copyright 2005-2011 The ConQAT Project                                   |<a name="line.3"></a>
+<span class="sourceLineNo">004</span>|                                                                          |<a name="line.4"></a>
+<span class="sourceLineNo">005</span>| Licensed under the Apache License, Version 2.0 (the "License");          |<a name="line.5"></a>
+<span class="sourceLineNo">006</span>| you may not use this file except in compliance with the License.         |<a name="line.6"></a>
+<span class="sourceLineNo">007</span>| You may obtain a copy of the License at                                  |<a name="line.7"></a>
+<span class="sourceLineNo">008</span>|                                                                          |<a name="line.8"></a>
+<span class="sourceLineNo">009</span>|    http://www.apache.org/licenses/LICENSE-2.0                            |<a name="line.9"></a>
+<span class="sourceLineNo">010</span>|                                                                          |<a name="line.10"></a>
+<span class="sourceLineNo">011</span>| Unless required by applicable law or agreed to in writing, software      |<a name="line.11"></a>
+<span class="sourceLineNo">012</span>| distributed under the License is distributed on an "AS IS" BASIS,        |<a name="line.12"></a>
+<span class="sourceLineNo">013</span>| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. |<a name="line.13"></a>
+<span class="sourceLineNo">014</span>| See the License for the specific language governing permissions and      |<a name="line.14"></a>
+<span class="sourceLineNo">015</span>| limitations under the License.                                           |<a name="line.15"></a>
+<span class="sourceLineNo">016</span>+-------------------------------------------------------------------------*/<a name="line.16"></a>
+<span class="sourceLineNo">017</span>package org.conqat.lib.commons.filesystem;<a name="line.17"></a>
+<span class="sourceLineNo">018</span><a name="line.18"></a>
+<span class="sourceLineNo">019</span>import java.util.Arrays;<a name="line.19"></a>
+<span class="sourceLineNo">020</span><a name="line.20"></a>
+<span class="sourceLineNo">021</span>import org.conqat.lib.commons.assertion.CCSMAssert;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import org.conqat.lib.commons.io.ByteArrayUtils;<a name="line.22"></a>
+<span class="sourceLineNo">023</span><a name="line.23"></a>
+<span class="sourceLineNo">024</span>/**<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * Enumeration of the UTF byte order marks (BOM). The actual values are taken<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * from http://unicode.org/faq/utf_bom.html<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * &lt;p&gt;<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * The order of the values in this enum is chosen such that BOMs that are a<a name="line.28"></a>
+<span class="sourceLineNo">029</span> * prefix of other BOMs are at the end, i.e. UTF-32 is before UTF-16. This way<a name="line.29"></a>
+<span class="sourceLineNo">030</span> * we can check the BOM prefix in the order of the enum values' appearance.<a name="line.30"></a>
+<span class="sourceLineNo">031</span> * <a name="line.31"></a>
+<span class="sourceLineNo">032</span> * @author hummelb<a name="line.32"></a>
+<span class="sourceLineNo">033</span> */<a name="line.33"></a>
+<span class="sourceLineNo">034</span>public enum EByteOrderMark {<a name="line.34"></a>
+<span class="sourceLineNo">035</span><a name="line.35"></a>
+<span class="sourceLineNo">036</span>        /** UTF-32 with big endian encoding. */<a name="line.36"></a>
+<span class="sourceLineNo">037</span>        UTF_32BE("UTF-32BE", new byte[] { 0x00, 0x00, (byte) 0xFE, (byte) 0xFF }),<a name="line.37"></a>
+<span class="sourceLineNo">038</span><a name="line.38"></a>
+<span class="sourceLineNo">039</span>        /** UTF-32 with little endian encoding. */<a name="line.39"></a>
+<span class="sourceLineNo">040</span>        UTF_32LE("UTF-32LE", new byte[] { (byte) 0xFF, (byte) 0xFE, 0x00, 0x00 }),<a name="line.40"></a>
+<span class="sourceLineNo">041</span><a name="line.41"></a>
+<span class="sourceLineNo">042</span>        /** UTF-16 with big endian encoding. */<a name="line.42"></a>
+<span class="sourceLineNo">043</span>        UTF_16BE("UTF-16BE", new byte[] { (byte) 0xFE, (byte) 0xFF }),<a name="line.43"></a>
+<span class="sourceLineNo">044</span><a name="line.44"></a>
+<span class="sourceLineNo">045</span>        /** UTF-16 with little endian encoding. */<a name="line.45"></a>
+<span class="sourceLineNo">046</span>        UTF_16LE("UTF-16LE", new byte[] { (byte) 0xFF, (byte) 0xFE }),<a name="line.46"></a>
+<span class="sourceLineNo">047</span><a name="line.47"></a>
+<span class="sourceLineNo">048</span>        /**<a name="line.48"></a>
+<span class="sourceLineNo">049</span>         * UTF-8. Note that for UTF-8 the endianess is not relevant and that the BOM<a name="line.49"></a>
+<span class="sourceLineNo">050</span>         * is optional.<a name="line.50"></a>
+<span class="sourceLineNo">051</span>         */<a name="line.51"></a>
+<span class="sourceLineNo">052</span>        UTF_8_BOM("UTF-8", new byte[] { (byte) 0xEF, (byte) 0xBB, (byte) 0xBF });<a name="line.52"></a>
+<span class="sourceLineNo">053</span><a name="line.53"></a>
+<span class="sourceLineNo">054</span>        /** The maximal length of a BOM. */<a name="line.54"></a>
+<span class="sourceLineNo">055</span>        public static final int MAX_BOM_LENGTH = 4;<a name="line.55"></a>
+<span class="sourceLineNo">056</span><a name="line.56"></a>
+<span class="sourceLineNo">057</span>        /** The name of the encoding */<a name="line.57"></a>
+<span class="sourceLineNo">058</span>        private final String encoding;<a name="line.58"></a>
+<span class="sourceLineNo">059</span><a name="line.59"></a>
+<span class="sourceLineNo">060</span>        /** The byte order mark. */<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        private final byte[] bom;<a name="line.61"></a>
+<span class="sourceLineNo">062</span><a name="line.62"></a>
+<span class="sourceLineNo">063</span>        /** Constructor. */<a name="line.63"></a>
+<span class="sourceLineNo">064</span>        private EByteOrderMark(String encoding, byte[] bom) {<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                this.encoding = encoding;<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                CCSMAssert.isTrue(bom.length &lt;= MAX_BOM_LENGTH, "Inconsistent max BOM length!");<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                this.bom = bom;<a name="line.67"></a>
+<span class="sourceLineNo">068</span>        }<a name="line.68"></a>
+<span class="sourceLineNo">069</span><a name="line.69"></a>
+<span class="sourceLineNo">070</span>        /** Returns the encoding. */<a name="line.70"></a>
+<span class="sourceLineNo">071</span>        public String getEncoding() {<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                return encoding;<a name="line.72"></a>
+<span class="sourceLineNo">073</span>        }<a name="line.73"></a>
+<span class="sourceLineNo">074</span><a name="line.74"></a>
+<span class="sourceLineNo">075</span>        /**<a name="line.75"></a>
+<span class="sourceLineNo">076</span>         * Returns the byte order mark. This returns a copy, so the array may be<a name="line.76"></a>
+<span class="sourceLineNo">077</span>         * modified.<a name="line.77"></a>
+<span class="sourceLineNo">078</span>         */<a name="line.78"></a>
+<span class="sourceLineNo">079</span>        public byte[] getBOM() {<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                return Arrays.copyOf(bom, bom.length);<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        }<a name="line.81"></a>
+<span class="sourceLineNo">082</span><a name="line.82"></a>
+<span class="sourceLineNo">083</span>        /** Returns the size of the BOM in bytes. */<a name="line.83"></a>
+<span class="sourceLineNo">084</span>        public int getBOMLength() {<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                return bom.length;<a name="line.85"></a>
+<span class="sourceLineNo">086</span>        }<a name="line.86"></a>
+<span class="sourceLineNo">087</span><a name="line.87"></a>
+<span class="sourceLineNo">088</span>        /**<a name="line.88"></a>
+<span class="sourceLineNo">089</span>         * This method checks the start of the provided data array to find a BOM. If<a name="line.89"></a>
+<span class="sourceLineNo">090</span>         * a BOM is found, the corresponding enum value is returned. Otherwise,<a name="line.90"></a>
+<span class="sourceLineNo">091</span>         * &lt;code&gt;null&lt;/code&gt; is returned. If possible, the provided data should at<a name="line.91"></a>
+<span class="sourceLineNo">092</span>         * least be of size {@value #MAX_BOM_LENGTH}. Otherwise the encoding might<a name="line.92"></a>
+<span class="sourceLineNo">093</span>         * not be detected correctly. However, the method also works with shorter<a name="line.93"></a>
+<span class="sourceLineNo">094</span>         * arrays (e.g. if a file consists of only 3 bytes).<a name="line.94"></a>
+<span class="sourceLineNo">095</span>         */<a name="line.95"></a>
+<span class="sourceLineNo">096</span>        public static EByteOrderMark determineBOM(byte[] data) {<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                for (EByteOrderMark bom : values()) {<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                        if (ByteArrayUtils.isPrefix(bom.bom, data)) {<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                                return bom;<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                        }<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                }<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                return null;<a name="line.102"></a>
+<span class="sourceLineNo">103</span>        }<a name="line.103"></a>
+<span class="sourceLineNo">104</span>}<a name="line.104"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

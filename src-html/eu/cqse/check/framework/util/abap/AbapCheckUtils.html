@@ -161,7 +161,7 @@
 <span class="sourceLineNo">153</span><a name="line.153"></a>
 <span class="sourceLineNo">154</span>                switch (method.getSubtype()) {<a name="line.154"></a>
 <span class="sourceLineNo">155</span>                case SubTypeNames.METHOD_IMPLEMENTATION:<a name="line.155"></a>
-<span class="sourceLineNo">156</span>                        return LanguageFeatureParser.ABAP.getDeclarationForMethod(rootEntities, method) == null;<a name="line.156"></a>
+<span class="sourceLineNo">156</span>                        return LanguageFeatureParser.ABAP.getDeclarationTokensForMethod(rootEntities, method) == null;<a name="line.156"></a>
 <span class="sourceLineNo">157</span>                default:<a name="line.157"></a>
 <span class="sourceLineNo">158</span>                        return false;<a name="line.158"></a>
 <span class="sourceLineNo">159</span>                }<a name="line.159"></a>
@@ -333,55 +333,47 @@
 <span class="sourceLineNo">325</span>        }<a name="line.325"></a>
 <span class="sourceLineNo">326</span><a name="line.326"></a>
 <span class="sourceLineNo">327</span>        /**<a name="line.327"></a>
-<span class="sourceLineNo">328</span>         * Lower-cases and removes leading '!', since this does not belong to the<a name="line.328"></a>
-<span class="sourceLineNo">329</span>         * variable name.<a name="line.329"></a>
+<span class="sourceLineNo">328</span>         * Checks if the given entity is a function call of a function with any of<a name="line.328"></a>
+<span class="sourceLineNo">329</span>         * the given names.<a name="line.329"></a>
 <span class="sourceLineNo">330</span>         */<a name="line.330"></a>
-<span class="sourceLineNo">331</span>        public static String normalizeVariableName(String name) {<a name="line.331"></a>
-<span class="sourceLineNo">332</span>                return StringUtils.stripPrefix(name, "!").toLowerCase();<a name="line.332"></a>
-<span class="sourceLineNo">333</span>        }<a name="line.333"></a>
-<span class="sourceLineNo">334</span><a name="line.334"></a>
-<span class="sourceLineNo">335</span>        /**<a name="line.335"></a>
-<span class="sourceLineNo">336</span>         * Checks if the given entity is a function call of a function with any of<a name="line.336"></a>
-<span class="sourceLineNo">337</span>         * the given names.<a name="line.337"></a>
-<span class="sourceLineNo">338</span>         */<a name="line.338"></a>
-<span class="sourceLineNo">339</span>        public static boolean isFunctionCallOfAny(ShallowEntity entity, String... functionNames) throws CheckException {<a name="line.339"></a>
-<span class="sourceLineNo">340</span>                Optional&lt;FunctionCallInfo&gt; functionCallInfo = LanguageFeatureParser.ABAP.getFunctionCallInfo(entity);<a name="line.340"></a>
-<span class="sourceLineNo">341</span>                if (!functionCallInfo.isPresent()) {<a name="line.341"></a>
-<span class="sourceLineNo">342</span>                        return false;<a name="line.342"></a>
-<span class="sourceLineNo">343</span>                }<a name="line.343"></a>
-<span class="sourceLineNo">344</span>                if (!Arrays.asList(functionNames).contains(functionCallInfo.get().getFunctionName())) {<a name="line.344"></a>
-<span class="sourceLineNo">345</span>                        return false;<a name="line.345"></a>
-<span class="sourceLineNo">346</span>                }<a name="line.346"></a>
-<span class="sourceLineNo">347</span>                return true;<a name="line.347"></a>
-<span class="sourceLineNo">348</span>        }<a name="line.348"></a>
-<span class="sourceLineNo">349</span><a name="line.349"></a>
-<span class="sourceLineNo">350</span>        /**<a name="line.350"></a>
-<span class="sourceLineNo">351</span>         * Gets the normalized text of the start tokens of a {@link ShallowEntity}<a name="line.351"></a>
-<span class="sourceLineNo">352</span>         * (typically for statement). Normalization is performed as follows:<a name="line.352"></a>
+<span class="sourceLineNo">331</span>        public static boolean isFunctionCallOfAny(ShallowEntity entity, String... functionNames) throws CheckException {<a name="line.331"></a>
+<span class="sourceLineNo">332</span>                Optional&lt;FunctionCallInfo&gt; functionCallInfo = LanguageFeatureParser.ABAP.getFunctionCallInfo(entity);<a name="line.332"></a>
+<span class="sourceLineNo">333</span>                if (!functionCallInfo.isPresent()) {<a name="line.333"></a>
+<span class="sourceLineNo">334</span>                        return false;<a name="line.334"></a>
+<span class="sourceLineNo">335</span>                }<a name="line.335"></a>
+<span class="sourceLineNo">336</span>                if (!Arrays.asList(functionNames).contains(functionCallInfo.get().getFunctionName())) {<a name="line.336"></a>
+<span class="sourceLineNo">337</span>                        return false;<a name="line.337"></a>
+<span class="sourceLineNo">338</span>                }<a name="line.338"></a>
+<span class="sourceLineNo">339</span>                return true;<a name="line.339"></a>
+<span class="sourceLineNo">340</span>        }<a name="line.340"></a>
+<span class="sourceLineNo">341</span><a name="line.341"></a>
+<span class="sourceLineNo">342</span>        /**<a name="line.342"></a>
+<span class="sourceLineNo">343</span>         * Gets the normalized text of the start tokens of a {@link ShallowEntity}<a name="line.343"></a>
+<span class="sourceLineNo">344</span>         * (typically for statement). Normalization is performed as follows:<a name="line.344"></a>
+<span class="sourceLineNo">345</span>         * &lt;p&gt;<a name="line.345"></a>
+<span class="sourceLineNo">346</span>         * 1) full comment lines (introduced with *) are removed<a name="line.346"></a>
+<span class="sourceLineNo">347</span>         * &lt;p&gt;<a name="line.347"></a>
+<span class="sourceLineNo">348</span>         * 2) mid-line comments (introduced with ") will be removed (unless a '<a name="line.348"></a>
+<span class="sourceLineNo">349</span>         * follows the " since it is assumed that the " is within a String literal<a name="line.349"></a>
+<span class="sourceLineNo">350</span>         * in that case).<a name="line.350"></a>
+<span class="sourceLineNo">351</span>         * &lt;p&gt;<a name="line.351"></a>
+<span class="sourceLineNo">352</span>         * 3) white spaces before the closing . are removed<a name="line.352"></a>
 <span class="sourceLineNo">353</span>         * &lt;p&gt;<a name="line.353"></a>
-<span class="sourceLineNo">354</span>         * 1) full comment lines (introduced with *) are removed<a name="line.354"></a>
-<span class="sourceLineNo">355</span>         * &lt;p&gt;<a name="line.355"></a>
-<span class="sourceLineNo">356</span>         * 2) mid-line comments (introduced with ") will be removed (unless a '<a name="line.356"></a>
-<span class="sourceLineNo">357</span>         * follows the " since it is assumed that the " is within a String literal<a name="line.357"></a>
-<span class="sourceLineNo">358</span>         * in that case).<a name="line.358"></a>
-<span class="sourceLineNo">359</span>         * &lt;p&gt;<a name="line.359"></a>
-<span class="sourceLineNo">360</span>         * 3) white spaces before the closing . are removed<a name="line.360"></a>
-<span class="sourceLineNo">361</span>         * &lt;p&gt;<a name="line.361"></a>
-<span class="sourceLineNo">362</span>         * 4) all (sequences of) white spaces are replaced by a single space<a name="line.362"></a>
-<span class="sourceLineNo">363</span>         */<a name="line.363"></a>
-<span class="sourceLineNo">364</span>        public static String getNormalizedStartTokensText(ShallowEntity entity, ICheckContext context)<a name="line.364"></a>
-<span class="sourceLineNo">365</span>                        throws CheckException {<a name="line.365"></a>
-<span class="sourceLineNo">366</span>                List&lt;IToken&gt; tokens = entity.ownStartTokens();<a name="line.366"></a>
-<span class="sourceLineNo">367</span>                if (tokens.isEmpty()) {<a name="line.367"></a>
-<span class="sourceLineNo">368</span>                        return StringUtils.EMPTY_STRING;<a name="line.368"></a>
-<span class="sourceLineNo">369</span>                }<a name="line.369"></a>
-<span class="sourceLineNo">370</span>                String statementText = context.getTextContent().substring(tokens.get(0).getOffset(),<a name="line.370"></a>
-<span class="sourceLineNo">371</span>                                tokens.get(tokens.size() - 1).getEndOffset() + 1);<a name="line.371"></a>
-<span class="sourceLineNo">372</span>                return statementText.replaceAll("(?m)^\\*.*", StringUtils.EMPTY_STRING)<a name="line.372"></a>
-<span class="sourceLineNo">373</span>                                .replaceAll("\"[^']*?\\n", StringUtils.SPACE).trim().replaceAll("\\s+\\.$", ".")<a name="line.373"></a>
-<span class="sourceLineNo">374</span>                                .replaceAll("\\s+", StringUtils.SPACE);<a name="line.374"></a>
-<span class="sourceLineNo">375</span>        }<a name="line.375"></a>
-<span class="sourceLineNo">376</span>}<a name="line.376"></a>
+<span class="sourceLineNo">354</span>         * 4) all (sequences of) white spaces are replaced by a single space<a name="line.354"></a>
+<span class="sourceLineNo">355</span>         */<a name="line.355"></a>
+<span class="sourceLineNo">356</span>        public static String getNormalizedStartTokensText(ShallowEntity entity, ICheckContext context)<a name="line.356"></a>
+<span class="sourceLineNo">357</span>                        throws CheckException {<a name="line.357"></a>
+<span class="sourceLineNo">358</span>                List&lt;IToken&gt; tokens = entity.ownStartTokens();<a name="line.358"></a>
+<span class="sourceLineNo">359</span>                if (tokens.isEmpty()) {<a name="line.359"></a>
+<span class="sourceLineNo">360</span>                        return StringUtils.EMPTY_STRING;<a name="line.360"></a>
+<span class="sourceLineNo">361</span>                }<a name="line.361"></a>
+<span class="sourceLineNo">362</span>                String statementText = context.getTextContent().substring(tokens.get(0).getOffset(),<a name="line.362"></a>
+<span class="sourceLineNo">363</span>                                tokens.get(tokens.size() - 1).getEndOffset() + 1);<a name="line.363"></a>
+<span class="sourceLineNo">364</span>                return statementText.replaceAll("(?m)^\\*.*", StringUtils.EMPTY_STRING)<a name="line.364"></a>
+<span class="sourceLineNo">365</span>                                .replaceAll("\"[^']*?\\n", StringUtils.SPACE).trim().replaceAll("\\s+\\.$", ".")<a name="line.365"></a>
+<span class="sourceLineNo">366</span>                                .replaceAll("\\s+", StringUtils.SPACE);<a name="line.366"></a>
+<span class="sourceLineNo">367</span>        }<a name="line.367"></a>
+<span class="sourceLineNo">368</span>}<a name="line.368"></a>
 
 
 

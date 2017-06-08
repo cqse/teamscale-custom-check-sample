@@ -1,0 +1,306 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*-------------------------------------------------------------------------+<a name="line.1"></a>
+<span class="sourceLineNo">002</span>|                                                                          |<a name="line.2"></a>
+<span class="sourceLineNo">003</span>| Copyright 2005-2011 the ConQAT Project                                   |<a name="line.3"></a>
+<span class="sourceLineNo">004</span>|                                                                          |<a name="line.4"></a>
+<span class="sourceLineNo">005</span>| Licensed under the Apache License, Version 2.0 (the "License");          |<a name="line.5"></a>
+<span class="sourceLineNo">006</span>| you may not use this file except in compliance with the License.         |<a name="line.6"></a>
+<span class="sourceLineNo">007</span>| You may obtain a copy of the License at                                  |<a name="line.7"></a>
+<span class="sourceLineNo">008</span>|                                                                          |<a name="line.8"></a>
+<span class="sourceLineNo">009</span>|    http://www.apache.org/licenses/LICENSE-2.0                            |<a name="line.9"></a>
+<span class="sourceLineNo">010</span>|                                                                          |<a name="line.10"></a>
+<span class="sourceLineNo">011</span>| Unless required by applicable law or agreed to in writing, software      |<a name="line.11"></a>
+<span class="sourceLineNo">012</span>| distributed under the License is distributed on an "AS IS" BASIS,        |<a name="line.12"></a>
+<span class="sourceLineNo">013</span>| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. |<a name="line.13"></a>
+<span class="sourceLineNo">014</span>| See the License for the specific language governing permissions and      |<a name="line.14"></a>
+<span class="sourceLineNo">015</span>| limitations under the License.                                           |<a name="line.15"></a>
+<span class="sourceLineNo">016</span>+-------------------------------------------------------------------------*/<a name="line.16"></a>
+<span class="sourceLineNo">017</span>package org.conqat.lib.commons.serialization;<a name="line.17"></a>
+<span class="sourceLineNo">018</span><a name="line.18"></a>
+<span class="sourceLineNo">019</span>import java.io.BufferedInputStream;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import java.io.ByteArrayInputStream;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import java.io.DataInputStream;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import java.io.EOFException;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import java.io.IOException;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import java.io.InputStream;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import java.io.ObjectStreamConstants;<a name="line.25"></a>
+<span class="sourceLineNo">026</span><a name="line.26"></a>
+<span class="sourceLineNo">027</span>import org.conqat.lib.commons.assertion.CCSMAssert;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import org.conqat.lib.commons.serialization.classes.SerializedClass;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>import org.conqat.lib.commons.serialization.classes.SerializedProxyClass;<a name="line.29"></a>
+<span class="sourceLineNo">030</span>import org.conqat.lib.commons.serialization.objects.SerializedArrayObject;<a name="line.30"></a>
+<span class="sourceLineNo">031</span>import org.conqat.lib.commons.serialization.objects.SerializedClassObject;<a name="line.31"></a>
+<span class="sourceLineNo">032</span>import org.conqat.lib.commons.serialization.objects.SerializedEnumLiteral;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import org.conqat.lib.commons.serialization.objects.SerializedObject;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import org.conqat.lib.commons.serialization.objects.SerializedStringObject;<a name="line.34"></a>
+<span class="sourceLineNo">035</span><a name="line.35"></a>
+<span class="sourceLineNo">036</span>/**<a name="line.36"></a>
+<span class="sourceLineNo">037</span> * Parses serialized entities (objects and classes).<a name="line.37"></a>
+<span class="sourceLineNo">038</span> */<a name="line.38"></a>
+<span class="sourceLineNo">039</span>public class SerializedEntityParser {<a name="line.39"></a>
+<span class="sourceLineNo">040</span><a name="line.40"></a>
+<span class="sourceLineNo">041</span>        /** The stream to read from. */<a name="line.41"></a>
+<span class="sourceLineNo">042</span>        private final DataInputStream din;<a name="line.42"></a>
+<span class="sourceLineNo">043</span><a name="line.43"></a>
+<span class="sourceLineNo">044</span>        /** The pool we use to store read objects into. */<a name="line.44"></a>
+<span class="sourceLineNo">045</span>        private final SerializedEntityPool pool = new SerializedEntityPool();<a name="line.45"></a>
+<span class="sourceLineNo">046</span><a name="line.46"></a>
+<span class="sourceLineNo">047</span>        /** Constructor. */<a name="line.47"></a>
+<span class="sourceLineNo">048</span>        private SerializedEntityParser(DataInputStream din) {<a name="line.48"></a>
+<span class="sourceLineNo">049</span>                CCSMAssert.isTrue(din.markSupported(), "Our parser requires an input stream that supports marking! "<a name="line.49"></a>
+<span class="sourceLineNo">050</span>                                + "However, all calling methods should ensure this.");<a name="line.50"></a>
+<span class="sourceLineNo">051</span><a name="line.51"></a>
+<span class="sourceLineNo">052</span>                this.din = din;<a name="line.52"></a>
+<span class="sourceLineNo">053</span>        }<a name="line.53"></a>
+<span class="sourceLineNo">054</span><a name="line.54"></a>
+<span class="sourceLineNo">055</span>        /** Performs the actual parsing and returns the pool of parsed objects. */<a name="line.55"></a>
+<span class="sourceLineNo">056</span>        private SerializedEntityPool parse() throws IOException {<a name="line.56"></a>
+<span class="sourceLineNo">057</span>                short magic = din.readShort();<a name="line.57"></a>
+<span class="sourceLineNo">058</span>                if (magic != ObjectStreamConstants.STREAM_MAGIC) {<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                        throw new IOException("Magic header not found!");<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                }<a name="line.60"></a>
+<span class="sourceLineNo">061</span><a name="line.61"></a>
+<span class="sourceLineNo">062</span>                short version = din.readShort();<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                if (version != ObjectStreamConstants.STREAM_VERSION) {<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                        throw new IOException("Unexpected stream version!");<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                }<a name="line.65"></a>
+<span class="sourceLineNo">066</span><a name="line.66"></a>
+<span class="sourceLineNo">067</span>                try {<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                        while (true) {<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                                pool.registerRootHandle(parseContent());<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                        }<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                } catch (EOFException e) {<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                        // this exception is the intended mechanism of communicating the end<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                        // of the stream. So all is ok.<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                }<a name="line.74"></a>
+<span class="sourceLineNo">075</span><a name="line.75"></a>
+<span class="sourceLineNo">076</span>                return pool;<a name="line.76"></a>
+<span class="sourceLineNo">077</span>        }<a name="line.77"></a>
+<span class="sourceLineNo">078</span><a name="line.78"></a>
+<span class="sourceLineNo">079</span>        /**<a name="line.79"></a>
+<span class="sourceLineNo">080</span>         * Parses the &lt;code&gt;content&lt;/code&gt; part of the stream. Returns a handle for<a name="line.80"></a>
+<span class="sourceLineNo">081</span>         * the created object.<a name="line.81"></a>
+<span class="sourceLineNo">082</span>         */<a name="line.82"></a>
+<span class="sourceLineNo">083</span>        public int parseContent() throws IOException {<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                byte next = din.readByte();<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                switch (next) {<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                // these are the options for "object"<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                case ObjectStreamConstants.TC_OBJECT:<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                        return parseObject();<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                case ObjectStreamConstants.TC_CLASS:<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                        return parseClass();<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                case ObjectStreamConstants.TC_ARRAY:<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                        return parseArray();<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                case ObjectStreamConstants.TC_STRING:<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                        return parseString(false);<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                case ObjectStreamConstants.TC_LONGSTRING:<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                        return parseString(true);<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                case ObjectStreamConstants.TC_ENUM:<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                        return parseEnum();<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                case ObjectStreamConstants.TC_CLASSDESC:<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                        return parsePlainClassDesc();<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                case ObjectStreamConstants.TC_PROXYCLASSDESC:<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                        return parseProxyClassDesc();<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                case ObjectStreamConstants.TC_REFERENCE:<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                        return readHandle();<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                case ObjectStreamConstants.TC_NULL:<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                        return SerializedEntityPool.NULL_HANDLE;<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                case ObjectStreamConstants.TC_EXCEPTION:<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                        // not sure how to create them; maybe only relevant in RMI?<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                        throw new IOException("Top-level exceptions are not supported!");<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                case ObjectStreamConstants.TC_RESET:<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                        pool.reset();<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                        return SerializedEntityPool.NULL_HANDLE;<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                case ObjectStreamConstants.TC_BLOCKDATA:<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                case ObjectStreamConstants.TC_BLOCKDATALONG:<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                        // although the grammar allows them at this point, we could find no<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                        // way block data can happen top-level<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                        throw new IOException("Unexpected block data at top-level!");<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                default:<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                        throw new IOException("Unexpected value for next: " + next);<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                }<a name="line.120"></a>
+<span class="sourceLineNo">121</span>        }<a name="line.121"></a>
+<span class="sourceLineNo">122</span><a name="line.122"></a>
+<span class="sourceLineNo">123</span>        /**<a name="line.123"></a>
+<span class="sourceLineNo">124</span>         * Parses the &lt;code&gt;newClass&lt;/code&gt; part of the stream. Returns the handle<a name="line.124"></a>
+<span class="sourceLineNo">125</span>         * of the object.<a name="line.125"></a>
+<span class="sourceLineNo">126</span>         */<a name="line.126"></a>
+<span class="sourceLineNo">127</span>        private int parseClass() throws IOException {<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                return new SerializedClassObject(pool, parseClassDesc()).getHandle();<a name="line.128"></a>
+<span class="sourceLineNo">129</span>        }<a name="line.129"></a>
+<span class="sourceLineNo">130</span><a name="line.130"></a>
+<span class="sourceLineNo">131</span>        /**<a name="line.131"></a>
+<span class="sourceLineNo">132</span>         * Parses the &lt;code&gt;newString&lt;/code&gt; of the stream. Argument determines<a name="line.132"></a>
+<span class="sourceLineNo">133</span>         * whether to parse a long string. Returns the handle of the object.<a name="line.133"></a>
+<span class="sourceLineNo">134</span>         */<a name="line.134"></a>
+<span class="sourceLineNo">135</span>        private int parseString(boolean longString) throws IOException {<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                return new SerializedStringObject(din, pool, longString).getHandle();<a name="line.136"></a>
+<span class="sourceLineNo">137</span>        }<a name="line.137"></a>
+<span class="sourceLineNo">138</span><a name="line.138"></a>
+<span class="sourceLineNo">139</span>        /**<a name="line.139"></a>
+<span class="sourceLineNo">140</span>         * Parses the &lt;code&gt;newObject&lt;/code&gt; part of the stream. Returns the handle<a name="line.140"></a>
+<span class="sourceLineNo">141</span>         * of the object.<a name="line.141"></a>
+<span class="sourceLineNo">142</span>         */<a name="line.142"></a>
+<span class="sourceLineNo">143</span>        private int parseObject() throws IOException {<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                return new SerializedObject(din, pool, this, parseClassDesc()).getHandle();<a name="line.144"></a>
+<span class="sourceLineNo">145</span>        }<a name="line.145"></a>
+<span class="sourceLineNo">146</span><a name="line.146"></a>
+<span class="sourceLineNo">147</span>        /**<a name="line.147"></a>
+<span class="sourceLineNo">148</span>         * Parses the &lt;code&gt;newArray&lt;/code&gt; part of the stream. Returns the handle<a name="line.148"></a>
+<span class="sourceLineNo">149</span>         * of the array object.<a name="line.149"></a>
+<span class="sourceLineNo">150</span>         */<a name="line.150"></a>
+<span class="sourceLineNo">151</span>        private int parseArray() throws IOException {<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                return new SerializedArrayObject(din, pool, this, parseClassDesc()).getHandle();<a name="line.152"></a>
+<span class="sourceLineNo">153</span>        }<a name="line.153"></a>
+<span class="sourceLineNo">154</span><a name="line.154"></a>
+<span class="sourceLineNo">155</span>        /**<a name="line.155"></a>
+<span class="sourceLineNo">156</span>         * Parses the &lt;code&gt;newEnum&lt;/code&gt; part of the stream. Returns the handle of<a name="line.156"></a>
+<span class="sourceLineNo">157</span>         * the enum literal.<a name="line.157"></a>
+<span class="sourceLineNo">158</span>         */<a name="line.158"></a>
+<span class="sourceLineNo">159</span>        private int parseEnum() throws IOException {<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                return new SerializedEnumLiteral(pool, this, parseClassDesc()).getHandle();<a name="line.160"></a>
+<span class="sourceLineNo">161</span>        }<a name="line.161"></a>
+<span class="sourceLineNo">162</span><a name="line.162"></a>
+<span class="sourceLineNo">163</span>        /**<a name="line.163"></a>
+<span class="sourceLineNo">164</span>         * Parses the &lt;code&gt;classDesc&lt;/code&gt; part of the stream. Returns the handle<a name="line.164"></a>
+<span class="sourceLineNo">165</span>         * of the class.<a name="line.165"></a>
+<span class="sourceLineNo">166</span>         */<a name="line.166"></a>
+<span class="sourceLineNo">167</span>        public int parseClassDesc() throws IOException {<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                byte next = din.readByte();<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                switch (next) {<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                case ObjectStreamConstants.TC_CLASSDESC:<a name="line.170"></a>
+<span class="sourceLineNo">171</span>                        return parsePlainClassDesc();<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                case ObjectStreamConstants.TC_PROXYCLASSDESC:<a name="line.172"></a>
+<span class="sourceLineNo">173</span>                        return parseProxyClassDesc();<a name="line.173"></a>
+<span class="sourceLineNo">174</span>                case ObjectStreamConstants.TC_NULL:<a name="line.174"></a>
+<span class="sourceLineNo">175</span>                        return SerializedEntityPool.NULL_HANDLE;<a name="line.175"></a>
+<span class="sourceLineNo">176</span>                case ObjectStreamConstants.TC_REFERENCE:<a name="line.176"></a>
+<span class="sourceLineNo">177</span>                        return readHandle();<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                default:<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                        throw new IOException("Unexpected value for next: " + next);<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                }<a name="line.180"></a>
+<span class="sourceLineNo">181</span>        }<a name="line.181"></a>
+<span class="sourceLineNo">182</span><a name="line.182"></a>
+<span class="sourceLineNo">183</span>        /**<a name="line.183"></a>
+<span class="sourceLineNo">184</span>         * Parses the "normal" part of a &lt;code&gt;newClassDesc&lt;/code&gt; part of the<a name="line.184"></a>
+<span class="sourceLineNo">185</span>         * stream. Returns the handle of the class.<a name="line.185"></a>
+<span class="sourceLineNo">186</span>         */<a name="line.186"></a>
+<span class="sourceLineNo">187</span>        private int parsePlainClassDesc() throws IOException {<a name="line.187"></a>
+<span class="sourceLineNo">188</span>                return new SerializedClass(din, pool, this).getHandle();<a name="line.188"></a>
+<span class="sourceLineNo">189</span>        }<a name="line.189"></a>
+<span class="sourceLineNo">190</span><a name="line.190"></a>
+<span class="sourceLineNo">191</span>        /**<a name="line.191"></a>
+<span class="sourceLineNo">192</span>         * Parses the proxy part of a &lt;code&gt;newClassDesc&lt;/code&gt; part of the stream.<a name="line.192"></a>
+<span class="sourceLineNo">193</span>         * Returns the handle of the class.<a name="line.193"></a>
+<span class="sourceLineNo">194</span>         */<a name="line.194"></a>
+<span class="sourceLineNo">195</span>        private int parseProxyClassDesc() throws IOException {<a name="line.195"></a>
+<span class="sourceLineNo">196</span>                return new SerializedProxyClass(din, pool, this).getHandle();<a name="line.196"></a>
+<span class="sourceLineNo">197</span>        }<a name="line.197"></a>
+<span class="sourceLineNo">198</span><a name="line.198"></a>
+<span class="sourceLineNo">199</span>        /** Reads a handle to a previously read object from the stream. */<a name="line.199"></a>
+<span class="sourceLineNo">200</span>        private int readHandle() throws IOException {<a name="line.200"></a>
+<span class="sourceLineNo">201</span>                int handle = din.readInt();<a name="line.201"></a>
+<span class="sourceLineNo">202</span>                if (!pool.containsHandle(handle)) {<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                        throw new IOException("Handle to unknown object: " + handle);<a name="line.203"></a>
+<span class="sourceLineNo">204</span>                }<a name="line.204"></a>
+<span class="sourceLineNo">205</span>                return handle;<a name="line.205"></a>
+<span class="sourceLineNo">206</span>        }<a name="line.206"></a>
+<span class="sourceLineNo">207</span><a name="line.207"></a>
+<span class="sourceLineNo">208</span>        /**<a name="line.208"></a>
+<span class="sourceLineNo">209</span>         * Parses an object and ensures that the returned object is a<a name="line.209"></a>
+<span class="sourceLineNo">210</span>         * {@link SerializedStringObject}.<a name="line.210"></a>
+<span class="sourceLineNo">211</span>         */<a name="line.211"></a>
+<span class="sourceLineNo">212</span>        public SerializedStringObject parseStringObject() throws IOException {<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                return pool.getEntity(parseContent(), SerializedStringObject.class);<a name="line.213"></a>
+<span class="sourceLineNo">214</span>        }<a name="line.214"></a>
+<span class="sourceLineNo">215</span><a name="line.215"></a>
+<span class="sourceLineNo">216</span>        /** Parses entities from a given data input stream. */<a name="line.216"></a>
+<span class="sourceLineNo">217</span>        public static SerializedEntityPool parse(DataInputStream din) throws IOException {<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                return new SerializedEntityParser(din).parse();<a name="line.218"></a>
+<span class="sourceLineNo">219</span>        }<a name="line.219"></a>
+<span class="sourceLineNo">220</span><a name="line.220"></a>
+<span class="sourceLineNo">221</span>        /** Parses entities from a given input stream. */<a name="line.221"></a>
+<span class="sourceLineNo">222</span>        public static SerializedEntityPool parse(InputStream in) throws IOException {<a name="line.222"></a>
+<span class="sourceLineNo">223</span>                if (!in.markSupported()) {<a name="line.223"></a>
+<span class="sourceLineNo">224</span>                        in = new BufferedInputStream(in);<a name="line.224"></a>
+<span class="sourceLineNo">225</span>                }<a name="line.225"></a>
+<span class="sourceLineNo">226</span><a name="line.226"></a>
+<span class="sourceLineNo">227</span>                return parse(new DataInputStream(in));<a name="line.227"></a>
+<span class="sourceLineNo">228</span>        }<a name="line.228"></a>
+<span class="sourceLineNo">229</span><a name="line.229"></a>
+<span class="sourceLineNo">230</span>        /** Parses entities from a given byte array. */<a name="line.230"></a>
+<span class="sourceLineNo">231</span>        public static SerializedEntityPool parse(byte[] data) throws IOException {<a name="line.231"></a>
+<span class="sourceLineNo">232</span>                return parse(new ByteArrayInputStream(data));<a name="line.232"></a>
+<span class="sourceLineNo">233</span>        }<a name="line.233"></a>
+<span class="sourceLineNo">234</span>}<a name="line.234"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

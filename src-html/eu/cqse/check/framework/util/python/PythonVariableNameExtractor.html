@@ -127,7 +127,7 @@
 <span class="sourceLineNo">119</span>        /** Extracts parameter names from a method. */<a name="line.119"></a>
 <span class="sourceLineNo">120</span>        private static List&lt;IToken&gt; extractFromMethod(ShallowEntity method) {<a name="line.120"></a>
 <span class="sourceLineNo">121</span>                List&lt;List&lt;IToken&gt;&gt; splitParameterTokens = getSplitParameterTokens(method);<a name="line.121"></a>
-<span class="sourceLineNo">122</span>                return CollectionUtils.map(splitParameterTokens, tokens -&gt; tokens.get(0));<a name="line.122"></a>
+<span class="sourceLineNo">122</span>                return CollectionUtils.filterAndMap(splitParameterTokens, tokens -&gt; !tokens.isEmpty(), tokens -&gt; tokens.get(0));<a name="line.122"></a>
 <span class="sourceLineNo">123</span>        }<a name="line.123"></a>
 <span class="sourceLineNo">124</span><a name="line.124"></a>
 <span class="sourceLineNo">125</span>        /**<a name="line.125"></a>

@@ -263,23 +263,21 @@
 <span class="sourceLineNo">255</span>         *         assigned or, if the exception is not specified explicitly but<a name="line.255"></a>
 <span class="sourceLineNo">256</span>         *         OTHERS is specified to be not<a name="line.256"></a>
 <span class="sourceLineNo">257</span>         *         {@value AbapCheckUtils#SY_SUBRC_NO_ERROR}<a name="line.257"></a>
-<span class="sourceLineNo">258</span>         * @throws CheckException<a name="line.258"></a>
-<span class="sourceLineNo">259</span>         *             if the error code is not specified as integer literal<a name="line.259"></a>
-<span class="sourceLineNo">260</span>         */<a name="line.260"></a>
-<span class="sourceLineNo">261</span>        public boolean isSettingErrorCodeForException(String exceptionName) throws CheckException {<a name="line.261"></a>
-<span class="sourceLineNo">262</span>                Integer errorCode = exceptionsSpecifiction.get(exceptionName);<a name="line.262"></a>
-<span class="sourceLineNo">263</span>                if (errorCode == null) {<a name="line.263"></a>
-<span class="sourceLineNo">264</span>                        if (OTHERS.equals(exceptionName)) {<a name="line.264"></a>
-<span class="sourceLineNo">265</span>                                return false;<a name="line.265"></a>
-<span class="sourceLineNo">266</span>                        }<a name="line.266"></a>
-<span class="sourceLineNo">267</span>                        return isSettingErrorCodeForException(OTHERS);<a name="line.267"></a>
-<span class="sourceLineNo">268</span>                }<a name="line.268"></a>
-<span class="sourceLineNo">269</span>                if (errorCode == AbapCheckUtils.SY_SUBRC_NO_ERROR) {<a name="line.269"></a>
-<span class="sourceLineNo">270</span>                        return false;<a name="line.270"></a>
-<span class="sourceLineNo">271</span>                }<a name="line.271"></a>
-<span class="sourceLineNo">272</span>                return true;<a name="line.272"></a>
-<span class="sourceLineNo">273</span>        }<a name="line.273"></a>
-<span class="sourceLineNo">274</span>}<a name="line.274"></a>
+<span class="sourceLineNo">258</span>         */<a name="line.258"></a>
+<span class="sourceLineNo">259</span>        public boolean isSettingErrorCodeForException(String exceptionName) {<a name="line.259"></a>
+<span class="sourceLineNo">260</span>                Integer errorCode = exceptionsSpecifiction.get(exceptionName);<a name="line.260"></a>
+<span class="sourceLineNo">261</span>                if (errorCode == null) {<a name="line.261"></a>
+<span class="sourceLineNo">262</span>                        if (OTHERS.equals(exceptionName)) {<a name="line.262"></a>
+<span class="sourceLineNo">263</span>                                return false;<a name="line.263"></a>
+<span class="sourceLineNo">264</span>                        }<a name="line.264"></a>
+<span class="sourceLineNo">265</span>                        return isSettingErrorCodeForException(OTHERS);<a name="line.265"></a>
+<span class="sourceLineNo">266</span>                }<a name="line.266"></a>
+<span class="sourceLineNo">267</span>                if (errorCode == AbapCheckUtils.SY_SUBRC_NO_ERROR) {<a name="line.267"></a>
+<span class="sourceLineNo">268</span>                        return false;<a name="line.268"></a>
+<span class="sourceLineNo">269</span>                }<a name="line.269"></a>
+<span class="sourceLineNo">270</span>                return true;<a name="line.270"></a>
+<span class="sourceLineNo">271</span>        }<a name="line.271"></a>
+<span class="sourceLineNo">272</span>}<a name="line.272"></a>
 
 
 

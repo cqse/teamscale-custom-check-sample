@@ -35,7 +35,7 @@
 <span class="sourceLineNo">027</span>/**<a name="line.27"></a>
 <span class="sourceLineNo">028</span> * Check for ignored JUnit tests.<a name="line.28"></a>
 <span class="sourceLineNo">029</span> */<a name="line.29"></a>
-<span class="sourceLineNo">030</span>@ACheck(name = IgnoredJUnitTestCheck.FINDING_MESSAGE, description = "JUnit tests should not be ignored for longer periods of time.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.YELLOW, languages = {<a name="line.30"></a>
+<span class="sourceLineNo">030</span>@ACheck(name = IgnoredJUnitTestCheck.FINDING_MESSAGE, description = "JUnit tests should not be ignored for longer periods of time.", groupName = CheckGroupNames.TEST_CONVENTIONS, defaultEnablement = EFindingEnablement.YELLOW, languages = {<a name="line.30"></a>
 <span class="sourceLineNo">031</span>                ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })<a name="line.31"></a>
 <span class="sourceLineNo">032</span>public class IgnoredJUnitTestCheck extends EntityFindingCheckBase {<a name="line.32"></a>
 <span class="sourceLineNo">033</span><a name="line.33"></a>
