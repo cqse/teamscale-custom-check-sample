@@ -35,6 +35,7 @@ dependencies {
     compile files('lib/eu.cqse.check.jar')
     
 	testCompile 'junit:junit:4.12'    
+	testCompile 'org.assertj:assertj-core:3.8.0'   
 	testCompile 'log4j:log4j:1.2.17'
 	testCompile 'jaxen:jaxen:1.1.6'
 }
