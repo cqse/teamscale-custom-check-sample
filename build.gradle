@@ -1,29 +1,36 @@
-apply plugin: 'java'
-apply plugin: 'eclipse'
+plugins {
+    id 'java-library'
+    id 'eclipse'
+    id 'idea'
+}
 
 sourceSets {
     main {
         java {
             srcDir 'src/'
+            outputDir = file("$buildDir/build/classes/")
         }
-        output.classesDir = 'build/classes/'
     }
     test {
         java {
             srcDir 'test-src/'
+            outputDir = file("$buildDir/build/classes/")
         }
-        output.classesDir = 'build/classes/'
     }
 
 }
 
-jar {
-    exclude ("**/CheckTest*")
-}
+// jar {
+//     exclude ("**/CheckTest*")
+// }
 
 test {
-    // It's sometimes useful to see the stdout during testing
-    testLogging.showStandardStreams = true
+    useJUnitPlatform()
+    testLogging {
+        // It's sometimes useful to see the stdout during testing
+        showStandardStreams = true
+        exceptionFormat='full'
+    }
 }
 
 
@@ -32,12 +39,12 @@ repositories {
 }
 
 dependencies {
-    compile files('lib/eu.cqse.check.jar')
+    compileOnly files('lib/eu.cqse.check.jar')
     
-	testCompile 'junit:junit:4.12'    
-	testCompile 'org.assertj:assertj-core:3.8.0'   
-	testCompile 'log4j:log4j:1.2.17'
-	testCompile 'jaxen:jaxen:1.1.6'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.5.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.5.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.1'
+    testImplementation 'org.assertj:assertj-core:3.8.0'
 }
 
 eclipse {
@@ -45,4 +52,3 @@ eclipse {
         defaultOutputDir = file('build/classes')
     }
 }
-
