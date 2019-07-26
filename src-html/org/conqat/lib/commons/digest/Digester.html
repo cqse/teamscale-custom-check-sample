@@ -39,9 +39,9 @@
 <span class="sourceLineNo">031</span>public class Digester {<a name="line.31"></a>
 <span class="sourceLineNo">032</span><a name="line.32"></a>
 <span class="sourceLineNo">033</span>        /**<a name="line.33"></a>
-<span class="sourceLineNo">034</span>         * MD5 Digesters used organized by thread. This is used to avoid recreation<a name="line.34"></a>
-<span class="sourceLineNo">035</span>         * of digesters, while keeping the code thread safe (i.e. each thread has<a name="line.35"></a>
-<span class="sourceLineNo">036</span>         * its own instance).<a name="line.36"></a>
+<span class="sourceLineNo">034</span>         * MD5 Digesters used organized by thread. This is used to avoid recreation of<a name="line.34"></a>
+<span class="sourceLineNo">035</span>         * digesters, while keeping the code thread safe (i.e. each thread has its own<a name="line.35"></a>
+<span class="sourceLineNo">036</span>         * instance).<a name="line.36"></a>
 <span class="sourceLineNo">037</span>         */<a name="line.37"></a>
 <span class="sourceLineNo">038</span>        private static ThreadLocal&lt;MessageDigest&gt; md5Digesters = new ThreadLocal&lt;MessageDigest&gt;() {<a name="line.38"></a>
 <span class="sourceLineNo">039</span>                /** {@inheritDoc} */<a name="line.39"></a>
@@ -52,9 +52,9 @@
 <span class="sourceLineNo">044</span>        };<a name="line.44"></a>
 <span class="sourceLineNo">045</span><a name="line.45"></a>
 <span class="sourceLineNo">046</span>        /**<a name="line.46"></a>
-<span class="sourceLineNo">047</span>         * SHA-1 Digesters used organized by thread. This is used to avoid<a name="line.47"></a>
-<span class="sourceLineNo">048</span>         * recreation of digesters, while keeping the code thread safe (i.e. each<a name="line.48"></a>
-<span class="sourceLineNo">049</span>         * thread has its own instance).<a name="line.49"></a>
+<span class="sourceLineNo">047</span>         * SHA-1 Digesters used organized by thread. This is used to avoid recreation of<a name="line.47"></a>
+<span class="sourceLineNo">048</span>         * digesters, while keeping the code thread safe (i.e. each thread has its own<a name="line.48"></a>
+<span class="sourceLineNo">049</span>         * instance).<a name="line.49"></a>
 <span class="sourceLineNo">050</span>         */<a name="line.50"></a>
 <span class="sourceLineNo">051</span>        private static ThreadLocal&lt;MessageDigest&gt; sha1Digesters = new ThreadLocal&lt;MessageDigest&gt;() {<a name="line.51"></a>
 <span class="sourceLineNo">052</span>                /** {@inheritDoc} */<a name="line.52"></a>
@@ -65,16 +65,16 @@
 <span class="sourceLineNo">057</span>        };<a name="line.57"></a>
 <span class="sourceLineNo">058</span><a name="line.58"></a>
 <span class="sourceLineNo">059</span>        /**<a name="line.59"></a>
-<span class="sourceLineNo">060</span>         * Computes an MD5 hash for a string. The hash is always 32 characters long<a name="line.60"></a>
-<span class="sourceLineNo">061</span>         * and only uses characters from [0-9A-F].<a name="line.61"></a>
+<span class="sourceLineNo">060</span>         * Computes an MD5 hash for a string. The hash is always 32 characters long and<a name="line.60"></a>
+<span class="sourceLineNo">061</span>         * only uses characters from [0-9A-F].<a name="line.61"></a>
 <span class="sourceLineNo">062</span>         */<a name="line.62"></a>
 <span class="sourceLineNo">063</span>        public static String createMD5Digest(String base) {<a name="line.63"></a>
 <span class="sourceLineNo">064</span>                return createMD5Digest(base.getBytes());<a name="line.64"></a>
 <span class="sourceLineNo">065</span>        }<a name="line.65"></a>
 <span class="sourceLineNo">066</span><a name="line.66"></a>
 <span class="sourceLineNo">067</span>        /**<a name="line.67"></a>
-<span class="sourceLineNo">068</span>         * Computes an MD5 hash for a byte array. The hash is always 32 characters<a name="line.68"></a>
-<span class="sourceLineNo">069</span>         * long and only uses characters from [0-9A-F].<a name="line.69"></a>
+<span class="sourceLineNo">068</span>         * Computes an MD5 hash for a byte array. The hash is always 32 characters long<a name="line.68"></a>
+<span class="sourceLineNo">069</span>         * and only uses characters from [0-9A-F].<a name="line.69"></a>
 <span class="sourceLineNo">070</span>         */<a name="line.70"></a>
 <span class="sourceLineNo">071</span>        public static String createMD5Digest(byte[] data) {<a name="line.71"></a>
 <span class="sourceLineNo">072</span>                MessageDigest digester = md5Digesters.get();<a name="line.72"></a>
@@ -84,8 +84,8 @@
 <span class="sourceLineNo">076</span><a name="line.76"></a>
 <span class="sourceLineNo">077</span>        /**<a name="line.77"></a>
 <span class="sourceLineNo">078</span>         * Computes an MD5 hash for a collection of strings. The strings are sorted<a name="line.78"></a>
-<span class="sourceLineNo">079</span>         * before MD5 computation, so that the resulting MD5 hash is independent of<a name="line.79"></a>
-<span class="sourceLineNo">080</span>         * the order of the strings in the collection.<a name="line.80"></a>
+<span class="sourceLineNo">079</span>         * before MD5 computation, so that the resulting MD5 hash is independent of the<a name="line.79"></a>
+<span class="sourceLineNo">080</span>         * order of the strings in the collection.<a name="line.80"></a>
 <span class="sourceLineNo">081</span>         */<a name="line.81"></a>
 <span class="sourceLineNo">082</span>        public static String createMD5Digest(Collection&lt;String&gt; bases) {<a name="line.82"></a>
 <span class="sourceLineNo">083</span>                List&lt;String&gt; sortedBases = CollectionUtils.sort(bases);<a name="line.83"></a>
@@ -93,8 +93,8 @@
 <span class="sourceLineNo">085</span>        }<a name="line.85"></a>
 <span class="sourceLineNo">086</span><a name="line.86"></a>
 <span class="sourceLineNo">087</span>        /**<a name="line.87"></a>
-<span class="sourceLineNo">088</span>         * Computes an SHA-1 hash for a byte array and returns the binary hash (i.e.<a name="line.88"></a>
-<span class="sourceLineNo">089</span>         * no string conversion).<a name="line.89"></a>
+<span class="sourceLineNo">088</span>         * Computes an SHA-1 hash for a byte array and returns the binary hash (i.e. no<a name="line.88"></a>
+<span class="sourceLineNo">089</span>         * string conversion).<a name="line.89"></a>
 <span class="sourceLineNo">090</span>         */<a name="line.90"></a>
 <span class="sourceLineNo">091</span>        public static byte[] createBinarySHA1Digest(byte[] data) {<a name="line.91"></a>
 <span class="sourceLineNo">092</span>                MessageDigest digester = sha1Digesters.get();<a name="line.92"></a>
@@ -103,30 +103,40 @@
 <span class="sourceLineNo">095</span>        }<a name="line.95"></a>
 <span class="sourceLineNo">096</span><a name="line.96"></a>
 <span class="sourceLineNo">097</span>        /**<a name="line.97"></a>
-<span class="sourceLineNo">098</span>         * Returns MD5 digester or throws an AssertionError if the digester could<a name="line.98"></a>
-<span class="sourceLineNo">099</span>         * not be located.<a name="line.99"></a>
+<span class="sourceLineNo">098</span>         * Computes an MD5 hash for a byte array and returns the binary hash (i.e. no<a name="line.98"></a>
+<span class="sourceLineNo">099</span>         * string conversion).<a name="line.99"></a>
 <span class="sourceLineNo">100</span>         */<a name="line.100"></a>
-<span class="sourceLineNo">101</span>        public static MessageDigest getMD5() {<a name="line.101"></a>
-<span class="sourceLineNo">102</span>                try {<a name="line.102"></a>
-<span class="sourceLineNo">103</span>                        return MessageDigest.getInstance("MD5");<a name="line.103"></a>
-<span class="sourceLineNo">104</span>                } catch (NoSuchAlgorithmException e) {<a name="line.104"></a>
-<span class="sourceLineNo">105</span>                        throw new EnvironmentError("No MD5 algorithm found. Please check your JRE installation", e);<a name="line.105"></a>
-<span class="sourceLineNo">106</span>                }<a name="line.106"></a>
-<span class="sourceLineNo">107</span>        }<a name="line.107"></a>
-<span class="sourceLineNo">108</span><a name="line.108"></a>
-<span class="sourceLineNo">109</span>        /**<a name="line.109"></a>
-<span class="sourceLineNo">110</span>         * Returns SHA-1 digester or throws an AssertionError if the digester could<a name="line.110"></a>
-<span class="sourceLineNo">111</span>         * not be located.<a name="line.111"></a>
-<span class="sourceLineNo">112</span>         */<a name="line.112"></a>
-<span class="sourceLineNo">113</span>        public static MessageDigest getSHA1() {<a name="line.113"></a>
-<span class="sourceLineNo">114</span>                try {<a name="line.114"></a>
-<span class="sourceLineNo">115</span>                        return MessageDigest.getInstance("SHA-1");<a name="line.115"></a>
-<span class="sourceLineNo">116</span>                } catch (NoSuchAlgorithmException e) {<a name="line.116"></a>
-<span class="sourceLineNo">117</span>                        throw new EnvironmentError("No SHA-1 algorithm found. Please check your JRE installation", e);<a name="line.117"></a>
-<span class="sourceLineNo">118</span>                }<a name="line.118"></a>
-<span class="sourceLineNo">119</span>        }<a name="line.119"></a>
-<span class="sourceLineNo">120</span><a name="line.120"></a>
-<span class="sourceLineNo">121</span>}<a name="line.121"></a>
+<span class="sourceLineNo">101</span>        public static byte[] createBinaryMD5Digest(byte[] data) {<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                MessageDigest digester = md5Digesters.get();<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                digester.reset();<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                return digester.digest(data);<a name="line.104"></a>
+<span class="sourceLineNo">105</span>        }<a name="line.105"></a>
+<span class="sourceLineNo">106</span><a name="line.106"></a>
+<span class="sourceLineNo">107</span>        /**<a name="line.107"></a>
+<span class="sourceLineNo">108</span>         * Returns MD5 digester or throws an AssertionError if the digester could not be<a name="line.108"></a>
+<span class="sourceLineNo">109</span>         * located.<a name="line.109"></a>
+<span class="sourceLineNo">110</span>         */<a name="line.110"></a>
+<span class="sourceLineNo">111</span>        public static MessageDigest getMD5() {<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                try {<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                        return MessageDigest.getInstance("MD5");<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                } catch (NoSuchAlgorithmException e) {<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                        throw new EnvironmentError("No MD5 algorithm found. Please check your JRE installation", e);<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                }<a name="line.116"></a>
+<span class="sourceLineNo">117</span>        }<a name="line.117"></a>
+<span class="sourceLineNo">118</span><a name="line.118"></a>
+<span class="sourceLineNo">119</span>        /**<a name="line.119"></a>
+<span class="sourceLineNo">120</span>         * Returns SHA-1 digester or throws an AssertionError if the digester could not<a name="line.120"></a>
+<span class="sourceLineNo">121</span>         * be located.<a name="line.121"></a>
+<span class="sourceLineNo">122</span>         */<a name="line.122"></a>
+<span class="sourceLineNo">123</span>        public static MessageDigest getSHA1() {<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                try {<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                        return MessageDigest.getInstance("SHA-1");<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                } catch (NoSuchAlgorithmException e) {<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                        throw new EnvironmentError("No SHA-1 algorithm found. Please check your JRE installation", e);<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                }<a name="line.128"></a>
+<span class="sourceLineNo">129</span>        }<a name="line.129"></a>
+<span class="sourceLineNo">130</span><a name="line.130"></a>
+<span class="sourceLineNo">131</span>}<a name="line.131"></a>
 
 
 

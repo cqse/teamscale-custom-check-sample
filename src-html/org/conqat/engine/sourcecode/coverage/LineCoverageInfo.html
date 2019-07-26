@@ -1,0 +1,425 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*-------------------------------------------------------------------------+<a name="line.1"></a>
+<span class="sourceLineNo">002</span>|                                                                          |<a name="line.2"></a>
+<span class="sourceLineNo">003</span>| Copyright 2005-2011 the ConQAT Project                                   |<a name="line.3"></a>
+<span class="sourceLineNo">004</span>|                                                                          |<a name="line.4"></a>
+<span class="sourceLineNo">005</span>| Licensed under the Apache License, Version 2.0 (the "License");          |<a name="line.5"></a>
+<span class="sourceLineNo">006</span>| you may not use this file except in compliance with the License.         |<a name="line.6"></a>
+<span class="sourceLineNo">007</span>| You may obtain a copy of the License at                                  |<a name="line.7"></a>
+<span class="sourceLineNo">008</span>|                                                                          |<a name="line.8"></a>
+<span class="sourceLineNo">009</span>|    http://www.apache.org/licenses/LICENSE-2.0                            |<a name="line.9"></a>
+<span class="sourceLineNo">010</span>|                                                                          |<a name="line.10"></a>
+<span class="sourceLineNo">011</span>| Unless required by applicable law or agreed to in writing, software      |<a name="line.11"></a>
+<span class="sourceLineNo">012</span>| distributed under the License is distributed on an "AS IS" BASIS,        |<a name="line.12"></a>
+<span class="sourceLineNo">013</span>| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. |<a name="line.13"></a>
+<span class="sourceLineNo">014</span>| See the License for the specific language governing permissions and      |<a name="line.14"></a>
+<span class="sourceLineNo">015</span>| limitations under the License.                                           |<a name="line.15"></a>
+<span class="sourceLineNo">016</span>+-------------------------------------------------------------------------*/<a name="line.16"></a>
+<span class="sourceLineNo">017</span>package org.conqat.engine.sourcecode.coverage;<a name="line.17"></a>
+<span class="sourceLineNo">018</span><a name="line.18"></a>
+<span class="sourceLineNo">019</span>import java.io.Serializable;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import java.util.Collection;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import java.util.HashSet;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import java.util.List;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import java.util.Set;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import java.util.stream.IntStream;<a name="line.24"></a>
+<span class="sourceLineNo">025</span><a name="line.25"></a>
+<span class="sourceLineNo">026</span>import org.conqat.lib.commons.assertion.CCSMAssert;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import org.conqat.lib.commons.collections.CollectionUtils;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import org.conqat.lib.commons.js_export.ExportToJavaScript;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>import org.conqat.lib.commons.string.StringUtils;<a name="line.29"></a>
+<span class="sourceLineNo">030</span><a name="line.30"></a>
+<span class="sourceLineNo">031</span>import com.fasterxml.jackson.annotation.JsonCreator;<a name="line.31"></a>
+<span class="sourceLineNo">032</span>import com.fasterxml.jackson.annotation.JsonProperty;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import com.thoughtworks.xstream.annotations.XStreamAlias;<a name="line.33"></a>
+<span class="sourceLineNo">034</span><a name="line.34"></a>
+<span class="sourceLineNo">035</span>import eu.cqse.check.framework.scanner.ETokenType.ETokenClass;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;<a name="line.37"></a>
+<span class="sourceLineNo">038</span><a name="line.38"></a>
+<span class="sourceLineNo">039</span>/**<a name="line.39"></a>
+<span class="sourceLineNo">040</span> * Holds line coverage information for a file.<a name="line.40"></a>
+<span class="sourceLineNo">041</span> */<a name="line.41"></a>
+<span class="sourceLineNo">042</span>@ExportToJavaScript<a name="line.42"></a>
+<span class="sourceLineNo">043</span>public class LineCoverageInfo implements Serializable {<a name="line.43"></a>
+<span class="sourceLineNo">044</span><a name="line.44"></a>
+<span class="sourceLineNo">045</span>        /** Version for serialization. */<a name="line.45"></a>
+<span class="sourceLineNo">046</span>        private static final long serialVersionUID = 1L;<a name="line.46"></a>
+<span class="sourceLineNo">047</span><a name="line.47"></a>
+<span class="sourceLineNo">048</span>        /** The name of the JSON property name for {@link #timestamp}. */<a name="line.48"></a>
+<span class="sourceLineNo">049</span>        private static final String TIMESTAMP_PROPERTY = "timestamp";<a name="line.49"></a>
+<span class="sourceLineNo">050</span><a name="line.50"></a>
+<span class="sourceLineNo">051</span>        /** The name of the JSON property name for {@link #isMethodAccurate}. */<a name="line.51"></a>
+<span class="sourceLineNo">052</span>        private static final String IS_METHOD_ACCURATE_PROPERTY = "isMethodAccurate";<a name="line.52"></a>
+<span class="sourceLineNo">053</span><a name="line.53"></a>
+<span class="sourceLineNo">054</span>        /** The line numbers that were fully covered */<a name="line.54"></a>
+<span class="sourceLineNo">055</span>        @JsonProperty("fullyCoveredLines")<a name="line.55"></a>
+<span class="sourceLineNo">056</span>        @XStreamAlias("fully-covered-lines")<a name="line.56"></a>
+<span class="sourceLineNo">057</span>        private final Set&lt;Integer&gt; fullyCoveredLines = new HashSet&lt;&gt;();<a name="line.57"></a>
+<span class="sourceLineNo">058</span><a name="line.58"></a>
+<span class="sourceLineNo">059</span>        /** The line numbers that were partially covered */<a name="line.59"></a>
+<span class="sourceLineNo">060</span>        @JsonProperty("partiallyCoveredLines")<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        @XStreamAlias("partially-covered-lines")<a name="line.61"></a>
+<span class="sourceLineNo">062</span>        private final Set&lt;Integer&gt; partiallyCoveredLines = new HashSet&lt;&gt;();<a name="line.62"></a>
+<span class="sourceLineNo">063</span><a name="line.63"></a>
+<span class="sourceLineNo">064</span>        /** The line numbers that were not covered */<a name="line.64"></a>
+<span class="sourceLineNo">065</span>        @JsonProperty("uncoveredLines")<a name="line.65"></a>
+<span class="sourceLineNo">066</span>        @XStreamAlias("uncovered-lines")<a name="line.66"></a>
+<span class="sourceLineNo">067</span>        private final Set&lt;Integer&gt; uncoveredLines = new HashSet&lt;&gt;();<a name="line.67"></a>
+<span class="sourceLineNo">068</span><a name="line.68"></a>
+<span class="sourceLineNo">069</span>        /**<a name="line.69"></a>
+<span class="sourceLineNo">070</span>         * Determines the accuracy of this coverage info. If &lt;code&gt;false&lt;/code&gt;, the<a name="line.70"></a>
+<span class="sourceLineNo">071</span>         * info is line-accurate, otherwise it is only method-accurate (i.e. executing<a name="line.71"></a>
+<span class="sourceLineNo">072</span>         * any statement in the method will mark the entire method as executed). The<a name="line.72"></a>
+<span class="sourceLineNo">073</span>         * default is line-accurate.<a name="line.73"></a>
+<span class="sourceLineNo">074</span>         * <a name="line.74"></a>
+<span class="sourceLineNo">075</span>         * Note that method-accurate coverage should not be used when e.g. calculating<a name="line.75"></a>
+<span class="sourceLineNo">076</span>         * the line coverage metric.<a name="line.76"></a>
+<span class="sourceLineNo">077</span>         */<a name="line.77"></a>
+<span class="sourceLineNo">078</span>        @JsonProperty(IS_METHOD_ACCURATE_PROPERTY)<a name="line.78"></a>
+<span class="sourceLineNo">079</span>        private boolean isMethodAccurate = false;<a name="line.79"></a>
+<span class="sourceLineNo">080</span><a name="line.80"></a>
+<span class="sourceLineNo">081</span>        /**<a name="line.81"></a>
+<span class="sourceLineNo">082</span>         * @see #isMethodAccurate<a name="line.82"></a>
+<span class="sourceLineNo">083</span>         */<a name="line.83"></a>
+<span class="sourceLineNo">084</span>        public boolean isMethodAccurate() {<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                return isMethodAccurate;<a name="line.85"></a>
+<span class="sourceLineNo">086</span>        }<a name="line.86"></a>
+<span class="sourceLineNo">087</span><a name="line.87"></a>
+<span class="sourceLineNo">088</span>        /**<a name="line.88"></a>
+<span class="sourceLineNo">089</span>         * @see #isMethodAccurate<a name="line.89"></a>
+<span class="sourceLineNo">090</span>         */<a name="line.90"></a>
+<span class="sourceLineNo">091</span>        public void setMethodAccurate(boolean isMethodAccurate) {<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                this.isMethodAccurate = isMethodAccurate;<a name="line.92"></a>
+<span class="sourceLineNo">093</span>        }<a name="line.93"></a>
+<span class="sourceLineNo">094</span><a name="line.94"></a>
+<span class="sourceLineNo">095</span>        /**<a name="line.95"></a>
+<span class="sourceLineNo">096</span>         * The timestamp of the code this coverage data refers to. May be -1 if unknown.<a name="line.96"></a>
+<span class="sourceLineNo">097</span>         */<a name="line.97"></a>
+<span class="sourceLineNo">098</span>        @JsonProperty(TIMESTAMP_PROPERTY)<a name="line.98"></a>
+<span class="sourceLineNo">099</span>        private long timestamp;<a name="line.99"></a>
+<span class="sourceLineNo">100</span><a name="line.100"></a>
+<span class="sourceLineNo">101</span>        /** Constructor with a default timestamp. */<a name="line.101"></a>
+<span class="sourceLineNo">102</span>        public LineCoverageInfo(boolean isMethodAccurate) {<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                this(-1, isMethodAccurate);<a name="line.103"></a>
+<span class="sourceLineNo">104</span>        }<a name="line.104"></a>
+<span class="sourceLineNo">105</span><a name="line.105"></a>
+<span class="sourceLineNo">106</span>        /** Constructor */<a name="line.106"></a>
+<span class="sourceLineNo">107</span>        @JsonCreator<a name="line.107"></a>
+<span class="sourceLineNo">108</span>        public LineCoverageInfo(@JsonProperty(TIMESTAMP_PROPERTY) long timestamp,<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                        @JsonProperty(IS_METHOD_ACCURATE_PROPERTY) boolean isMethodAccurate) {<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                this.timestamp = timestamp;<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                this.isMethodAccurate = isMethodAccurate;<a name="line.111"></a>
+<span class="sourceLineNo">112</span>        }<a name="line.112"></a>
+<span class="sourceLineNo">113</span><a name="line.113"></a>
+<span class="sourceLineNo">114</span>        /**<a name="line.114"></a>
+<span class="sourceLineNo">115</span>         * Adds the coverage information for the given line. This merges the given<a name="line.115"></a>
+<span class="sourceLineNo">116</span>         * coverage info if called multiple times for the same line. This is needed to<a name="line.116"></a>
+<span class="sourceLineNo">117</span>         * allow for overlapping coverage reports.<a name="line.117"></a>
+<span class="sourceLineNo">118</span>         */<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        public void addLineCoverage(int line, ELineCoverage coverage) {<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                CCSMAssert.isNotNull(coverage);<a name="line.120"></a>
+<span class="sourceLineNo">121</span><a name="line.121"></a>
+<span class="sourceLineNo">122</span>                ELineCoverage existingCoverage = getLineCoverage(line);<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                if (existingCoverage == null) {<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                        setLineCoverage(line, coverage);<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                        return;<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                }<a name="line.126"></a>
+<span class="sourceLineNo">127</span><a name="line.127"></a>
+<span class="sourceLineNo">128</span>                switch (existingCoverage) {<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                case NOT_COVERED:<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                        uncoveredLines.remove(line);<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                        setLineCoverage(line, coverage);<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                        break;<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                case PARTIALLY_COVERED:<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                        if (coverage.equals(ELineCoverage.FULLY_COVERED)) {<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                                partiallyCoveredLines.remove(line);<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                                fullyCoveredLines.add(line);<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                        }<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                        break;<a name="line.138"></a>
+<span class="sourceLineNo">139</span>                case FULLY_COVERED:<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                        // cannot get any better<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                        break;<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                default:<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                        throw new IllegalStateException("Unknown line coverage: " + coverage);<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                }<a name="line.144"></a>
+<span class="sourceLineNo">145</span><a name="line.145"></a>
+<span class="sourceLineNo">146</span>        }<a name="line.146"></a>
+<span class="sourceLineNo">147</span><a name="line.147"></a>
+<span class="sourceLineNo">148</span>        /**<a name="line.148"></a>
+<span class="sourceLineNo">149</span>         * Adds the coverage information for the given lines.<a name="line.149"></a>
+<span class="sourceLineNo">150</span>         * <a name="line.150"></a>
+<span class="sourceLineNo">151</span>         * @see #addLineCoverage(int, ELineCoverage)<a name="line.151"></a>
+<span class="sourceLineNo">152</span>         */<a name="line.152"></a>
+<span class="sourceLineNo">153</span>        public void addLineCoverage(Collection&lt;Integer&gt; lines, ELineCoverage coverage) {<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                for (Integer line : lines) {<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                        addLineCoverage(line, coverage);<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                }<a name="line.156"></a>
+<span class="sourceLineNo">157</span>        }<a name="line.157"></a>
+<span class="sourceLineNo">158</span><a name="line.158"></a>
+<span class="sourceLineNo">159</span>        /**<a name="line.159"></a>
+<span class="sourceLineNo">160</span>         * Adds the coverage information for the given lines.<a name="line.160"></a>
+<span class="sourceLineNo">161</span>         * <a name="line.161"></a>
+<span class="sourceLineNo">162</span>         * @see #addLineCoverage(int, ELineCoverage)<a name="line.162"></a>
+<span class="sourceLineNo">163</span>         */<a name="line.163"></a>
+<span class="sourceLineNo">164</span>        public void addLineCoverage(IntStream lines, ELineCoverage coverage) {<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                lines.forEach(line -&gt; addLineCoverage(line, coverage));<a name="line.165"></a>
+<span class="sourceLineNo">166</span>        }<a name="line.166"></a>
+<span class="sourceLineNo">167</span><a name="line.167"></a>
+<span class="sourceLineNo">168</span>        /** Removes all previously stored line coverage for the given line. */<a name="line.168"></a>
+<span class="sourceLineNo">169</span>        public void removeLineCoverageInfo(int line) {<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                fullyCoveredLines.remove(line);<a name="line.170"></a>
+<span class="sourceLineNo">171</span>                partiallyCoveredLines.remove(line);<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                uncoveredLines.remove(line);<a name="line.172"></a>
+<span class="sourceLineNo">173</span>        }<a name="line.173"></a>
+<span class="sourceLineNo">174</span><a name="line.174"></a>
+<span class="sourceLineNo">175</span>        /**<a name="line.175"></a>
+<span class="sourceLineNo">176</span>         * Sets the line coverage for the given line. This ignores previously stored<a name="line.176"></a>
+<span class="sourceLineNo">177</span>         * values.<a name="line.177"></a>
+<span class="sourceLineNo">178</span>         */<a name="line.178"></a>
+<span class="sourceLineNo">179</span>        private void setLineCoverage(int line, ELineCoverage coverage) {<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                switch (coverage) {<a name="line.180"></a>
+<span class="sourceLineNo">181</span>                case FULLY_COVERED:<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                        fullyCoveredLines.add(line);<a name="line.182"></a>
+<span class="sourceLineNo">183</span>                        break;<a name="line.183"></a>
+<span class="sourceLineNo">184</span>                case PARTIALLY_COVERED:<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                        partiallyCoveredLines.add(line);<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                        break;<a name="line.186"></a>
+<span class="sourceLineNo">187</span>                case NOT_COVERED:<a name="line.187"></a>
+<span class="sourceLineNo">188</span>                        uncoveredLines.add(line);<a name="line.188"></a>
+<span class="sourceLineNo">189</span>                        break;<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                default:<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                        throw new IllegalStateException("Unknown line coverage: " + coverage);<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                }<a name="line.192"></a>
+<span class="sourceLineNo">193</span>        }<a name="line.193"></a>
+<span class="sourceLineNo">194</span><a name="line.194"></a>
+<span class="sourceLineNo">195</span>        /** Adds all coverage information from another {@link LineCoverageInfo}. */<a name="line.195"></a>
+<span class="sourceLineNo">196</span>        public void addAll(LineCoverageInfo coverageInfo) {<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                for (int line : coverageInfo.fullyCoveredLines) {<a name="line.197"></a>
+<span class="sourceLineNo">198</span>                        addLineCoverage(line, ELineCoverage.FULLY_COVERED);<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                }<a name="line.199"></a>
+<span class="sourceLineNo">200</span>                for (int line : coverageInfo.partiallyCoveredLines) {<a name="line.200"></a>
+<span class="sourceLineNo">201</span>                        addLineCoverage(line, ELineCoverage.PARTIALLY_COVERED);<a name="line.201"></a>
+<span class="sourceLineNo">202</span>                }<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                for (int line : coverageInfo.uncoveredLines) {<a name="line.203"></a>
+<span class="sourceLineNo">204</span>                        addLineCoverage(line, ELineCoverage.NOT_COVERED);<a name="line.204"></a>
+<span class="sourceLineNo">205</span>                }<a name="line.205"></a>
+<span class="sourceLineNo">206</span>        }<a name="line.206"></a>
+<span class="sourceLineNo">207</span><a name="line.207"></a>
+<span class="sourceLineNo">208</span>        /**<a name="line.208"></a>
+<span class="sourceLineNo">209</span>         * Returns the line coverage for the given line or &lt;code&gt;null&lt;/code&gt; if none is<a name="line.209"></a>
+<span class="sourceLineNo">210</span>         * stored.<a name="line.210"></a>
+<span class="sourceLineNo">211</span>         */<a name="line.211"></a>
+<span class="sourceLineNo">212</span>        public ELineCoverage getLineCoverage(int line) {<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                if (fullyCoveredLines.contains(line)) {<a name="line.213"></a>
+<span class="sourceLineNo">214</span>                        return ELineCoverage.FULLY_COVERED;<a name="line.214"></a>
+<span class="sourceLineNo">215</span>                }<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                if (partiallyCoveredLines.contains(line)) {<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                        return ELineCoverage.PARTIALLY_COVERED;<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                }<a name="line.218"></a>
+<span class="sourceLineNo">219</span>                if (uncoveredLines.contains(line)) {<a name="line.219"></a>
+<span class="sourceLineNo">220</span>                        return ELineCoverage.NOT_COVERED;<a name="line.220"></a>
+<span class="sourceLineNo">221</span>                }<a name="line.221"></a>
+<span class="sourceLineNo">222</span>                return null;<a name="line.222"></a>
+<span class="sourceLineNo">223</span>        }<a name="line.223"></a>
+<span class="sourceLineNo">224</span><a name="line.224"></a>
+<span class="sourceLineNo">225</span>        /** Returns list of fully covered lines (sorted ascending) */<a name="line.225"></a>
+<span class="sourceLineNo">226</span>        public List&lt;Integer&gt; getFullyCoveredLines() {<a name="line.226"></a>
+<span class="sourceLineNo">227</span>                return CollectionUtils.sort(fullyCoveredLines);<a name="line.227"></a>
+<span class="sourceLineNo">228</span>        }<a name="line.228"></a>
+<span class="sourceLineNo">229</span><a name="line.229"></a>
+<span class="sourceLineNo">230</span>        /** Returns list of partially covered lines (sorted ascending) */<a name="line.230"></a>
+<span class="sourceLineNo">231</span>        public List&lt;Integer&gt; getPartiallyCoveredLines() {<a name="line.231"></a>
+<span class="sourceLineNo">232</span>                return CollectionUtils.sort(partiallyCoveredLines);<a name="line.232"></a>
+<span class="sourceLineNo">233</span>        }<a name="line.233"></a>
+<span class="sourceLineNo">234</span><a name="line.234"></a>
+<span class="sourceLineNo">235</span>        /** Returns list of uncovered lines (sorted ascending) */<a name="line.235"></a>
+<span class="sourceLineNo">236</span>        public List&lt;Integer&gt; getUncoveredLines() {<a name="line.236"></a>
+<span class="sourceLineNo">237</span>                return CollectionUtils.sort(uncoveredLines);<a name="line.237"></a>
+<span class="sourceLineNo">238</span>        }<a name="line.238"></a>
+<span class="sourceLineNo">239</span><a name="line.239"></a>
+<span class="sourceLineNo">240</span>        /** Returns the line coverage ratio as a double ([0..1]). */<a name="line.240"></a>
+<span class="sourceLineNo">241</span>        public double getCoverageRatio() {<a name="line.241"></a>
+<span class="sourceLineNo">242</span>                int lines = getCoverableLines();<a name="line.242"></a>
+<span class="sourceLineNo">243</span>                if (lines == 0) {<a name="line.243"></a>
+<span class="sourceLineNo">244</span>                        return 0;<a name="line.244"></a>
+<span class="sourceLineNo">245</span>                }<a name="line.245"></a>
+<span class="sourceLineNo">246</span>                return getCoveredLines() / lines;<a name="line.246"></a>
+<span class="sourceLineNo">247</span>        }<a name="line.247"></a>
+<span class="sourceLineNo">248</span><a name="line.248"></a>
+<span class="sourceLineNo">249</span>        /** Returns the number of lines that are covered or partially covered. */<a name="line.249"></a>
+<span class="sourceLineNo">250</span>        public double getCoveredLines() {<a name="line.250"></a>
+<span class="sourceLineNo">251</span>                return fullyCoveredLines.size() + partiallyCoveredLines.size();<a name="line.251"></a>
+<span class="sourceLineNo">252</span>        }<a name="line.252"></a>
+<span class="sourceLineNo">253</span><a name="line.253"></a>
+<span class="sourceLineNo">254</span>        /** Returns the number of lines that are coverable. */<a name="line.254"></a>
+<span class="sourceLineNo">255</span>        public int getCoverableLines() {<a name="line.255"></a>
+<span class="sourceLineNo">256</span>                return fullyCoveredLines.size() + partiallyCoveredLines.size() + uncoveredLines.size();<a name="line.256"></a>
+<span class="sourceLineNo">257</span>        }<a name="line.257"></a>
+<span class="sourceLineNo">258</span><a name="line.258"></a>
+<span class="sourceLineNo">259</span>        /** Returns the set of all lines in the coverage report. */<a name="line.259"></a>
+<span class="sourceLineNo">260</span>        public Set&lt;Integer&gt; getAllCoverableLines() {<a name="line.260"></a>
+<span class="sourceLineNo">261</span>                return CollectionUtils.unionSet(fullyCoveredLines, partiallyCoveredLines, uncoveredLines);<a name="line.261"></a>
+<span class="sourceLineNo">262</span>        }<a name="line.262"></a>
+<span class="sourceLineNo">263</span><a name="line.263"></a>
+<span class="sourceLineNo">264</span>        /**<a name="line.264"></a>
+<span class="sourceLineNo">265</span>         * @see #timestamp<a name="line.265"></a>
+<span class="sourceLineNo">266</span>         */<a name="line.266"></a>
+<span class="sourceLineNo">267</span>        public long getTimestamp() {<a name="line.267"></a>
+<span class="sourceLineNo">268</span>                return timestamp;<a name="line.268"></a>
+<span class="sourceLineNo">269</span>        }<a name="line.269"></a>
+<span class="sourceLineNo">270</span><a name="line.270"></a>
+<span class="sourceLineNo">271</span>        /**<a name="line.271"></a>
+<span class="sourceLineNo">272</span>         * @see #timestamp<a name="line.272"></a>
+<span class="sourceLineNo">273</span>         */<a name="line.273"></a>
+<span class="sourceLineNo">274</span>        public void setTimestamp(long timestamp) {<a name="line.274"></a>
+<span class="sourceLineNo">275</span>                this.timestamp = timestamp;<a name="line.275"></a>
+<span class="sourceLineNo">276</span>        }<a name="line.276"></a>
+<span class="sourceLineNo">277</span><a name="line.277"></a>
+<span class="sourceLineNo">278</span>        /** {@inheritDoc} */<a name="line.278"></a>
+<span class="sourceLineNo">279</span>        @Override<a name="line.279"></a>
+<span class="sourceLineNo">280</span>        public String toString() {<a name="line.280"></a>
+<span class="sourceLineNo">281</span>                return String.valueOf(getCoverageRatio());<a name="line.281"></a>
+<span class="sourceLineNo">282</span>        }<a name="line.282"></a>
+<span class="sourceLineNo">283</span><a name="line.283"></a>
+<span class="sourceLineNo">284</span>        /** Returns a string representation of the covered/uncovered lines. */<a name="line.284"></a>
+<span class="sourceLineNo">285</span>        public String toLineString() {<a name="line.285"></a>
+<span class="sourceLineNo">286</span>                return "Fully covered: " + StringUtils.concat(CollectionUtils.sort(fullyCoveredLines), ",")<a name="line.286"></a>
+<span class="sourceLineNo">287</span>                                + "; partially covered: " + StringUtils.concat(CollectionUtils.sort(partiallyCoveredLines), ",")<a name="line.287"></a>
+<span class="sourceLineNo">288</span>                                + "; uncovered: " + StringUtils.concat(CollectionUtils.sort(uncoveredLines), ",") + "; timestamp: "<a name="line.288"></a>
+<span class="sourceLineNo">289</span>                                + timestamp;<a name="line.289"></a>
+<span class="sourceLineNo">290</span>        }<a name="line.290"></a>
+<span class="sourceLineNo">291</span><a name="line.291"></a>
+<span class="sourceLineNo">292</span>        /**<a name="line.292"></a>
+<span class="sourceLineNo">293</span>         * Replaces the coverable lines with the given lines. This also adjusts the<a name="line.293"></a>
+<span class="sourceLineNo">294</span>         * {@link #fullyCoveredLines} and {@link #partiallyCoveredLines} by removing all<a name="line.294"></a>
+<span class="sourceLineNo">295</span>         * lines that are not coverable.<a name="line.295"></a>
+<span class="sourceLineNo">296</span>         */<a name="line.296"></a>
+<span class="sourceLineNo">297</span>        public void setCoverableLines(Set&lt;Integer&gt; lines) {<a name="line.297"></a>
+<span class="sourceLineNo">298</span>                fullyCoveredLines.retainAll(lines);<a name="line.298"></a>
+<span class="sourceLineNo">299</span>                partiallyCoveredLines.retainAll(lines);<a name="line.299"></a>
+<span class="sourceLineNo">300</span><a name="line.300"></a>
+<span class="sourceLineNo">301</span>                uncoveredLines.clear();<a name="line.301"></a>
+<span class="sourceLineNo">302</span>                uncoveredLines.addAll(lines);<a name="line.302"></a>
+<span class="sourceLineNo">303</span>                uncoveredLines.removeAll(fullyCoveredLines);<a name="line.303"></a>
+<span class="sourceLineNo">304</span>                uncoveredLines.removeAll(partiallyCoveredLines);<a name="line.304"></a>
+<span class="sourceLineNo">305</span>        }<a name="line.305"></a>
+<span class="sourceLineNo">306</span><a name="line.306"></a>
+<span class="sourceLineNo">307</span>        /**<a name="line.307"></a>
+<span class="sourceLineNo">308</span>         * Creates a copy of this object that is stable in regards to serialization, as<a name="line.308"></a>
+<span class="sourceLineNo">309</span>         * it creates the {@link #fullyCoveredLines}, {@link #partiallyCoveredLines} and<a name="line.309"></a>
+<span class="sourceLineNo">310</span>         * {@link #uncoveredLines} sets by adding the respective entries in a sorted<a name="line.310"></a>
+<span class="sourceLineNo">311</span>         * manner.<a name="line.311"></a>
+<span class="sourceLineNo">312</span>         * <a name="line.312"></a>
+<span class="sourceLineNo">313</span>         * This is somewhat of a hack,as this relies on java sets always turning out the<a name="line.313"></a>
+<span class="sourceLineNo">314</span>         * same, if the entries are inserted in the same order.<a name="line.314"></a>
+<span class="sourceLineNo">315</span>         */<a name="line.315"></a>
+<span class="sourceLineNo">316</span>        public LineCoverageInfo createStableCopy() {<a name="line.316"></a>
+<span class="sourceLineNo">317</span>                LineCoverageInfo copy = new LineCoverageInfo(this.isMethodAccurate);<a name="line.317"></a>
+<span class="sourceLineNo">318</span>                copy.addLineCoverage(getFullyCoveredLines(), ELineCoverage.FULLY_COVERED);<a name="line.318"></a>
+<span class="sourceLineNo">319</span>                copy.addLineCoverage(getPartiallyCoveredLines(), ELineCoverage.PARTIALLY_COVERED);<a name="line.319"></a>
+<span class="sourceLineNo">320</span>                copy.addLineCoverage(getUncoveredLines(), ELineCoverage.NOT_COVERED);<a name="line.320"></a>
+<span class="sourceLineNo">321</span>                return copy;<a name="line.321"></a>
+<span class="sourceLineNo">322</span>        }<a name="line.322"></a>
+<span class="sourceLineNo">323</span><a name="line.323"></a>
+<span class="sourceLineNo">324</span>        /**<a name="line.324"></a>
+<span class="sourceLineNo">325</span>         * Extends coverage to full entities by using the best covered line for all<a name="line.325"></a>
+<span class="sourceLineNo">326</span>         * lines of an entity.<a name="line.326"></a>
+<span class="sourceLineNo">327</span>         */<a name="line.327"></a>
+<span class="sourceLineNo">328</span>        public void extendCoverageToStatements(Collection&lt;ShallowEntity&gt; coverableEntities) {<a name="line.328"></a>
+<span class="sourceLineNo">329</span>                for (ShallowEntity entity : coverableEntities) {<a name="line.329"></a>
+<span class="sourceLineNo">330</span>                        List&lt;IToken&gt; ownStartTokens = CollectionUtils.filter(entity.ownStartTokens(),<a name="line.330"></a>
+<span class="sourceLineNo">331</span>                                        token -&gt; token.getType().getTokenClass() != ETokenClass.SYNTHETIC);<a name="line.331"></a>
+<span class="sourceLineNo">332</span>                        if (ownStartTokens.isEmpty()) {<a name="line.332"></a>
+<span class="sourceLineNo">333</span>                                continue;<a name="line.333"></a>
+<span class="sourceLineNo">334</span>                        }<a name="line.334"></a>
+<span class="sourceLineNo">335</span><a name="line.335"></a>
+<span class="sourceLineNo">336</span>                        int startLine = ownStartTokens.get(0).getLineNumber() + 1;<a name="line.336"></a>
+<span class="sourceLineNo">337</span>                        int endLine = CollectionUtils.getLast(ownStartTokens).getLineNumber() + 1;<a name="line.337"></a>
+<span class="sourceLineNo">338</span>                        if (startLine == endLine) {<a name="line.338"></a>
+<span class="sourceLineNo">339</span>                                // no adjustment needed for single line entities<a name="line.339"></a>
+<span class="sourceLineNo">340</span>                                continue;<a name="line.340"></a>
+<span class="sourceLineNo">341</span>                        }<a name="line.341"></a>
+<span class="sourceLineNo">342</span><a name="line.342"></a>
+<span class="sourceLineNo">343</span>                        if (IntStream.range(startLine, endLine + 1).anyMatch(fullyCoveredLines::contains)) {<a name="line.343"></a>
+<span class="sourceLineNo">344</span>                                IntStream.range(startLine, endLine + 1).forEach(fullyCoveredLines::add);<a name="line.344"></a>
+<span class="sourceLineNo">345</span>                                IntStream.range(startLine, endLine + 1).forEach(partiallyCoveredLines::remove);<a name="line.345"></a>
+<span class="sourceLineNo">346</span>                                IntStream.range(startLine, endLine + 1).forEach(uncoveredLines::remove);<a name="line.346"></a>
+<span class="sourceLineNo">347</span>                        } else if (IntStream.range(startLine, endLine + 1).anyMatch(partiallyCoveredLines::contains)) {<a name="line.347"></a>
+<span class="sourceLineNo">348</span>                                IntStream.range(startLine, endLine + 1).forEach(partiallyCoveredLines::add);<a name="line.348"></a>
+<span class="sourceLineNo">349</span>                                IntStream.range(startLine, endLine + 1).forEach(uncoveredLines::remove);<a name="line.349"></a>
+<span class="sourceLineNo">350</span>                        }<a name="line.350"></a>
+<span class="sourceLineNo">351</span>                }<a name="line.351"></a>
+<span class="sourceLineNo">352</span>        }<a name="line.352"></a>
+<span class="sourceLineNo">353</span>}<a name="line.353"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

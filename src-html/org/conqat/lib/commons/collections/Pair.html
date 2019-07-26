@@ -82,7 +82,12 @@
 <span class="sourceLineNo">074</span><a name="line.74"></a>
 <span class="sourceLineNo">075</span>                return new Pair&lt;Integer, Integer&gt;(Integer.parseInt(tokens[0]), Integer.parseInt(tokens[1]));<a name="line.75"></a>
 <span class="sourceLineNo">076</span>        }<a name="line.76"></a>
-<span class="sourceLineNo">077</span>}<a name="line.77"></a>
+<span class="sourceLineNo">077</span><a name="line.77"></a>
+<span class="sourceLineNo">078</span>        /** Factory method for pairs, to simplify creation. */<a name="line.78"></a>
+<span class="sourceLineNo">079</span>        public static &lt;S, T&gt; Pair&lt;S, T&gt; createPair(S first, T second) {<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                return new Pair&lt;&gt;(first, second);<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        }<a name="line.81"></a>
+<span class="sourceLineNo">082</span>}<a name="line.82"></a>
 
 
 

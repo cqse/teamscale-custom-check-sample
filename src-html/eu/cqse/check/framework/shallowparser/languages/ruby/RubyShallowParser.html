@@ -167,15 +167,12 @@
 <span class="sourceLineNo">159</span>                                .subRecognizer(new RubySimpleStatementRecognizer(), 1, 1).endNode();<a name="line.159"></a>
 <span class="sourceLineNo">160</span>        }<a name="line.160"></a>
 <span class="sourceLineNo">161</span><a name="line.161"></a>
-<span class="sourceLineNo">162</span>        /**<a name="line.162"></a>
-<span class="sourceLineNo">163</span>         * @return<a name="line.163"></a>
-<span class="sourceLineNo">164</span>         */<a name="line.164"></a>
-<span class="sourceLineNo">165</span>        private RecognizerBase&lt;ERubyParserStates&gt; appendTrailingConditionRecognizer(<a name="line.165"></a>
-<span class="sourceLineNo">166</span>                        RecognizerBase&lt;ERubyParserStates&gt; recognizer) {<a name="line.166"></a>
-<span class="sourceLineNo">167</span>                return recognizer.subRecognizer(emptyRecognizer().sequence(EnumSet.of(FOR, IF, UNLESS, WHILE, UNTIL))<a name="line.167"></a>
-<span class="sourceLineNo">168</span>                                .subRecognizer(new RubyTrailingConditionRecognizer(), 1, 1), 0, Integer.MAX_VALUE);<a name="line.168"></a>
-<span class="sourceLineNo">169</span>        }<a name="line.169"></a>
-<span class="sourceLineNo">170</span>}<a name="line.170"></a>
+<span class="sourceLineNo">162</span>        private RecognizerBase&lt;ERubyParserStates&gt; appendTrailingConditionRecognizer(<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                        RecognizerBase&lt;ERubyParserStates&gt; recognizer) {<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                return recognizer.subRecognizer(emptyRecognizer().sequence(EnumSet.of(FOR, IF, UNLESS, WHILE, UNTIL))<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                                .subRecognizer(new RubyTrailingConditionRecognizer(), 1, 1), 0, Integer.MAX_VALUE);<a name="line.165"></a>
+<span class="sourceLineNo">166</span>        }<a name="line.166"></a>
+<span class="sourceLineNo">167</span>}<a name="line.167"></a>
 
 
 

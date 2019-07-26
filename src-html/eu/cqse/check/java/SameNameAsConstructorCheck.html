@@ -44,7 +44,7 @@
 <span class="sourceLineNo">036</span>        protected void processEntity(ShallowEntity entity) throws CheckException {<a name="line.36"></a>
 <span class="sourceLineNo">037</span>                String methodName = entity.getName();<a name="line.37"></a>
 <span class="sourceLineNo">038</span>                if (methodName.equals(entity.getParent().getName())) {<a name="line.38"></a>
-<span class="sourceLineNo">039</span>                        createFindingOnFirstLine("Method " + methodName + " must not be named like the constructor", entity);<a name="line.39"></a>
+<span class="sourceLineNo">039</span>                        createFindingOnFirstLine("Method `" + methodName + "` should not be named like the constructor", entity);<a name="line.39"></a>
 <span class="sourceLineNo">040</span>                }<a name="line.40"></a>
 <span class="sourceLineNo">041</span>        }<a name="line.41"></a>
 <span class="sourceLineNo">042</span>}<a name="line.42"></a>

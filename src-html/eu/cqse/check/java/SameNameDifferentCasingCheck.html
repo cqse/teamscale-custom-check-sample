@@ -1,0 +1,248 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*-----------------------------------------------------------------------+<a name="line.1"></a>
+<span class="sourceLineNo">002</span> | de.audi.teamscale.checks<a name="line.2"></a>
+<span class="sourceLineNo">003</span> |                                                                       |<a name="line.3"></a>
+<span class="sourceLineNo">004</span>   $Id: SameNameDifferentCasingCheck.java 12400 2016-07-29 12:58:04Z hummelb $<a name="line.4"></a>
+<span class="sourceLineNo">005</span> |                                                                       |<a name="line.5"></a>
+<span class="sourceLineNo">006</span> | Copyright (c)  2009-2016 CQSE GmbH                                 |<a name="line.6"></a>
+<span class="sourceLineNo">007</span> +-----------------------------------------------------------------------*/<a name="line.7"></a>
+<span class="sourceLineNo">008</span>package eu.cqse.check.java;<a name="line.8"></a>
+<span class="sourceLineNo">009</span><a name="line.9"></a>
+<span class="sourceLineNo">010</span>import static java.util.stream.Collectors.groupingBy;<a name="line.10"></a>
+<span class="sourceLineNo">011</span><a name="line.11"></a>
+<span class="sourceLineNo">012</span>import java.util.ArrayList;<a name="line.12"></a>
+<span class="sourceLineNo">013</span>import java.util.Comparator;<a name="line.13"></a>
+<span class="sourceLineNo">014</span>import java.util.EnumSet;<a name="line.14"></a>
+<span class="sourceLineNo">015</span>import java.util.HashSet;<a name="line.15"></a>
+<span class="sourceLineNo">016</span>import java.util.List;<a name="line.16"></a>
+<span class="sourceLineNo">017</span>import java.util.Map;<a name="line.17"></a>
+<span class="sourceLineNo">018</span>import java.util.Optional;<a name="line.18"></a>
+<span class="sourceLineNo">019</span>import java.util.Set;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import java.util.stream.Collectors;<a name="line.20"></a>
+<span class="sourceLineNo">021</span><a name="line.21"></a>
+<span class="sourceLineNo">022</span>import org.conqat.lib.commons.collections.CollectionUtils;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import org.conqat.lib.commons.collections.Pair;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import org.conqat.lib.commons.collections.PairList;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import org.conqat.lib.commons.string.StringUtils;<a name="line.25"></a>
+<span class="sourceLineNo">026</span><a name="line.26"></a>
+<span class="sourceLineNo">027</span>import eu.cqse.check.framework.core.ACheck;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import eu.cqse.check.framework.core.CheckException;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>import eu.cqse.check.framework.core.CheckGroupNames;<a name="line.29"></a>
+<span class="sourceLineNo">030</span>import eu.cqse.check.framework.core.CheckImplementationBase;<a name="line.30"></a>
+<span class="sourceLineNo">031</span>import eu.cqse.check.framework.core.ECheckParameter;<a name="line.31"></a>
+<span class="sourceLineNo">032</span>import eu.cqse.check.framework.core.EFindingEnablement;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import eu.cqse.check.framework.scanner.ELanguage;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import eu.cqse.check.framework.shallowparser.SubTypeNames;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import eu.cqse.check.framework.shallowparser.util.ShallowParsingUtils;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import eu.cqse.check.framework.util.LanguageFeatureParser;<a name="line.38"></a>
+<span class="sourceLineNo">039</span><a name="line.39"></a>
+<span class="sourceLineNo">040</span>/**<a name="line.40"></a>
+<span class="sourceLineNo">041</span> * {@ConQAT.Doc}<a name="line.41"></a>
+<span class="sourceLineNo">042</span> */<a name="line.42"></a>
+<span class="sourceLineNo">043</span>@ACheck(name = "Names must not only differ in casing", description = "Identifiers in the code must not differ only in their casing, as this can easily lead to confusion:  \n"<a name="line.43"></a>
+<span class="sourceLineNo">044</span>                + "```java  \n" + "class Example {  \n" + "    String fileName;  \n"<a name="line.44"></a>
+<span class="sourceLineNo">045</span>                + "    String filename; // Hard to distinguish from previous field  \n" + "}  \n"<a name="line.45"></a>
+<span class="sourceLineNo">046</span>                + "```", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.YELLOW, languages = {<a name="line.46"></a>
+<span class="sourceLineNo">047</span>                                ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })<a name="line.47"></a>
+<span class="sourceLineNo">048</span>public class SameNameDifferentCasingCheck extends CheckImplementationBase {<a name="line.48"></a>
+<span class="sourceLineNo">049</span><a name="line.49"></a>
+<span class="sourceLineNo">050</span>        /**<a name="line.50"></a>
+<span class="sourceLineNo">051</span>         * {@inheritDoc}<a name="line.51"></a>
+<span class="sourceLineNo">052</span>         * <a name="line.52"></a>
+<span class="sourceLineNo">053</span>         * Groups all identifiers by their lower case name. For each identifier in each<a name="line.53"></a>
+<span class="sourceLineNo">054</span>         * group, tries to find an identifier that differs in casing from it and reports<a name="line.54"></a>
+<span class="sourceLineNo">055</span>         * a finding for that.<a name="line.55"></a>
+<span class="sourceLineNo">056</span>         */<a name="line.56"></a>
+<span class="sourceLineNo">057</span>        @Override<a name="line.57"></a>
+<span class="sourceLineNo">058</span>        public void execute() throws CheckException {<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                List&lt;IdentifierData&gt; identifiers = findAllIdentifiers();<a name="line.59"></a>
+<span class="sourceLineNo">060</span><a name="line.60"></a>
+<span class="sourceLineNo">061</span>                findClashesAmongCheckedTypes(identifiers, EnumSet.of(EIdentifierType.CLASS));<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                findClashesAmongCheckedTypes(identifiers, EnumSet.of(EIdentifierType.CONSTANT));<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                findClashesAmongCheckedTypes(identifiers, EnumSet.of(EIdentifierType.FIELD, EIdentifierType.LOCAL_VARIABLE,<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                                EIdentifierType.PARAMETER, EIdentifierType.METHOD));<a name="line.64"></a>
+<span class="sourceLineNo">065</span>        }<a name="line.65"></a>
+<span class="sourceLineNo">066</span><a name="line.66"></a>
+<span class="sourceLineNo">067</span>        /**<a name="line.67"></a>
+<span class="sourceLineNo">068</span>         * Finds all identifiers that are declared in the analyzed file. Except<a name="line.68"></a>
+<span class="sourceLineNo">069</span>         * constructors.<a name="line.69"></a>
+<span class="sourceLineNo">070</span>         */<a name="line.70"></a>
+<span class="sourceLineNo">071</span>        private List&lt;IdentifierData&gt; findAllIdentifiers() throws CheckException {<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                List&lt;IdentifierData&gt; identifiers = new ArrayList&lt;&gt;();<a name="line.72"></a>
+<span class="sourceLineNo">073</span><a name="line.73"></a>
+<span class="sourceLineNo">074</span>                identifiers.addAll(extractIdentifiers(select("//TYPE"), EIdentifierType.CLASS));<a name="line.74"></a>
+<span class="sourceLineNo">075</span><a name="line.75"></a>
+<span class="sourceLineNo">076</span>                List&lt;ShallowEntity&gt; localVariables = select(<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                                "//STATEMENT[count(node())=0 and subtype('" + SubTypeNames.LOCAL_VARIABLE + "')]");<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                identifiers.addAll(extractIdentifiers(localVariables, EIdentifierType.LOCAL_VARIABLE));<a name="line.78"></a>
+<span class="sourceLineNo">079</span><a name="line.79"></a>
+<span class="sourceLineNo">080</span>                for (ShallowEntity field : select("//ATTRIBUTE[subtype('" + SubTypeNames.ATTRIBUTE + "')]")) {<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                        if (!StringUtils.isEmpty(field.getName())) {<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                                if (LanguageFeatureParser.JAVA.isConstant(field)) {<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                                        identifiers.add(new IdentifierData(EIdentifierType.CONSTANT, field.getName(), field));<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                                } else {<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                                        identifiers.add(new IdentifierData(EIdentifierType.FIELD, field.getName(), field));<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                                }<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                        }<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                }<a name="line.88"></a>
+<span class="sourceLineNo">089</span><a name="line.89"></a>
+<span class="sourceLineNo">090</span>                for (ShallowEntity method : select("//METHOD")) {<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                        if (!StringUtils.isEmpty(method.getName()) &amp;&amp; !method.getSubtype().equals(SubTypeNames.CONSTRUCTOR)) {<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                                identifiers.add(new IdentifierData(EIdentifierType.METHOD, method.getName(), method));<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                        }<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                        List&lt;IToken&gt; parameterTokens = ShallowParsingUtils.extractParameterNameTokens(method);<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                        for (IToken parameterToken : parameterTokens) {<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                                identifiers.add(new IdentifierData(EIdentifierType.PARAMETER, parameterToken.getText(), method));<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                        }<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                }<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                return identifiers;<a name="line.99"></a>
+<span class="sourceLineNo">100</span>        }<a name="line.100"></a>
+<span class="sourceLineNo">101</span><a name="line.101"></a>
+<span class="sourceLineNo">102</span>        /**<a name="line.102"></a>
+<span class="sourceLineNo">103</span>         * Creates an {@link IdentifierData} object for each of the given entities.<a name="line.103"></a>
+<span class="sourceLineNo">104</span>         */<a name="line.104"></a>
+<span class="sourceLineNo">105</span>        private static List&lt;IdentifierData&gt; extractIdentifiers(List&lt;ShallowEntity&gt; entities, EIdentifierType type) {<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                return CollectionUtils.filterAndMap(entities, entity -&gt; !StringUtils.isEmpty(entity.getName()),<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                                entity -&gt; new IdentifierData(type, entity.getName(), entity));<a name="line.107"></a>
+<span class="sourceLineNo">108</span>        }<a name="line.108"></a>
+<span class="sourceLineNo">109</span><a name="line.109"></a>
+<span class="sourceLineNo">110</span>        /**<a name="line.110"></a>
+<span class="sourceLineNo">111</span>         * Finds all clashes within the identifiers.<a name="line.111"></a>
+<span class="sourceLineNo">112</span>         * <a name="line.112"></a>
+<span class="sourceLineNo">113</span>         * @param checkedTypes<a name="line.113"></a>
+<span class="sourceLineNo">114</span>         *            only identifiers of these types will be considered.<a name="line.114"></a>
+<span class="sourceLineNo">115</span>         */<a name="line.115"></a>
+<span class="sourceLineNo">116</span>        private void findClashesAmongCheckedTypes(List&lt;IdentifierData&gt; identifiers, Set&lt;EIdentifierType&gt; checkedTypes)<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                        throws CheckException {<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                Set&lt;Pair&lt;IdentifierData, IdentifierData&gt;&gt; identifierPairsWithFindings = new HashSet&lt;&gt;();<a name="line.118"></a>
+<span class="sourceLineNo">119</span><a name="line.119"></a>
+<span class="sourceLineNo">120</span>                Map&lt;String, List&lt;IdentifierData&gt;&gt; identifiersByCanonicalIdentifier = identifiers.stream()<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                                .filter(identifier -&gt; checkedTypes.contains(identifier.getType()))<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                                .collect(groupingBy(identifier -&gt; identifier.getName().toLowerCase()));<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                for (List&lt;IdentifierData&gt; identifiersWithSameCanonicalization : identifiersByCanonicalIdentifier.values()) {<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                        // Ensure that the findings produced are deterministic by fixing the order in<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                        // which identifiers are processed.<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                        List&lt;IdentifierData&gt; orderedIdentifiers = identifiersWithSameCanonicalization.stream()<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                                        .sorted(Comparator.comparing(IdentifierData::getType).thenComparing(IdentifierData::getName))<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                                        .collect(Collectors.toList());<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                        for (IdentifierData identifier : orderedIdentifiers) {<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                                Optional&lt;IdentifierData&gt; identifierWithDifferentCase = findPotentialClash(orderedIdentifiers,<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                                                identifier);<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                                if (!identifierWithDifferentCase.isPresent()) {<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                                        continue;<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                                }<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                                IdentifierData clashingIdentifier = identifierWithDifferentCase.get();<a name="line.135"></a>
+<span class="sourceLineNo">136</span><a name="line.136"></a>
+<span class="sourceLineNo">137</span>                                // Has this pair of identifiers been reported as a finding already?<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                                if (identifierPairsWithFindings.contains(Pair.createPair(identifier, clashingIdentifier))<a name="line.138"></a>
+<span class="sourceLineNo">139</span>                                                || identifierPairsWithFindings.contains(Pair.createPair(clashingIdentifier, identifier))) {<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                                        continue;<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                                }<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                                createFinding(identifier, clashingIdentifier);<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                                identifierPairsWithFindings.add(Pair.createPair(identifier, clashingIdentifier));<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                        }<a name="line.144"></a>
+<span class="sourceLineNo">145</span>                }<a name="line.145"></a>
+<span class="sourceLineNo">146</span>        }<a name="line.146"></a>
+<span class="sourceLineNo">147</span><a name="line.147"></a>
+<span class="sourceLineNo">148</span>        /**<a name="line.148"></a>
+<span class="sourceLineNo">149</span>         * Returns any found identifier which clashes with the currently examined<a name="line.149"></a>
+<span class="sourceLineNo">150</span>         * identifier.<a name="line.150"></a>
+<span class="sourceLineNo">151</span>         */<a name="line.151"></a>
+<span class="sourceLineNo">152</span>        private static Optional&lt;IdentifierData&gt; findPotentialClash(List&lt;IdentifierData&gt; otherIdentifiers,<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                        IdentifierData currentIdentifier) {<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                return otherIdentifiers.stream()<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                                .filter(potentialClash -&gt; !potentialClash.getName().equals(currentIdentifier.getName())).findAny();<a name="line.155"></a>
+<span class="sourceLineNo">156</span>        }<a name="line.156"></a>
+<span class="sourceLineNo">157</span><a name="line.157"></a>
+<span class="sourceLineNo">158</span>        /**<a name="line.158"></a>
+<span class="sourceLineNo">159</span>         * Creates a finding with the given message at the given token.<a name="line.159"></a>
+<span class="sourceLineNo">160</span>         */<a name="line.160"></a>
+<span class="sourceLineNo">161</span>        private void createFinding(IdentifierData referenceData, IdentifierData otherData) throws CheckException {<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                PairList&lt;IToken, IToken&gt; pairList = new PairList&lt;&gt;();<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                // Assumes that the first token of each shallow entity is reasonably close to<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                // problematic identifier<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                pairList.add(getFirstToken(referenceData.getEntity()), getFirstToken(referenceData.getEntity()));<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                pairList.add(getFirstToken(otherData.getEntity()), getFirstToken(otherData.getEntity()));<a name="line.166"></a>
+<span class="sourceLineNo">167</span><a name="line.167"></a>
+<span class="sourceLineNo">168</span>                createFindingForSiblings(StringUtils.capitalize(referenceData.getType().getDescription()) + " "<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                                + referenceData.getName() + " differs only in casing from "<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                                + otherData.getType().getDescription().toLowerCase() + " " + otherData.getName(), pairList);<a name="line.170"></a>
+<span class="sourceLineNo">171</span>        }<a name="line.171"></a>
+<span class="sourceLineNo">172</span><a name="line.172"></a>
+<span class="sourceLineNo">173</span>        private static IToken getFirstToken(ShallowEntity entity) {<a name="line.173"></a>
+<span class="sourceLineNo">174</span>                return entity.getAllTokens().get(entity.getStartTokenIndex());<a name="line.174"></a>
+<span class="sourceLineNo">175</span>        }<a name="line.175"></a>
+<span class="sourceLineNo">176</span>}<a name="line.176"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

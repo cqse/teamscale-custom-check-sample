@@ -23,156 +23,158 @@
 <span class="sourceLineNo">015</span>import org.conqat.lib.commons.collections.CollectionUtils;<a name="line.15"></a>
 <span class="sourceLineNo">016</span>import org.conqat.lib.commons.collections.UnmodifiableList;<a name="line.16"></a>
 <span class="sourceLineNo">017</span><a name="line.17"></a>
-<span class="sourceLineNo">018</span>/**<a name="line.18"></a>
-<span class="sourceLineNo">019</span> * A class describing a diff.<a name="line.19"></a>
-<span class="sourceLineNo">020</span> */<a name="line.20"></a>
-<span class="sourceLineNo">021</span>public class DiffDescription implements Serializable {<a name="line.21"></a>
-<span class="sourceLineNo">022</span><a name="line.22"></a>
-<span class="sourceLineNo">023</span>        /** Serial version UID. */<a name="line.23"></a>
-<span class="sourceLineNo">024</span>        private static final long serialVersionUID = 1;<a name="line.24"></a>
-<span class="sourceLineNo">025</span><a name="line.25"></a>
-<span class="sourceLineNo">026</span>        /** The name of this description. */<a name="line.26"></a>
-<span class="sourceLineNo">027</span>        private final String name;<a name="line.27"></a>
-<span class="sourceLineNo">028</span><a name="line.28"></a>
-<span class="sourceLineNo">029</span>        /**<a name="line.29"></a>
-<span class="sourceLineNo">030</span>         * Line changes for the left lines. The integers are organized in pairs,<a name="line.30"></a>
-<span class="sourceLineNo">031</span>         * giving the start (inclusive) and end (exclusive) lines of a region.<a name="line.31"></a>
-<span class="sourceLineNo">032</span>         */<a name="line.32"></a>
-<span class="sourceLineNo">033</span>        private final List&lt;Integer&gt; leftChangeLines = new ArrayList&lt;Integer&gt;();<a name="line.33"></a>
-<span class="sourceLineNo">034</span><a name="line.34"></a>
-<span class="sourceLineNo">035</span>        /**<a name="line.35"></a>
-<span class="sourceLineNo">036</span>         * Line changes for the right lines. The integers are organized in pairs,<a name="line.36"></a>
-<span class="sourceLineNo">037</span>         * giving the start (inclusive) and end (exclusive) lines of a region.<a name="line.37"></a>
-<span class="sourceLineNo">038</span>         */<a name="line.38"></a>
-<span class="sourceLineNo">039</span>        private final List&lt;Integer&gt; rightChangeLines = new ArrayList&lt;Integer&gt;();<a name="line.39"></a>
-<span class="sourceLineNo">040</span><a name="line.40"></a>
-<span class="sourceLineNo">041</span>        /**<a name="line.41"></a>
-<span class="sourceLineNo">042</span>         * Change tokens for the left text. These are used to highlight the exact<a name="line.42"></a>
-<span class="sourceLineNo">043</span>         * change within changed lines. The integers are organized in pairs, giving<a name="line.43"></a>
-<span class="sourceLineNo">044</span>         * the start (inclusive) and end (exclusive) offsets of a region.<a name="line.44"></a>
-<span class="sourceLineNo">045</span>         */<a name="line.45"></a>
-<span class="sourceLineNo">046</span>        private final List&lt;Integer&gt; leftChangeRegions = new ArrayList&lt;Integer&gt;();<a name="line.46"></a>
-<span class="sourceLineNo">047</span><a name="line.47"></a>
-<span class="sourceLineNo">048</span>        /**<a name="line.48"></a>
-<span class="sourceLineNo">049</span>         * Change tokens for the left text. These are used to highlight the exact<a name="line.49"></a>
-<span class="sourceLineNo">050</span>         * change within changed lines. The integers are organized in pairs, giving<a name="line.50"></a>
-<span class="sourceLineNo">051</span>         * the start (inclusive) and end (exclusive) offsets of a region.<a name="line.51"></a>
-<span class="sourceLineNo">052</span>         */<a name="line.52"></a>
-<span class="sourceLineNo">053</span>        private final List&lt;Integer&gt; rightChangeRegions = new ArrayList&lt;Integer&gt;();<a name="line.53"></a>
-<span class="sourceLineNo">054</span><a name="line.54"></a>
-<span class="sourceLineNo">055</span>        /** Constructor. */<a name="line.55"></a>
-<span class="sourceLineNo">056</span>        public DiffDescription(String name) {<a name="line.56"></a>
-<span class="sourceLineNo">057</span>                this.name = name;<a name="line.57"></a>
-<span class="sourceLineNo">058</span>        }<a name="line.58"></a>
-<span class="sourceLineNo">059</span><a name="line.59"></a>
-<span class="sourceLineNo">060</span>        /** Returns the name. */<a name="line.60"></a>
-<span class="sourceLineNo">061</span>        public String getName() {<a name="line.61"></a>
-<span class="sourceLineNo">062</span>                return name;<a name="line.62"></a>
-<span class="sourceLineNo">063</span>        }<a name="line.63"></a>
-<span class="sourceLineNo">064</span><a name="line.64"></a>
-<span class="sourceLineNo">065</span>        /**<a name="line.65"></a>
-<span class="sourceLineNo">066</span>         * Adds a line region that is matched between the left and right element.<a name="line.66"></a>
-<span class="sourceLineNo">067</span>         * This denotes a part where these regions differ. First lines are<a name="line.67"></a>
-<span class="sourceLineNo">068</span>         * inclusive, last lines are exclusive. All lines are 1-based. Adding<a name="line.68"></a>
-<span class="sourceLineNo">069</span>         * regions must be performed in ascending order.<a name="line.69"></a>
-<span class="sourceLineNo">070</span>         */<a name="line.70"></a>
-<span class="sourceLineNo">071</span>        public void addLineRegion(int leftFirstLine, int leftEndLine, int rightFirstLine, int rightEndLine) {<a name="line.71"></a>
-<span class="sourceLineNo">072</span>                addLineRegion(leftFirstLine, leftEndLine, leftChangeLines);<a name="line.72"></a>
-<span class="sourceLineNo">073</span>                addLineRegion(rightFirstLine, rightEndLine, rightChangeLines);<a name="line.73"></a>
-<span class="sourceLineNo">074</span>        }<a name="line.74"></a>
-<span class="sourceLineNo">075</span><a name="line.75"></a>
-<span class="sourceLineNo">076</span>        /**<a name="line.76"></a>
-<span class="sourceLineNo">077</span>         * Inserts a line region into either {@link #leftChangeLines} or<a name="line.77"></a>
-<span class="sourceLineNo">078</span>         * {@link #rightChangeLines}.<a name="line.78"></a>
-<span class="sourceLineNo">079</span>         */<a name="line.79"></a>
-<span class="sourceLineNo">080</span>        private static void addLineRegion(int firstLine, int endLine, List&lt;Integer&gt; changeLines) {<a name="line.80"></a>
-<span class="sourceLineNo">081</span>                CCSMAssert.isTrue(firstLine &gt;= 0, "May only insert positive lines!");<a name="line.81"></a>
-<span class="sourceLineNo">082</span>                CCSMAssert.isTrue(firstLine &lt;= endLine, "End must not be before start!");<a name="line.82"></a>
-<span class="sourceLineNo">083</span>                CCSMAssert.isTrue(changeLines.isEmpty() || CollectionUtils.getLast(changeLines) - 1 &lt;= firstLine,<a name="line.83"></a>
-<span class="sourceLineNo">084</span>                                "Must insert in ascending order!");<a name="line.84"></a>
-<span class="sourceLineNo">085</span>                changeLines.add(firstLine);<a name="line.85"></a>
-<span class="sourceLineNo">086</span>                changeLines.add(endLine);<a name="line.86"></a>
-<span class="sourceLineNo">087</span>        }<a name="line.87"></a>
-<span class="sourceLineNo">088</span><a name="line.88"></a>
-<span class="sourceLineNo">089</span>        /**<a name="line.89"></a>
-<span class="sourceLineNo">090</span>         * Adds a change within a line region (that is highlighted) for the left<a name="line.90"></a>
-<span class="sourceLineNo">091</span>         * side. Start is inclusive, end is exclusive.<a name="line.91"></a>
-<span class="sourceLineNo">092</span>         */<a name="line.92"></a>
-<span class="sourceLineNo">093</span>        public void addLeftChange(int startOffset, int endOffset) {<a name="line.93"></a>
-<span class="sourceLineNo">094</span>                addChange(startOffset, endOffset, leftChangeRegions);<a name="line.94"></a>
-<span class="sourceLineNo">095</span>        }<a name="line.95"></a>
-<span class="sourceLineNo">096</span><a name="line.96"></a>
-<span class="sourceLineNo">097</span>        /**<a name="line.97"></a>
-<span class="sourceLineNo">098</span>         * Adds a change within a line region (that is highlighted) for the right<a name="line.98"></a>
-<span class="sourceLineNo">099</span>         * side. Start is inclusive, end is exclusive.<a name="line.99"></a>
-<span class="sourceLineNo">100</span>         */<a name="line.100"></a>
-<span class="sourceLineNo">101</span>        public void addRightChange(int startOffset, int endOffset) {<a name="line.101"></a>
-<span class="sourceLineNo">102</span>                addChange(startOffset, endOffset, rightChangeRegions);<a name="line.102"></a>
-<span class="sourceLineNo">103</span>        }<a name="line.103"></a>
-<span class="sourceLineNo">104</span><a name="line.104"></a>
-<span class="sourceLineNo">105</span>        /**<a name="line.105"></a>
-<span class="sourceLineNo">106</span>         * Adds a change within a line region. Start is inclusive, end is exclusive.<a name="line.106"></a>
+<span class="sourceLineNo">018</span>import com.fasterxml.jackson.annotation.JsonProperty;<a name="line.18"></a>
+<span class="sourceLineNo">019</span><a name="line.19"></a>
+<span class="sourceLineNo">020</span>/**<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * A class describing a diff.<a name="line.21"></a>
+<span class="sourceLineNo">022</span> */<a name="line.22"></a>
+<span class="sourceLineNo">023</span>public class DiffDescription implements Serializable {<a name="line.23"></a>
+<span class="sourceLineNo">024</span><a name="line.24"></a>
+<span class="sourceLineNo">025</span>        /** Serial version UID. */<a name="line.25"></a>
+<span class="sourceLineNo">026</span>        private static final long serialVersionUID = 1;<a name="line.26"></a>
+<span class="sourceLineNo">027</span><a name="line.27"></a>
+<span class="sourceLineNo">028</span>        /** The name of this description. */<a name="line.28"></a>
+<span class="sourceLineNo">029</span>        @JsonProperty("name")<a name="line.29"></a>
+<span class="sourceLineNo">030</span>        private final String name;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>        /**<a name="line.32"></a>
+<span class="sourceLineNo">033</span>         * Line changes for the left lines. The integers are organized in pairs, giving<a name="line.33"></a>
+<span class="sourceLineNo">034</span>         * the start (inclusive) and end (exclusive) lines of a region.<a name="line.34"></a>
+<span class="sourceLineNo">035</span>         */<a name="line.35"></a>
+<span class="sourceLineNo">036</span>        @JsonProperty("leftChangeLines")<a name="line.36"></a>
+<span class="sourceLineNo">037</span>        private final List&lt;Integer&gt; leftChangeLines = new ArrayList&lt;&gt;();<a name="line.37"></a>
+<span class="sourceLineNo">038</span><a name="line.38"></a>
+<span class="sourceLineNo">039</span>        /**<a name="line.39"></a>
+<span class="sourceLineNo">040</span>         * Line changes for the right lines. The integers are organized in pairs, giving<a name="line.40"></a>
+<span class="sourceLineNo">041</span>         * the start (inclusive) and end (exclusive) lines of a region.<a name="line.41"></a>
+<span class="sourceLineNo">042</span>         */<a name="line.42"></a>
+<span class="sourceLineNo">043</span>        @JsonProperty("rightChangeLines")<a name="line.43"></a>
+<span class="sourceLineNo">044</span>        private final List&lt;Integer&gt; rightChangeLines = new ArrayList&lt;&gt;();<a name="line.44"></a>
+<span class="sourceLineNo">045</span><a name="line.45"></a>
+<span class="sourceLineNo">046</span>        /**<a name="line.46"></a>
+<span class="sourceLineNo">047</span>         * Change tokens for the left text. These are used to highlight the exact change<a name="line.47"></a>
+<span class="sourceLineNo">048</span>         * within changed lines. The integers are organized in pairs, giving the start<a name="line.48"></a>
+<span class="sourceLineNo">049</span>         * (inclusive) and end (exclusive) offsets of a region.<a name="line.49"></a>
+<span class="sourceLineNo">050</span>         */<a name="line.50"></a>
+<span class="sourceLineNo">051</span>        @JsonProperty("leftChangeRegions")<a name="line.51"></a>
+<span class="sourceLineNo">052</span>        private final List&lt;Integer&gt; leftChangeRegions = new ArrayList&lt;&gt;();<a name="line.52"></a>
+<span class="sourceLineNo">053</span><a name="line.53"></a>
+<span class="sourceLineNo">054</span>        /**<a name="line.54"></a>
+<span class="sourceLineNo">055</span>         * Change tokens for the left text. These are used to highlight the exact change<a name="line.55"></a>
+<span class="sourceLineNo">056</span>         * within changed lines. The integers are organized in pairs, giving the start<a name="line.56"></a>
+<span class="sourceLineNo">057</span>         * (inclusive) and end (exclusive) offsets of a region.<a name="line.57"></a>
+<span class="sourceLineNo">058</span>         */<a name="line.58"></a>
+<span class="sourceLineNo">059</span>        @JsonProperty("rightChangeRegions")<a name="line.59"></a>
+<span class="sourceLineNo">060</span>        private final List&lt;Integer&gt; rightChangeRegions = new ArrayList&lt;&gt;();<a name="line.60"></a>
+<span class="sourceLineNo">061</span><a name="line.61"></a>
+<span class="sourceLineNo">062</span>        /** Constructor. */<a name="line.62"></a>
+<span class="sourceLineNo">063</span>        public DiffDescription(String name) {<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                this.name = name;<a name="line.64"></a>
+<span class="sourceLineNo">065</span>        }<a name="line.65"></a>
+<span class="sourceLineNo">066</span><a name="line.66"></a>
+<span class="sourceLineNo">067</span>        /** Returns the name. */<a name="line.67"></a>
+<span class="sourceLineNo">068</span>        public String getName() {<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                return name;<a name="line.69"></a>
+<span class="sourceLineNo">070</span>        }<a name="line.70"></a>
+<span class="sourceLineNo">071</span><a name="line.71"></a>
+<span class="sourceLineNo">072</span>        /**<a name="line.72"></a>
+<span class="sourceLineNo">073</span>         * Adds a line region that is matched between the left and right element. This<a name="line.73"></a>
+<span class="sourceLineNo">074</span>         * denotes a part where these regions differ. First lines are inclusive, last<a name="line.74"></a>
+<span class="sourceLineNo">075</span>         * lines are exclusive. All lines are 1-based. Adding regions must be performed<a name="line.75"></a>
+<span class="sourceLineNo">076</span>         * in ascending order.<a name="line.76"></a>
+<span class="sourceLineNo">077</span>         */<a name="line.77"></a>
+<span class="sourceLineNo">078</span>        public void addLineRegion(int leftFirstLine, int leftEndLine, int rightFirstLine, int rightEndLine) {<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                addLineRegion(leftFirstLine, leftEndLine, leftChangeLines);<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                addLineRegion(rightFirstLine, rightEndLine, rightChangeLines);<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        }<a name="line.81"></a>
+<span class="sourceLineNo">082</span><a name="line.82"></a>
+<span class="sourceLineNo">083</span>        /**<a name="line.83"></a>
+<span class="sourceLineNo">084</span>         * Inserts a line region into either {@link #leftChangeLines} or<a name="line.84"></a>
+<span class="sourceLineNo">085</span>         * {@link #rightChangeLines}.<a name="line.85"></a>
+<span class="sourceLineNo">086</span>         */<a name="line.86"></a>
+<span class="sourceLineNo">087</span>        private static void addLineRegion(int firstLine, int endLine, List&lt;Integer&gt; changeLines) {<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                CCSMAssert.isTrue(firstLine &gt;= 0, "May only insert positive lines!");<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                CCSMAssert.isTrue(firstLine &lt;= endLine, "End must not be before start!");<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                CCSMAssert.isTrue(changeLines.isEmpty() || CollectionUtils.getLast(changeLines) - 1 &lt;= firstLine,<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                                "Must insert in ascending order!");<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                changeLines.add(firstLine);<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                changeLines.add(endLine);<a name="line.93"></a>
+<span class="sourceLineNo">094</span>        }<a name="line.94"></a>
+<span class="sourceLineNo">095</span><a name="line.95"></a>
+<span class="sourceLineNo">096</span>        /**<a name="line.96"></a>
+<span class="sourceLineNo">097</span>         * Adds a change within a line region (that is highlighted) for the left side.<a name="line.97"></a>
+<span class="sourceLineNo">098</span>         * Start is inclusive, end is exclusive.<a name="line.98"></a>
+<span class="sourceLineNo">099</span>         */<a name="line.99"></a>
+<span class="sourceLineNo">100</span>        public void addLeftChange(int startOffset, int endOffset) {<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                addChange(startOffset, endOffset, leftChangeRegions);<a name="line.101"></a>
+<span class="sourceLineNo">102</span>        }<a name="line.102"></a>
+<span class="sourceLineNo">103</span><a name="line.103"></a>
+<span class="sourceLineNo">104</span>        /**<a name="line.104"></a>
+<span class="sourceLineNo">105</span>         * Adds a change within a line region (that is highlighted) for the right side.<a name="line.105"></a>
+<span class="sourceLineNo">106</span>         * Start is inclusive, end is exclusive.<a name="line.106"></a>
 <span class="sourceLineNo">107</span>         */<a name="line.107"></a>
-<span class="sourceLineNo">108</span>        private static void addChange(int startOffset, int endOffset, List&lt;Integer&gt; changeTokens) {<a name="line.108"></a>
-<span class="sourceLineNo">109</span>                if (!changeTokens.isEmpty() &amp;&amp; startOffset &lt;= CollectionUtils.getLast(changeTokens)) {<a name="line.109"></a>
-<span class="sourceLineNo">110</span>                        changeTokens.set(changeTokens.size() - 1, endOffset);<a name="line.110"></a>
-<span class="sourceLineNo">111</span>                } else {<a name="line.111"></a>
-<span class="sourceLineNo">112</span>                        changeTokens.add(startOffset);<a name="line.112"></a>
-<span class="sourceLineNo">113</span>                        changeTokens.add(endOffset);<a name="line.113"></a>
-<span class="sourceLineNo">114</span>                }<a name="line.114"></a>
-<span class="sourceLineNo">115</span>        }<a name="line.115"></a>
-<span class="sourceLineNo">116</span>        <a name="line.116"></a>
-<span class="sourceLineNo">117</span><a name="line.117"></a>
-<span class="sourceLineNo">118</span>        /**<a name="line.118"></a>
-<span class="sourceLineNo">119</span>         * Returns the change regions for the left lines. The integers are organized<a name="line.119"></a>
-<span class="sourceLineNo">120</span>         * in pairs, giving the start (inclusive) and end (exclusive) index of a<a name="line.120"></a>
-<span class="sourceLineNo">121</span>         * region.<a name="line.121"></a>
-<span class="sourceLineNo">122</span>         */<a name="line.122"></a>
-<span class="sourceLineNo">123</span>        public UnmodifiableList&lt;Integer&gt; getLeftChangeRegions() {<a name="line.123"></a>
-<span class="sourceLineNo">124</span>                return CollectionUtils.asUnmodifiable(leftChangeRegions);<a name="line.124"></a>
-<span class="sourceLineNo">125</span>        }<a name="line.125"></a>
-<span class="sourceLineNo">126</span><a name="line.126"></a>
-<span class="sourceLineNo">127</span>        /**<a name="line.127"></a>
-<span class="sourceLineNo">128</span>         * Returns the change regions for the right lines. The integers are organized<a name="line.128"></a>
-<span class="sourceLineNo">129</span>         * in pairs, giving the start (inclusive) and end (exclusive) index of a<a name="line.129"></a>
-<span class="sourceLineNo">130</span>         * region.<a name="line.130"></a>
-<span class="sourceLineNo">131</span>         */<a name="line.131"></a>
-<span class="sourceLineNo">132</span>        public UnmodifiableList&lt;Integer&gt; getRightChangeRegions() {<a name="line.132"></a>
-<span class="sourceLineNo">133</span>                return CollectionUtils.asUnmodifiable(rightChangeRegions);<a name="line.133"></a>
-<span class="sourceLineNo">134</span>        }<a name="line.134"></a>
-<span class="sourceLineNo">135</span>        <a name="line.135"></a>
-<span class="sourceLineNo">136</span>        /**<a name="line.136"></a>
-<span class="sourceLineNo">137</span>         * Adds the given list to the leftChangeRegions<a name="line.137"></a>
-<span class="sourceLineNo">138</span>         */<a name="line.138"></a>
-<span class="sourceLineNo">139</span>        public void addLeftChangeRegions(UnmodifiableList&lt;Integer&gt; leftChangeRegions) {<a name="line.139"></a>
-<span class="sourceLineNo">140</span>                this.leftChangeRegions.addAll(leftChangeRegions);<a name="line.140"></a>
-<span class="sourceLineNo">141</span>        }<a name="line.141"></a>
-<span class="sourceLineNo">142</span><a name="line.142"></a>
-<span class="sourceLineNo">143</span>        /**<a name="line.143"></a>
-<span class="sourceLineNo">144</span>         * Adds the given list to the rightChangeRegions<a name="line.144"></a>
-<span class="sourceLineNo">145</span>         */<a name="line.145"></a>
-<span class="sourceLineNo">146</span>        public void addRightChangeRegions(UnmodifiableList&lt;Integer&gt; rightChangeRegions) {<a name="line.146"></a>
-<span class="sourceLineNo">147</span>                this.rightChangeRegions.addAll(rightChangeRegions);<a name="line.147"></a>
-<span class="sourceLineNo">148</span>        }<a name="line.148"></a>
-<span class="sourceLineNo">149</span><a name="line.149"></a>
-<span class="sourceLineNo">150</span>        /**<a name="line.150"></a>
-<span class="sourceLineNo">151</span>         * Returns the line changes for the left lines. The integers are organized<a name="line.151"></a>
-<span class="sourceLineNo">152</span>         * in pairs, giving the start (inclusive) and end (exclusive) lines of a<a name="line.152"></a>
-<span class="sourceLineNo">153</span>         * region.<a name="line.153"></a>
-<span class="sourceLineNo">154</span>         */<a name="line.154"></a>
-<span class="sourceLineNo">155</span>        public UnmodifiableList&lt;Integer&gt; getLeftChangeLines() {<a name="line.155"></a>
-<span class="sourceLineNo">156</span>                return CollectionUtils.asUnmodifiable(leftChangeLines);<a name="line.156"></a>
-<span class="sourceLineNo">157</span>        }<a name="line.157"></a>
-<span class="sourceLineNo">158</span><a name="line.158"></a>
-<span class="sourceLineNo">159</span>        /**<a name="line.159"></a>
-<span class="sourceLineNo">160</span>         * Returns the line changes for the right lines. The integers are organized<a name="line.160"></a>
-<span class="sourceLineNo">161</span>         * in pairs, giving the start (inclusive) and end (exclusive) lines of a<a name="line.161"></a>
-<span class="sourceLineNo">162</span>         * region.<a name="line.162"></a>
-<span class="sourceLineNo">163</span>         */<a name="line.163"></a>
-<span class="sourceLineNo">164</span>        public UnmodifiableList&lt;Integer&gt; getRightChangeLines() {<a name="line.164"></a>
-<span class="sourceLineNo">165</span>                return CollectionUtils.asUnmodifiable(rightChangeLines);<a name="line.165"></a>
-<span class="sourceLineNo">166</span>        }<a name="line.166"></a>
-<span class="sourceLineNo">167</span>}<a name="line.167"></a>
+<span class="sourceLineNo">108</span>        public void addRightChange(int startOffset, int endOffset) {<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                addChange(startOffset, endOffset, rightChangeRegions);<a name="line.109"></a>
+<span class="sourceLineNo">110</span>        }<a name="line.110"></a>
+<span class="sourceLineNo">111</span><a name="line.111"></a>
+<span class="sourceLineNo">112</span>        /**<a name="line.112"></a>
+<span class="sourceLineNo">113</span>         * Adds a change within a line region. Start is inclusive, end is exclusive.<a name="line.113"></a>
+<span class="sourceLineNo">114</span>         */<a name="line.114"></a>
+<span class="sourceLineNo">115</span>        private static void addChange(int startOffset, int endOffset, List&lt;Integer&gt; changeTokens) {<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                if (!changeTokens.isEmpty() &amp;&amp; startOffset &lt;= CollectionUtils.getLast(changeTokens)) {<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                        changeTokens.set(changeTokens.size() - 1, endOffset);<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                } else {<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                        changeTokens.add(startOffset);<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                        changeTokens.add(endOffset);<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                }<a name="line.121"></a>
+<span class="sourceLineNo">122</span>        }<a name="line.122"></a>
+<span class="sourceLineNo">123</span><a name="line.123"></a>
+<span class="sourceLineNo">124</span>        /**<a name="line.124"></a>
+<span class="sourceLineNo">125</span>         * Returns the change regions for the left lines. The integers are organized in<a name="line.125"></a>
+<span class="sourceLineNo">126</span>         * pairs, giving the start (inclusive) and end (exclusive) index of a region.<a name="line.126"></a>
+<span class="sourceLineNo">127</span>         */<a name="line.127"></a>
+<span class="sourceLineNo">128</span>        public UnmodifiableList&lt;Integer&gt; getLeftChangeRegions() {<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                return CollectionUtils.asUnmodifiable(leftChangeRegions);<a name="line.129"></a>
+<span class="sourceLineNo">130</span>        }<a name="line.130"></a>
+<span class="sourceLineNo">131</span><a name="line.131"></a>
+<span class="sourceLineNo">132</span>        /**<a name="line.132"></a>
+<span class="sourceLineNo">133</span>         * Returns the change regions for the right lines. The integers are organized in<a name="line.133"></a>
+<span class="sourceLineNo">134</span>         * pairs, giving the start (inclusive) and end (exclusive) index of a region.<a name="line.134"></a>
+<span class="sourceLineNo">135</span>         */<a name="line.135"></a>
+<span class="sourceLineNo">136</span>        public UnmodifiableList&lt;Integer&gt; getRightChangeRegions() {<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                return CollectionUtils.asUnmodifiable(rightChangeRegions);<a name="line.137"></a>
+<span class="sourceLineNo">138</span>        }<a name="line.138"></a>
+<span class="sourceLineNo">139</span><a name="line.139"></a>
+<span class="sourceLineNo">140</span>        /**<a name="line.140"></a>
+<span class="sourceLineNo">141</span>         * Adds the given list to the leftChangeRegions<a name="line.141"></a>
+<span class="sourceLineNo">142</span>         */<a name="line.142"></a>
+<span class="sourceLineNo">143</span>        public void addLeftChangeRegions(UnmodifiableList&lt;Integer&gt; leftChangeRegions) {<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                this.leftChangeRegions.addAll(leftChangeRegions);<a name="line.144"></a>
+<span class="sourceLineNo">145</span>        }<a name="line.145"></a>
+<span class="sourceLineNo">146</span><a name="line.146"></a>
+<span class="sourceLineNo">147</span>        /**<a name="line.147"></a>
+<span class="sourceLineNo">148</span>         * Adds the given list to the rightChangeRegions<a name="line.148"></a>
+<span class="sourceLineNo">149</span>         */<a name="line.149"></a>
+<span class="sourceLineNo">150</span>        public void addRightChangeRegions(UnmodifiableList&lt;Integer&gt; rightChangeRegions) {<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                this.rightChangeRegions.addAll(rightChangeRegions);<a name="line.151"></a>
+<span class="sourceLineNo">152</span>        }<a name="line.152"></a>
+<span class="sourceLineNo">153</span><a name="line.153"></a>
+<span class="sourceLineNo">154</span>        /**<a name="line.154"></a>
+<span class="sourceLineNo">155</span>         * Returns the line changes for the left lines. The integers are organized in<a name="line.155"></a>
+<span class="sourceLineNo">156</span>         * pairs, giving the start (inclusive) and end (exclusive) lines of a region.<a name="line.156"></a>
+<span class="sourceLineNo">157</span>         */<a name="line.157"></a>
+<span class="sourceLineNo">158</span>        public UnmodifiableList&lt;Integer&gt; getLeftChangeLines() {<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                return CollectionUtils.asUnmodifiable(leftChangeLines);<a name="line.159"></a>
+<span class="sourceLineNo">160</span>        }<a name="line.160"></a>
+<span class="sourceLineNo">161</span><a name="line.161"></a>
+<span class="sourceLineNo">162</span>        /**<a name="line.162"></a>
+<span class="sourceLineNo">163</span>         * Returns the line changes for the right lines. The integers are organized in<a name="line.163"></a>
+<span class="sourceLineNo">164</span>         * pairs, giving the start (inclusive) and end (exclusive) lines of a region.<a name="line.164"></a>
+<span class="sourceLineNo">165</span>         */<a name="line.165"></a>
+<span class="sourceLineNo">166</span>        public UnmodifiableList&lt;Integer&gt; getRightChangeLines() {<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                return CollectionUtils.asUnmodifiable(rightChangeLines);<a name="line.167"></a>
+<span class="sourceLineNo">168</span>        }<a name="line.168"></a>
+<span class="sourceLineNo">169</span>}<a name="line.169"></a>
 
 
 

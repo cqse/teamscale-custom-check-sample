@@ -92,7 +92,7 @@
 <span class="sourceLineNo">084</span>                String className = "&lt;unknown&gt;";<a name="line.84"></a>
 <span class="sourceLineNo">085</span>                try {<a name="line.85"></a>
 <span class="sourceLineNo">086</span>                        className = pool.getEntity(classHandle, SerializedClassBase.class).toString();<a name="line.86"></a>
-<span class="sourceLineNo">087</span>                        builder.append("Object " + getHandle() + ": " + className + StringUtils.CR);<a name="line.87"></a>
+<span class="sourceLineNo">087</span>                        builder.append("Object " + getHandle() + ": " + className + StringUtils.LINE_SEPARATOR);<a name="line.87"></a>
 <span class="sourceLineNo">088</span><a name="line.88"></a>
 <span class="sourceLineNo">089</span>                        int index = 0;<a name="line.89"></a>
 <span class="sourceLineNo">090</span>                        for (SerializedClass serializedClass : getPlainClassHierarchy()) {<a name="line.90"></a>
@@ -111,7 +111,7 @@
 <span class="sourceLineNo">103</span>                        int fieldIndex = 0;<a name="line.103"></a>
 <span class="sourceLineNo">104</span>                        for (SerializedFieldBase field : serializedClass.getFields()) {<a name="line.104"></a>
 <span class="sourceLineNo">105</span>                                builder.append("  " + serializedClass.getName() + "#" + field.getName() + ": "<a name="line.105"></a>
-<span class="sourceLineNo">106</span>                                                + fieldSet.getValue(fieldIndex++) + StringUtils.CR);<a name="line.106"></a>
+<span class="sourceLineNo">106</span>                                                + fieldSet.getValue(fieldIndex++) + StringUtils.LINE_SEPARATOR);<a name="line.106"></a>
 <span class="sourceLineNo">107</span>                        }<a name="line.107"></a>
 <span class="sourceLineNo">108</span>                } else {<a name="line.108"></a>
 <span class="sourceLineNo">109</span>                        builder.append("  " + serializedClass.getName() + ": &lt;no data&gt;");<a name="line.109"></a>
@@ -140,33 +140,44 @@
 <span class="sourceLineNo">132</span>        }<a name="line.132"></a>
 <span class="sourceLineNo">133</span><a name="line.133"></a>
 <span class="sourceLineNo">134</span>        /**<a name="line.134"></a>
-<span class="sourceLineNo">135</span>         * Returns the field set and index within this fieldset for a field with<a name="line.135"></a>
-<span class="sourceLineNo">136</span>         * given name. Returns null if none is found.<a name="line.136"></a>
+<span class="sourceLineNo">135</span>         * Removes the value object for the field with the given name. This does not<a name="line.135"></a>
+<span class="sourceLineNo">136</span>         * only set the vlaue to 0 or null, but corresponds to a deletion of the field.<a name="line.136"></a>
 <span class="sourceLineNo">137</span>         */<a name="line.137"></a>
-<span class="sourceLineNo">138</span>        private Pair&lt;SerializedClassValues, Integer&gt; getFieldSetAndIndex(String fieldName) throws IOException {<a name="line.138"></a>
-<span class="sourceLineNo">139</span>                int classIndex = 0;<a name="line.139"></a>
-<span class="sourceLineNo">140</span>                for (SerializedClass serializedClass : getPlainClassHierarchy()) {<a name="line.140"></a>
-<span class="sourceLineNo">141</span>                        SerializedFieldBase field = serializedClass.getField(fieldName);<a name="line.141"></a>
-<span class="sourceLineNo">142</span>                        if (field != null) {<a name="line.142"></a>
-<span class="sourceLineNo">143</span>                                int index = serializedClass.getFields().indexOf(field);<a name="line.143"></a>
-<span class="sourceLineNo">144</span>                                SerializedClassValues fieldSet = fieldSets.get(classIndex);<a name="line.144"></a>
-<span class="sourceLineNo">145</span>                                return new Pair&lt;&gt;(fieldSet, index);<a name="line.145"></a>
-<span class="sourceLineNo">146</span>                        }<a name="line.146"></a>
-<span class="sourceLineNo">147</span>                        classIndex++;<a name="line.147"></a>
-<span class="sourceLineNo">148</span>                }<a name="line.148"></a>
-<span class="sourceLineNo">149</span>                return null;<a name="line.149"></a>
-<span class="sourceLineNo">150</span>        }<a name="line.150"></a>
-<span class="sourceLineNo">151</span><a name="line.151"></a>
-<span class="sourceLineNo">152</span>        /** Returns number of field sets. */<a name="line.152"></a>
-<span class="sourceLineNo">153</span>        public int getFieldSetCount() {<a name="line.153"></a>
-<span class="sourceLineNo">154</span>                return fieldSets.size();<a name="line.154"></a>
-<span class="sourceLineNo">155</span>        }<a name="line.155"></a>
-<span class="sourceLineNo">156</span><a name="line.156"></a>
-<span class="sourceLineNo">157</span>        /** Returns field sets of given index. */<a name="line.157"></a>
-<span class="sourceLineNo">158</span>        public SerializedClassValues getFieldSet(int index) {<a name="line.158"></a>
-<span class="sourceLineNo">159</span>                return fieldSets.get(index);<a name="line.159"></a>
-<span class="sourceLineNo">160</span>        }<a name="line.160"></a>
-<span class="sourceLineNo">161</span>}<a name="line.161"></a>
+<span class="sourceLineNo">138</span>        public void removeFieldValue(String name) throws IOException {<a name="line.138"></a>
+<span class="sourceLineNo">139</span>                Pair&lt;SerializedClassValues, Integer&gt; fieldSetAndValue = getFieldSetAndIndex(name);<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                if (fieldSetAndValue != null) {<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                        fieldSetAndValue.getFirst().removeValue(fieldSetAndValue.getSecond());<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                }<a name="line.142"></a>
+<span class="sourceLineNo">143</span>        }<a name="line.143"></a>
+<span class="sourceLineNo">144</span><a name="line.144"></a>
+<span class="sourceLineNo">145</span>        /**<a name="line.145"></a>
+<span class="sourceLineNo">146</span>         * Returns the field set and index within this fieldset for a field with given<a name="line.146"></a>
+<span class="sourceLineNo">147</span>         * name. Returns null if none is found.<a name="line.147"></a>
+<span class="sourceLineNo">148</span>         */<a name="line.148"></a>
+<span class="sourceLineNo">149</span>        private Pair&lt;SerializedClassValues, Integer&gt; getFieldSetAndIndex(String fieldName) throws IOException {<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                int classIndex = 0;<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                for (SerializedClass serializedClass : getPlainClassHierarchy()) {<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                        SerializedFieldBase field = serializedClass.getField(fieldName);<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                        if (field != null) {<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                                int index = serializedClass.getFields().indexOf(field);<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                                SerializedClassValues fieldSet = fieldSets.get(classIndex);<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                                return new Pair&lt;&gt;(fieldSet, index);<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                        }<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                        classIndex++;<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                }<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                return null;<a name="line.160"></a>
+<span class="sourceLineNo">161</span>        }<a name="line.161"></a>
+<span class="sourceLineNo">162</span><a name="line.162"></a>
+<span class="sourceLineNo">163</span>        /** Returns number of field sets. */<a name="line.163"></a>
+<span class="sourceLineNo">164</span>        public int getFieldSetCount() {<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                return fieldSets.size();<a name="line.165"></a>
+<span class="sourceLineNo">166</span>        }<a name="line.166"></a>
+<span class="sourceLineNo">167</span><a name="line.167"></a>
+<span class="sourceLineNo">168</span>        /** Returns field sets of given index. */<a name="line.168"></a>
+<span class="sourceLineNo">169</span>        public SerializedClassValues getFieldSet(int index) {<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                return fieldSets.get(index);<a name="line.170"></a>
+<span class="sourceLineNo">171</span>        }<a name="line.171"></a>
+<span class="sourceLineNo">172</span>}<a name="line.172"></a>
 
 
 

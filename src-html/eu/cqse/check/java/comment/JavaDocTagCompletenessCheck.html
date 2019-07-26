@@ -1,0 +1,333 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*-------------------------------------------------------------------------+<a name="line.1"></a>
+<span class="sourceLineNo">002</span>|                                                                          |<a name="line.2"></a>
+<span class="sourceLineNo">003</span>| Copyright (c) 2009-2018 CQSE GmbH                                        |<a name="line.3"></a>
+<span class="sourceLineNo">004</span>|                                                                          |<a name="line.4"></a>
+<span class="sourceLineNo">005</span>+-------------------------------------------------------------------------*/<a name="line.5"></a>
+<span class="sourceLineNo">006</span>package eu.cqse.check.java.comment;<a name="line.6"></a>
+<span class="sourceLineNo">007</span><a name="line.7"></a>
+<span class="sourceLineNo">008</span>import static eu.cqse.check.framework.scanner.ELanguage.JAVA;<a name="line.8"></a>
+<span class="sourceLineNo">009</span>import static eu.cqse.check.framework.scanner.ELanguage.JAVADOC;<a name="line.9"></a>
+<span class="sourceLineNo">010</span>import static eu.cqse.check.framework.scanner.ETokenType.DOCUMENTATION_COMMENT;<a name="line.10"></a>
+<span class="sourceLineNo">011</span>import static eu.cqse.check.framework.scanner.ETokenType.EOL;<a name="line.11"></a>
+<span class="sourceLineNo">012</span>import static eu.cqse.check.framework.scanner.ETokenType.JAVADOC_INLINE_TAG;<a name="line.12"></a>
+<span class="sourceLineNo">013</span>import static eu.cqse.check.framework.scanner.ETokenType.JAVADOC_TAG;<a name="line.13"></a>
+<span class="sourceLineNo">014</span>import static eu.cqse.check.framework.shallowparser.TokenStreamUtils.NOT_FOUND;<a name="line.14"></a>
+<span class="sourceLineNo">015</span>import static eu.cqse.check.framework.shallowparser.framework.EShallowEntityType.META;<a name="line.15"></a>
+<span class="sourceLineNo">016</span>import static eu.cqse.check.java.comment.EJavaDocParameter.CLOSING_TOKEN_TYPES;<a name="line.16"></a>
+<span class="sourceLineNo">017</span>import static eu.cqse.check.java.comment.EJavaDocParameter.OPENING_TOKEN_TYPES;<a name="line.17"></a>
+<span class="sourceLineNo">018</span><a name="line.18"></a>
+<span class="sourceLineNo">019</span>import java.util.EnumSet;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import java.util.HashMap;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import java.util.HashSet;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import java.util.LinkedList;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import java.util.List;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import java.util.Map;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import java.util.Map.Entry;<a name="line.25"></a>
+<span class="sourceLineNo">026</span>import java.util.Optional;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import java.util.Set;<a name="line.27"></a>
+<span class="sourceLineNo">028</span><a name="line.28"></a>
+<span class="sourceLineNo">029</span>import org.conqat.lib.commons.collections.SetMap;<a name="line.29"></a>
+<span class="sourceLineNo">030</span>import org.conqat.lib.commons.string.StringUtils;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>import eu.cqse.check.base.CommentCheckBase;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import eu.cqse.check.framework.core.ACheck;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import eu.cqse.check.framework.core.CheckException;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import eu.cqse.check.framework.core.CheckGroupNames;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import eu.cqse.check.framework.core.ECheckParameter;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import eu.cqse.check.framework.core.EFindingEnablement;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import eu.cqse.check.framework.core.phase.ECodeViewOption;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import eu.cqse.check.framework.scanner.ETokenType;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>import eu.cqse.check.framework.scanner.LanguageProperties;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>import eu.cqse.check.framework.scanner.ScannerUtils;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>import eu.cqse.check.framework.shallowparser.TokenStreamUtils;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>import eu.cqse.check.framework.util.tokens.TokenPattern;<a name="line.45"></a>
+<span class="sourceLineNo">046</span><a name="line.46"></a>
+<span class="sourceLineNo">047</span>/** {@ConQAT.Doc} */<a name="line.47"></a>
+<span class="sourceLineNo">048</span>@ACheck(name = "Incorrect JavaDoc usage", description = "Incorrect used JavaDoc tags clutter comments and make them less usable", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.YELLOW, languages = {<a name="line.48"></a>
+<span class="sourceLineNo">049</span>                JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })<a name="line.49"></a>
+<span class="sourceLineNo">050</span>public class JavaDocTagCompletenessCheck extends CommentCheckBase {<a name="line.50"></a>
+<span class="sourceLineNo">051</span><a name="line.51"></a>
+<span class="sourceLineNo">052</span>        /** All JavaDoc block tags (initialized statically). */<a name="line.52"></a>
+<span class="sourceLineNo">053</span>        private static final Set&lt;IJavaDocTag&gt; BLOCK_TAGS = new HashSet&lt;&gt;();<a name="line.53"></a>
+<span class="sourceLineNo">054</span><a name="line.54"></a>
+<span class="sourceLineNo">055</span>        /** All JavaDoc inline tags (initialized statically). */<a name="line.55"></a>
+<span class="sourceLineNo">056</span>        private static final Set&lt;IJavaDocTag&gt; INLINE_TAGS = new HashSet&lt;&gt;();<a name="line.56"></a>
+<span class="sourceLineNo">057</span><a name="line.57"></a>
+<span class="sourceLineNo">058</span>        /** All JavaDoc tags by name (initialized statically). */<a name="line.58"></a>
+<span class="sourceLineNo">059</span>        private static final Map&lt;String, IJavaDocTag&gt; ALL_TAGS_BY_NAME = new HashMap&lt;&gt;();<a name="line.59"></a>
+<span class="sourceLineNo">060</span><a name="line.60"></a>
+<span class="sourceLineNo">061</span>        static {<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                for (IJavaDocTag blockTag : EJavaDocBlockTag.values()) {<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                        BLOCK_TAGS.add(blockTag);<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                        ALL_TAGS_BY_NAME.put(blockTag.getName(), blockTag);<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                }<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                for (IJavaDocTag inlineTag : EJavaDocInlineTag.values()) {<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                        INLINE_TAGS.add(inlineTag);<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                        ALL_TAGS_BY_NAME.put("{" + inlineTag.getName(), inlineTag);<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                }<a name="line.69"></a>
+<span class="sourceLineNo">070</span>        }<a name="line.70"></a>
+<span class="sourceLineNo">071</span><a name="line.71"></a>
+<span class="sourceLineNo">072</span>        @Override<a name="line.72"></a>
+<span class="sourceLineNo">073</span>        protected void processComment(IToken completeComment, int startLine, int endLine) throws CheckException {<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                if (completeComment.getType() != DOCUMENTATION_COMMENT) {<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                        return;<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                }<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                Optional&lt;ShallowEntity&gt; commentedEntity = getCommentedEntity(completeComment,<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                                context.getTokens(ECodeViewOption.FILTERED_PREPROCESSED));<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                if (!commentedEntity.isPresent()) {<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                        return;<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                }<a name="line.81"></a>
+<span class="sourceLineNo">082</span><a name="line.82"></a>
+<span class="sourceLineNo">083</span>                List&lt;IToken&gt; commentTokens = ScannerUtils.getTokens(<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                                LanguageProperties.of(context.getLanguage()).getCommentContent(completeComment.getText()), JAVADOC);<a name="line.84"></a>
+<span class="sourceLineNo">085</span><a name="line.85"></a>
+<span class="sourceLineNo">086</span>                checkComment(completeComment, new LinkedList&lt;&gt;(commentTokens), commentedEntity.get());<a name="line.86"></a>
+<span class="sourceLineNo">087</span>        }<a name="line.87"></a>
+<span class="sourceLineNo">088</span><a name="line.88"></a>
+<span class="sourceLineNo">089</span>        /**<a name="line.89"></a>
+<span class="sourceLineNo">090</span>         * Checks the comment for misuses of JavaDoc tags and creates findings where<a name="line.90"></a>
+<span class="sourceLineNo">091</span>         * necessary.<a name="line.91"></a>
+<span class="sourceLineNo">092</span>         */<a name="line.92"></a>
+<span class="sourceLineNo">093</span>        private void checkComment(IToken completeComment, List&lt;IToken&gt; commentTokens, ShallowEntity relatedEntity)<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                        throws CheckException {<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                SetMap&lt;IToken, String&gt; findingsByComment = collectFindings(completeComment, commentTokens, relatedEntity);<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                for (Entry&lt;IToken, Set&lt;String&gt;&gt; entry : findingsByComment) {<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                        IToken comment = entry.getKey();<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                        Set&lt;String&gt; findings = entry.getValue();<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                        createJavaDocFinding(StringUtils.concat(findings, "\n"), comment);<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                }<a name="line.100"></a>
+<span class="sourceLineNo">101</span>        }<a name="line.101"></a>
+<span class="sourceLineNo">102</span><a name="line.102"></a>
+<span class="sourceLineNo">103</span>        /**<a name="line.103"></a>
+<span class="sourceLineNo">104</span>         * For all comments, collects and returns all findings related to the respective<a name="line.104"></a>
+<span class="sourceLineNo">105</span>         * comment. The map structure is Comment -&gt; Finding Messages.<a name="line.105"></a>
+<span class="sourceLineNo">106</span>         */<a name="line.106"></a>
+<span class="sourceLineNo">107</span>        private static SetMap&lt;IToken, String&gt; collectFindings(IToken completeComment, List&lt;IToken&gt; commentTokens,<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                        ShallowEntity relatedEntity) {<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                SetMap&lt;IToken, String&gt; findingsByComment = new SetMap&lt;&gt;();<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                while (!commentTokens.isEmpty()) {<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                        IToken token = commentTokens.remove(0);<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                        if (!isJavaDocTag(token)) {<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                                continue;<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                        }<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                        Optional&lt;IJavaDocTag&gt; optionalJavaDocTag = getByTagName(token);<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                        if (!optionalJavaDocTag.isPresent()) {<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                                continue;<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                        }<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                        IJavaDocTag javaDocTag = optionalJavaDocTag.get();<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                        int endIndex = computeEndIndex(token, commentTokens);<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                        if (endIndex == TokenStreamUtils.NOT_FOUND) {<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                                findingsByComment.add(completeComment, "`" + javaDocTag.getName() + "` - Unterminated inline tag");<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                                continue;<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                        }<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                        List&lt;IToken&gt; tagTokens = commentTokens.subList(0, endIndex);<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                        commentTokens = commentTokens.subList(tagTokens.size(), commentTokens.size());<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                        Optional&lt;String&gt; finding = createFindingMessage(token, tagTokens, relatedEntity);<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                        if (finding.isPresent()) {<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                                findingsByComment.add(completeComment, "`" + javaDocTag.getName() + "` - " + finding.get());<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                        }<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                }<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                return findingsByComment;<a name="line.132"></a>
+<span class="sourceLineNo">133</span>        }<a name="line.133"></a>
+<span class="sourceLineNo">134</span><a name="line.134"></a>
+<span class="sourceLineNo">135</span>        /** Creates and returns a finding for the given JavaDoc tag. */<a name="line.135"></a>
+<span class="sourceLineNo">136</span>        private void createJavaDocFinding(String findingMessage, IToken completeComment) throws CheckException {<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                createFinding("Incorrect JavaDoc Tags: " + findingMessage, completeComment);<a name="line.137"></a>
+<span class="sourceLineNo">138</span>        }<a name="line.138"></a>
+<span class="sourceLineNo">139</span><a name="line.139"></a>
+<span class="sourceLineNo">140</span>        /**<a name="line.140"></a>
+<span class="sourceLineNo">141</span>         * Returns the entity following the given comment token, i.e. the entity the<a name="line.141"></a>
+<span class="sourceLineNo">142</span>         * comment references. META Entities are ignored.<a name="line.142"></a>
+<span class="sourceLineNo">143</span>         */<a name="line.143"></a>
+<span class="sourceLineNo">144</span>        private Optional&lt;ShallowEntity&gt; getCommentedEntity(IToken commentToken, List&lt;IToken&gt; filteredPreprocessedTokens)<a name="line.144"></a>
+<span class="sourceLineNo">145</span>                        throws CheckException {<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                int index = filteredPreprocessedTokens.indexOf(commentToken) + 1;<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                if (index == filteredPreprocessedTokens.size()) {<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                        return Optional.empty();<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                }<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                IToken nextToken = filteredPreprocessedTokens.get(index);<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                return findEntity(nextToken, context.getAbstractSyntaxTree(ECodeViewOption.FILTERED_PREPROCESSED));<a name="line.151"></a>
+<span class="sourceLineNo">152</span><a name="line.152"></a>
+<span class="sourceLineNo">153</span>        }<a name="line.153"></a>
+<span class="sourceLineNo">154</span><a name="line.154"></a>
+<span class="sourceLineNo">155</span>        /**<a name="line.155"></a>
+<span class="sourceLineNo">156</span>         * Searches recursively for and returns the entity following the given comment<a name="line.156"></a>
+<span class="sourceLineNo">157</span>         * token, i.e. the entity the comment references. META Entities are ignored.<a name="line.157"></a>
+<span class="sourceLineNo">158</span>         */<a name="line.158"></a>
+<span class="sourceLineNo">159</span>        private static Optional&lt;ShallowEntity&gt; findEntity(IToken nextToken, List&lt;ShallowEntity&gt; shallowEntities) {<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                for (ShallowEntity entity : shallowEntities) {<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                        int index = entity.includedTokens().indexOf(nextToken);<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                        switch (index) {<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                        case -1:<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                                continue;<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                        case 0:<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                                if (entity.getType() == META) {<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                                        // This is a package entity<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                                        continue;<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                                }<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                                return Optional.of(entity);<a name="line.170"></a>
+<span class="sourceLineNo">171</span>                        default:<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                                return findEntity(nextToken, entity.getChildren());<a name="line.172"></a>
+<span class="sourceLineNo">173</span>                        }<a name="line.173"></a>
+<span class="sourceLineNo">174</span>                }<a name="line.174"></a>
+<span class="sourceLineNo">175</span>                return Optional.empty();<a name="line.175"></a>
+<span class="sourceLineNo">176</span>        }<a name="line.176"></a>
+<span class="sourceLineNo">177</span><a name="line.177"></a>
+<span class="sourceLineNo">178</span>        /** Returns JavaDocTag with matching tag name */<a name="line.178"></a>
+<span class="sourceLineNo">179</span>        public static Optional&lt;IJavaDocTag&gt; getByTagName(IToken token) {<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                return Optional.ofNullable(ALL_TAGS_BY_NAME.get(token.getText()));<a name="line.180"></a>
+<span class="sourceLineNo">181</span>        }<a name="line.181"></a>
+<span class="sourceLineNo">182</span><a name="line.182"></a>
+<span class="sourceLineNo">183</span>        /** Returns whether the given token is a JavaDoc tag. */<a name="line.183"></a>
+<span class="sourceLineNo">184</span>        public static boolean isJavaDocTag(IToken token) {<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                return EnumSet.of(JAVADOC_TAG, JAVADOC_INLINE_TAG).contains(token.getType());<a name="line.185"></a>
+<span class="sourceLineNo">186</span>        }<a name="line.186"></a>
+<span class="sourceLineNo">187</span><a name="line.187"></a>
+<span class="sourceLineNo">188</span>        /** Returns the end index of the given JavaDoc tag. */<a name="line.188"></a>
+<span class="sourceLineNo">189</span>        public static int computeEndIndex(IToken tagToken, List&lt;IToken&gt; commentTokens) {<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                if (tagToken.getType() == JAVADOC_INLINE_TAG) {<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                        return TokenStreamUtils.findMatchingClosingToken(commentTokens, 0, OPENING_TOKEN_TYPES,<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                                        CLOSING_TOKEN_TYPES);<a name="line.192"></a>
+<span class="sourceLineNo">193</span>                }<a name="line.193"></a>
+<span class="sourceLineNo">194</span>                int index = TokenStreamUtils.firstTokenOfType(commentTokens, 0, JAVADOC_TAG);<a name="line.194"></a>
+<span class="sourceLineNo">195</span>                if (index == NOT_FOUND) {<a name="line.195"></a>
+<span class="sourceLineNo">196</span>                        return commentTokens.size();<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                }<a name="line.197"></a>
+<span class="sourceLineNo">198</span>                return index;<a name="line.198"></a>
+<span class="sourceLineNo">199</span>        }<a name="line.199"></a>
+<span class="sourceLineNo">200</span><a name="line.200"></a>
+<span class="sourceLineNo">201</span>        /** Creates and returns the relevant finding message (if any) for this token. */<a name="line.201"></a>
+<span class="sourceLineNo">202</span>        public static Optional&lt;String&gt; createFindingMessage(IToken token, List&lt;IToken&gt; commentTokens,<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                        ShallowEntity relatedEntity) {<a name="line.203"></a>
+<span class="sourceLineNo">204</span>                IJavaDocTag javaDocTag = getByTagName(token).get();<a name="line.204"></a>
+<span class="sourceLineNo">205</span>                if (token.getType() == JAVADOC_INLINE_TAG) {<a name="line.205"></a>
+<span class="sourceLineNo">206</span>                        int nextInlineTag = TokenStreamUtils.firstTokenOfType(commentTokens, 0, JAVADOC_INLINE_TAG);<a name="line.206"></a>
+<span class="sourceLineNo">207</span>                        if (nextInlineTag != NOT_FOUND) {<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                                return Optional.of("Nesting inline JavaDoc tags");<a name="line.208"></a>
+<span class="sourceLineNo">209</span>                        }<a name="line.209"></a>
+<span class="sourceLineNo">210</span>                }<a name="line.210"></a>
+<span class="sourceLineNo">211</span>                if (conformsToExpectedPattern(javaDocTag, commentTokens, relatedEntity)) {<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                        return Optional.empty();<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                }<a name="line.213"></a>
+<span class="sourceLineNo">214</span>                if (javaDocTag == EJavaDocBlockTag.PARAM &amp;&amp; isValidParamSyntax(commentTokens)) {<a name="line.214"></a>
+<span class="sourceLineNo">215</span>                        return Optional.of("Parameter " + commentTokens.get(0).getText() + " is not declared");<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                }<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                return Optional.of("Pattern expected but not observed: " + javaDocTag.toString());<a name="line.217"></a>
+<span class="sourceLineNo">218</span>        }<a name="line.218"></a>
+<span class="sourceLineNo">219</span><a name="line.219"></a>
+<span class="sourceLineNo">220</span>        /**<a name="line.220"></a>
+<span class="sourceLineNo">221</span>         * Returns whether the given JavaDoc tag and the tokens following it conform to<a name="line.221"></a>
+<span class="sourceLineNo">222</span>         * the pattern expected for that tag. This includes checking for parameter name<a name="line.222"></a>
+<span class="sourceLineNo">223</span>         * matches (using the given related entity).<a name="line.223"></a>
+<span class="sourceLineNo">224</span>         */<a name="line.224"></a>
+<span class="sourceLineNo">225</span>        private static boolean conformsToExpectedPattern(IJavaDocTag tag, List&lt;IToken&gt; tagTokens,<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                        ShallowEntity relatedEntity) {<a name="line.226"></a>
+<span class="sourceLineNo">227</span>                List&lt;EJavaDocParameter&gt; parameters = tag.getParameters();<a name="line.227"></a>
+<span class="sourceLineNo">228</span>                if (parameters.isEmpty()) {<a name="line.228"></a>
+<span class="sourceLineNo">229</span>                        return tagTokens.isEmpty();<a name="line.229"></a>
+<span class="sourceLineNo">230</span>                } else if (allOptional(parameters) &amp;&amp; tagTokens.isEmpty()) {<a name="line.230"></a>
+<span class="sourceLineNo">231</span>                        return true;<a name="line.231"></a>
+<span class="sourceLineNo">232</span>                }<a name="line.232"></a>
+<span class="sourceLineNo">233</span>                TokenPattern pattern = new TokenPattern().beginningOfStream();<a name="line.233"></a>
+<span class="sourceLineNo">234</span>                for (EJavaDocParameter parameter : parameters) {<a name="line.234"></a>
+<span class="sourceLineNo">235</span>                        pattern.repeated(EOL).sequence(parameter.getPattern(relatedEntity)).repeated(EOL);<a name="line.235"></a>
+<span class="sourceLineNo">236</span>                }<a name="line.236"></a>
+<span class="sourceLineNo">237</span>                pattern.endOfStream();<a name="line.237"></a>
+<span class="sourceLineNo">238</span>                return pattern.matchesAnywhere(tagTokens);<a name="line.238"></a>
+<span class="sourceLineNo">239</span>        }<a name="line.239"></a>
+<span class="sourceLineNo">240</span><a name="line.240"></a>
+<span class="sourceLineNo">241</span>        private static boolean allOptional(List&lt;EJavaDocParameter&gt; parameters) {<a name="line.241"></a>
+<span class="sourceLineNo">242</span>                for (EJavaDocParameter parameter : parameters) {<a name="line.242"></a>
+<span class="sourceLineNo">243</span>                        if (!parameter.isOptional()) {<a name="line.243"></a>
+<span class="sourceLineNo">244</span>                                return false;<a name="line.244"></a>
+<span class="sourceLineNo">245</span>                        }<a name="line.245"></a>
+<span class="sourceLineNo">246</span>                }<a name="line.246"></a>
+<span class="sourceLineNo">247</span>                return true;<a name="line.247"></a>
+<span class="sourceLineNo">248</span>        }<a name="line.248"></a>
+<span class="sourceLineNo">249</span><a name="line.249"></a>
+<span class="sourceLineNo">250</span>        /**<a name="line.250"></a>
+<span class="sourceLineNo">251</span>         * Checks whether the syntax of the comment tokens is a valid parameter<a name="line.251"></a>
+<span class="sourceLineNo">252</span>         * definition. If it is, this only leaves the option that the given parameter<a name="line.252"></a>
+<span class="sourceLineNo">253</span>         * name must have been invalid.<a name="line.253"></a>
+<span class="sourceLineNo">254</span>         */<a name="line.254"></a>
+<span class="sourceLineNo">255</span>        private static boolean isValidParamSyntax(List&lt;IToken&gt; commentTokens) {<a name="line.255"></a>
+<span class="sourceLineNo">256</span>                return TokenStreamUtils.hasTokenTypeSequence(commentTokens, 0, ETokenType.WORD, ETokenType.WORD)<a name="line.256"></a>
+<span class="sourceLineNo">257</span>                                || TokenStreamUtils.hasTokenTypeSequence(commentTokens, 0, ETokenType.WORD, ETokenType.EOL,<a name="line.257"></a>
+<span class="sourceLineNo">258</span>                                                ETokenType.WORD);<a name="line.258"></a>
+<span class="sourceLineNo">259</span>        }<a name="line.259"></a>
+<span class="sourceLineNo">260</span><a name="line.260"></a>
+<span class="sourceLineNo">261</span>}<a name="line.261"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

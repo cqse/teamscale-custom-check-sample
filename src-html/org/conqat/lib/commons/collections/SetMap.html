@@ -24,58 +24,80 @@
 <span class="sourceLineNo">016</span>+-------------------------------------------------------------------------*/<a name="line.16"></a>
 <span class="sourceLineNo">017</span>package org.conqat.lib.commons.collections;<a name="line.17"></a>
 <span class="sourceLineNo">018</span><a name="line.18"></a>
-<span class="sourceLineNo">019</span>import java.util.HashSet;<a name="line.19"></a>
-<span class="sourceLineNo">020</span>import java.util.Map;<a name="line.20"></a>
-<span class="sourceLineNo">021</span>import java.util.Set;<a name="line.21"></a>
-<span class="sourceLineNo">022</span><a name="line.22"></a>
-<span class="sourceLineNo">023</span>import org.conqat.lib.commons.error.NeverThrownRuntimeException;<a name="line.23"></a>
-<span class="sourceLineNo">024</span>import org.conqat.lib.commons.factory.IFactory;<a name="line.24"></a>
-<span class="sourceLineNo">025</span><a name="line.25"></a>
-<span class="sourceLineNo">026</span>/**<a name="line.26"></a>
-<span class="sourceLineNo">027</span> * Manages a map of sets, i.e. each key can store multiple elements.<a name="line.27"></a>
-<span class="sourceLineNo">028</span> * <a name="line.28"></a>
-<span class="sourceLineNo">029</span> * @param &lt;K&gt;<a name="line.29"></a>
-<span class="sourceLineNo">030</span> *            the key type.<a name="line.30"></a>
-<span class="sourceLineNo">031</span> * @param &lt;V&gt;<a name="line.31"></a>
-<span class="sourceLineNo">032</span> *            the value type (i.e. the values stored in the collections).<a name="line.32"></a>
-<span class="sourceLineNo">033</span> */<a name="line.33"></a>
-<span class="sourceLineNo">034</span>public class SetMap&lt;K, V&gt; extends CollectionMap&lt;K, V, Set&lt;V&gt;&gt; {<a name="line.34"></a>
-<span class="sourceLineNo">035</span><a name="line.35"></a>
-<span class="sourceLineNo">036</span>        /**<a name="line.36"></a>
-<span class="sourceLineNo">037</span>         * The factory used for set creation. We have to make this static, so it can<a name="line.37"></a>
-<span class="sourceLineNo">038</span>         * be used in the calls to super(), but this also means we can not use the<a name="line.38"></a>
-<span class="sourceLineNo">039</span>         * generic parameters of this class. While we could use an anonymous class<a name="line.39"></a>
-<span class="sourceLineNo">040</span>         * in the constructor to circumvent this, we would create an instance of<a name="line.40"></a>
-<span class="sourceLineNo">041</span>         * this factory for each instance for {@link SetMap}. To avoid this, we use<a name="line.41"></a>
-<span class="sourceLineNo">042</span>         * the static but untyped variant here.<a name="line.42"></a>
-<span class="sourceLineNo">043</span>         */<a name="line.43"></a>
-<span class="sourceLineNo">044</span>        private static final IFactory&lt;Set&lt;?&gt;, NeverThrownRuntimeException&gt; factory = new IFactory&lt;Set&lt;?&gt;, NeverThrownRuntimeException&gt;() {<a name="line.44"></a>
-<span class="sourceLineNo">045</span>                @Override<a name="line.45"></a>
-<span class="sourceLineNo">046</span>                public Set&lt;?&gt; create() {<a name="line.46"></a>
-<span class="sourceLineNo">047</span>                        return new HashSet&lt;Object&gt;();<a name="line.47"></a>
-<span class="sourceLineNo">048</span>                }<a name="line.48"></a>
-<span class="sourceLineNo">049</span>        };<a name="line.49"></a>
-<span class="sourceLineNo">050</span><a name="line.50"></a>
-<span class="sourceLineNo">051</span>        /** Create new hashed list map. */<a name="line.51"></a>
-<span class="sourceLineNo">052</span>        @SuppressWarnings({ "unchecked", "rawtypes" })<a name="line.52"></a>
-<span class="sourceLineNo">053</span>        public SetMap() {<a name="line.53"></a>
-<span class="sourceLineNo">054</span>                // This cast is not nice, but it works<a name="line.54"></a>
-<span class="sourceLineNo">055</span>                super((IFactory) factory);<a name="line.55"></a>
-<span class="sourceLineNo">056</span>        }<a name="line.56"></a>
-<span class="sourceLineNo">057</span><a name="line.57"></a>
-<span class="sourceLineNo">058</span>        /** Create new hashed list map with a specified map. */<a name="line.58"></a>
-<span class="sourceLineNo">059</span>        @SuppressWarnings({ "unchecked", "rawtypes" })<a name="line.59"></a>
-<span class="sourceLineNo">060</span>        public SetMap(Map&lt;K, Set&lt;V&gt;&gt; map) {<a name="line.60"></a>
-<span class="sourceLineNo">061</span>                // This cast is not nice, but it works<a name="line.61"></a>
-<span class="sourceLineNo">062</span>                super(map, (IFactory) factory);<a name="line.62"></a>
-<span class="sourceLineNo">063</span>        }<a name="line.63"></a>
-<span class="sourceLineNo">064</span><a name="line.64"></a>
-<span class="sourceLineNo">065</span>        /** Copy constructor. */<a name="line.65"></a>
-<span class="sourceLineNo">066</span>        public SetMap(SetMap&lt;K, V&gt; other) {<a name="line.66"></a>
-<span class="sourceLineNo">067</span>                this();<a name="line.67"></a>
-<span class="sourceLineNo">068</span>                addAll(other);<a name="line.68"></a>
-<span class="sourceLineNo">069</span>        }<a name="line.69"></a>
-<span class="sourceLineNo">070</span>}<a name="line.70"></a>
+<span class="sourceLineNo">019</span>import java.util.Arrays;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import java.util.HashSet;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import java.util.Map;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import java.util.Set;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import java.util.function.Supplier;<a name="line.23"></a>
+<span class="sourceLineNo">024</span><a name="line.24"></a>
+<span class="sourceLineNo">025</span>/**<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * Manages a map of sets, i.e. each key can store multiple elements.<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * <a name="line.27"></a>
+<span class="sourceLineNo">028</span> * @param &lt;K&gt;<a name="line.28"></a>
+<span class="sourceLineNo">029</span> *            the key type.<a name="line.29"></a>
+<span class="sourceLineNo">030</span> * @param &lt;V&gt;<a name="line.30"></a>
+<span class="sourceLineNo">031</span> *            the value type (i.e. the values stored in the collections).<a name="line.31"></a>
+<span class="sourceLineNo">032</span> */<a name="line.32"></a>
+<span class="sourceLineNo">033</span>public class SetMap&lt;K, V&gt; extends CollectionMap&lt;K, V, Set&lt;V&gt;&gt; {<a name="line.33"></a>
+<span class="sourceLineNo">034</span><a name="line.34"></a>
+<span class="sourceLineNo">035</span>        private static final long serialVersionUID = 1L;<a name="line.35"></a>
+<span class="sourceLineNo">036</span><a name="line.36"></a>
+<span class="sourceLineNo">037</span>        private final Supplier&lt;Set&lt;V&gt;&gt; setFactory;<a name="line.37"></a>
+<span class="sourceLineNo">038</span><a name="line.38"></a>
+<span class="sourceLineNo">039</span>        public SetMap() {<a name="line.39"></a>
+<span class="sourceLineNo">040</span>                this(HashSet::new);<a name="line.40"></a>
+<span class="sourceLineNo">041</span>        }<a name="line.41"></a>
+<span class="sourceLineNo">042</span><a name="line.42"></a>
+<span class="sourceLineNo">043</span>        public SetMap(Supplier&lt;Set&lt;V&gt;&gt; setFactory) {<a name="line.43"></a>
+<span class="sourceLineNo">044</span>                this.setFactory = setFactory;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>        }<a name="line.45"></a>
+<span class="sourceLineNo">046</span><a name="line.46"></a>
+<span class="sourceLineNo">047</span>        @SafeVarargs<a name="line.47"></a>
+<span class="sourceLineNo">048</span>        public SetMap(SetMap&lt;K, V&gt;... otherMaps) {<a name="line.48"></a>
+<span class="sourceLineNo">049</span>                this(determineFactory(otherMaps));<a name="line.49"></a>
+<span class="sourceLineNo">050</span>                for (SetMap&lt;K, V&gt; otherMap : otherMaps) {<a name="line.50"></a>
+<span class="sourceLineNo">051</span>                        addAll(otherMap);<a name="line.51"></a>
+<span class="sourceLineNo">052</span>                }<a name="line.52"></a>
+<span class="sourceLineNo">053</span>        }<a name="line.53"></a>
+<span class="sourceLineNo">054</span><a name="line.54"></a>
+<span class="sourceLineNo">055</span>        private static &lt;K, V&gt; Supplier&lt;Set&lt;V&gt;&gt; determineFactory(SetMap&lt;K, V&gt;[] otherMaps) {<a name="line.55"></a>
+<span class="sourceLineNo">056</span>                if (otherMaps.length &gt; 0) {<a name="line.56"></a>
+<span class="sourceLineNo">057</span>                        return otherMaps[0].setFactory;<a name="line.57"></a>
+<span class="sourceLineNo">058</span>                }<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                return HashSet::new;<a name="line.59"></a>
+<span class="sourceLineNo">060</span>        }<a name="line.60"></a>
+<span class="sourceLineNo">061</span><a name="line.61"></a>
+<span class="sourceLineNo">062</span>        @SafeVarargs<a name="line.62"></a>
+<span class="sourceLineNo">063</span>        public SetMap(Map&lt;K, Set&lt;V&gt;&gt;... otherMaps) {<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                this();<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                for (Map&lt;K, Set&lt;V&gt;&gt; otherMap : otherMaps) {<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                        addAll(otherMap);<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                }<a name="line.67"></a>
+<span class="sourceLineNo">068</span>        }<a name="line.68"></a>
+<span class="sourceLineNo">069</span><a name="line.69"></a>
+<span class="sourceLineNo">070</span>        @Override<a name="line.70"></a>
+<span class="sourceLineNo">071</span>        protected Set&lt;V&gt; createNewCollection() {<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                return setFactory.get();<a name="line.72"></a>
+<span class="sourceLineNo">073</span>        }<a name="line.73"></a>
+<span class="sourceLineNo">074</span><a name="line.74"></a>
+<span class="sourceLineNo">075</span>        /** Inverts this SetMap, i.e. switches the keys and values. */<a name="line.75"></a>
+<span class="sourceLineNo">076</span>        public SetMap&lt;V, K&gt; invert() {<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                SetMap&lt;V, K&gt; invertedMap = new SetMap&lt;&gt;();<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                for (K nowValue : this.getKeys()) {<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                        for (V nowKey : this.getCollection(nowValue)) {<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                                invertedMap.add(nowKey, nowValue);<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                        }<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                }<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                return invertedMap;<a name="line.83"></a>
+<span class="sourceLineNo">084</span>        }<a name="line.84"></a>
+<span class="sourceLineNo">085</span><a name="line.85"></a>
+<span class="sourceLineNo">086</span>        /** Factory function for a {@link SetMap} with one entry. */<a name="line.86"></a>
+<span class="sourceLineNo">087</span>        public static &lt;K, V&gt; SetMap&lt;K, V&gt; of(K key, V... values) {<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                SetMap&lt;K, V&gt; result = new SetMap&lt;&gt;();<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                result.addAll(key, Arrays.asList(values));<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                return result;<a name="line.90"></a>
+<span class="sourceLineNo">091</span>        }<a name="line.91"></a>
+<span class="sourceLineNo">092</span>}<a name="line.92"></a>
 
 
 

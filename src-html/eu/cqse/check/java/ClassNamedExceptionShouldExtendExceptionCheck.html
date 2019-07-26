@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>package eu.cqse.check.java;<a name="line.1"></a>
+<span class="sourceLineNo">002</span><a name="line.2"></a>
+<span class="sourceLineNo">003</span>import static eu.cqse.check.framework.core.CheckGroupNames.BAD_PRACTICE;<a name="line.3"></a>
+<span class="sourceLineNo">004</span>import static eu.cqse.check.framework.core.ECheckParameter.ABSTRACT_SYNTAX_TREE;<a name="line.4"></a>
+<span class="sourceLineNo">005</span>import static eu.cqse.check.framework.core.EFindingEnablement.YELLOW;<a name="line.5"></a>
+<span class="sourceLineNo">006</span>import static eu.cqse.check.framework.scanner.ELanguage.CS;<a name="line.6"></a>
+<span class="sourceLineNo">007</span>import static eu.cqse.check.framework.scanner.ELanguage.JAVA;<a name="line.7"></a>
+<span class="sourceLineNo">008</span>import static eu.cqse.check.framework.scanner.ETokenType.COLON;<a name="line.8"></a>
+<span class="sourceLineNo">009</span>import static eu.cqse.check.framework.scanner.ETokenType.EXTENDS;<a name="line.9"></a>
+<span class="sourceLineNo">010</span>import static eu.cqse.check.framework.scanner.ETokenType.IDENTIFIER;<a name="line.10"></a>
+<span class="sourceLineNo">011</span><a name="line.11"></a>
+<span class="sourceLineNo">012</span>import org.conqat.lib.commons.collections.UnmodifiableList;<a name="line.12"></a>
+<span class="sourceLineNo">013</span>import org.conqat.lib.commons.string.StringUtils;<a name="line.13"></a>
+<span class="sourceLineNo">014</span><a name="line.14"></a>
+<span class="sourceLineNo">015</span>import eu.cqse.check.base.EntityCheckBase;<a name="line.15"></a>
+<span class="sourceLineNo">016</span>import eu.cqse.check.framework.core.ACheck;<a name="line.16"></a>
+<span class="sourceLineNo">017</span>import eu.cqse.check.framework.core.CheckException;<a name="line.17"></a>
+<span class="sourceLineNo">018</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.18"></a>
+<span class="sourceLineNo">019</span>import eu.cqse.check.framework.shallowparser.SubTypeNames;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import eu.cqse.check.framework.shallowparser.TokenStreamUtils;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import eu.cqse.check.framework.util.tokens.TokenPattern;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import eu.cqse.check.framework.util.tokens.TokenPatternMatch;<a name="line.23"></a>
+<span class="sourceLineNo">024</span><a name="line.24"></a>
+<span class="sourceLineNo">025</span>/**<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * {@ConQAT.Doc}<a name="line.26"></a>
+<span class="sourceLineNo">027</span> */<a name="line.27"></a>
+<span class="sourceLineNo">028</span>@ACheck(name = "Class named like Exception should extend Exception or subclass", //<a name="line.28"></a>
+<span class="sourceLineNo">029</span>                description = "If the name of a class has the suffix *Exception*, one would expect that it inherits from `Exception` or one of its subclasses. "<a name="line.29"></a>
+<span class="sourceLineNo">030</span>                                + "Since naming choices like this can cause confusion, occurrences of such unexpected class names will be reported by this check. "<a name="line.30"></a>
+<span class="sourceLineNo">031</span>                                + "To avoid false positives, no finding will be created if the name of the parent class contains the term *Exception*.\n"<a name="line.31"></a>
+<span class="sourceLineNo">032</span>                                + "\n" + "*Incorrect examples (Java) *\n" + //<a name="line.32"></a>
+<span class="sourceLineNo">033</span>                                "\n" + "```java\n" + //<a name="line.33"></a>
+<span class="sourceLineNo">034</span>                                "class SomeException { } // unexpected, not inheriting from java.lang.Exception or subclass\n" + //<a name="line.34"></a>
+<span class="sourceLineNo">035</span>                                "class OtherException extends Foo { } // unexpected, apparently no exception-related parent class\n" + //<a name="line.35"></a>
+<span class="sourceLineNo">036</span>                                "```\n" + "\n" + "*Correct examples (Java) *\n" + //<a name="line.36"></a>
+<span class="sourceLineNo">037</span>                                "\n" + "```java\n" + //<a name="line.37"></a>
+<span class="sourceLineNo">038</span>                                "class SomeException extends Exception { } \n" + //<a name="line.38"></a>
+<span class="sourceLineNo">039</span>                                "class OtherException extends SomeParentException { } \n" + //<a name="line.39"></a>
+<span class="sourceLineNo">040</span>                                "```\n" + "\n", //<a name="line.40"></a>
+<span class="sourceLineNo">041</span>                groupName = BAD_PRACTICE, defaultEnablement = YELLOW, languages = { JAVA, CS }, parameters = {<a name="line.41"></a>
+<span class="sourceLineNo">042</span>                                ABSTRACT_SYNTAX_TREE })<a name="line.42"></a>
+<span class="sourceLineNo">043</span>public class ClassNamedExceptionShouldExtendExceptionCheck extends EntityCheckBase {<a name="line.43"></a>
+<span class="sourceLineNo">044</span><a name="line.44"></a>
+<span class="sourceLineNo">045</span>        /**<a name="line.45"></a>
+<span class="sourceLineNo">046</span>         * Pattern that matches parent class declarations (Java &amp; C#) containing<a name="line.46"></a>
+<span class="sourceLineNo">047</span>         * 'Exception' or 'Throwable'.<a name="line.47"></a>
+<span class="sourceLineNo">048</span>         */<a name="line.48"></a>
+<span class="sourceLineNo">049</span>        private static final TokenPattern PARENT_CLASS_EXCEPTION_PATTERN = new TokenPattern().alternative(EXTENDS, COLON)<a name="line.49"></a>
+<span class="sourceLineNo">050</span>                        .regex("\\w*([eE]xception)|Throwable\\w*");<a name="line.50"></a>
+<span class="sourceLineNo">051</span><a name="line.51"></a>
+<span class="sourceLineNo">052</span>        /** {@inheritDoc} */<a name="line.52"></a>
+<span class="sourceLineNo">053</span>        @Override<a name="line.53"></a>
+<span class="sourceLineNo">054</span>        protected String getXPathSelectionString() {<a name="line.54"></a>
+<span class="sourceLineNo">055</span>                return "//TYPE[subtype('" + SubTypeNames.CLASS + "')]";<a name="line.55"></a>
+<span class="sourceLineNo">056</span>        }<a name="line.56"></a>
+<span class="sourceLineNo">057</span><a name="line.57"></a>
+<span class="sourceLineNo">058</span>        @Override<a name="line.58"></a>
+<span class="sourceLineNo">059</span>        protected void processEntity(ShallowEntity typeEntity) throws CheckException {<a name="line.59"></a>
+<span class="sourceLineNo">060</span><a name="line.60"></a>
+<span class="sourceLineNo">061</span>                if (typeEntity.getName() == null || !StringUtils.endsWithIgnoreCase(typeEntity.getName(), "exception")) {<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                        return;<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                }<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                UnmodifiableList&lt;IToken&gt; classDefinitionTokens = typeEntity.ownStartTokens();<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                TokenPatternMatch match = PARENT_CLASS_EXCEPTION_PATTERN.findFirstMatch(classDefinitionTokens);<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                if (match == null) {<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                        createFinding("`" + typeEntity.getName() + "` should inherit from `Exception` or subclass",<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                                        classDefinitionTokens.get(TokenStreamUtils.firstTokenOfType(classDefinitionTokens, IDENTIFIER)));<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                }<a name="line.69"></a>
+<span class="sourceLineNo">070</span>        }<a name="line.70"></a>
+<span class="sourceLineNo">071</span><a name="line.71"></a>
+<span class="sourceLineNo">072</span>}<a name="line.72"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

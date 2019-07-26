@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*-------------------------------------------------------------------------+<a name="line.1"></a>
+<span class="sourceLineNo">002</span>|                                                                          |<a name="line.2"></a>
+<span class="sourceLineNo">003</span>| Copyright (c) 2009-2017 CQSE GmbH                                        |<a name="line.3"></a>
+<span class="sourceLineNo">004</span>|                                                                          |<a name="line.4"></a>
+<span class="sourceLineNo">005</span>+-------------------------------------------------------------------------*/<a name="line.5"></a>
+<span class="sourceLineNo">006</span>package eu.cqse.check.cpp.misra.switches;<a name="line.6"></a>
+<span class="sourceLineNo">007</span><a name="line.7"></a>
+<span class="sourceLineNo">008</span>import static eu.cqse.check.framework.core.ruleset.ERuleset.MISRA;<a name="line.8"></a>
+<span class="sourceLineNo">009</span><a name="line.9"></a>
+<span class="sourceLineNo">010</span>import eu.cqse.check.base.EntityCheckBase;<a name="line.10"></a>
+<span class="sourceLineNo">011</span>import eu.cqse.check.framework.core.ACheck;<a name="line.11"></a>
+<span class="sourceLineNo">012</span>import eu.cqse.check.framework.core.CheckException;<a name="line.12"></a>
+<span class="sourceLineNo">013</span>import eu.cqse.check.framework.core.CheckGroupNames;<a name="line.13"></a>
+<span class="sourceLineNo">014</span>import eu.cqse.check.framework.core.ECheckParameter;<a name="line.14"></a>
+<span class="sourceLineNo">015</span>import eu.cqse.check.framework.core.EFindingEnablement;<a name="line.15"></a>
+<span class="sourceLineNo">016</span>import eu.cqse.check.framework.core.phase.ECodeViewOption;<a name="line.16"></a>
+<span class="sourceLineNo">017</span>import eu.cqse.check.framework.core.ruleset.ACheckRuleset;<a name="line.17"></a>
+<span class="sourceLineNo">018</span>import eu.cqse.check.framework.scanner.ELanguage;<a name="line.18"></a>
+<span class="sourceLineNo">019</span>import eu.cqse.check.framework.shallowparser.SubTypeNames;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;<a name="line.20"></a>
+<span class="sourceLineNo">021</span><a name="line.21"></a>
+<span class="sourceLineNo">022</span>/**<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * Checks that switch statements are well formed.<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * <a name="line.24"></a>
+<span class="sourceLineNo">025</span> * @see WellFormedCheckVisitor information what well-formed means<a name="line.25"></a>
+<span class="sourceLineNo">026</span> */<a name="line.26"></a>
+<span class="sourceLineNo">027</span>@ACheck(name = "Switch statements should not contain unexpected constructs", description = "Switch statements should not contain unusual constructs, such as `case` statements in sub-conditions or `default` clauses before `case` clauses.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.YELLOW, languages = {<a name="line.27"></a>
+<span class="sourceLineNo">028</span>                ELanguage.CPP }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })<a name="line.28"></a>
+<span class="sourceLineNo">029</span>@ACheckRuleset(ruleId = "16.1", ruleset = MISRA)<a name="line.29"></a>
+<span class="sourceLineNo">030</span>public class SwitchStatementIsWellFormedCheck extends EntityCheckBase {<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>        /** {@inheritDoc} */<a name="line.32"></a>
+<span class="sourceLineNo">033</span>        @Override<a name="line.33"></a>
+<span class="sourceLineNo">034</span>        protected String getXPathSelectionString() {<a name="line.34"></a>
+<span class="sourceLineNo">035</span>                return "//*[subtype('" + SubTypeNames.SWITCH + "')]";<a name="line.35"></a>
+<span class="sourceLineNo">036</span>        }<a name="line.36"></a>
+<span class="sourceLineNo">037</span><a name="line.37"></a>
+<span class="sourceLineNo">038</span>        @Override<a name="line.38"></a>
+<span class="sourceLineNo">039</span>        protected ECodeViewOption getCodeViewOption() {<a name="line.39"></a>
+<span class="sourceLineNo">040</span>                return ECodeViewOption.FILTERED_PREPROCESSED;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>        }<a name="line.41"></a>
+<span class="sourceLineNo">042</span><a name="line.42"></a>
+<span class="sourceLineNo">043</span>        /** {@inheritDoc} */<a name="line.43"></a>
+<span class="sourceLineNo">044</span>        @Override<a name="line.44"></a>
+<span class="sourceLineNo">045</span>        protected void processEntity(ShallowEntity entity) throws CheckException {<a name="line.45"></a>
+<span class="sourceLineNo">046</span>                WellFormedCheckVisitor visitor = new WellFormedCheckVisitor();<a name="line.46"></a>
+<span class="sourceLineNo">047</span>                entity.traverse(visitor);<a name="line.47"></a>
+<span class="sourceLineNo">048</span>                if (!visitor.isInExitState()) {<a name="line.48"></a>
+<span class="sourceLineNo">049</span>                        createFinding(visitor.getErrorMessage(), visitor.getCurrentEntity());<a name="line.49"></a>
+<span class="sourceLineNo">050</span>                }<a name="line.50"></a>
+<span class="sourceLineNo">051</span><a name="line.51"></a>
+<span class="sourceLineNo">052</span>        }<a name="line.52"></a>
+<span class="sourceLineNo">053</span><a name="line.53"></a>
+<span class="sourceLineNo">054</span>}<a name="line.54"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

@@ -38,149 +38,133 @@
 <span class="sourceLineNo">030</span> * &gt;modified UTF8&lt;/a&gt; handling is implemented in these classes, they can only<a name="line.30"></a>
 <span class="sourceLineNo">031</span> * handle short strings (less than 2^16 characters). As the code is badly<a name="line.31"></a>
 <span class="sourceLineNo">032</span> * modularized, we had to copy and modify it.<a name="line.32"></a>
-<span class="sourceLineNo">033</span> * <a name="line.33"></a>
-<span class="sourceLineNo">034</span> * Besides minor simplification, we did not attempt to clean up the code in any<a name="line.34"></a>
-<span class="sourceLineNo">035</span> * way to keep it as similar to the original as possible.<a name="line.35"></a>
-<span class="sourceLineNo">036</span> */<a name="line.36"></a>
-<span class="sourceLineNo">037</span>public class LongStringUtils {<a name="line.37"></a>
+<span class="sourceLineNo">033</span> */<a name="line.33"></a>
+<span class="sourceLineNo">034</span>public class LongStringUtils {<a name="line.34"></a>
+<span class="sourceLineNo">035</span><a name="line.35"></a>
+<span class="sourceLineNo">036</span>        /** Max size for char that can be encoded as single byte. */<a name="line.36"></a>
+<span class="sourceLineNo">037</span>        private static final int SINGLE_BYTE_LIMIT = 0x007F;<a name="line.37"></a>
 <span class="sourceLineNo">038</span><a name="line.38"></a>
-<span class="sourceLineNo">039</span>        /** Maximal length of a short string. */<a name="line.39"></a>
-<span class="sourceLineNo">040</span>        public static final int MAX_SHORT_STRING_LENGTH = (1 &lt;&lt; 16) - 1;<a name="line.40"></a>
+<span class="sourceLineNo">039</span>        /** Max size for char that can be encoded as two bytes. */<a name="line.39"></a>
+<span class="sourceLineNo">040</span>        private static final int DOUBLE_BYTE_LIMIT = 0x07FF;<a name="line.40"></a>
 <span class="sourceLineNo">041</span><a name="line.41"></a>
-<span class="sourceLineNo">042</span>        /**<a name="line.42"></a>
-<span class="sourceLineNo">043</span>         * This is a copy of {@link DataInputStream#readUTF(DataInput)} with the<a name="line.43"></a>
-<span class="sourceLineNo">044</span>         * main difference that the length is not read as a short but as a long.<a name="line.44"></a>
-<span class="sourceLineNo">045</span>         */<a name="line.45"></a>
-<span class="sourceLineNo">046</span>        @SuppressWarnings("cast")<a name="line.46"></a>
-<span class="sourceLineNo">047</span>        public final static String readLongString(DataInputStream in) throws IOException {<a name="line.47"></a>
-<span class="sourceLineNo">048</span>                int utflen = (int) in.readLong();<a name="line.48"></a>
-<span class="sourceLineNo">049</span>                byte[] bytearr = new byte[utflen];<a name="line.49"></a>
-<span class="sourceLineNo">050</span>                char[] chararr = new char[utflen];<a name="line.50"></a>
-<span class="sourceLineNo">051</span><a name="line.51"></a>
-<span class="sourceLineNo">052</span>                int c, char2, char3;<a name="line.52"></a>
-<span class="sourceLineNo">053</span>                int count = 0;<a name="line.53"></a>
-<span class="sourceLineNo">054</span>                int chararr_count = 0;<a name="line.54"></a>
-<span class="sourceLineNo">055</span><a name="line.55"></a>
-<span class="sourceLineNo">056</span>                in.readFully(bytearr, 0, utflen);<a name="line.56"></a>
-<span class="sourceLineNo">057</span><a name="line.57"></a>
-<span class="sourceLineNo">058</span>                while (count &lt; utflen) {<a name="line.58"></a>
-<span class="sourceLineNo">059</span>                        c = (int) bytearr[count] &amp; 0xff;<a name="line.59"></a>
-<span class="sourceLineNo">060</span>                        if (c &gt; 127) {<a name="line.60"></a>
-<span class="sourceLineNo">061</span>                                break;<a name="line.61"></a>
-<span class="sourceLineNo">062</span>                        }<a name="line.62"></a>
-<span class="sourceLineNo">063</span>                        count++;<a name="line.63"></a>
-<span class="sourceLineNo">064</span>                        chararr[chararr_count++] = (char) c;<a name="line.64"></a>
-<span class="sourceLineNo">065</span>                }<a name="line.65"></a>
-<span class="sourceLineNo">066</span><a name="line.66"></a>
-<span class="sourceLineNo">067</span>                while (count &lt; utflen) {<a name="line.67"></a>
-<span class="sourceLineNo">068</span>                        c = (int) bytearr[count] &amp; 0xff;<a name="line.68"></a>
-<span class="sourceLineNo">069</span>                        switch (c &gt;&gt; 4) {<a name="line.69"></a>
-<span class="sourceLineNo">070</span>                        case 0:<a name="line.70"></a>
-<span class="sourceLineNo">071</span>                        case 1:<a name="line.71"></a>
-<span class="sourceLineNo">072</span>                        case 2:<a name="line.72"></a>
-<span class="sourceLineNo">073</span>                        case 3:<a name="line.73"></a>
-<span class="sourceLineNo">074</span>                        case 4:<a name="line.74"></a>
-<span class="sourceLineNo">075</span>                        case 5:<a name="line.75"></a>
-<span class="sourceLineNo">076</span>                        case 6:<a name="line.76"></a>
-<span class="sourceLineNo">077</span>                        case 7:<a name="line.77"></a>
-<span class="sourceLineNo">078</span>                                /* 0xxxxxxx */<a name="line.78"></a>
-<span class="sourceLineNo">079</span>                                count++;<a name="line.79"></a>
-<span class="sourceLineNo">080</span>                                chararr[chararr_count++] = (char) c;<a name="line.80"></a>
-<span class="sourceLineNo">081</span>                                break;<a name="line.81"></a>
-<span class="sourceLineNo">082</span>                        case 12:<a name="line.82"></a>
-<span class="sourceLineNo">083</span>                        case 13:<a name="line.83"></a>
-<span class="sourceLineNo">084</span>                                /* 110x xxxx 10xx xxxx */<a name="line.84"></a>
-<span class="sourceLineNo">085</span>                                count += 2;<a name="line.85"></a>
-<span class="sourceLineNo">086</span>                                if (count &gt; utflen) {<a name="line.86"></a>
-<span class="sourceLineNo">087</span>                                        throw new UTFDataFormatException("malformed input: partial character at end");<a name="line.87"></a>
-<span class="sourceLineNo">088</span>                                }<a name="line.88"></a>
-<span class="sourceLineNo">089</span>                                char2 = (int) bytearr[count - 1];<a name="line.89"></a>
-<span class="sourceLineNo">090</span>                                if ((char2 &amp; 0xC0) != 0x80) {<a name="line.90"></a>
-<span class="sourceLineNo">091</span>                                        throw new UTFDataFormatException("malformed input around byte " + count);<a name="line.91"></a>
-<span class="sourceLineNo">092</span>                                }<a name="line.92"></a>
-<span class="sourceLineNo">093</span>                                chararr[chararr_count++] = (char) (((c &amp; 0x1F) &lt;&lt; 6) | (char2 &amp; 0x3F));<a name="line.93"></a>
-<span class="sourceLineNo">094</span>                                break;<a name="line.94"></a>
-<span class="sourceLineNo">095</span>                        case 14:<a name="line.95"></a>
-<span class="sourceLineNo">096</span>                                /* 1110 xxxx 10xx xxxx 10xx xxxx */<a name="line.96"></a>
-<span class="sourceLineNo">097</span>                                count += 3;<a name="line.97"></a>
-<span class="sourceLineNo">098</span>                                if (count &gt; utflen) {<a name="line.98"></a>
-<span class="sourceLineNo">099</span>                                        throw new UTFDataFormatException("malformed input: partial character at end");<a name="line.99"></a>
-<span class="sourceLineNo">100</span>                                }<a name="line.100"></a>
-<span class="sourceLineNo">101</span>                                char2 = (int) bytearr[count - 2];<a name="line.101"></a>
-<span class="sourceLineNo">102</span>                                char3 = (int) bytearr[count - 1];<a name="line.102"></a>
-<span class="sourceLineNo">103</span>                                if (((char2 &amp; 0xC0) != 0x80) || ((char3 &amp; 0xC0) != 0x80)) {<a name="line.103"></a>
-<span class="sourceLineNo">104</span>                                        throw new UTFDataFormatException("malformed input around byte " + (count - 1));<a name="line.104"></a>
-<span class="sourceLineNo">105</span>                                }<a name="line.105"></a>
-<span class="sourceLineNo">106</span>                                chararr[chararr_count++] = (char) (((c &amp; 0x0F) &lt;&lt; 12) | ((char2 &amp; 0x3F) &lt;&lt; 6) | ((char3 &amp; 0x3F) &lt;&lt; 0));<a name="line.106"></a>
-<span class="sourceLineNo">107</span>                                break;<a name="line.107"></a>
-<span class="sourceLineNo">108</span>                        default:<a name="line.108"></a>
-<span class="sourceLineNo">109</span>                                /* 10xx xxxx, 1111 xxxx */<a name="line.109"></a>
-<span class="sourceLineNo">110</span>                                throw new UTFDataFormatException("malformed input around byte " + count);<a name="line.110"></a>
-<span class="sourceLineNo">111</span>                        }<a name="line.111"></a>
-<span class="sourceLineNo">112</span>                }<a name="line.112"></a>
-<span class="sourceLineNo">113</span>                // The number of chars produced may be less than utflen<a name="line.113"></a>
-<span class="sourceLineNo">114</span>                return new String(chararr, 0, chararr_count);<a name="line.114"></a>
-<span class="sourceLineNo">115</span>        }<a name="line.115"></a>
-<span class="sourceLineNo">116</span><a name="line.116"></a>
-<span class="sourceLineNo">117</span>        /**<a name="line.117"></a>
-<span class="sourceLineNo">118</span>         * This is a copy of {@link DataOutputStream#writeUTF(String)} with the main<a name="line.118"></a>
-<span class="sourceLineNo">119</span>         * difference that the length is not read as a short but as a long.<a name="line.119"></a>
-<span class="sourceLineNo">120</span>         */<a name="line.120"></a>
-<span class="sourceLineNo">121</span>        public static int writeUTF(String str, DataOutputStream out) throws IOException {<a name="line.121"></a>
-<span class="sourceLineNo">122</span>                int strlen = str.length();<a name="line.122"></a>
-<span class="sourceLineNo">123</span>                int utflen = 0;<a name="line.123"></a>
-<span class="sourceLineNo">124</span>                int c, count = 0;<a name="line.124"></a>
-<span class="sourceLineNo">125</span><a name="line.125"></a>
-<span class="sourceLineNo">126</span>                /* use charAt instead of copying String to char array */<a name="line.126"></a>
-<span class="sourceLineNo">127</span>                for (int i = 0; i &lt; strlen; i++) {<a name="line.127"></a>
-<span class="sourceLineNo">128</span>                        c = str.charAt(i);<a name="line.128"></a>
-<span class="sourceLineNo">129</span>                        if ((c &gt;= 0x0001) &amp;&amp; (c &lt;= 0x007F)) {<a name="line.129"></a>
-<span class="sourceLineNo">130</span>                                utflen++;<a name="line.130"></a>
-<span class="sourceLineNo">131</span>                        } else if (c &gt; 0x07FF) {<a name="line.131"></a>
-<span class="sourceLineNo">132</span>                                utflen += 3;<a name="line.132"></a>
-<span class="sourceLineNo">133</span>                        } else {<a name="line.133"></a>
-<span class="sourceLineNo">134</span>                                utflen += 2;<a name="line.134"></a>
-<span class="sourceLineNo">135</span>                        }<a name="line.135"></a>
-<span class="sourceLineNo">136</span>                }<a name="line.136"></a>
-<span class="sourceLineNo">137</span><a name="line.137"></a>
-<span class="sourceLineNo">138</span>                int arraySize = utflen + 8;<a name="line.138"></a>
-<span class="sourceLineNo">139</span>                byte[] bytearr = new byte[arraySize];<a name="line.139"></a>
-<span class="sourceLineNo">140</span>                bytearr[count++] = 0;<a name="line.140"></a>
-<span class="sourceLineNo">141</span>                bytearr[count++] = 0;<a name="line.141"></a>
-<span class="sourceLineNo">142</span>                bytearr[count++] = 0;<a name="line.142"></a>
-<span class="sourceLineNo">143</span>                bytearr[count++] = 0;<a name="line.143"></a>
-<span class="sourceLineNo">144</span>                bytearr[count++] = (byte) ((utflen &gt;&gt;&gt; 24) &amp; 0xFF);<a name="line.144"></a>
-<span class="sourceLineNo">145</span>                bytearr[count++] = (byte) ((utflen &gt;&gt;&gt; 16) &amp; 0xFF);<a name="line.145"></a>
-<span class="sourceLineNo">146</span>                bytearr[count++] = (byte) ((utflen &gt;&gt;&gt; 8) &amp; 0xFF);<a name="line.146"></a>
-<span class="sourceLineNo">147</span>                bytearr[count++] = (byte) ((utflen &gt;&gt;&gt; 0) &amp; 0xFF);<a name="line.147"></a>
+<span class="sourceLineNo">042</span>        /** Maximal length of a short string. */<a name="line.42"></a>
+<span class="sourceLineNo">043</span>        public static final int MAX_SHORT_STRING_LENGTH = (1 &lt;&lt; 16) - 1;<a name="line.43"></a>
+<span class="sourceLineNo">044</span><a name="line.44"></a>
+<span class="sourceLineNo">045</span>        /**<a name="line.45"></a>
+<span class="sourceLineNo">046</span>         * This is a copy of {@link DataInputStream#readUTF(DataInput)} with the main<a name="line.46"></a>
+<span class="sourceLineNo">047</span>         * difference that the length is not read as a short but as a long.<a name="line.47"></a>
+<span class="sourceLineNo">048</span>         */<a name="line.48"></a>
+<span class="sourceLineNo">049</span>        public static String readLongString(DataInputStream in) throws IOException {<a name="line.49"></a>
+<span class="sourceLineNo">050</span><a name="line.50"></a>
+<span class="sourceLineNo">051</span>                // we need to read a long here as per specification, but are guaranteed to get<a name="line.51"></a>
+<span class="sourceLineNo">052</span>                // only int range (as an array in Java also can not hold more elements)<a name="line.52"></a>
+<span class="sourceLineNo">053</span>                int utfLength = (int) in.readLong();<a name="line.53"></a>
+<span class="sourceLineNo">054</span>                byte[] bytes = new byte[utfLength];<a name="line.54"></a>
+<span class="sourceLineNo">055</span>                in.readFully(bytes);<a name="line.55"></a>
+<span class="sourceLineNo">056</span><a name="line.56"></a>
+<span class="sourceLineNo">057</span>                int count = 0;<a name="line.57"></a>
+<span class="sourceLineNo">058</span>                int charCount = 0;<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                char[] chars = new char[utfLength];<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                while (count &lt; utfLength) {<a name="line.60"></a>
+<span class="sourceLineNo">061</span>                        int c = bytes[count] &amp; 0xff;<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                        if (c &lt;= SINGLE_BYTE_LIMIT) {<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                                count++;<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                                chars[charCount++] = (char) c;<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                                continue;<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                        }<a name="line.66"></a>
+<span class="sourceLineNo">067</span><a name="line.67"></a>
+<span class="sourceLineNo">068</span>                        switch (c &gt;&gt; 4) {<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                        case 12:<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                        case 13:<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                                /* 110x xxxx 10xx xxxx */<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                                count = incrementChecked(count, utfLength, 2);<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                                chars[charCount++] = extractTwoByteChar(bytes, count - 2);<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                                break;<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                        case 14:<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                                /* 1110 xxxx 10xx xxxx 10xx xxxx */<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                                count = incrementChecked(count, utfLength, 3);<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                                chars[charCount++] = extractThreeByteChar(bytes, count - 3);<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                                break;<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                        default:<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                                throwMalformedIf(true, count);<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                        }<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                }<a name="line.83"></a>
+<span class="sourceLineNo">084</span><a name="line.84"></a>
+<span class="sourceLineNo">085</span>                return new String(chars, 0, charCount);<a name="line.85"></a>
+<span class="sourceLineNo">086</span><a name="line.86"></a>
+<span class="sourceLineNo">087</span>        }<a name="line.87"></a>
+<span class="sourceLineNo">088</span><a name="line.88"></a>
+<span class="sourceLineNo">089</span>        /** Extracts a three byte character at given index position. */<a name="line.89"></a>
+<span class="sourceLineNo">090</span>        private static char extractThreeByteChar(byte[] bytes, int index) throws UTFDataFormatException {<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                int char2 = bytes[index + 1];<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                int char3 = bytes[index + 2];<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                throwMalformedIf(((char2 &amp; 0xC0) != 0x80) || ((char3 &amp; 0xC0) != 0x80), index + 1);<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                return (char) (((bytes[index] &amp; 0x0F) &lt;&lt; 12) | ((char2 &amp; 0x3F) &lt;&lt; 6) | ((char3 &amp; 0x3F) &lt;&lt; 0));<a name="line.94"></a>
+<span class="sourceLineNo">095</span>        }<a name="line.95"></a>
+<span class="sourceLineNo">096</span><a name="line.96"></a>
+<span class="sourceLineNo">097</span>        /** Extracts a two byte character at given index position. */<a name="line.97"></a>
+<span class="sourceLineNo">098</span>        private static char extractTwoByteChar(byte[] bytes, int index) throws UTFDataFormatException {<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                int char2 = bytes[index + 1];<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                throwMalformedIf((char2 &amp; 0xC0) != 0x80, index + 2);<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                return (char) (((bytes[index] &amp; 0x1F) &lt;&lt; 6) | (char2 &amp; 0x3F));<a name="line.101"></a>
+<span class="sourceLineNo">102</span>        }<a name="line.102"></a>
+<span class="sourceLineNo">103</span><a name="line.103"></a>
+<span class="sourceLineNo">104</span>        private static void throwMalformedIf(boolean condition, int count) throws UTFDataFormatException {<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                if (condition) {<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                        throw new UTFDataFormatException("malformed input around byte " + count);<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                }<a name="line.107"></a>
+<span class="sourceLineNo">108</span>        }<a name="line.108"></a>
+<span class="sourceLineNo">109</span><a name="line.109"></a>
+<span class="sourceLineNo">110</span>        /**<a name="line.110"></a>
+<span class="sourceLineNo">111</span>         * Increments the count and checks whether count is still within the given<a name="line.111"></a>
+<span class="sourceLineNo">112</span>         * length.<a name="line.112"></a>
+<span class="sourceLineNo">113</span>         */<a name="line.113"></a>
+<span class="sourceLineNo">114</span>        private static int incrementChecked(int count, int utfLength, int increment) throws UTFDataFormatException {<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                count += increment;<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                if (count &gt; utfLength) {<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                        throw new UTFDataFormatException("malformed input: partial character at end");<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                }<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                return count;<a name="line.119"></a>
+<span class="sourceLineNo">120</span>        }<a name="line.120"></a>
+<span class="sourceLineNo">121</span><a name="line.121"></a>
+<span class="sourceLineNo">122</span>        /**<a name="line.122"></a>
+<span class="sourceLineNo">123</span>         * This is a copy of {@link DataOutputStream#writeUTF(String)} with the main<a name="line.123"></a>
+<span class="sourceLineNo">124</span>         * difference that the length is not read as a short but as a long.<a name="line.124"></a>
+<span class="sourceLineNo">125</span>         */<a name="line.125"></a>
+<span class="sourceLineNo">126</span>        public static void writeUTF(String string, DataOutputStream out) throws IOException {<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                int utfLength = string.chars().map(LongStringUtils::utfSize).sum();<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                out.writeLong(utfLength);<a name="line.128"></a>
+<span class="sourceLineNo">129</span><a name="line.129"></a>
+<span class="sourceLineNo">130</span>                byte[] bytes = new byte[utfLength];<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                int index = 0;<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                for (int i = 0; i &lt; string.length(); i++) {<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                        int c = string.charAt(i);<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                        if ((c &gt;= 1) &amp;&amp; (c &lt;= SINGLE_BYTE_LIMIT)) {<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                                bytes[index++] = (byte) c;<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                        } else {<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                                if (c &gt; DOUBLE_BYTE_LIMIT) {<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                                        bytes[index++] = (byte) (0xE0 | ((c &gt;&gt; 12) &amp; 0x0F));<a name="line.138"></a>
+<span class="sourceLineNo">139</span>                                        bytes[index++] = (byte) (0x80 | ((c &gt;&gt; 6) &amp; 0x3F));<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                                } else {<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                                        bytes[index++] = (byte) (0xC0 | ((c &gt;&gt; 6) &amp; 0x1F));<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                                }<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                                bytes[index++] = (byte) (0x80 | (c &amp; 0x3F));<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                        }<a name="line.144"></a>
+<span class="sourceLineNo">145</span>                }<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                out.write(bytes);<a name="line.146"></a>
+<span class="sourceLineNo">147</span>        }<a name="line.147"></a>
 <span class="sourceLineNo">148</span><a name="line.148"></a>
-<span class="sourceLineNo">149</span>                int i = 0;<a name="line.149"></a>
-<span class="sourceLineNo">150</span>                for (i = 0; i &lt; strlen; i++) {<a name="line.150"></a>
-<span class="sourceLineNo">151</span>                        c = str.charAt(i);<a name="line.151"></a>
-<span class="sourceLineNo">152</span>                        if (!((c &gt;= 0x0001) &amp;&amp; (c &lt;= 0x007F))) {<a name="line.152"></a>
-<span class="sourceLineNo">153</span>                                break;<a name="line.153"></a>
-<span class="sourceLineNo">154</span>                        }<a name="line.154"></a>
-<span class="sourceLineNo">155</span>                        bytearr[count++] = (byte) c;<a name="line.155"></a>
+<span class="sourceLineNo">149</span>        /** Returns UTF encoded size of a character. */<a name="line.149"></a>
+<span class="sourceLineNo">150</span>        private static int utfSize(int character) {<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                if (character &gt;= 1 &amp;&amp; character &lt;= SINGLE_BYTE_LIMIT) {<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                        return 1;<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                }<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                if (character &gt; DOUBLE_BYTE_LIMIT) {<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                        return 3;<a name="line.155"></a>
 <span class="sourceLineNo">156</span>                }<a name="line.156"></a>
-<span class="sourceLineNo">157</span><a name="line.157"></a>
-<span class="sourceLineNo">158</span>                for (; i &lt; strlen; i++) {<a name="line.158"></a>
-<span class="sourceLineNo">159</span>                        c = str.charAt(i);<a name="line.159"></a>
-<span class="sourceLineNo">160</span>                        if ((c &gt;= 0x0001) &amp;&amp; (c &lt;= 0x007F)) {<a name="line.160"></a>
-<span class="sourceLineNo">161</span>                                bytearr[count++] = (byte) c;<a name="line.161"></a>
-<span class="sourceLineNo">162</span><a name="line.162"></a>
-<span class="sourceLineNo">163</span>                        } else if (c &gt; 0x07FF) {<a name="line.163"></a>
-<span class="sourceLineNo">164</span>                                bytearr[count++] = (byte) (0xE0 | ((c &gt;&gt; 12) &amp; 0x0F));<a name="line.164"></a>
-<span class="sourceLineNo">165</span>                                bytearr[count++] = (byte) (0x80 | ((c &gt;&gt; 6) &amp; 0x3F));<a name="line.165"></a>
-<span class="sourceLineNo">166</span>                                bytearr[count++] = (byte) (0x80 | ((c &gt;&gt; 0) &amp; 0x3F));<a name="line.166"></a>
-<span class="sourceLineNo">167</span>                        } else {<a name="line.167"></a>
-<span class="sourceLineNo">168</span>                                bytearr[count++] = (byte) (0xC0 | ((c &gt;&gt; 6) &amp; 0x1F));<a name="line.168"></a>
-<span class="sourceLineNo">169</span>                                bytearr[count++] = (byte) (0x80 | ((c &gt;&gt; 0) &amp; 0x3F));<a name="line.169"></a>
-<span class="sourceLineNo">170</span>                        }<a name="line.170"></a>
-<span class="sourceLineNo">171</span>                }<a name="line.171"></a>
-<span class="sourceLineNo">172</span>                out.write(bytearr, 0, arraySize);<a name="line.172"></a>
-<span class="sourceLineNo">173</span>                return arraySize;<a name="line.173"></a>
-<span class="sourceLineNo">174</span>        }<a name="line.174"></a>
-<span class="sourceLineNo">175</span>}<a name="line.175"></a>
+<span class="sourceLineNo">157</span>                return 2;<a name="line.157"></a>
+<span class="sourceLineNo">158</span>        }<a name="line.158"></a>
+<span class="sourceLineNo">159</span>}<a name="line.159"></a>
 
 
 

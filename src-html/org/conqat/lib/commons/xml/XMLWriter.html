@@ -24,7 +24,7 @@
 <span class="sourceLineNo">016</span>+-------------------------------------------------------------------------*/<a name="line.16"></a>
 <span class="sourceLineNo">017</span>package org.conqat.lib.commons.xml;<a name="line.17"></a>
 <span class="sourceLineNo">018</span><a name="line.18"></a>
-<span class="sourceLineNo">019</span>import static org.conqat.lib.commons.string.StringUtils.CR;<a name="line.19"></a>
+<span class="sourceLineNo">019</span>import static org.conqat.lib.commons.string.StringUtils.LINE_SEPARATOR;<a name="line.19"></a>
 <span class="sourceLineNo">020</span>import static org.conqat.lib.commons.string.StringUtils.SPACE;<a name="line.20"></a>
 <span class="sourceLineNo">021</span><a name="line.21"></a>
 <span class="sourceLineNo">022</span>import java.io.Closeable;<a name="line.22"></a>
@@ -41,7 +41,7 @@
 <span class="sourceLineNo">033</span><a name="line.33"></a>
 <span class="sourceLineNo">034</span>/**<a name="line.34"></a>
 <span class="sourceLineNo">035</span> * Utility class for creating XML documents. Please consult test case<a name="line.35"></a>
-<span class="sourceLineNo">036</span> * {@link XMLWriterTest} to see how this class is intended to be used.<a name="line.36"></a>
+<span class="sourceLineNo">036</span> * XMLWriterTest to see how this class is intended to be used.<a name="line.36"></a>
 <span class="sourceLineNo">037</span> */<a name="line.37"></a>
 <span class="sourceLineNo">038</span>public class XMLWriter&lt;E extends Enum&lt;E&gt;, A extends Enum&lt;A&gt;&gt; implements Closeable {<a name="line.38"></a>
 <span class="sourceLineNo">039</span><a name="line.39"></a>
@@ -82,8 +82,8 @@
 <span class="sourceLineNo">074</span>         * This set maintains the attributes added to an element to detect duplicate<a name="line.74"></a>
 <span class="sourceLineNo">075</span>         * attributes.<a name="line.75"></a>
 <span class="sourceLineNo">076</span>         * &lt;p&gt;<a name="line.76"></a>
-<span class="sourceLineNo">077</span>         * We can not use {@link java.util.EnumSet} here as we would need a<a name="line.77"></a>
-<span class="sourceLineNo">078</span>         * reference to the defining class.<a name="line.78"></a>
+<span class="sourceLineNo">077</span>         * We can not use {@link java.util.EnumSet} here as we would need a reference to<a name="line.77"></a>
+<span class="sourceLineNo">078</span>         * the defining class.<a name="line.78"></a>
 <span class="sourceLineNo">079</span>         */<a name="line.79"></a>
 <span class="sourceLineNo">080</span>        private final HashSet&lt;A&gt; currentAttributes = new HashSet&lt;A&gt;();<a name="line.80"></a>
 <span class="sourceLineNo">081</span><a name="line.81"></a>
@@ -91,8 +91,8 @@
 <span class="sourceLineNo">083</span>        private int currentNestingDepth = -1;<a name="line.83"></a>
 <span class="sourceLineNo">084</span><a name="line.84"></a>
 <span class="sourceLineNo">085</span>        /**<a name="line.85"></a>
-<span class="sourceLineNo">086</span>         * This stack maintains the elements in order of creation. It is used to<a name="line.86"></a>
-<span class="sourceLineNo">087</span>         * check if elements are closed in the correct order.<a name="line.87"></a>
+<span class="sourceLineNo">086</span>         * This stack maintains the elements in order of creation. It is used to check<a name="line.86"></a>
+<span class="sourceLineNo">087</span>         * if elements are closed in the correct order.<a name="line.87"></a>
 <span class="sourceLineNo">088</span>         */<a name="line.88"></a>
 <span class="sourceLineNo">089</span>        private final Stack&lt;E&gt; elementStack = new Stack&lt;E&gt;();<a name="line.89"></a>
 <span class="sourceLineNo">090</span><a name="line.90"></a>
@@ -136,12 +136,12 @@
 <span class="sourceLineNo">128</span>        }<a name="line.128"></a>
 <span class="sourceLineNo">129</span><a name="line.129"></a>
 <span class="sourceLineNo">130</span>        /**<a name="line.130"></a>
-<span class="sourceLineNo">131</span>         * Toogle line break behavior. If set to &lt;code&gt;true&lt;/code&gt; the writer does<a name="line.131"></a>
-<span class="sourceLineNo">132</span>         * not write line breaks. If set to &lt;code&gt;false&lt;/code&gt; (default) line breaks<a name="line.132"></a>
-<span class="sourceLineNo">133</span>         * are written.<a name="line.133"></a>
+<span class="sourceLineNo">131</span>         * Toogle line break behavior. If set to &lt;code&gt;true&lt;/code&gt; the writer does not<a name="line.131"></a>
+<span class="sourceLineNo">132</span>         * write line breaks. If set to &lt;code&gt;false&lt;/code&gt; (default) line breaks are<a name="line.132"></a>
+<span class="sourceLineNo">133</span>         * written.<a name="line.133"></a>
 <span class="sourceLineNo">134</span>         * &lt;p&gt;<a name="line.134"></a>
-<span class="sourceLineNo">135</span>         * This can, for example, be used for HTML where line breaks sometimes<a name="line.135"></a>
-<span class="sourceLineNo">136</span>         * change the layout.<a name="line.136"></a>
+<span class="sourceLineNo">135</span>         * This can, for example, be used for HTML where line breaks sometimes change<a name="line.135"></a>
+<span class="sourceLineNo">136</span>         * the layout.<a name="line.136"></a>
 <span class="sourceLineNo">137</span>         */<a name="line.137"></a>
 <span class="sourceLineNo">138</span>        public void setSuppressLineBreaks(boolean supressLineBreaks) {<a name="line.138"></a>
 <span class="sourceLineNo">139</span>                this.suppressLineBreaks = supressLineBreaks;<a name="line.139"></a>
@@ -196,8 +196,8 @@
 <span class="sourceLineNo">188</span>        }<a name="line.188"></a>
 <span class="sourceLineNo">189</span><a name="line.189"></a>
 <span class="sourceLineNo">190</span>        /**<a name="line.190"></a>
-<span class="sourceLineNo">191</span>         * Add the HTML5 doctype, which is different from normal XML/HTML doctypes<a name="line.191"></a>
-<span class="sourceLineNo">192</span>         * in that it is much shorter and does not contain any public or system IDs.<a name="line.192"></a>
+<span class="sourceLineNo">191</span>         * Add the HTML5 doctype, which is different from normal XML/HTML doctypes in<a name="line.191"></a>
+<span class="sourceLineNo">192</span>         * that it is much shorter and does not contain any public or system IDs.<a name="line.192"></a>
 <span class="sourceLineNo">193</span>         */<a name="line.193"></a>
 <span class="sourceLineNo">194</span>        public void addHTML5Doctype() {<a name="line.194"></a>
 <span class="sourceLineNo">195</span>                print(LT);<a name="line.195"></a>
@@ -242,8 +242,8 @@
 <span class="sourceLineNo">234</span>         *            its value<a name="line.234"></a>
 <span class="sourceLineNo">235</span>         * @throws XMLWriterException<a name="line.235"></a>
 <span class="sourceLineNo">236</span>         *             if there's no element to add attributes to (<a name="line.236"></a>
-<span class="sourceLineNo">237</span>         *             {@link EXMLWriterExceptionType#ATTRIBUTE_OUTSIDE_ELEMENT}) or<a name="line.237"></a>
-<span class="sourceLineNo">238</span>         *             if an attribute is added twice (<a name="line.238"></a>
+<span class="sourceLineNo">237</span>         *             {@link EXMLWriterExceptionType#ATTRIBUTE_OUTSIDE_ELEMENT}) or if<a name="line.237"></a>
+<span class="sourceLineNo">238</span>         *             an attribute is added twice (<a name="line.238"></a>
 <span class="sourceLineNo">239</span>         *             {@link EXMLWriterExceptionType#DUPLICATE_ATTRIBUTE}).<a name="line.239"></a>
 <span class="sourceLineNo">240</span>         */<a name="line.240"></a>
 <span class="sourceLineNo">241</span>        public void addAttribute(A attribute, Object value) {<a name="line.241"></a>
@@ -280,147 +280,147 @@
 <span class="sourceLineNo">272</span>         * @param element<a name="line.272"></a>
 <span class="sourceLineNo">273</span>         *            The element to be opened (using {@link #openElement(Enum)}).<a name="line.273"></a>
 <span class="sourceLineNo">274</span>         * @param attributes<a name="line.274"></a>
-<span class="sourceLineNo">275</span>         *            the attributes to be added. The number of arguments must be<a name="line.275"></a>
-<span class="sourceLineNo">276</span>         *            even, where the first, third, etc. argument is an attribute<a name="line.276"></a>
-<span class="sourceLineNo">277</span>         *            enum.<a name="line.277"></a>
-<span class="sourceLineNo">278</span>         */<a name="line.278"></a>
-<span class="sourceLineNo">279</span>        public void openElement(E element, Object... attributes) {<a name="line.279"></a>
-<span class="sourceLineNo">280</span>                if (attributes.length % 2 != 0) {<a name="line.280"></a>
-<span class="sourceLineNo">281</span>                        throw new XMLWriterException("Expected an even number of arguments!",<a name="line.281"></a>
-<span class="sourceLineNo">282</span>                                        EXMLWriterExceptionType.ODD_NUMBER_OF_ARGUMENTS);<a name="line.282"></a>
-<span class="sourceLineNo">283</span>                }<a name="line.283"></a>
-<span class="sourceLineNo">284</span>                for (int i = 0; i &lt; attributes.length; i += 2) {<a name="line.284"></a>
-<span class="sourceLineNo">285</span>                        if (!xmlResolver.getAttributeClass().isAssignableFrom(attributes[i].getClass())) {<a name="line.285"></a>
-<span class="sourceLineNo">286</span>                                throw new XMLWriterException(<a name="line.286"></a>
-<span class="sourceLineNo">287</span>                                                "Attribute name (index " + i + ") must be of type " + xmlResolver.getAttributeClass().getName(),<a name="line.287"></a>
-<span class="sourceLineNo">288</span>                                                EXMLWriterExceptionType.ILLEGAL_ATTRIBUTE_TYPE);<a name="line.288"></a>
-<span class="sourceLineNo">289</span>                        }<a name="line.289"></a>
-<span class="sourceLineNo">290</span>                }<a name="line.290"></a>
-<span class="sourceLineNo">291</span>                openElement(element);<a name="line.291"></a>
-<span class="sourceLineNo">292</span>                for (int i = 0; i &lt; attributes.length; i += 2) {<a name="line.292"></a>
-<span class="sourceLineNo">293</span>                        // this is ok as we checked it above<a name="line.293"></a>
-<span class="sourceLineNo">294</span>                        @SuppressWarnings("unchecked")<a name="line.294"></a>
-<span class="sourceLineNo">295</span>                        A a = (A) attributes[i];<a name="line.295"></a>
-<span class="sourceLineNo">296</span>                        addAttribute(a, attributes[i + 1]);<a name="line.296"></a>
-<span class="sourceLineNo">297</span>                }<a name="line.297"></a>
-<span class="sourceLineNo">298</span>        }<a name="line.298"></a>
-<span class="sourceLineNo">299</span><a name="line.299"></a>
-<span class="sourceLineNo">300</span>        /**<a name="line.300"></a>
-<span class="sourceLineNo">301</span>         * Convenience method for adding an element together with (some of) its<a name="line.301"></a>
-<span class="sourceLineNo">302</span>         * attributes. This is the same as {@link #openElement(Enum, Object[])}, but<a name="line.302"></a>
-<span class="sourceLineNo">303</span>         * also closes the element.<a name="line.303"></a>
-<span class="sourceLineNo">304</span>         */<a name="line.304"></a>
-<span class="sourceLineNo">305</span>        public void addClosedElement(E element, Object... attributes) {<a name="line.305"></a>
-<span class="sourceLineNo">306</span>                openElement(element, attributes);<a name="line.306"></a>
-<span class="sourceLineNo">307</span>                closeElement(element);<a name="line.307"></a>
-<span class="sourceLineNo">308</span>        }<a name="line.308"></a>
-<span class="sourceLineNo">309</span><a name="line.309"></a>
-<span class="sourceLineNo">310</span>        /**<a name="line.310"></a>
-<span class="sourceLineNo">311</span>         * Convenience method for adding an element together with (some of) its<a name="line.311"></a>
-<span class="sourceLineNo">312</span>         * attributes and text inbetween. This is the same as<a name="line.312"></a>
-<span class="sourceLineNo">313</span>         * {@link #openElement(Enum, Object[])}, but then adds the provided text and<a name="line.313"></a>
-<span class="sourceLineNo">314</span>         * closes the element.<a name="line.314"></a>
-<span class="sourceLineNo">315</span>         */<a name="line.315"></a>
-<span class="sourceLineNo">316</span>        public void addClosedTextElement(E element, String text, Object... attributes) {<a name="line.316"></a>
-<span class="sourceLineNo">317</span>                openElement(element, attributes);<a name="line.317"></a>
-<span class="sourceLineNo">318</span>                addText(text);<a name="line.318"></a>
-<span class="sourceLineNo">319</span>                closeElement(element);<a name="line.319"></a>
-<span class="sourceLineNo">320</span>        }<a name="line.320"></a>
-<span class="sourceLineNo">321</span><a name="line.321"></a>
-<span class="sourceLineNo">322</span>        /**<a name="line.322"></a>
-<span class="sourceLineNo">323</span>         * Close an element.<a name="line.323"></a>
-<span class="sourceLineNo">324</span>         * <a name="line.324"></a>
-<span class="sourceLineNo">325</span>         * @param element<a name="line.325"></a>
-<span class="sourceLineNo">326</span>         *            the element to close.<a name="line.326"></a>
-<span class="sourceLineNo">327</span>         * @throws XMLWriterException<a name="line.327"></a>
-<span class="sourceLineNo">328</span>         *             on attempt to close the wrong element (<a name="line.328"></a>
-<span class="sourceLineNo">329</span>         *             {@link EXMLWriterExceptionType#UNCLOSED_ELEMENT}).<a name="line.329"></a>
-<span class="sourceLineNo">330</span>         */<a name="line.330"></a>
-<span class="sourceLineNo">331</span>        public void closeElement(E element) {<a name="line.331"></a>
-<span class="sourceLineNo">332</span>                if (element != elementStack.peek()) {<a name="line.332"></a>
-<span class="sourceLineNo">333</span>                        throw new XMLWriterException("Must close element " + elementStack.peek() + " first.",<a name="line.333"></a>
-<span class="sourceLineNo">334</span>                                        EXMLWriterExceptionType.UNCLOSED_ELEMENT);<a name="line.334"></a>
-<span class="sourceLineNo">335</span>                }<a name="line.335"></a>
-<span class="sourceLineNo">336</span><a name="line.336"></a>
-<span class="sourceLineNo">337</span>                if (state == EState.INSIDE_TAG) {<a name="line.337"></a>
-<span class="sourceLineNo">338</span>                        // if inside a tag, just close the tag and done<a name="line.338"></a>
-<span class="sourceLineNo">339</span>                        print(" /");<a name="line.339"></a>
-<span class="sourceLineNo">340</span>                        print(GT);<a name="line.340"></a>
-<span class="sourceLineNo">341</span><a name="line.341"></a>
-<span class="sourceLineNo">342</span>                } else {<a name="line.342"></a>
-<span class="sourceLineNo">343</span>                        // we're not inside a tag<a name="line.343"></a>
-<span class="sourceLineNo">344</span><a name="line.344"></a>
-<span class="sourceLineNo">345</span>                        if (state != EState.INSIDE_TEXT) {<a name="line.345"></a>
-<span class="sourceLineNo">346</span>                                // if not inside a text element, create new line and indent<a name="line.346"></a>
-<span class="sourceLineNo">347</span>                                println();<a name="line.347"></a>
-<span class="sourceLineNo">348</span>                                printIndent();<a name="line.348"></a>
-<span class="sourceLineNo">349</span>                        }<a name="line.349"></a>
-<span class="sourceLineNo">350</span><a name="line.350"></a>
-<span class="sourceLineNo">351</span>                        // create closing tag<a name="line.351"></a>
-<span class="sourceLineNo">352</span>                        print(LT);<a name="line.352"></a>
-<span class="sourceLineNo">353</span>                        print("/");<a name="line.353"></a>
-<span class="sourceLineNo">354</span>                        print(xmlResolver.resolveElementName(element));<a name="line.354"></a>
-<span class="sourceLineNo">355</span>                        print(GT);<a name="line.355"></a>
-<span class="sourceLineNo">356</span>                }<a name="line.356"></a>
-<span class="sourceLineNo">357</span><a name="line.357"></a>
-<span class="sourceLineNo">358</span>                // we're done with this element<a name="line.358"></a>
-<span class="sourceLineNo">359</span>                elementStack.pop();<a name="line.359"></a>
-<span class="sourceLineNo">360</span>                currentNestingDepth--;<a name="line.360"></a>
-<span class="sourceLineNo">361</span>                state = EState.OUTSIDE_TAG;<a name="line.361"></a>
-<span class="sourceLineNo">362</span>        }<a name="line.362"></a>
-<span class="sourceLineNo">363</span><a name="line.363"></a>
-<span class="sourceLineNo">364</span>        /**<a name="line.364"></a>
-<span class="sourceLineNo">365</span>         * Add a text element to an element.<a name="line.365"></a>
-<span class="sourceLineNo">366</span>         * <a name="line.366"></a>
-<span class="sourceLineNo">367</span>         * @param text<a name="line.367"></a>
-<span class="sourceLineNo">368</span>         *            the text to add.<a name="line.368"></a>
-<span class="sourceLineNo">369</span>         */<a name="line.369"></a>
-<span class="sourceLineNo">370</span>        public void addText(String text) {<a name="line.370"></a>
-<span class="sourceLineNo">371</span>                if (state == EState.INSIDE_TAG) {<a name="line.371"></a>
-<span class="sourceLineNo">372</span>                        print(GT);<a name="line.372"></a>
-<span class="sourceLineNo">373</span>                }<a name="line.373"></a>
-<span class="sourceLineNo">374</span>                print(escape(text));<a name="line.374"></a>
-<span class="sourceLineNo">375</span><a name="line.375"></a>
-<span class="sourceLineNo">376</span>                state = EState.INSIDE_TEXT;<a name="line.376"></a>
-<span class="sourceLineNo">377</span>        }<a name="line.377"></a>
-<span class="sourceLineNo">378</span><a name="line.378"></a>
-<span class="sourceLineNo">379</span>        /**<a name="line.379"></a>
-<span class="sourceLineNo">380</span>         * Add CDATA section. Added text is not escaped.<a name="line.380"></a>
-<span class="sourceLineNo">381</span>         * <a name="line.381"></a>
-<span class="sourceLineNo">382</span>         * @throws XMLWriterException<a name="line.382"></a>
-<span class="sourceLineNo">383</span>         *             If the added text contains the CDATA closing tag<a name="line.383"></a>
-<span class="sourceLineNo">384</span>         *             &lt;code&gt;]]&gt;&lt;/code&gt;. This is not automatically escaped as some<a name="line.384"></a>
-<span class="sourceLineNo">385</span>         *             parsers do not automatically unescape it when reading.<a name="line.385"></a>
-<span class="sourceLineNo">386</span>         */<a name="line.386"></a>
-<span class="sourceLineNo">387</span>        public void addCDataSection(String cdata) {<a name="line.387"></a>
-<span class="sourceLineNo">388</span>                if (state == EState.INSIDE_TAG) {<a name="line.388"></a>
-<span class="sourceLineNo">389</span>                        print(GT);<a name="line.389"></a>
-<span class="sourceLineNo">390</span>                }<a name="line.390"></a>
-<span class="sourceLineNo">391</span><a name="line.391"></a>
-<span class="sourceLineNo">392</span>                if (cdata.contains("]]&gt;")) {<a name="line.392"></a>
-<span class="sourceLineNo">393</span>                        throw new XMLWriterException("CDATA contains ']]&gt;'",<a name="line.393"></a>
-<span class="sourceLineNo">394</span>                                        EXMLWriterExceptionType.CDATA_CONTAINS_CDATA_CLOSING_TAG);<a name="line.394"></a>
-<span class="sourceLineNo">395</span>                }<a name="line.395"></a>
-<span class="sourceLineNo">396</span><a name="line.396"></a>
-<span class="sourceLineNo">397</span>                print("&lt;![CDATA[");<a name="line.397"></a>
-<span class="sourceLineNo">398</span>                print(cdata);<a name="line.398"></a>
-<span class="sourceLineNo">399</span>                print("]]&gt;");<a name="line.399"></a>
-<span class="sourceLineNo">400</span>                state = EState.INSIDE_TEXT;<a name="line.400"></a>
-<span class="sourceLineNo">401</span>        }<a name="line.401"></a>
-<span class="sourceLineNo">402</span><a name="line.402"></a>
-<span class="sourceLineNo">403</span>        /**<a name="line.403"></a>
-<span class="sourceLineNo">404</span>         * Add an XML comment.<a name="line.404"></a>
-<span class="sourceLineNo">405</span>         * <a name="line.405"></a>
-<span class="sourceLineNo">406</span>         * @param text<a name="line.406"></a>
-<span class="sourceLineNo">407</span>         *            comment text.<a name="line.407"></a>
-<span class="sourceLineNo">408</span>         */<a name="line.408"></a>
-<span class="sourceLineNo">409</span>        public void addComment(String text) {<a name="line.409"></a>
-<span class="sourceLineNo">410</span>                ensureOutsideTag();<a name="line.410"></a>
-<span class="sourceLineNo">411</span><a name="line.411"></a>
-<span class="sourceLineNo">412</span>                currentNestingDepth++;<a name="line.412"></a>
-<span class="sourceLineNo">413</span>                printIndent();<a name="line.413"></a>
-<span class="sourceLineNo">414</span>                print(COMMENT_START);<a name="line.414"></a>
-<span class="sourceLineNo">415</span>                print(escape(text));<a name="line.415"></a>
+<span class="sourceLineNo">275</span>         *            the attributes to be added. The number of arguments must be even,<a name="line.275"></a>
+<span class="sourceLineNo">276</span>         *            where the first, third, etc. argument is an attribute enum.<a name="line.276"></a>
+<span class="sourceLineNo">277</span>         */<a name="line.277"></a>
+<span class="sourceLineNo">278</span>        public void openElement(E element, Object... attributes) {<a name="line.278"></a>
+<span class="sourceLineNo">279</span>                if (attributes.length % 2 != 0) {<a name="line.279"></a>
+<span class="sourceLineNo">280</span>                        throw new XMLWriterException("Expected an even number of arguments!",<a name="line.280"></a>
+<span class="sourceLineNo">281</span>                                        EXMLWriterExceptionType.ODD_NUMBER_OF_ARGUMENTS);<a name="line.281"></a>
+<span class="sourceLineNo">282</span>                }<a name="line.282"></a>
+<span class="sourceLineNo">283</span>                for (int i = 0; i &lt; attributes.length; i += 2) {<a name="line.283"></a>
+<span class="sourceLineNo">284</span>                        if (!xmlResolver.getAttributeClass().isAssignableFrom(attributes[i].getClass())) {<a name="line.284"></a>
+<span class="sourceLineNo">285</span>                                throw new XMLWriterException(<a name="line.285"></a>
+<span class="sourceLineNo">286</span>                                                "Attribute name (index " + i + ") must be of type " + xmlResolver.getAttributeClass().getName(),<a name="line.286"></a>
+<span class="sourceLineNo">287</span>                                                EXMLWriterExceptionType.ILLEGAL_ATTRIBUTE_TYPE);<a name="line.287"></a>
+<span class="sourceLineNo">288</span>                        }<a name="line.288"></a>
+<span class="sourceLineNo">289</span>                }<a name="line.289"></a>
+<span class="sourceLineNo">290</span>                openElement(element);<a name="line.290"></a>
+<span class="sourceLineNo">291</span>                for (int i = 0; i &lt; attributes.length; i += 2) {<a name="line.291"></a>
+<span class="sourceLineNo">292</span>                        // this is ok as we checked it above<a name="line.292"></a>
+<span class="sourceLineNo">293</span>                        @SuppressWarnings("unchecked")<a name="line.293"></a>
+<span class="sourceLineNo">294</span>                        A a = (A) attributes[i];<a name="line.294"></a>
+<span class="sourceLineNo">295</span>                        addAttribute(a, attributes[i + 1]);<a name="line.295"></a>
+<span class="sourceLineNo">296</span>                }<a name="line.296"></a>
+<span class="sourceLineNo">297</span>        }<a name="line.297"></a>
+<span class="sourceLineNo">298</span><a name="line.298"></a>
+<span class="sourceLineNo">299</span>        /**<a name="line.299"></a>
+<span class="sourceLineNo">300</span>         * Convenience method for adding an element together with (some of) its<a name="line.300"></a>
+<span class="sourceLineNo">301</span>         * attributes. This is the same as {@link #openElement(Enum, Object[])}, but<a name="line.301"></a>
+<span class="sourceLineNo">302</span>         * also closes the element.<a name="line.302"></a>
+<span class="sourceLineNo">303</span>         */<a name="line.303"></a>
+<span class="sourceLineNo">304</span>        public void addClosedElement(E element, Object... attributes) {<a name="line.304"></a>
+<span class="sourceLineNo">305</span>                openElement(element, attributes);<a name="line.305"></a>
+<span class="sourceLineNo">306</span>                closeElement(element);<a name="line.306"></a>
+<span class="sourceLineNo">307</span>        }<a name="line.307"></a>
+<span class="sourceLineNo">308</span><a name="line.308"></a>
+<span class="sourceLineNo">309</span>        /**<a name="line.309"></a>
+<span class="sourceLineNo">310</span>         * Convenience method for adding an element together with (some of) its<a name="line.310"></a>
+<span class="sourceLineNo">311</span>         * attributes and text inbetween. This is the same as<a name="line.311"></a>
+<span class="sourceLineNo">312</span>         * {@link #openElement(Enum, Object[])}, but then adds the provided text and<a name="line.312"></a>
+<span class="sourceLineNo">313</span>         * closes the element.<a name="line.313"></a>
+<span class="sourceLineNo">314</span>         */<a name="line.314"></a>
+<span class="sourceLineNo">315</span>        public void addClosedTextElement(E element, String text, Object... attributes) {<a name="line.315"></a>
+<span class="sourceLineNo">316</span>                openElement(element, attributes);<a name="line.316"></a>
+<span class="sourceLineNo">317</span>                addText(text);<a name="line.317"></a>
+<span class="sourceLineNo">318</span>                closeElement(element);<a name="line.318"></a>
+<span class="sourceLineNo">319</span>        }<a name="line.319"></a>
+<span class="sourceLineNo">320</span><a name="line.320"></a>
+<span class="sourceLineNo">321</span>        /**<a name="line.321"></a>
+<span class="sourceLineNo">322</span>         * Close an element.<a name="line.322"></a>
+<span class="sourceLineNo">323</span>         * <a name="line.323"></a>
+<span class="sourceLineNo">324</span>         * @param element<a name="line.324"></a>
+<span class="sourceLineNo">325</span>         *            the element to close.<a name="line.325"></a>
+<span class="sourceLineNo">326</span>         * @throws XMLWriterException<a name="line.326"></a>
+<span class="sourceLineNo">327</span>         *             on attempt to close the wrong element (<a name="line.327"></a>
+<span class="sourceLineNo">328</span>         *             {@link EXMLWriterExceptionType#UNCLOSED_ELEMENT}).<a name="line.328"></a>
+<span class="sourceLineNo">329</span>         */<a name="line.329"></a>
+<span class="sourceLineNo">330</span>        public void closeElement(E element) {<a name="line.330"></a>
+<span class="sourceLineNo">331</span>                if (element != elementStack.peek()) {<a name="line.331"></a>
+<span class="sourceLineNo">332</span>                        throw new XMLWriterException("Must close element " + elementStack.peek() + " first.",<a name="line.332"></a>
+<span class="sourceLineNo">333</span>                                        EXMLWriterExceptionType.UNCLOSED_ELEMENT);<a name="line.333"></a>
+<span class="sourceLineNo">334</span>                }<a name="line.334"></a>
+<span class="sourceLineNo">335</span><a name="line.335"></a>
+<span class="sourceLineNo">336</span>                if (state == EState.INSIDE_TAG) {<a name="line.336"></a>
+<span class="sourceLineNo">337</span>                        // if inside a tag, just close the tag and done<a name="line.337"></a>
+<span class="sourceLineNo">338</span>                        print(" /");<a name="line.338"></a>
+<span class="sourceLineNo">339</span>                        print(GT);<a name="line.339"></a>
+<span class="sourceLineNo">340</span><a name="line.340"></a>
+<span class="sourceLineNo">341</span>                } else {<a name="line.341"></a>
+<span class="sourceLineNo">342</span>                        // we're not inside a tag<a name="line.342"></a>
+<span class="sourceLineNo">343</span><a name="line.343"></a>
+<span class="sourceLineNo">344</span>                        if (state != EState.INSIDE_TEXT) {<a name="line.344"></a>
+<span class="sourceLineNo">345</span>                                // if not inside a text element, create new line and indent<a name="line.345"></a>
+<span class="sourceLineNo">346</span>                                println();<a name="line.346"></a>
+<span class="sourceLineNo">347</span>                                printIndent();<a name="line.347"></a>
+<span class="sourceLineNo">348</span>                        }<a name="line.348"></a>
+<span class="sourceLineNo">349</span><a name="line.349"></a>
+<span class="sourceLineNo">350</span>                        // create closing tag<a name="line.350"></a>
+<span class="sourceLineNo">351</span>                        print(LT);<a name="line.351"></a>
+<span class="sourceLineNo">352</span>                        print("/");<a name="line.352"></a>
+<span class="sourceLineNo">353</span>                        print(xmlResolver.resolveElementName(element));<a name="line.353"></a>
+<span class="sourceLineNo">354</span>                        print(GT);<a name="line.354"></a>
+<span class="sourceLineNo">355</span>                }<a name="line.355"></a>
+<span class="sourceLineNo">356</span><a name="line.356"></a>
+<span class="sourceLineNo">357</span>                // we're done with this element<a name="line.357"></a>
+<span class="sourceLineNo">358</span>                elementStack.pop();<a name="line.358"></a>
+<span class="sourceLineNo">359</span>                currentNestingDepth--;<a name="line.359"></a>
+<span class="sourceLineNo">360</span>                state = EState.OUTSIDE_TAG;<a name="line.360"></a>
+<span class="sourceLineNo">361</span>        }<a name="line.361"></a>
+<span class="sourceLineNo">362</span><a name="line.362"></a>
+<span class="sourceLineNo">363</span>        /**<a name="line.363"></a>
+<span class="sourceLineNo">364</span>         * Add a text element to an element.<a name="line.364"></a>
+<span class="sourceLineNo">365</span>         * <a name="line.365"></a>
+<span class="sourceLineNo">366</span>         * @param text<a name="line.366"></a>
+<span class="sourceLineNo">367</span>         *            the text to add.<a name="line.367"></a>
+<span class="sourceLineNo">368</span>         */<a name="line.368"></a>
+<span class="sourceLineNo">369</span>        public void addText(String text) {<a name="line.369"></a>
+<span class="sourceLineNo">370</span>                if (state == EState.INSIDE_TAG) {<a name="line.370"></a>
+<span class="sourceLineNo">371</span>                        print(GT);<a name="line.371"></a>
+<span class="sourceLineNo">372</span>                }<a name="line.372"></a>
+<span class="sourceLineNo">373</span>                print(escape(text));<a name="line.373"></a>
+<span class="sourceLineNo">374</span><a name="line.374"></a>
+<span class="sourceLineNo">375</span>                state = EState.INSIDE_TEXT;<a name="line.375"></a>
+<span class="sourceLineNo">376</span>        }<a name="line.376"></a>
+<span class="sourceLineNo">377</span><a name="line.377"></a>
+<span class="sourceLineNo">378</span>        /**<a name="line.378"></a>
+<span class="sourceLineNo">379</span>         * Add CDATA section. Added text is not escaped.<a name="line.379"></a>
+<span class="sourceLineNo">380</span>         * <a name="line.380"></a>
+<span class="sourceLineNo">381</span>         * @throws XMLWriterException<a name="line.381"></a>
+<span class="sourceLineNo">382</span>         *             If the added text contains the CDATA closing tag<a name="line.382"></a>
+<span class="sourceLineNo">383</span>         *             &lt;code&gt;]]&gt;&lt;/code&gt;. This is not automatically escaped as some<a name="line.383"></a>
+<span class="sourceLineNo">384</span>         *             parsers do not automatically unescape it when reading.<a name="line.384"></a>
+<span class="sourceLineNo">385</span>         */<a name="line.385"></a>
+<span class="sourceLineNo">386</span>        public void addCDataSection(String cdata) {<a name="line.386"></a>
+<span class="sourceLineNo">387</span>                if (state == EState.INSIDE_TAG) {<a name="line.387"></a>
+<span class="sourceLineNo">388</span>                        print(GT);<a name="line.388"></a>
+<span class="sourceLineNo">389</span>                }<a name="line.389"></a>
+<span class="sourceLineNo">390</span><a name="line.390"></a>
+<span class="sourceLineNo">391</span>                if (cdata.contains("]]&gt;")) {<a name="line.391"></a>
+<span class="sourceLineNo">392</span>                        throw new XMLWriterException("CDATA contains ']]&gt;'",<a name="line.392"></a>
+<span class="sourceLineNo">393</span>                                        EXMLWriterExceptionType.CDATA_CONTAINS_CDATA_CLOSING_TAG);<a name="line.393"></a>
+<span class="sourceLineNo">394</span>                }<a name="line.394"></a>
+<span class="sourceLineNo">395</span><a name="line.395"></a>
+<span class="sourceLineNo">396</span>                print("&lt;![CDATA[");<a name="line.396"></a>
+<span class="sourceLineNo">397</span>                print(cdata);<a name="line.397"></a>
+<span class="sourceLineNo">398</span>                print("]]&gt;");<a name="line.398"></a>
+<span class="sourceLineNo">399</span>                state = EState.INSIDE_TEXT;<a name="line.399"></a>
+<span class="sourceLineNo">400</span>        }<a name="line.400"></a>
+<span class="sourceLineNo">401</span><a name="line.401"></a>
+<span class="sourceLineNo">402</span>        /**<a name="line.402"></a>
+<span class="sourceLineNo">403</span>         * Add an XML comment.<a name="line.403"></a>
+<span class="sourceLineNo">404</span>         * <a name="line.404"></a>
+<span class="sourceLineNo">405</span>         * @param text<a name="line.405"></a>
+<span class="sourceLineNo">406</span>         *            comment text.<a name="line.406"></a>
+<span class="sourceLineNo">407</span>         */<a name="line.407"></a>
+<span class="sourceLineNo">408</span>        public void addComment(String text) {<a name="line.408"></a>
+<span class="sourceLineNo">409</span>                ensureOutsideTag();<a name="line.409"></a>
+<span class="sourceLineNo">410</span><a name="line.410"></a>
+<span class="sourceLineNo">411</span>                currentNestingDepth++;<a name="line.411"></a>
+<span class="sourceLineNo">412</span>                printIndent();<a name="line.412"></a>
+<span class="sourceLineNo">413</span>                print(COMMENT_START);<a name="line.413"></a>
+<span class="sourceLineNo">414</span>                // XML comments must not include --<a name="line.414"></a>
+<span class="sourceLineNo">415</span>                print(escape(text.replace("--", "__")));<a name="line.415"></a>
 <span class="sourceLineNo">416</span>                print(COMMENT_END);<a name="line.416"></a>
 <span class="sourceLineNo">417</span>                currentNestingDepth--;<a name="line.417"></a>
 <span class="sourceLineNo">418</span><a name="line.418"></a>
@@ -503,7 +503,7 @@
 <span class="sourceLineNo">495</span>                text = text.replaceAll("\"", "&amp;quot;");<a name="line.495"></a>
 <span class="sourceLineNo">496</span><a name="line.496"></a>
 <span class="sourceLineNo">497</span>                // normalize line breaks<a name="line.497"></a>
-<span class="sourceLineNo">498</span>                text = StringUtils.replaceLineBreaks(text, CR);<a name="line.498"></a>
+<span class="sourceLineNo">498</span>                text = StringUtils.replaceLineBreaks(text, LINE_SEPARATOR);<a name="line.498"></a>
 <span class="sourceLineNo">499</span>                return text;<a name="line.499"></a>
 <span class="sourceLineNo">500</span>        }<a name="line.500"></a>
 <span class="sourceLineNo">501</span><a name="line.501"></a>
@@ -522,7 +522,7 @@
 <span class="sourceLineNo">514</span>        /** Write to writer. */<a name="line.514"></a>
 <span class="sourceLineNo">515</span>        private void println() {<a name="line.515"></a>
 <span class="sourceLineNo">516</span>                if (!suppressLineBreaks) {<a name="line.516"></a>
-<span class="sourceLineNo">517</span>                        print(CR);<a name="line.517"></a>
+<span class="sourceLineNo">517</span>                        print(LINE_SEPARATOR);<a name="line.517"></a>
 <span class="sourceLineNo">518</span>                }<a name="line.518"></a>
 <span class="sourceLineNo">519</span>        }<a name="line.519"></a>
 <span class="sourceLineNo">520</span><a name="line.520"></a>

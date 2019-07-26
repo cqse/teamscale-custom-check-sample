@@ -63,7 +63,7 @@
 <span class="sourceLineNo">055</span>        /**<a name="line.55"></a>
 <span class="sourceLineNo">056</span>         * Attempts to guess the newline style from a string. This performs a simple<a name="line.56"></a>
 <span class="sourceLineNo">057</span>         * majority guess, where CR+lF are simply assumed to be next to each other.<a name="line.57"></a>
-<span class="sourceLineNo">058</span>         * If no line breaks are found, the newline for {@link StringUtils#CR} is<a name="line.58"></a>
+<span class="sourceLineNo">058</span>         * If no line breaks are found, the newline for {@link StringUtils#LINE_SEPARATOR} is<a name="line.58"></a>
 <span class="sourceLineNo">059</span>         * returned.<a name="line.59"></a>
 <span class="sourceLineNo">060</span>         */<a name="line.60"></a>
 <span class="sourceLineNo">061</span>        public static ENewline guessNewline(String string) {<a name="line.61"></a>
@@ -98,7 +98,7 @@
 <span class="sourceLineNo">090</span><a name="line.90"></a>
 <span class="sourceLineNo">091</span>                if (crCount == 0) {<a name="line.91"></a>
 <span class="sourceLineNo">092</span>                        // in this case, all are 0<a name="line.92"></a>
-<span class="sourceLineNo">093</span>                        return guessNewline(StringUtils.CR);<a name="line.93"></a>
+<span class="sourceLineNo">093</span>                        return guessNewline(StringUtils.LINE_SEPARATOR);<a name="line.93"></a>
 <span class="sourceLineNo">094</span>                }<a name="line.94"></a>
 <span class="sourceLineNo">095</span><a name="line.95"></a>
 <span class="sourceLineNo">096</span>                return MAC;<a name="line.96"></a>

@@ -1,0 +1,468 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*-------------------------------------------------------------------------+<a name="line.1"></a>
+<span class="sourceLineNo">002</span>|                                                                          |<a name="line.2"></a>
+<span class="sourceLineNo">003</span>| Copyright 2005-2011 the ConQAT Project                                   |<a name="line.3"></a>
+<span class="sourceLineNo">004</span>|                                                                          |<a name="line.4"></a>
+<span class="sourceLineNo">005</span>| Licensed under the Apache License, Version 2.0 (the "License");          |<a name="line.5"></a>
+<span class="sourceLineNo">006</span>| you may not use this file except in compliance with the License.         |<a name="line.6"></a>
+<span class="sourceLineNo">007</span>| You may obtain a copy of the License at                                  |<a name="line.7"></a>
+<span class="sourceLineNo">008</span>|                                                                          |<a name="line.8"></a>
+<span class="sourceLineNo">009</span>|    http://www.apache.org/licenses/LICENSE-2.0                            |<a name="line.9"></a>
+<span class="sourceLineNo">010</span>|                                                                          |<a name="line.10"></a>
+<span class="sourceLineNo">011</span>| Unless required by applicable law or agreed to in writing, software      |<a name="line.11"></a>
+<span class="sourceLineNo">012</span>| distributed under the License is distributed on an "AS IS" BASIS,        |<a name="line.12"></a>
+<span class="sourceLineNo">013</span>| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. |<a name="line.13"></a>
+<span class="sourceLineNo">014</span>| See the License for the specific language governing permissions and      |<a name="line.14"></a>
+<span class="sourceLineNo">015</span>| limitations under the License.                                           |<a name="line.15"></a>
+<span class="sourceLineNo">016</span>+-------------------------------------------------------------------------*/<a name="line.16"></a>
+<span class="sourceLineNo">017</span>package org.conqat.engine.commons.findings.location;<a name="line.17"></a>
+<span class="sourceLineNo">018</span><a name="line.18"></a>
+<span class="sourceLineNo">019</span>import java.util.ArrayList;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import java.util.Collections;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import java.util.Comparator;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import java.util.List;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import java.util.Set;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import java.util.regex.Matcher;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import java.util.regex.Pattern;<a name="line.25"></a>
+<span class="sourceLineNo">026</span><a name="line.26"></a>
+<span class="sourceLineNo">027</span>import org.conqat.lib.commons.algo.Diff;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import org.conqat.lib.commons.algo.Diff.Delta;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>import org.conqat.lib.commons.region.Region;<a name="line.29"></a>
+<span class="sourceLineNo">030</span>import org.conqat.lib.commons.region.SimpleRegion;<a name="line.30"></a>
+<span class="sourceLineNo">031</span>import org.conqat.lib.commons.string.LineOffsetConverter;<a name="line.31"></a>
+<span class="sourceLineNo">032</span><a name="line.32"></a>
+<span class="sourceLineNo">033</span>/**<a name="line.33"></a>
+<span class="sourceLineNo">034</span> * This class is used for adjusting the offsets used in locations (i.e.<a name="line.34"></a>
+<span class="sourceLineNo">035</span> * subclasses of {@link ElementLocation} for text that is slightly modified. The<a name="line.35"></a>
+<span class="sourceLineNo">036</span> * main use-case is the update of locations where the local (adjusted) text has<a name="line.36"></a>
+<span class="sourceLineNo">037</span> * different line ending, different content due to keyword expansion, or minor<a name="line.37"></a>
+<span class="sourceLineNo">038</span> * local modifications compared to the text on which the analysis was executed<a name="line.38"></a>
+<span class="sourceLineNo">039</span> * (original text).<a name="line.39"></a>
+<span class="sourceLineNo">040</span> *<a name="line.40"></a>
+<span class="sourceLineNo">041</span> * Both the original and adjusted text may have arbitrary line endings.<a name="line.41"></a>
+<span class="sourceLineNo">042</span> *<a name="line.42"></a>
+<span class="sourceLineNo">043</span> * The implementation is based on a token diff, which can lead to minor<a name="line.43"></a>
+<span class="sourceLineNo">044</span> * deviations for offsets that are not aligned with token boundaries. A<a name="line.44"></a>
+<span class="sourceLineNo">045</span> * character diff would be more precise, but is too performance and memory<a name="line.45"></a>
+<span class="sourceLineNo">046</span> * intensive for large files.<a name="line.46"></a>
+<span class="sourceLineNo">047</span> */<a name="line.47"></a>
+<span class="sourceLineNo">048</span>public class LocationAdjuster {<a name="line.48"></a>
+<span class="sourceLineNo">049</span><a name="line.49"></a>
+<span class="sourceLineNo">050</span>        /**<a name="line.50"></a>
+<span class="sourceLineNo">051</span>         * If the number of tokens in the adjusted region differs by the tokens in the<a name="line.51"></a>
+<span class="sourceLineNo">052</span>         * original region by more than this factor, the mapping is counted as wrong.<a name="line.52"></a>
+<span class="sourceLineNo">053</span>         */<a name="line.53"></a>
+<span class="sourceLineNo">054</span>        private static final double LOSS_FACTOR = 2;<a name="line.54"></a>
+<span class="sourceLineNo">055</span><a name="line.55"></a>
+<span class="sourceLineNo">056</span>        /** Maximal number of tokens in the diff we accept. */<a name="line.56"></a>
+<span class="sourceLineNo">057</span>        private static final int MAX_DIFF_SIZE = 5000;<a name="line.57"></a>
+<span class="sourceLineNo">058</span><a name="line.58"></a>
+<span class="sourceLineNo">059</span>        /**<a name="line.59"></a>
+<span class="sourceLineNo">060</span>         * Pattern defining tokens for the diff. Matches either alphanumeric strings<a name="line.60"></a>
+<span class="sourceLineNo">061</span>         * (typical identifiers), or single non-whitespace characters.<a name="line.61"></a>
+<span class="sourceLineNo">062</span>         */<a name="line.62"></a>
+<span class="sourceLineNo">063</span>        private static final Pattern TOKEN_PATTERN = Pattern.compile("[a-zA-Z0-9_]+|\\S");<a name="line.63"></a>
+<span class="sourceLineNo">064</span><a name="line.64"></a>
+<span class="sourceLineNo">065</span>        /** The tokens of the original string. */<a name="line.65"></a>
+<span class="sourceLineNo">066</span>        private final List&lt;AdjusterToken&gt; originalTokens;<a name="line.66"></a>
+<span class="sourceLineNo">067</span><a name="line.67"></a>
+<span class="sourceLineNo">068</span>        /**<a name="line.68"></a>
+<span class="sourceLineNo">069</span>         * Adjusted tokens corresponding to the {@link #originalTokens}. If there is no<a name="line.69"></a>
+<span class="sourceLineNo">070</span>         * corresponding token, this list contains null at the index. If the content<a name="line.70"></a>
+<span class="sourceLineNo">071</span>         * could not be matched/adjusted at all (too many differences), this field is<a name="line.71"></a>
+<span class="sourceLineNo">072</span>         * null.<a name="line.72"></a>
+<span class="sourceLineNo">073</span>         */<a name="line.73"></a>
+<span class="sourceLineNo">074</span>        private final List&lt;AdjusterToken&gt; mappedAdjustedTokens;<a name="line.74"></a>
+<span class="sourceLineNo">075</span><a name="line.75"></a>
+<span class="sourceLineNo">076</span>        /** Line offset converted for the original text. */<a name="line.76"></a>
+<span class="sourceLineNo">077</span>        private final LineOffsetConverter originalLineOffsetConverter;<a name="line.77"></a>
+<span class="sourceLineNo">078</span><a name="line.78"></a>
+<span class="sourceLineNo">079</span>        /** Line offset converted for the adjusted text. */<a name="line.79"></a>
+<span class="sourceLineNo">080</span>        private final LineOffsetConverter adjustedLineOffsetConverter;<a name="line.80"></a>
+<span class="sourceLineNo">081</span><a name="line.81"></a>
+<span class="sourceLineNo">082</span>        /**<a name="line.82"></a>
+<span class="sourceLineNo">083</span>         * Optional uniform path to correct element locations of<a name="line.83"></a>
+<span class="sourceLineNo">084</span>         * {@link #adjustLocation(ElementLocation)}. Null if no correction will be<a name="line.84"></a>
+<span class="sourceLineNo">085</span>         * performed.<a name="line.85"></a>
+<span class="sourceLineNo">086</span>         */<a name="line.86"></a>
+<span class="sourceLineNo">087</span>        private String adjustedUniformPath;<a name="line.87"></a>
+<span class="sourceLineNo">088</span><a name="line.88"></a>
+<span class="sourceLineNo">089</span>        /**<a name="line.89"></a>
+<span class="sourceLineNo">090</span>         * Constructor.<a name="line.90"></a>
+<span class="sourceLineNo">091</span>         *<a name="line.91"></a>
+<span class="sourceLineNo">092</span>         * @param originalText<a name="line.92"></a>
+<span class="sourceLineNo">093</span>         *            the text for which the input locations have been created, i.e. the<a name="line.93"></a>
+<span class="sourceLineNo">094</span>         *            text from the analysis. May be &lt;code&gt;null&lt;/code&gt;, in which case no<a name="line.94"></a>
+<span class="sourceLineNo">095</span>         *            adjustment is performed.<a name="line.95"></a>
+<span class="sourceLineNo">096</span>         * @param adjustedText<a name="line.96"></a>
+<span class="sourceLineNo">097</span>         *            the text for which the locations should be adjusted, i.e. the<a name="line.97"></a>
+<span class="sourceLineNo">098</span>         *            local text.<a name="line.98"></a>
+<span class="sourceLineNo">099</span>         * @param adjustedUniformPath<a name="line.99"></a>
+<span class="sourceLineNo">100</span>         *            the adjusted uniform path for adjusted findings.<a name="line.100"></a>
+<span class="sourceLineNo">101</span>         */<a name="line.101"></a>
+<span class="sourceLineNo">102</span>        public LocationAdjuster(String originalText, String adjustedText, String adjustedUniformPath) {<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                if (originalText == null) {<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                        originalText = adjustedText;<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                }<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                this.adjustedUniformPath = adjustedUniformPath;<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                originalLineOffsetConverter = new LineOffsetConverter(originalText);<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                adjustedLineOffsetConverter = new LineOffsetConverter(adjustedText);<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                originalTokens = toTokens(originalText);<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                mappedAdjustedTokens = calculateMappedAdjustedTokens(adjustedText, originalTokens);<a name="line.110"></a>
+<span class="sourceLineNo">111</span>        }<a name="line.111"></a>
+<span class="sourceLineNo">112</span><a name="line.112"></a>
+<span class="sourceLineNo">113</span>        /**<a name="line.113"></a>
+<span class="sourceLineNo">114</span>         * Constructor.<a name="line.114"></a>
+<span class="sourceLineNo">115</span>         *<a name="line.115"></a>
+<span class="sourceLineNo">116</span>         * @param originalText<a name="line.116"></a>
+<span class="sourceLineNo">117</span>         *            the text for which the input locations have been created, i.e. the<a name="line.117"></a>
+<span class="sourceLineNo">118</span>         *            text from the analysis.<a name="line.118"></a>
+<span class="sourceLineNo">119</span>         * @param adjustedText<a name="line.119"></a>
+<span class="sourceLineNo">120</span>         *            the text for which the locations should be adjusted, i.e. the<a name="line.120"></a>
+<span class="sourceLineNo">121</span>         *            local text.<a name="line.121"></a>
+<span class="sourceLineNo">122</span>         */<a name="line.122"></a>
+<span class="sourceLineNo">123</span>        public LocationAdjuster(String originalText, String adjustedText) {<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                this(originalText, adjustedText, null);<a name="line.124"></a>
+<span class="sourceLineNo">125</span>        }<a name="line.125"></a>
+<span class="sourceLineNo">126</span><a name="line.126"></a>
+<span class="sourceLineNo">127</span>        /**<a name="line.127"></a>
+<span class="sourceLineNo">128</span>         * Calculates the #mappedAdjustedTokens based on original tokens and adjusted<a name="line.128"></a>
+<span class="sourceLineNo">129</span>         * text. May return null if adjustment is not possible due too many changes.<a name="line.129"></a>
+<span class="sourceLineNo">130</span>         */<a name="line.130"></a>
+<span class="sourceLineNo">131</span>        private static List&lt;AdjusterToken&gt; calculateMappedAdjustedTokens(String adjustedText,<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                        List&lt;AdjusterToken&gt; originalTokens) {<a name="line.132"></a>
+<span class="sourceLineNo">133</span><a name="line.133"></a>
+<span class="sourceLineNo">134</span>                List&lt;AdjusterToken&gt; adjustedTokens = toTokens(adjustedText);<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                Delta&lt;AdjusterToken&gt; delta = Diff.computeDelta(originalTokens, adjustedTokens, MAX_DIFF_SIZE);<a name="line.135"></a>
+<span class="sourceLineNo">136</span><a name="line.136"></a>
+<span class="sourceLineNo">137</span>                if (delta.getSize() &gt;= MAX_DIFF_SIZE) {<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                        return null;<a name="line.138"></a>
+<span class="sourceLineNo">139</span>                }<a name="line.139"></a>
+<span class="sourceLineNo">140</span><a name="line.140"></a>
+<span class="sourceLineNo">141</span>                return calculateMappedAdjustedTokensFromDelta(delta, originalTokens, adjustedTokens);<a name="line.141"></a>
+<span class="sourceLineNo">142</span>        }<a name="line.142"></a>
+<span class="sourceLineNo">143</span><a name="line.143"></a>
+<span class="sourceLineNo">144</span>        /**<a name="line.144"></a>
+<span class="sourceLineNo">145</span>         * Calculates the #mappedAdjustedTokens based on original tokens, adjusted text,<a name="line.145"></a>
+<span class="sourceLineNo">146</span>         * and delta.<a name="line.146"></a>
+<span class="sourceLineNo">147</span>         */<a name="line.147"></a>
+<span class="sourceLineNo">148</span>        private static List&lt;AdjusterToken&gt; calculateMappedAdjustedTokensFromDelta(Delta&lt;AdjusterToken&gt; delta,<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                        List&lt;AdjusterToken&gt; originalTokens, List&lt;AdjusterToken&gt; adjustedTokens) {<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                List&lt;AdjusterToken&gt; mappedAdjustedTokens = new ArrayList&lt;&gt;(<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                                Collections.nCopies(originalTokens.size(), (AdjusterToken) null));<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                int originalIndex = 0;<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                int adjustedIndex = 0;<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                for (int i = 0; i &lt; delta.getSize(); ++i) {<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                        int position = delta.getPosition(i);<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                        if (position &gt; 0) {<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                                position -= 1;<a name="line.157"></a>
+<span class="sourceLineNo">158</span><a name="line.158"></a>
+<span class="sourceLineNo">159</span>                                while (adjustedIndex &lt; position) {<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                                        mappedAdjustedTokens.set(originalIndex++, adjustedTokens.get(adjustedIndex++));<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                                }<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                                adjustedIndex += 1;<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                        } else {<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                                position = -position - 1;<a name="line.164"></a>
+<span class="sourceLineNo">165</span><a name="line.165"></a>
+<span class="sourceLineNo">166</span>                                while (originalIndex &lt; position) {<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                                        mappedAdjustedTokens.set(originalIndex++, adjustedTokens.get(adjustedIndex++));<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                                }<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                                originalIndex += 1;<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                        }<a name="line.170"></a>
+<span class="sourceLineNo">171</span>                }<a name="line.171"></a>
+<span class="sourceLineNo">172</span><a name="line.172"></a>
+<span class="sourceLineNo">173</span>                while (originalIndex &lt; originalTokens.size()) {<a name="line.173"></a>
+<span class="sourceLineNo">174</span>                        mappedAdjustedTokens.set(originalIndex++, adjustedTokens.get(adjustedIndex++));<a name="line.174"></a>
+<span class="sourceLineNo">175</span>                }<a name="line.175"></a>
+<span class="sourceLineNo">176</span><a name="line.176"></a>
+<span class="sourceLineNo">177</span>                return mappedAdjustedTokens;<a name="line.177"></a>
+<span class="sourceLineNo">178</span>        }<a name="line.178"></a>
+<span class="sourceLineNo">179</span><a name="line.179"></a>
+<span class="sourceLineNo">180</span>        /** Splits a string into tokens. */<a name="line.180"></a>
+<span class="sourceLineNo">181</span>        private static List&lt;AdjusterToken&gt; toTokens(String s) {<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                List&lt;AdjusterToken&gt; tokens = new ArrayList&lt;&gt;();<a name="line.182"></a>
+<span class="sourceLineNo">183</span>                Matcher matcher = TOKEN_PATTERN.matcher(s);<a name="line.183"></a>
+<span class="sourceLineNo">184</span>                while (matcher.find()) {<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                        tokens.add(new AdjusterToken(matcher.group(), matcher.start()));<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                }<a name="line.186"></a>
+<span class="sourceLineNo">187</span>                return tokens;<a name="line.187"></a>
+<span class="sourceLineNo">188</span>        }<a name="line.188"></a>
+<span class="sourceLineNo">189</span><a name="line.189"></a>
+<span class="sourceLineNo">190</span>        /**<a name="line.190"></a>
+<span class="sourceLineNo">191</span>         * Maps a zero-based offset range (both inclusive) to the adjusted string.<a name="line.191"></a>
+<span class="sourceLineNo">192</span>         * Returns &lt;code&gt;null&lt;/code&gt; if the region could not be approximately mapped.<a name="line.192"></a>
+<span class="sourceLineNo">193</span>         */<a name="line.193"></a>
+<span class="sourceLineNo">194</span>        public Region getAdjustedRegion(int originalStartOffset, int originalEndOffset) {<a name="line.194"></a>
+<span class="sourceLineNo">195</span><a name="line.195"></a>
+<span class="sourceLineNo">196</span>                if (mappedAdjustedTokens == null) {<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                        return null;<a name="line.197"></a>
+<span class="sourceLineNo">198</span>                }<a name="line.198"></a>
+<span class="sourceLineNo">199</span><a name="line.199"></a>
+<span class="sourceLineNo">200</span>                Region originalIndexRegion = findOriginalIndexRegion(originalStartOffset, originalEndOffset);<a name="line.200"></a>
+<span class="sourceLineNo">201</span>                if (originalIndexRegion.isEmpty()) {<a name="line.201"></a>
+<span class="sourceLineNo">202</span>                        return null;<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                }<a name="line.203"></a>
+<span class="sourceLineNo">204</span><a name="line.204"></a>
+<span class="sourceLineNo">205</span>                int numOriginalTokens = originalIndexRegion.getLength();<a name="line.205"></a>
+<span class="sourceLineNo">206</span>                int numAdjustedTokens = 0;<a name="line.206"></a>
+<span class="sourceLineNo">207</span><a name="line.207"></a>
+<span class="sourceLineNo">208</span>                AdjusterToken firstAdjustedToken = null;<a name="line.208"></a>
+<span class="sourceLineNo">209</span>                AdjusterToken lastAdjustedToken = null;<a name="line.209"></a>
+<span class="sourceLineNo">210</span>                for (int i = originalIndexRegion.getStart(); i &lt;= originalIndexRegion.getEnd(); ++i) {<a name="line.210"></a>
+<span class="sourceLineNo">211</span>                        AdjusterToken adjustedToken = mappedAdjustedTokens.get(i);<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                        if (adjustedToken != null) {<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                                numAdjustedTokens += 1;<a name="line.213"></a>
+<span class="sourceLineNo">214</span>                                if (firstAdjustedToken == null) {<a name="line.214"></a>
+<span class="sourceLineNo">215</span>                                        firstAdjustedToken = adjustedToken;<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                                }<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                                lastAdjustedToken = adjustedToken;<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                        }<a name="line.218"></a>
+<span class="sourceLineNo">219</span>                }<a name="line.219"></a>
+<span class="sourceLineNo">220</span><a name="line.220"></a>
+<span class="sourceLineNo">221</span>                if (firstAdjustedToken == null || lastAdjustedToken == null<a name="line.221"></a>
+<span class="sourceLineNo">222</span>                                || LOSS_FACTOR * numAdjustedTokens &lt; numOriginalTokens) {<a name="line.222"></a>
+<span class="sourceLineNo">223</span>                        return null;<a name="line.223"></a>
+<span class="sourceLineNo">224</span>                }<a name="line.224"></a>
+<span class="sourceLineNo">225</span><a name="line.225"></a>
+<span class="sourceLineNo">226</span>                return new Region(firstAdjustedToken.startOffset, lastAdjustedToken.endOffset);<a name="line.226"></a>
+<span class="sourceLineNo">227</span>        }<a name="line.227"></a>
+<span class="sourceLineNo">228</span><a name="line.228"></a>
+<span class="sourceLineNo">229</span>        /**<a name="line.229"></a>
+<span class="sourceLineNo">230</span>         * Returns the region of indexes in the {@link #originalTokens} contained in the<a name="line.230"></a>
+<span class="sourceLineNo">231</span>         * given offsets.<a name="line.231"></a>
+<span class="sourceLineNo">232</span>         */<a name="line.232"></a>
+<span class="sourceLineNo">233</span>        private Region findOriginalIndexRegion(int originalStartOffset, int originalEndOffset) {<a name="line.233"></a>
+<span class="sourceLineNo">234</span>                AdjusterToken searchToken = new AdjusterToken(null, originalStartOffset, originalEndOffset);<a name="line.234"></a>
+<span class="sourceLineNo">235</span>                int originalStartTokenIndex = Collections.binarySearch(originalTokens, searchToken,<a name="line.235"></a>
+<span class="sourceLineNo">236</span>                                AdjusterToken.COMPARE_BY_START_OFFSET);<a name="line.236"></a>
+<span class="sourceLineNo">237</span>                if (originalStartTokenIndex &lt; 0) {<a name="line.237"></a>
+<span class="sourceLineNo">238</span>                        originalStartTokenIndex = -originalStartTokenIndex - 1;<a name="line.238"></a>
+<span class="sourceLineNo">239</span>                }<a name="line.239"></a>
+<span class="sourceLineNo">240</span><a name="line.240"></a>
+<span class="sourceLineNo">241</span>                int originalEndTokenIndex = Collections.binarySearch(originalTokens, searchToken,<a name="line.241"></a>
+<span class="sourceLineNo">242</span>                                AdjusterToken.COMPARE_BY_END_OFFSET);<a name="line.242"></a>
+<span class="sourceLineNo">243</span>                if (originalEndTokenIndex &lt; 0) {<a name="line.243"></a>
+<span class="sourceLineNo">244</span>                        // we want insertion point -1<a name="line.244"></a>
+<span class="sourceLineNo">245</span>                        originalEndTokenIndex = -originalEndTokenIndex - 2;<a name="line.245"></a>
+<span class="sourceLineNo">246</span>                }<a name="line.246"></a>
+<span class="sourceLineNo">247</span><a name="line.247"></a>
+<span class="sourceLineNo">248</span>                return new Region(originalStartTokenIndex, originalEndTokenIndex);<a name="line.248"></a>
+<span class="sourceLineNo">249</span>        }<a name="line.249"></a>
+<span class="sourceLineNo">250</span><a name="line.250"></a>
+<span class="sourceLineNo">251</span>        /**<a name="line.251"></a>
+<span class="sourceLineNo">252</span>         * Returns a new location with adjusted offsets (if necessary). Returns<a name="line.252"></a>
+<span class="sourceLineNo">253</span>         * &lt;code&gt;null&lt;/code&gt; if the location cannot be mapped to the adjusted text.<a name="line.253"></a>
+<span class="sourceLineNo">254</span>         */<a name="line.254"></a>
+<span class="sourceLineNo">255</span>        public ElementLocation adjustLocation(ElementLocation location) {<a name="line.255"></a>
+<span class="sourceLineNo">256</span>                if (location instanceof TextRegionLocation) {<a name="line.256"></a>
+<span class="sourceLineNo">257</span>                        return adjustLocation((TextRegionLocation) location);<a name="line.257"></a>
+<span class="sourceLineNo">258</span>                }<a name="line.258"></a>
+<span class="sourceLineNo">259</span><a name="line.259"></a>
+<span class="sourceLineNo">260</span>                // other locations do not have offsets, if the uniform path should not<a name="line.260"></a>
+<span class="sourceLineNo">261</span>                // be adjusted simply return the original location.<a name="line.261"></a>
+<span class="sourceLineNo">262</span>                if (adjustedUniformPath == null) {<a name="line.262"></a>
+<span class="sourceLineNo">263</span>                        return location;<a name="line.263"></a>
+<span class="sourceLineNo">264</span>                }<a name="line.264"></a>
+<span class="sourceLineNo">265</span><a name="line.265"></a>
+<span class="sourceLineNo">266</span>                if (location instanceof QualifiedNameLocation) {<a name="line.266"></a>
+<span class="sourceLineNo">267</span>                        return new QualifiedNameLocation(((QualifiedNameLocation) location).getQualifiedName(),<a name="line.267"></a>
+<span class="sourceLineNo">268</span>                                        location.getLocation(), this.adjustedUniformPath);<a name="line.268"></a>
+<span class="sourceLineNo">269</span>                }<a name="line.269"></a>
+<span class="sourceLineNo">270</span><a name="line.270"></a>
+<span class="sourceLineNo">271</span>                return new ElementLocation(location.getLocation(), adjustedUniformPath);<a name="line.271"></a>
+<span class="sourceLineNo">272</span>        }<a name="line.272"></a>
+<span class="sourceLineNo">273</span><a name="line.273"></a>
+<span class="sourceLineNo">274</span>        /**<a name="line.274"></a>
+<span class="sourceLineNo">275</span>         * Returns a new location with adjusted offsets (if necessary). Returns<a name="line.275"></a>
+<span class="sourceLineNo">276</span>         * &lt;code&gt;null&lt;/code&gt; if the cannot be mapped to the adjusted text.<a name="line.276"></a>
+<span class="sourceLineNo">277</span>         */<a name="line.277"></a>
+<span class="sourceLineNo">278</span>        public TextRegionLocation adjustLocation(TextRegionLocation location) {<a name="line.278"></a>
+<span class="sourceLineNo">279</span>                int startOffset = location.getRawStartOffset();<a name="line.279"></a>
+<span class="sourceLineNo">280</span>                int endOffset = location.getRawEndOffset();<a name="line.280"></a>
+<span class="sourceLineNo">281</span>                if (startOffset &lt; 0) {<a name="line.281"></a>
+<span class="sourceLineNo">282</span>                        startOffset = originalLineOffsetConverter.getOffset(location.getRawStartLine());<a name="line.282"></a>
+<span class="sourceLineNo">283</span>                }<a name="line.283"></a>
+<span class="sourceLineNo">284</span>                if (endOffset &lt; 0) {<a name="line.284"></a>
+<span class="sourceLineNo">285</span>                        endOffset = originalLineOffsetConverter.getOffset(location.getRawEndLine() + 1) - 1;<a name="line.285"></a>
+<span class="sourceLineNo">286</span>                }<a name="line.286"></a>
+<span class="sourceLineNo">287</span><a name="line.287"></a>
+<span class="sourceLineNo">288</span>                Region adjustedOffsets = getAdjustedRegion(startOffset, endOffset);<a name="line.288"></a>
+<span class="sourceLineNo">289</span><a name="line.289"></a>
+<span class="sourceLineNo">290</span>                if (adjustedOffsets == null || adjustedOffsets.isEmpty()) {<a name="line.290"></a>
+<span class="sourceLineNo">291</span>                        return null;<a name="line.291"></a>
+<span class="sourceLineNo">292</span>                }<a name="line.292"></a>
+<span class="sourceLineNo">293</span><a name="line.293"></a>
+<span class="sourceLineNo">294</span>                String uniformPath = location.getUniformPath();<a name="line.294"></a>
+<span class="sourceLineNo">295</span>                if (this.adjustedUniformPath != null) {<a name="line.295"></a>
+<span class="sourceLineNo">296</span>                        uniformPath = adjustedUniformPath;<a name="line.296"></a>
+<span class="sourceLineNo">297</span>                }<a name="line.297"></a>
+<span class="sourceLineNo">298</span><a name="line.298"></a>
+<span class="sourceLineNo">299</span>                int newStartOffset = adjustedOffsets.getStart();<a name="line.299"></a>
+<span class="sourceLineNo">300</span>                int newEndOffset = adjustedOffsets.getEnd();<a name="line.300"></a>
+<span class="sourceLineNo">301</span>                return new TextRegionLocation(location.getLocation(), uniformPath, newStartOffset, newEndOffset,<a name="line.301"></a>
+<span class="sourceLineNo">302</span>                                adjustedLineOffsetConverter.getLine(newStartOffset), adjustedLineOffsetConverter.getLine(newEndOffset));<a name="line.302"></a>
+<span class="sourceLineNo">303</span>        }<a name="line.303"></a>
+<span class="sourceLineNo">304</span><a name="line.304"></a>
+<span class="sourceLineNo">305</span>        /**<a name="line.305"></a>
+<span class="sourceLineNo">306</span>         * Adjusts the location of a single line. This only respects the token part of a<a name="line.306"></a>
+<span class="sourceLineNo">307</span>         * line, i.e. leading and trailing whitespace of a line will be ignored. This<a name="line.307"></a>
+<span class="sourceLineNo">308</span>         * method is robust w.r.t lines numbers that are out of the range of the<a name="line.308"></a>
+<span class="sourceLineNo">309</span>         * original text. In case of such an invalid line, the line is logged as error<a name="line.309"></a>
+<span class="sourceLineNo">310</span>         * to the given logger and &lt;code&gt;null&lt;/code&gt; is returned.<a name="line.310"></a>
+<span class="sourceLineNo">311</span>         *<a name="line.311"></a>
+<span class="sourceLineNo">312</span>         * @param line<a name="line.312"></a>
+<span class="sourceLineNo">313</span>         *            the one-based line number of be adjusted.<a name="line.313"></a>
+<span class="sourceLineNo">314</span>         * @param invalidLines<a name="line.314"></a>
+<span class="sourceLineNo">315</span>         *            used for collecting invalid lines.<a name="line.315"></a>
+<span class="sourceLineNo">316</span>         * <a name="line.316"></a>
+<span class="sourceLineNo">317</span>         * @return the one-based lines encoded as a region, as a line may map to<a name="line.317"></a>
+<span class="sourceLineNo">318</span>         *         multiple lines after changing. This may also return null, if no<a name="line.318"></a>
+<span class="sourceLineNo">319</span>         *         non-empty lines could be found that correspond to the input line<a name="line.319"></a>
+<span class="sourceLineNo">320</span>         *         after adjustment.<a name="line.320"></a>
+<span class="sourceLineNo">321</span>         */<a name="line.321"></a>
+<span class="sourceLineNo">322</span>        public SimpleRegion adjustLine(int line, Set&lt;Integer&gt; invalidLines) {<a name="line.322"></a>
+<span class="sourceLineNo">323</span>                if (!originalLineOffsetConverter.isValidLine(line) || !originalLineOffsetConverter.isValidLine(line + 1)) {<a name="line.323"></a>
+<span class="sourceLineNo">324</span>                        invalidLines.add(line);<a name="line.324"></a>
+<span class="sourceLineNo">325</span>                        return null;<a name="line.325"></a>
+<span class="sourceLineNo">326</span>                }<a name="line.326"></a>
+<span class="sourceLineNo">327</span>                int originalStartOffset = originalLineOffsetConverter.getOffset(line);<a name="line.327"></a>
+<span class="sourceLineNo">328</span>                int originalEndOffset = originalLineOffsetConverter.getOffset(line + 1) - 1;<a name="line.328"></a>
+<span class="sourceLineNo">329</span>                Region adjustedOffsets = getAdjustedRegion(originalStartOffset, originalEndOffset);<a name="line.329"></a>
+<span class="sourceLineNo">330</span>                if (adjustedOffsets == null) {<a name="line.330"></a>
+<span class="sourceLineNo">331</span>                        return null;<a name="line.331"></a>
+<span class="sourceLineNo">332</span>                }<a name="line.332"></a>
+<span class="sourceLineNo">333</span><a name="line.333"></a>
+<span class="sourceLineNo">334</span>                int adjustedStartLine = adjustedLineOffsetConverter.getLine(adjustedOffsets.getStart());<a name="line.334"></a>
+<span class="sourceLineNo">335</span>                int adjustedEndLine = adjustedLineOffsetConverter.getLine(adjustedOffsets.getEnd());<a name="line.335"></a>
+<span class="sourceLineNo">336</span>                return new SimpleRegion(adjustedStartLine, adjustedEndLine);<a name="line.336"></a>
+<span class="sourceLineNo">337</span>        }<a name="line.337"></a>
+<span class="sourceLineNo">338</span><a name="line.338"></a>
+<span class="sourceLineNo">339</span>        /** Returns the line count of the original text */<a name="line.339"></a>
+<span class="sourceLineNo">340</span>        public int getOriginalLineCount() {<a name="line.340"></a>
+<span class="sourceLineNo">341</span>                return originalLineOffsetConverter.getLineCount();<a name="line.341"></a>
+<span class="sourceLineNo">342</span>        }<a name="line.342"></a>
+<span class="sourceLineNo">343</span><a name="line.343"></a>
+<span class="sourceLineNo">344</span>        /** Simple token representation used in location adjustment. */<a name="line.344"></a>
+<span class="sourceLineNo">345</span>        private static class AdjusterToken {<a name="line.345"></a>
+<span class="sourceLineNo">346</span><a name="line.346"></a>
+<span class="sourceLineNo">347</span>                /** Compares by start offset. */<a name="line.347"></a>
+<span class="sourceLineNo">348</span>                private static final Comparator&lt;AdjusterToken&gt; COMPARE_BY_START_OFFSET = new Comparator&lt;AdjusterToken&gt;() {<a name="line.348"></a>
+<span class="sourceLineNo">349</span>                        @Override<a name="line.349"></a>
+<span class="sourceLineNo">350</span>                        public int compare(AdjusterToken token1, AdjusterToken token2) {<a name="line.350"></a>
+<span class="sourceLineNo">351</span>                                return token1.startOffset - token2.startOffset;<a name="line.351"></a>
+<span class="sourceLineNo">352</span>                        }<a name="line.352"></a>
+<span class="sourceLineNo">353</span>                };<a name="line.353"></a>
+<span class="sourceLineNo">354</span><a name="line.354"></a>
+<span class="sourceLineNo">355</span>                /** Compares by end offset. */<a name="line.355"></a>
+<span class="sourceLineNo">356</span>                private static final Comparator&lt;AdjusterToken&gt; COMPARE_BY_END_OFFSET = new Comparator&lt;AdjusterToken&gt;() {<a name="line.356"></a>
+<span class="sourceLineNo">357</span>                        @Override<a name="line.357"></a>
+<span class="sourceLineNo">358</span>                        public int compare(AdjusterToken token1, AdjusterToken token2) {<a name="line.358"></a>
+<span class="sourceLineNo">359</span>                                return token1.endOffset - token2.endOffset;<a name="line.359"></a>
+<span class="sourceLineNo">360</span>                        }<a name="line.360"></a>
+<span class="sourceLineNo">361</span>                };<a name="line.361"></a>
+<span class="sourceLineNo">362</span><a name="line.362"></a>
+<span class="sourceLineNo">363</span>                /** The text content. */<a name="line.363"></a>
+<span class="sourceLineNo">364</span>                private final String text;<a name="line.364"></a>
+<span class="sourceLineNo">365</span><a name="line.365"></a>
+<span class="sourceLineNo">366</span>                /** The start offset in the text. */<a name="line.366"></a>
+<span class="sourceLineNo">367</span>                private final int startOffset;<a name="line.367"></a>
+<span class="sourceLineNo">368</span><a name="line.368"></a>
+<span class="sourceLineNo">369</span>                /** The inclusive end offset in the text. */<a name="line.369"></a>
+<span class="sourceLineNo">370</span>                private final int endOffset;<a name="line.370"></a>
+<span class="sourceLineNo">371</span><a name="line.371"></a>
+<span class="sourceLineNo">372</span>                /** Constructor. */<a name="line.372"></a>
+<span class="sourceLineNo">373</span>                public AdjusterToken(String text, int startOffset) {<a name="line.373"></a>
+<span class="sourceLineNo">374</span>                        this(text, startOffset, startOffset + text.length() - 1);<a name="line.374"></a>
+<span class="sourceLineNo">375</span>                }<a name="line.375"></a>
+<span class="sourceLineNo">376</span><a name="line.376"></a>
+<span class="sourceLineNo">377</span>                /** Constructor. */<a name="line.377"></a>
+<span class="sourceLineNo">378</span>                public AdjusterToken(String text, int startOffset, int endOffset) {<a name="line.378"></a>
+<span class="sourceLineNo">379</span>                        this.text = text;<a name="line.379"></a>
+<span class="sourceLineNo">380</span>                        this.startOffset = startOffset;<a name="line.380"></a>
+<span class="sourceLineNo">381</span>                        this.endOffset = endOffset;<a name="line.381"></a>
+<span class="sourceLineNo">382</span>                }<a name="line.382"></a>
+<span class="sourceLineNo">383</span><a name="line.383"></a>
+<span class="sourceLineNo">384</span>                /** {@inheritDoc} */<a name="line.384"></a>
+<span class="sourceLineNo">385</span>                @Override<a name="line.385"></a>
+<span class="sourceLineNo">386</span>                public boolean equals(Object obj) {<a name="line.386"></a>
+<span class="sourceLineNo">387</span>                        return (obj instanceof AdjusterToken) &amp;&amp; ((AdjusterToken) obj).text.equals(text);<a name="line.387"></a>
+<span class="sourceLineNo">388</span>                }<a name="line.388"></a>
+<span class="sourceLineNo">389</span><a name="line.389"></a>
+<span class="sourceLineNo">390</span>                /** {@inheritDoc} */<a name="line.390"></a>
+<span class="sourceLineNo">391</span>                @Override<a name="line.391"></a>
+<span class="sourceLineNo">392</span>                public int hashCode() {<a name="line.392"></a>
+<span class="sourceLineNo">393</span>                        return text.hashCode();<a name="line.393"></a>
+<span class="sourceLineNo">394</span>                }<a name="line.394"></a>
+<span class="sourceLineNo">395</span>        }<a name="line.395"></a>
+<span class="sourceLineNo">396</span>}<a name="line.396"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

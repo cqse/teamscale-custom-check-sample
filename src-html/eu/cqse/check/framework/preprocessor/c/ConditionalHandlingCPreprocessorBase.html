@@ -157,126 +157,125 @@
 <span class="sourceLineNo">149</span>        }<a name="line.149"></a>
 <span class="sourceLineNo">150</span><a name="line.150"></a>
 <span class="sourceLineNo">151</span>        /**<a name="line.151"></a>
-<span class="sourceLineNo">152</span>         * Decides for each ifRegion, whether it should be included or not. The<a name="line.152"></a>
-<span class="sourceLineNo">153</span>         * default implementation does this by checking each region's condition and<a name="line.153"></a>
-<span class="sourceLineNo">154</span>         * selecting the first region with a true condition. Sub classes may change<a name="line.154"></a>
-<span class="sourceLineNo">155</span>         * the behavior, by including one or multiple regions based on other<a name="line.155"></a>
-<span class="sourceLineNo">156</span>         * criteria.<a name="line.156"></a>
-<span class="sourceLineNo">157</span>         * <a name="line.157"></a>
-<span class="sourceLineNo">158</span>         * @param ifRegions<a name="line.158"></a>
-<span class="sourceLineNo">159</span>         *            the regions to decide for. The inclusion of the regions is<a name="line.159"></a>
-<span class="sourceLineNo">160</span>         *            initially false and must be updated, if a region should be<a name="line.160"></a>
-<span class="sourceLineNo">161</span>         *            included.<a name="line.161"></a>
-<span class="sourceLineNo">162</span>         */<a name="line.162"></a>
-<span class="sourceLineNo">163</span>        protected void decideRegionInclusion(List&lt;IfRegionDescriptor&gt; ifRegions) {<a name="line.163"></a>
-<span class="sourceLineNo">164</span>                for (IfRegionDescriptor ifRegion : ifRegions) {<a name="line.164"></a>
-<span class="sourceLineNo">165</span>                        if (conditionIsTrue(ifRegion.getCondition())) {<a name="line.165"></a>
-<span class="sourceLineNo">166</span>                                ifRegion.setInclude(true);<a name="line.166"></a>
-<span class="sourceLineNo">167</span>                                return;<a name="line.167"></a>
-<span class="sourceLineNo">168</span>                        }<a name="line.168"></a>
-<span class="sourceLineNo">169</span>                }<a name="line.169"></a>
-<span class="sourceLineNo">170</span>        }<a name="line.170"></a>
-<span class="sourceLineNo">171</span><a name="line.171"></a>
-<span class="sourceLineNo">172</span>        /** Evaluates an if condition and returns its boolean value. */<a name="line.172"></a>
-<span class="sourceLineNo">173</span>        protected boolean conditionIsTrue(String condition) {<a name="line.173"></a>
-<span class="sourceLineNo">174</span>                List&lt;IToken&gt; conditionTokens = parseMacroContent(condition);<a name="line.174"></a>
-<span class="sourceLineNo">175</span>                conditionTokens = expandDefined(conditionTokens);<a name="line.175"></a>
-<span class="sourceLineNo">176</span><a name="line.176"></a>
-<span class="sourceLineNo">177</span>                // expand all macros<a name="line.177"></a>
-<span class="sourceLineNo">178</span>                conditionTokens = preprocess(null, conditionTokens);<a name="line.178"></a>
-<span class="sourceLineNo">179</span><a name="line.179"></a>
-<span class="sourceLineNo">180</span>                // if there are still identifiers left, we are missing values for them<a name="line.180"></a>
-<span class="sourceLineNo">181</span>                if (conditionTokens.isEmpty() || TokenStreamUtils.containsAny(conditionTokens, ETokenType.IDENTIFIER)) {<a name="line.181"></a>
-<span class="sourceLineNo">182</span>                        return false;<a name="line.182"></a>
-<span class="sourceLineNo">183</span>                }<a name="line.183"></a>
-<span class="sourceLineNo">184</span><a name="line.184"></a>
-<span class="sourceLineNo">185</span>                if (conditionTokens.size() == 1 &amp;&amp; conditionTokens.get(0).getType() == ETokenType.INTEGER_LITERAL) {<a name="line.185"></a>
-<span class="sourceLineNo">186</span>                        return Integer.parseInt(conditionTokens.get(0).getText().replaceAll("[^0-9]", "")) != 0;<a name="line.186"></a>
-<span class="sourceLineNo">187</span>                }<a name="line.187"></a>
-<span class="sourceLineNo">188</span><a name="line.188"></a>
-<span class="sourceLineNo">189</span>                String expression = TokenStreamTextUtils.concatTokenTexts(CollectionUtils.filter(conditionTokens,<a name="line.189"></a>
-<span class="sourceLineNo">190</span>                                token -&gt; token.getType().getTokenClass() != ETokenClass.COMMENT), StringUtils.SPACE);<a name="line.190"></a>
-<span class="sourceLineNo">191</span>                expression = stripNumberSuffixes(expression);<a name="line.191"></a>
-<span class="sourceLineNo">192</span>                return EXPRESSION_CACHE.obtain(expression);<a name="line.192"></a>
-<span class="sourceLineNo">193</span>        }<a name="line.193"></a>
-<span class="sourceLineNo">194</span><a name="line.194"></a>
-<span class="sourceLineNo">195</span>        /**<a name="line.195"></a>
-<span class="sourceLineNo">196</span>         * Removes number suffixes for size and signedness (u, s, l, etc.) from<a name="line.196"></a>
-<span class="sourceLineNo">197</span>         * decimal and hexadecimal numbers.<a name="line.197"></a>
-<span class="sourceLineNo">198</span>         */<a name="line.198"></a>
-<span class="sourceLineNo">199</span>        private static String stripNumberSuffixes(String expression) {<a name="line.199"></a>
-<span class="sourceLineNo">200</span>                return expression.replaceAll("(\\d|[a-fA-F])[uUsSlL]{1,2}", "$1");<a name="line.200"></a>
-<span class="sourceLineNo">201</span>        }<a name="line.201"></a>
-<span class="sourceLineNo">202</span><a name="line.202"></a>
-<span class="sourceLineNo">203</span>        /** Expands "defined" statements. */<a name="line.203"></a>
-<span class="sourceLineNo">204</span>        private List&lt;IToken&gt; expandDefined(List&lt;IToken&gt; tokens) {<a name="line.204"></a>
-<span class="sourceLineNo">205</span>                List&lt;IToken&gt; result = new ArrayList&lt;&gt;();<a name="line.205"></a>
-<span class="sourceLineNo">206</span>                for (int i = 0; i &lt; tokens.size(); ++i) {<a name="line.206"></a>
-<span class="sourceLineNo">207</span>                        IToken token = tokens.get(i);<a name="line.207"></a>
-<span class="sourceLineNo">208</span>                        if (token.getType() == ETokenType.IDENTIFIER &amp;&amp; token.getText().equals("defined")) {<a name="line.208"></a>
-<span class="sourceLineNo">209</span>                                if (i + 3 &gt;= tokens.size() || !TokenStreamUtils.tokenTypesAt(tokens, i + 1, ETokenType.LPAREN,<a name="line.209"></a>
-<span class="sourceLineNo">210</span>                                                ETokenType.IDENTIFIER, ETokenType.RPAREN)) {<a name="line.210"></a>
-<span class="sourceLineNo">211</span>                                        // broken define; break here<a name="line.211"></a>
-<span class="sourceLineNo">212</span>                                        return result;<a name="line.212"></a>
-<span class="sourceLineNo">213</span>                                }<a name="line.213"></a>
-<span class="sourceLineNo">214</span><a name="line.214"></a>
-<span class="sourceLineNo">215</span>                                String macroName = tokens.get(i + 2).getText();<a name="line.215"></a>
-<span class="sourceLineNo">216</span>                                String value = "0";<a name="line.216"></a>
-<span class="sourceLineNo">217</span>                                if (macroProvider.isDefined(macroName)) {<a name="line.217"></a>
-<span class="sourceLineNo">218</span>                                        value = "1";<a name="line.218"></a>
-<span class="sourceLineNo">219</span>                                }<a name="line.219"></a>
-<span class="sourceLineNo">220</span>                                result.add(token.newToken(ETokenType.INTEGER_LITERAL, token.getOffset(), token.getLineNumber(), value,<a name="line.220"></a>
-<span class="sourceLineNo">221</span>                                                token.getOriginId()));<a name="line.221"></a>
-<span class="sourceLineNo">222</span><a name="line.222"></a>
-<span class="sourceLineNo">223</span>                                // consume additional tokens<a name="line.223"></a>
-<span class="sourceLineNo">224</span>                                i += 3;<a name="line.224"></a>
-<span class="sourceLineNo">225</span>                        } else {<a name="line.225"></a>
-<span class="sourceLineNo">226</span>                                result.add(token);<a name="line.226"></a>
-<span class="sourceLineNo">227</span>                        }<a name="line.227"></a>
-<span class="sourceLineNo">228</span>                }<a name="line.228"></a>
-<span class="sourceLineNo">229</span>                return result;<a name="line.229"></a>
-<span class="sourceLineNo">230</span>        }<a name="line.230"></a>
-<span class="sourceLineNo">231</span><a name="line.231"></a>
-<span class="sourceLineNo">232</span>        /**<a name="line.232"></a>
-<span class="sourceLineNo">233</span>         * Applies the inclusion state of the given if regions by updating the<a name="line.233"></a>
-<span class="sourceLineNo">234</span>         * ignored regions.<a name="line.234"></a>
-<span class="sourceLineNo">235</span>         */<a name="line.235"></a>
-<span class="sourceLineNo">236</span>        private static void applyIfRegions(List&lt;IfRegionDescriptor&gt; ifRegions, RegionSet ignoredRegions) {<a name="line.236"></a>
-<span class="sourceLineNo">237</span>                for (IfRegionDescriptor ifRegion : ifRegions) {<a name="line.237"></a>
-<span class="sourceLineNo">238</span>                        if (ifRegion.isInclude()) {<a name="line.238"></a>
-<span class="sourceLineNo">239</span>                                ignoredRegions.add(new Region(ifRegion.getStartIndex(), ifRegion.getStartIndex()));<a name="line.239"></a>
-<span class="sourceLineNo">240</span>                                ignoredRegions.add(new Region(ifRegion.getEndIndex(), ifRegion.getEndIndex()));<a name="line.240"></a>
-<span class="sourceLineNo">241</span>                        } else {<a name="line.241"></a>
-<span class="sourceLineNo">242</span>                                ignoredRegions.add(new Region(ifRegion.getStartIndex(), ifRegion.getEndIndex()));<a name="line.242"></a>
-<span class="sourceLineNo">243</span>                        }<a name="line.243"></a>
-<span class="sourceLineNo">244</span>                }<a name="line.244"></a>
-<span class="sourceLineNo">245</span>        }<a name="line.245"></a>
-<span class="sourceLineNo">246</span><a name="line.246"></a>
-<span class="sourceLineNo">247</span>        /** Evaluates a boolean expression. */<a name="line.247"></a>
-<span class="sourceLineNo">248</span>        private static Boolean evaluateExpression(String expression) {<a name="line.248"></a>
-<span class="sourceLineNo">249</span>                try {<a name="line.249"></a>
-<span class="sourceLineNo">250</span>                        Object result;<a name="line.250"></a>
-<span class="sourceLineNo">251</span><a name="line.251"></a>
-<span class="sourceLineNo">252</span>                        // the remainder at this point is a boolean or<a name="line.252"></a>
-<span class="sourceLineNo">253</span>                        // arithmetic expression, which is compatible with<a name="line.253"></a>
-<span class="sourceLineNo">254</span>                        // JavaScript, so we use this as parser<a name="line.254"></a>
-<span class="sourceLineNo">255</span>                        synchronized (CONDITIONAL_EVALUATION_ENGINE) {<a name="line.255"></a>
-<span class="sourceLineNo">256</span>                                result = CONDITIONAL_EVALUATION_ENGINE.eval(expression);<a name="line.256"></a>
-<span class="sourceLineNo">257</span>                        }<a name="line.257"></a>
-<span class="sourceLineNo">258</span><a name="line.258"></a>
-<span class="sourceLineNo">259</span>                        if (result instanceof Boolean) {<a name="line.259"></a>
-<span class="sourceLineNo">260</span>                                return (Boolean) result;<a name="line.260"></a>
-<span class="sourceLineNo">261</span>                        }<a name="line.261"></a>
-<span class="sourceLineNo">262</span>                        if (result instanceof Integer) {<a name="line.262"></a>
-<span class="sourceLineNo">263</span>                                return 0 != (Integer) result;<a name="line.263"></a>
-<span class="sourceLineNo">264</span>                        }<a name="line.264"></a>
-<span class="sourceLineNo">265</span>                        return false;<a name="line.265"></a>
-<span class="sourceLineNo">266</span>                } catch (ScriptException e) {<a name="line.266"></a>
-<span class="sourceLineNo">267</span>                        // not parseable<a name="line.267"></a>
-<span class="sourceLineNo">268</span>                        return false;<a name="line.268"></a>
-<span class="sourceLineNo">269</span>                }<a name="line.269"></a>
-<span class="sourceLineNo">270</span>        }<a name="line.270"></a>
-<span class="sourceLineNo">271</span>}<a name="line.271"></a>
+<span class="sourceLineNo">152</span>         * Decides for each ifRegion, whether it should be included or not. The default<a name="line.152"></a>
+<span class="sourceLineNo">153</span>         * implementation does this by checking each region's condition and selecting<a name="line.153"></a>
+<span class="sourceLineNo">154</span>         * the first region with a true condition. Sub classes may change the behavior,<a name="line.154"></a>
+<span class="sourceLineNo">155</span>         * by including one or multiple regions based on other criteria.<a name="line.155"></a>
+<span class="sourceLineNo">156</span>         * <a name="line.156"></a>
+<span class="sourceLineNo">157</span>         * @param ifRegions<a name="line.157"></a>
+<span class="sourceLineNo">158</span>         *            the regions to decide for. The inclusion of the regions is<a name="line.158"></a>
+<span class="sourceLineNo">159</span>         *            initially false and must be updated, if a region should be<a name="line.159"></a>
+<span class="sourceLineNo">160</span>         *            included.<a name="line.160"></a>
+<span class="sourceLineNo">161</span>         */<a name="line.161"></a>
+<span class="sourceLineNo">162</span>        protected void decideRegionInclusion(List&lt;IfRegionDescriptor&gt; ifRegions) {<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                for (IfRegionDescriptor ifRegion : ifRegions) {<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                        if (conditionIsTrue(ifRegion.getCondition())) {<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                                ifRegion.setInclude(true);<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                                return;<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                        }<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                }<a name="line.168"></a>
+<span class="sourceLineNo">169</span>        }<a name="line.169"></a>
+<span class="sourceLineNo">170</span><a name="line.170"></a>
+<span class="sourceLineNo">171</span>        /** Evaluates an if condition and returns its boolean value. */<a name="line.171"></a>
+<span class="sourceLineNo">172</span>        protected boolean conditionIsTrue(String condition) {<a name="line.172"></a>
+<span class="sourceLineNo">173</span>                List&lt;IToken&gt; conditionTokens = parseMacroContent(condition);<a name="line.173"></a>
+<span class="sourceLineNo">174</span>                conditionTokens = expandDefined(conditionTokens);<a name="line.174"></a>
+<span class="sourceLineNo">175</span><a name="line.175"></a>
+<span class="sourceLineNo">176</span>                // expand all macros<a name="line.176"></a>
+<span class="sourceLineNo">177</span>                conditionTokens = preprocess(null, conditionTokens);<a name="line.177"></a>
+<span class="sourceLineNo">178</span><a name="line.178"></a>
+<span class="sourceLineNo">179</span>                // if there are still identifiers left, we are missing values for them<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                if (conditionTokens.isEmpty() || TokenStreamUtils.containsAny(conditionTokens, ETokenType.IDENTIFIER)) {<a name="line.180"></a>
+<span class="sourceLineNo">181</span>                        return false;<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                }<a name="line.182"></a>
+<span class="sourceLineNo">183</span><a name="line.183"></a>
+<span class="sourceLineNo">184</span>                if (conditionTokens.size() == 1 &amp;&amp; conditionTokens.get(0).getType() == ETokenType.INTEGER_LITERAL) {<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                        return Integer.parseInt(conditionTokens.get(0).getText().replaceAll("[^0-9]", "")) != 0;<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                }<a name="line.186"></a>
+<span class="sourceLineNo">187</span><a name="line.187"></a>
+<span class="sourceLineNo">188</span>                String expression = TokenStreamTextUtils.concatTokenTexts(CollectionUtils.filter(conditionTokens,<a name="line.188"></a>
+<span class="sourceLineNo">189</span>                                token -&gt; token.getType().getTokenClass() != ETokenClass.COMMENT), StringUtils.SPACE);<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                expression = stripNumberSuffixes(expression);<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                return EXPRESSION_CACHE.obtain(expression);<a name="line.191"></a>
+<span class="sourceLineNo">192</span>        }<a name="line.192"></a>
+<span class="sourceLineNo">193</span><a name="line.193"></a>
+<span class="sourceLineNo">194</span>        /**<a name="line.194"></a>
+<span class="sourceLineNo">195</span>         * Removes number suffixes for size and signedness (u, s, l, etc.) from decimal<a name="line.195"></a>
+<span class="sourceLineNo">196</span>         * and hexadecimal numbers.<a name="line.196"></a>
+<span class="sourceLineNo">197</span>         */<a name="line.197"></a>
+<span class="sourceLineNo">198</span>        private static String stripNumberSuffixes(String expression) {<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                return expression.replaceAll("(\\d|[a-fA-F])[uUsSlL]{1,2}", "$1");<a name="line.199"></a>
+<span class="sourceLineNo">200</span>        }<a name="line.200"></a>
+<span class="sourceLineNo">201</span><a name="line.201"></a>
+<span class="sourceLineNo">202</span>        /** Expands "defined" statements. */<a name="line.202"></a>
+<span class="sourceLineNo">203</span>        private List&lt;IToken&gt; expandDefined(List&lt;IToken&gt; tokens) {<a name="line.203"></a>
+<span class="sourceLineNo">204</span>                List&lt;IToken&gt; result = new ArrayList&lt;&gt;();<a name="line.204"></a>
+<span class="sourceLineNo">205</span>                for (int i = 0; i &lt; tokens.size(); ++i) {<a name="line.205"></a>
+<span class="sourceLineNo">206</span>                        IToken token = tokens.get(i);<a name="line.206"></a>
+<span class="sourceLineNo">207</span>                        if (token.getType() == ETokenType.IDENTIFIER &amp;&amp; token.getText().equals("defined")) {<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                                if (i + 3 &gt;= tokens.size() || !TokenStreamUtils.tokenTypesAt(tokens, i + 1, ETokenType.LPAREN,<a name="line.208"></a>
+<span class="sourceLineNo">209</span>                                                ETokenType.IDENTIFIER, ETokenType.RPAREN)) {<a name="line.209"></a>
+<span class="sourceLineNo">210</span>                                        // broken define; break here<a name="line.210"></a>
+<span class="sourceLineNo">211</span>                                        return result;<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                                }<a name="line.212"></a>
+<span class="sourceLineNo">213</span><a name="line.213"></a>
+<span class="sourceLineNo">214</span>                                String macroName = tokens.get(i + 2).getText();<a name="line.214"></a>
+<span class="sourceLineNo">215</span>                                String value = "0";<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                                if (macroProvider.isDefined(macroName)) {<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                                        value = "1";<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                                }<a name="line.218"></a>
+<span class="sourceLineNo">219</span>                                result.add(token.newToken(ETokenType.INTEGER_LITERAL, token.getOffset(), token.getLineNumber(), value,<a name="line.219"></a>
+<span class="sourceLineNo">220</span>                                                token.getOriginId()));<a name="line.220"></a>
+<span class="sourceLineNo">221</span><a name="line.221"></a>
+<span class="sourceLineNo">222</span>                                // consume additional tokens<a name="line.222"></a>
+<span class="sourceLineNo">223</span>                                i += 3;<a name="line.223"></a>
+<span class="sourceLineNo">224</span>                        } else {<a name="line.224"></a>
+<span class="sourceLineNo">225</span>                                result.add(token);<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                        }<a name="line.226"></a>
+<span class="sourceLineNo">227</span>                }<a name="line.227"></a>
+<span class="sourceLineNo">228</span>                return result;<a name="line.228"></a>
+<span class="sourceLineNo">229</span>        }<a name="line.229"></a>
+<span class="sourceLineNo">230</span><a name="line.230"></a>
+<span class="sourceLineNo">231</span>        /**<a name="line.231"></a>
+<span class="sourceLineNo">232</span>         * Applies the inclusion state of the given if regions by updating the ignored<a name="line.232"></a>
+<span class="sourceLineNo">233</span>         * regions.<a name="line.233"></a>
+<span class="sourceLineNo">234</span>         */<a name="line.234"></a>
+<span class="sourceLineNo">235</span>        private static void applyIfRegions(List&lt;IfRegionDescriptor&gt; ifRegions, RegionSet ignoredRegions) {<a name="line.235"></a>
+<span class="sourceLineNo">236</span>                for (IfRegionDescriptor ifRegion : ifRegions) {<a name="line.236"></a>
+<span class="sourceLineNo">237</span>                        if (ifRegion.isInclude()) {<a name="line.237"></a>
+<span class="sourceLineNo">238</span>                                ignoredRegions.add(new Region(ifRegion.getStartIndex(), ifRegion.getStartIndex()));<a name="line.238"></a>
+<span class="sourceLineNo">239</span>                                ignoredRegions.add(new Region(ifRegion.getEndIndex(), ifRegion.getEndIndex()));<a name="line.239"></a>
+<span class="sourceLineNo">240</span>                        } else {<a name="line.240"></a>
+<span class="sourceLineNo">241</span>                                ignoredRegions.add(new Region(ifRegion.getStartIndex(), ifRegion.getEndIndex()));<a name="line.241"></a>
+<span class="sourceLineNo">242</span>                        }<a name="line.242"></a>
+<span class="sourceLineNo">243</span>                }<a name="line.243"></a>
+<span class="sourceLineNo">244</span>        }<a name="line.244"></a>
+<span class="sourceLineNo">245</span><a name="line.245"></a>
+<span class="sourceLineNo">246</span>        /** Evaluates a boolean expression. */<a name="line.246"></a>
+<span class="sourceLineNo">247</span>        private static Boolean evaluateExpression(String expression) {<a name="line.247"></a>
+<span class="sourceLineNo">248</span>                try {<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                        Object result;<a name="line.249"></a>
+<span class="sourceLineNo">250</span><a name="line.250"></a>
+<span class="sourceLineNo">251</span>                        // the remainder at this point is a boolean or<a name="line.251"></a>
+<span class="sourceLineNo">252</span>                        // arithmetic expression, which is compatible with<a name="line.252"></a>
+<span class="sourceLineNo">253</span>                        // JavaScript, so we use this as parser<a name="line.253"></a>
+<span class="sourceLineNo">254</span>                        synchronized (CONDITIONAL_EVALUATION_ENGINE) {<a name="line.254"></a>
+<span class="sourceLineNo">255</span>                                result = CONDITIONAL_EVALUATION_ENGINE.eval(expression);<a name="line.255"></a>
+<span class="sourceLineNo">256</span>                        }<a name="line.256"></a>
+<span class="sourceLineNo">257</span><a name="line.257"></a>
+<span class="sourceLineNo">258</span>                        if (result instanceof Boolean) {<a name="line.258"></a>
+<span class="sourceLineNo">259</span>                                return (Boolean) result;<a name="line.259"></a>
+<span class="sourceLineNo">260</span>                        }<a name="line.260"></a>
+<span class="sourceLineNo">261</span>                        if (result instanceof Integer) {<a name="line.261"></a>
+<span class="sourceLineNo">262</span>                                return 0 != (Integer) result;<a name="line.262"></a>
+<span class="sourceLineNo">263</span>                        }<a name="line.263"></a>
+<span class="sourceLineNo">264</span>                        return false;<a name="line.264"></a>
+<span class="sourceLineNo">265</span>                } catch (ScriptException e) {<a name="line.265"></a>
+<span class="sourceLineNo">266</span>                        // not parseable<a name="line.266"></a>
+<span class="sourceLineNo">267</span>                        return false;<a name="line.267"></a>
+<span class="sourceLineNo">268</span>                }<a name="line.268"></a>
+<span class="sourceLineNo">269</span>        }<a name="line.269"></a>
+<span class="sourceLineNo">270</span>}<a name="line.270"></a>
 
 
 

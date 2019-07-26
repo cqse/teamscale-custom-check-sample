@@ -182,35 +182,41 @@
 <span class="sourceLineNo">174</span>                return getMilliseconds() / 1000;<a name="line.174"></a>
 <span class="sourceLineNo">175</span>        }<a name="line.175"></a>
 <span class="sourceLineNo">176</span><a name="line.176"></a>
-<span class="sourceLineNo">177</span>        /** Gets the measured time in milliseconds */<a name="line.177"></a>
-<span class="sourceLineNo">178</span>        public long getMilliseconds() {<a name="line.178"></a>
-<span class="sourceLineNo">179</span>                return stopTimeInMillis - startTimeInMillis;<a name="line.179"></a>
-<span class="sourceLineNo">180</span>        }<a name="line.180"></a>
-<span class="sourceLineNo">181</span><a name="line.181"></a>
-<span class="sourceLineNo">182</span>        /** Gets the maximal memory consumption in bytes */<a name="line.182"></a>
-<span class="sourceLineNo">183</span>        public long getMaxMemUsageInBytes() {<a name="line.183"></a>
-<span class="sourceLineNo">184</span>                if (useMemoryMonitor) {<a name="line.184"></a>
-<span class="sourceLineNo">185</span>                        return memMonitor.getMaximumMemoryUsage();<a name="line.185"></a>
-<span class="sourceLineNo">186</span>                }<a name="line.186"></a>
-<span class="sourceLineNo">187</span>                return Math.max(stopMemoryInBytes, startMemoryInBytes);<a name="line.187"></a>
-<span class="sourceLineNo">188</span>        }<a name="line.188"></a>
-<span class="sourceLineNo">189</span><a name="line.189"></a>
-<span class="sourceLineNo">190</span>        /** Gets the maximal memory consumption in kilobytes */<a name="line.190"></a>
-<span class="sourceLineNo">191</span>        public long getMaxMemUsageInKBs() {<a name="line.191"></a>
-<span class="sourceLineNo">192</span>                return getMaxMemUsageInBytes() / 1024;<a name="line.192"></a>
-<span class="sourceLineNo">193</span>        }<a name="line.193"></a>
-<span class="sourceLineNo">194</span><a name="line.194"></a>
-<span class="sourceLineNo">195</span>        /** Gets the delta in memory consumption in bytes */<a name="line.195"></a>
-<span class="sourceLineNo">196</span>        public long getDeltaMemUsageInBytes() {<a name="line.196"></a>
-<span class="sourceLineNo">197</span>                return getMaxMemUsageInBytes() - startMemoryInBytes;<a name="line.197"></a>
-<span class="sourceLineNo">198</span>        }<a name="line.198"></a>
-<span class="sourceLineNo">199</span><a name="line.199"></a>
-<span class="sourceLineNo">200</span>        /** Gets the delta in memory consumption in kilobytes */<a name="line.200"></a>
-<span class="sourceLineNo">201</span>        public long getDeltaMemUsageInKBs() {<a name="line.201"></a>
-<span class="sourceLineNo">202</span>                return getDeltaMemUsageInBytes() / 1024;<a name="line.202"></a>
-<span class="sourceLineNo">203</span>        }<a name="line.203"></a>
-<span class="sourceLineNo">204</span><a name="line.204"></a>
-<span class="sourceLineNo">205</span>}<a name="line.205"></a>
+<span class="sourceLineNo">177</span>        /**<a name="line.177"></a>
+<span class="sourceLineNo">178</span>         * Gets the measured time in milliseconds. If measuring is not stopped,<a name="line.178"></a>
+<span class="sourceLineNo">179</span>         * returns the time since start of the measuring.<a name="line.179"></a>
+<span class="sourceLineNo">180</span>         */<a name="line.180"></a>
+<span class="sourceLineNo">181</span>        public long getMilliseconds() {<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                if (state == EPerformanceMonitorState.RUNNING) {<a name="line.182"></a>
+<span class="sourceLineNo">183</span>                        return System.currentTimeMillis() - startTimeInMillis;<a name="line.183"></a>
+<span class="sourceLineNo">184</span>                }<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                return stopTimeInMillis - startTimeInMillis;<a name="line.185"></a>
+<span class="sourceLineNo">186</span>        }<a name="line.186"></a>
+<span class="sourceLineNo">187</span><a name="line.187"></a>
+<span class="sourceLineNo">188</span>        /** Gets the maximal memory consumption in bytes */<a name="line.188"></a>
+<span class="sourceLineNo">189</span>        public long getMaxMemUsageInBytes() {<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                if (useMemoryMonitor) {<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                        return memMonitor.getMaximumMemoryUsage();<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                }<a name="line.192"></a>
+<span class="sourceLineNo">193</span>                return Math.max(stopMemoryInBytes, startMemoryInBytes);<a name="line.193"></a>
+<span class="sourceLineNo">194</span>        }<a name="line.194"></a>
+<span class="sourceLineNo">195</span><a name="line.195"></a>
+<span class="sourceLineNo">196</span>        /** Gets the maximal memory consumption in kilobytes */<a name="line.196"></a>
+<span class="sourceLineNo">197</span>        public long getMaxMemUsageInKBs() {<a name="line.197"></a>
+<span class="sourceLineNo">198</span>                return getMaxMemUsageInBytes() / 1024;<a name="line.198"></a>
+<span class="sourceLineNo">199</span>        }<a name="line.199"></a>
+<span class="sourceLineNo">200</span><a name="line.200"></a>
+<span class="sourceLineNo">201</span>        /** Gets the delta in memory consumption in bytes */<a name="line.201"></a>
+<span class="sourceLineNo">202</span>        public long getDeltaMemUsageInBytes() {<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                return getMaxMemUsageInBytes() - startMemoryInBytes;<a name="line.203"></a>
+<span class="sourceLineNo">204</span>        }<a name="line.204"></a>
+<span class="sourceLineNo">205</span><a name="line.205"></a>
+<span class="sourceLineNo">206</span>        /** Gets the delta in memory consumption in kilobytes */<a name="line.206"></a>
+<span class="sourceLineNo">207</span>        public long getDeltaMemUsageInKBs() {<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                return getDeltaMemUsageInBytes() / 1024;<a name="line.208"></a>
+<span class="sourceLineNo">209</span>        }<a name="line.209"></a>
+<span class="sourceLineNo">210</span><a name="line.210"></a>
+<span class="sourceLineNo">211</span>}<a name="line.211"></a>
 
 
 

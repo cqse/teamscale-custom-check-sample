@@ -41,7 +41,7 @@
 <span class="sourceLineNo">033</span> * {@ConQAT.Doc}<a name="line.33"></a>
 <span class="sourceLineNo">034</span> */<a name="line.34"></a>
 <span class="sourceLineNo">035</span>@ACheck(name = "Unwanted constructor calls", description = "Constructors of some types, e.g., primitive "<a name="line.35"></a>
-<span class="sourceLineNo">036</span>                + "wrappers and String must not be called, because they only create extra objects which take up "<a name="line.36"></a>
+<span class="sourceLineNo">036</span>                + "wrappers and `String` must not be called, because they only create extra objects which take up "<a name="line.36"></a>
 <span class="sourceLineNo">037</span>                + "more memory and reduce performance, without any other functional effect.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.YELLOW, languages = {<a name="line.37"></a>
 <span class="sourceLineNo">038</span>                                ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })<a name="line.38"></a>
 <span class="sourceLineNo">039</span>public class UnwantedConstructorCallsCheck extends EntityTokenCheckBase {<a name="line.39"></a>
@@ -50,9 +50,9 @@
 <span class="sourceLineNo">042</span>        private static final ETokenType[] CONSTRUCTOR_CALL_SEQUENCE = { NEW, IDENTIFIER, LPAREN };<a name="line.42"></a>
 <span class="sourceLineNo">043</span><a name="line.43"></a>
 <span class="sourceLineNo">044</span>        /**<a name="line.44"></a>
-<span class="sourceLineNo">045</span>         * Token types of the first parameter of the String constructor that<a name="line.45"></a>
-<span class="sourceLineNo">046</span>         * indicate a forbidden constructor call. This is either a string literal or<a name="line.46"></a>
-<span class="sourceLineNo">047</span>         * the constructor without parameters (thus there is a closing parenthesis).<a name="line.47"></a>
+<span class="sourceLineNo">045</span>         * Token types of the first parameter of the String constructor that indicate a<a name="line.45"></a>
+<span class="sourceLineNo">046</span>         * forbidden constructor call. This is either a string literal or the<a name="line.46"></a>
+<span class="sourceLineNo">047</span>         * constructor without parameters (thus there is a closing parenthesis).<a name="line.47"></a>
 <span class="sourceLineNo">048</span>         */<a name="line.48"></a>
 <span class="sourceLineNo">049</span>        private static final EnumSet&lt;ETokenType&gt; FORBIDDEN_STRING_CONSTRUCTOR_PARAMETER_TOKENS = EnumSet.of(STRING_LITERAL,<a name="line.49"></a>
 <span class="sourceLineNo">050</span>                        RPAREN);<a name="line.50"></a>
@@ -81,30 +81,31 @@
 <span class="sourceLineNo">073</span>                        String typeName = typeToken.getText();<a name="line.73"></a>
 <span class="sourceLineNo">074</span>                        for (String wrapperName : constructorNames) {<a name="line.74"></a>
 <span class="sourceLineNo">075</span>                                if (wrapperName.equals(typeName)) {<a name="line.75"></a>
-<span class="sourceLineNo">076</span>                                        createFinding("Constructor of type " + wrapperName + " must not be called explicitly", typeToken);<a name="line.76"></a>
-<span class="sourceLineNo">077</span>                                        return;<a name="line.77"></a>
-<span class="sourceLineNo">078</span>                                }<a name="line.78"></a>
-<span class="sourceLineNo">079</span>                        }<a name="line.79"></a>
-<span class="sourceLineNo">080</span>                }<a name="line.80"></a>
-<span class="sourceLineNo">081</span>        }<a name="line.81"></a>
-<span class="sourceLineNo">082</span><a name="line.82"></a>
-<span class="sourceLineNo">083</span>        /**<a name="line.83"></a>
-<span class="sourceLineNo">084</span>         * Checks the special case of a String constructor call. If the given index<a name="line.84"></a>
-<span class="sourceLineNo">085</span>         * is a call of the String constructor and its parameter is no string<a name="line.85"></a>
-<span class="sourceLineNo">086</span>         * literal (but there is a parameter) the call is allowed and this method<a name="line.86"></a>
-<span class="sourceLineNo">087</span>         * returns true. Otherwise false is returned.<a name="line.87"></a>
-<span class="sourceLineNo">088</span>         */<a name="line.88"></a>
-<span class="sourceLineNo">089</span>        private static boolean isAllowedStringCall(List&lt;IToken&gt; tokens, int callIndex) {<a name="line.89"></a>
-<span class="sourceLineNo">090</span>                String typeName = tokens.get(callIndex + 1).getText();<a name="line.90"></a>
-<span class="sourceLineNo">091</span>                int parameterIndex = callIndex + 3;<a name="line.91"></a>
-<span class="sourceLineNo">092</span><a name="line.92"></a>
-<span class="sourceLineNo">093</span>                if (typeName.equals(String.class.getSimpleName()) &amp;&amp; parameterIndex &lt; tokens.size()) {<a name="line.93"></a>
-<span class="sourceLineNo">094</span>                        ETokenType parameterType = tokens.get(parameterIndex).getType();<a name="line.94"></a>
-<span class="sourceLineNo">095</span>                        return !FORBIDDEN_STRING_CONSTRUCTOR_PARAMETER_TOKENS.contains(parameterType);<a name="line.95"></a>
-<span class="sourceLineNo">096</span>                }<a name="line.96"></a>
-<span class="sourceLineNo">097</span>                return false;<a name="line.97"></a>
-<span class="sourceLineNo">098</span>        }<a name="line.98"></a>
-<span class="sourceLineNo">099</span>}<a name="line.99"></a>
+<span class="sourceLineNo">076</span>                                        createFinding("Constructor of type `" + wrapperName + "` should not be called explicitly",<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                                                        typeToken);<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                                        return;<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                                }<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                        }<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                }<a name="line.81"></a>
+<span class="sourceLineNo">082</span>        }<a name="line.82"></a>
+<span class="sourceLineNo">083</span><a name="line.83"></a>
+<span class="sourceLineNo">084</span>        /**<a name="line.84"></a>
+<span class="sourceLineNo">085</span>         * Checks the special case of a String constructor call. If the given index is a<a name="line.85"></a>
+<span class="sourceLineNo">086</span>         * call of the String constructor and its parameter is no string literal (but<a name="line.86"></a>
+<span class="sourceLineNo">087</span>         * there is a parameter) the call is allowed and this method returns true.<a name="line.87"></a>
+<span class="sourceLineNo">088</span>         * Otherwise false is returned.<a name="line.88"></a>
+<span class="sourceLineNo">089</span>         */<a name="line.89"></a>
+<span class="sourceLineNo">090</span>        private static boolean isAllowedStringCall(List&lt;IToken&gt; tokens, int callIndex) {<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                String typeName = tokens.get(callIndex + 1).getText();<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                int parameterIndex = callIndex + 3;<a name="line.92"></a>
+<span class="sourceLineNo">093</span><a name="line.93"></a>
+<span class="sourceLineNo">094</span>                if (typeName.equals(String.class.getSimpleName()) &amp;&amp; parameterIndex &lt; tokens.size()) {<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                        ETokenType parameterType = tokens.get(parameterIndex).getType();<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                        return !FORBIDDEN_STRING_CONSTRUCTOR_PARAMETER_TOKENS.contains(parameterType);<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                }<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                return false;<a name="line.98"></a>
+<span class="sourceLineNo">099</span>        }<a name="line.99"></a>
+<span class="sourceLineNo">100</span>}<a name="line.100"></a>
 
 
 

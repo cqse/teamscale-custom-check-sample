@@ -70,12 +70,12 @@
 <span class="sourceLineNo">062</span>        }<a name="line.62"></a>
 <span class="sourceLineNo">063</span><a name="line.63"></a>
 <span class="sourceLineNo">064</span>        /** Determines if node area is large enough */<a name="line.64"></a>
-<span class="sourceLineNo">065</span>        private boolean enoughSpace(Rectangle2D nodeArea) {<a name="line.65"></a>
+<span class="sourceLineNo">065</span>        private static boolean enoughSpace(Rectangle2D nodeArea) {<a name="line.65"></a>
 <span class="sourceLineNo">066</span>                return nodeArea.getWidth() &gt; 3 * TEXT_PADDING &amp;&amp; nodeArea.getHeight() &gt; 3 * TEXT_PADDING;<a name="line.66"></a>
 <span class="sourceLineNo">067</span>        }<a name="line.67"></a>
 <span class="sourceLineNo">068</span><a name="line.68"></a>
 <span class="sourceLineNo">069</span>        /** Draws the node text */<a name="line.69"></a>
-<span class="sourceLineNo">070</span>        private &lt;T&gt; void drawText(String text, Rectangle2D availableSpace, Graphics2D graphics) {<a name="line.70"></a>
+<span class="sourceLineNo">070</span>        private void drawText(String text, Rectangle2D availableSpace, Graphics2D graphics) {<a name="line.70"></a>
 <span class="sourceLineNo">071</span><a name="line.71"></a>
 <span class="sourceLineNo">072</span>                // cut text to size<a name="line.72"></a>
 <span class="sourceLineNo">073</span>                String fittedText = clipTextToWidth(text, availableSpace.getWidth(), graphics);<a name="line.73"></a>
@@ -117,17 +117,17 @@
 <span class="sourceLineNo">109</span>        }<a name="line.109"></a>
 <span class="sourceLineNo">110</span><a name="line.110"></a>
 <span class="sourceLineNo">111</span>        /** Determines the width a string requires in the current font */<a name="line.111"></a>
-<span class="sourceLineNo">112</span>        private int actualWidth(String label, Graphics2D graphics) {<a name="line.112"></a>
+<span class="sourceLineNo">112</span>        private static int actualWidth(String label, Graphics2D graphics) {<a name="line.112"></a>
 <span class="sourceLineNo">113</span>                return (int) actualBounds(label, graphics).getWidth();<a name="line.113"></a>
 <span class="sourceLineNo">114</span>        }<a name="line.114"></a>
 <span class="sourceLineNo">115</span><a name="line.115"></a>
 <span class="sourceLineNo">116</span>        /** Determines the height a string requires in the current font */<a name="line.116"></a>
-<span class="sourceLineNo">117</span>        private int actualHeight(String label, Graphics2D graphics) {<a name="line.117"></a>
+<span class="sourceLineNo">117</span>        private static int actualHeight(String label, Graphics2D graphics) {<a name="line.117"></a>
 <span class="sourceLineNo">118</span>                return (int) actualBounds(label, graphics).getHeight();<a name="line.118"></a>
 <span class="sourceLineNo">119</span>        }<a name="line.119"></a>
 <span class="sourceLineNo">120</span><a name="line.120"></a>
 <span class="sourceLineNo">121</span>        /** Computes the bounds of a string in the current font */<a name="line.121"></a>
-<span class="sourceLineNo">122</span>        private Rectangle2D actualBounds(String label, Graphics2D graphics) {<a name="line.122"></a>
+<span class="sourceLineNo">122</span>        private static Rectangle2D actualBounds(String label, Graphics2D graphics) {<a name="line.122"></a>
 <span class="sourceLineNo">123</span>                return graphics.getFont().getStringBounds(label, graphics.getFontRenderContext());<a name="line.123"></a>
 <span class="sourceLineNo">124</span>        }<a name="line.124"></a>
 <span class="sourceLineNo">125</span><a name="line.125"></a>

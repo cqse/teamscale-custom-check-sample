@@ -71,19 +71,20 @@
 <span class="sourceLineNo">063</span>                                        &amp;&amp; CLASS_SUFFIX.equals(includedTokens.get(i + 4).getText())) {<a name="line.63"></a>
 <span class="sourceLineNo">064</span>                                String specifiedClassName = includedTokens.get(i + 2).getText();<a name="line.64"></a>
 <span class="sourceLineNo">065</span>                                if (!(specifiedClassName.equals(actualClassName))) {<a name="line.65"></a>
-<span class="sourceLineNo">066</span>                                        createFinding("Logger should be specified with " + actualClassName + "." + CLASS_SUFFIX, entity);<a name="line.66"></a>
-<span class="sourceLineNo">067</span>                                        return;<a name="line.67"></a>
-<span class="sourceLineNo">068</span>                                }<a name="line.68"></a>
-<span class="sourceLineNo">069</span>                        }<a name="line.69"></a>
-<span class="sourceLineNo">070</span>                }<a name="line.70"></a>
-<span class="sourceLineNo">071</span>        }<a name="line.71"></a>
-<span class="sourceLineNo">072</span><a name="line.72"></a>
-<span class="sourceLineNo">073</span>        /** {@inheritDoc} */<a name="line.73"></a>
-<span class="sourceLineNo">074</span>        @Override<a name="line.74"></a>
-<span class="sourceLineNo">075</span>        protected String getXPathSelectionString() {<a name="line.75"></a>
-<span class="sourceLineNo">076</span>                return "//ATTRIBUTE";<a name="line.76"></a>
-<span class="sourceLineNo">077</span>        }<a name="line.77"></a>
-<span class="sourceLineNo">078</span>}<a name="line.78"></a>
+<span class="sourceLineNo">066</span>                                        createFinding("Logger should be specified with `" + actualClassName + "." + CLASS_SUFFIX + "`",<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                                                        entity);<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                                        return;<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                                }<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                        }<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                }<a name="line.71"></a>
+<span class="sourceLineNo">072</span>        }<a name="line.72"></a>
+<span class="sourceLineNo">073</span><a name="line.73"></a>
+<span class="sourceLineNo">074</span>        /** {@inheritDoc} */<a name="line.74"></a>
+<span class="sourceLineNo">075</span>        @Override<a name="line.75"></a>
+<span class="sourceLineNo">076</span>        protected String getXPathSelectionString() {<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                return "//ATTRIBUTE";<a name="line.77"></a>
+<span class="sourceLineNo">078</span>        }<a name="line.78"></a>
+<span class="sourceLineNo">079</span>}<a name="line.79"></a>
 
 
 

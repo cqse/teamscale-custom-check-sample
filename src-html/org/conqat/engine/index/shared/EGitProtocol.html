@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*-----------------------------------------------------------------------+<a name="line.1"></a>
+<span class="sourceLineNo">002</span> | com.teamscale.index<a name="line.2"></a>
+<span class="sourceLineNo">003</span> |                                                                       |<a name="line.3"></a>
+<span class="sourceLineNo">004</span>   $Id: codetemplates.xml 18709 2009-03-06 13:31:16Z hummelb $            <a name="line.4"></a>
+<span class="sourceLineNo">005</span> |                                                                       |<a name="line.5"></a>
+<span class="sourceLineNo">006</span> | Copyright (c)  2009-2016 CQSE GmbH                                 |<a name="line.6"></a>
+<span class="sourceLineNo">007</span> +-----------------------------------------------------------------------*/<a name="line.7"></a>
+<span class="sourceLineNo">008</span>package org.conqat.engine.index.shared;<a name="line.8"></a>
+<span class="sourceLineNo">009</span><a name="line.9"></a>
+<span class="sourceLineNo">010</span>import java.net.URI;<a name="line.10"></a>
+<span class="sourceLineNo">011</span>import java.net.URISyntaxException;<a name="line.11"></a>
+<span class="sourceLineNo">012</span>import java.util.Optional;<a name="line.12"></a>
+<span class="sourceLineNo">013</span><a name="line.13"></a>
+<span class="sourceLineNo">014</span>import org.conqat.lib.commons.enums.EnumUtils;<a name="line.14"></a>
+<span class="sourceLineNo">015</span>import org.conqat.lib.commons.net.UrlUtils;<a name="line.15"></a>
+<span class="sourceLineNo">016</span><a name="line.16"></a>
+<span class="sourceLineNo">017</span>/**<a name="line.17"></a>
+<span class="sourceLineNo">018</span> * Enumeration of supported git transport protocols.<a name="line.18"></a>
+<span class="sourceLineNo">019</span> */<a name="line.19"></a>
+<span class="sourceLineNo">020</span>public enum EGitProtocol {<a name="line.20"></a>
+<span class="sourceLineNo">021</span><a name="line.21"></a>
+<span class="sourceLineNo">022</span>        /** File protocol. */<a name="line.22"></a>
+<span class="sourceLineNo">023</span>        FILE("file://"),<a name="line.23"></a>
+<span class="sourceLineNo">024</span><a name="line.24"></a>
+<span class="sourceLineNo">025</span>        /** HTTP protocol. */<a name="line.25"></a>
+<span class="sourceLineNo">026</span>        HTTP("http://"),<a name="line.26"></a>
+<span class="sourceLineNo">027</span><a name="line.27"></a>
+<span class="sourceLineNo">028</span>        /** HTTPS protocol. */<a name="line.28"></a>
+<span class="sourceLineNo">029</span>        HTTPS("https://"),<a name="line.29"></a>
+<span class="sourceLineNo">030</span><a name="line.30"></a>
+<span class="sourceLineNo">031</span>        /** SSH protocol */<a name="line.31"></a>
+<span class="sourceLineNo">032</span>        SSH("ssh://git@"),<a name="line.32"></a>
+<span class="sourceLineNo">033</span><a name="line.33"></a>
+<span class="sourceLineNo">034</span>        /** GIT protocol */<a name="line.34"></a>
+<span class="sourceLineNo">035</span>        GIT("git://");<a name="line.35"></a>
+<span class="sourceLineNo">036</span><a name="line.36"></a>
+<span class="sourceLineNo">037</span>        /** The usual prefix of corresponding URLs. This is more than just the scheme in some cases (e.g. SSH). Used for protocol rewriting. */<a name="line.37"></a>
+<span class="sourceLineNo">038</span>        private final String prefix;<a name="line.38"></a>
+<span class="sourceLineNo">039</span><a name="line.39"></a>
+<span class="sourceLineNo">040</span>        private EGitProtocol(String prefix) {<a name="line.40"></a>
+<span class="sourceLineNo">041</span>                this.prefix = prefix;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>        }<a name="line.42"></a>
+<span class="sourceLineNo">043</span>        <a name="line.43"></a>
+<span class="sourceLineNo">044</span>        /**<a name="line.44"></a>
+<span class="sourceLineNo">045</span>         * Returns the protocol from the given url or empty if the url is invalid or the<a name="line.45"></a>
+<span class="sourceLineNo">046</span>         * protocol is unknown.<a name="line.46"></a>
+<span class="sourceLineNo">047</span>         */<a name="line.47"></a>
+<span class="sourceLineNo">048</span>        public static Optional&lt;EGitProtocol&gt; fromUrl(String url) {<a name="line.48"></a>
+<span class="sourceLineNo">049</span>                try {<a name="line.49"></a>
+<span class="sourceLineNo">050</span>                        URI location = UrlUtils.convertUriFromUrl(url);<a name="line.50"></a>
+<span class="sourceLineNo">051</span>                        return Optional.ofNullable(EnumUtils.valueOfIgnoreCase(EGitProtocol.class, location.getScheme()));<a name="line.51"></a>
+<span class="sourceLineNo">052</span>                } catch (URISyntaxException e) {<a name="line.52"></a>
+<span class="sourceLineNo">053</span>                        return Optional.empty();<a name="line.53"></a>
+<span class="sourceLineNo">054</span>                }<a name="line.54"></a>
+<span class="sourceLineNo">055</span>        }<a name="line.55"></a>
+<span class="sourceLineNo">056</span><a name="line.56"></a>
+<span class="sourceLineNo">057</span>        /**<a name="line.57"></a>
+<span class="sourceLineNo">058</span>         * Returns the URL prefix corresponding to this protocol, e.g. file:// or<a name="line.58"></a>
+<span class="sourceLineNo">059</span>         * http://.<a name="line.59"></a>
+<span class="sourceLineNo">060</span>         */<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        public String getUrlPrefix() {<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                return prefix;<a name="line.62"></a>
+<span class="sourceLineNo">063</span>        }<a name="line.63"></a>
+<span class="sourceLineNo">064</span><a name="line.64"></a>
+<span class="sourceLineNo">065</span>}<a name="line.65"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

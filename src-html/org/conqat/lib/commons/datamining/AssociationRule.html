@@ -39,54 +39,50 @@
 <span class="sourceLineNo">031</span> */<a name="line.31"></a>
 <span class="sourceLineNo">032</span>public class AssociationRule&lt;T&gt; implements Serializable {<a name="line.32"></a>
 <span class="sourceLineNo">033</span><a name="line.33"></a>
-<span class="sourceLineNo">034</span>        // TODO test finding notifications<a name="line.34"></a>
-<span class="sourceLineNo">035</span>        // TODO test<a name="line.35"></a>
+<span class="sourceLineNo">034</span>        /** Version used for serialization. */<a name="line.34"></a>
+<span class="sourceLineNo">035</span>        private static final long serialVersionUID = 1;<a name="line.35"></a>
 <span class="sourceLineNo">036</span><a name="line.36"></a>
-<span class="sourceLineNo">037</span>        /** Version used for serialization. */<a name="line.37"></a>
-<span class="sourceLineNo">038</span>        private static final long serialVersionUID = 1;<a name="line.38"></a>
+<span class="sourceLineNo">037</span>        /** The item set (i.e. the I in I-&gt;j) */<a name="line.37"></a>
+<span class="sourceLineNo">038</span>        private Set&lt;T&gt; itemSet;<a name="line.38"></a>
 <span class="sourceLineNo">039</span><a name="line.39"></a>
-<span class="sourceLineNo">040</span>        /** The item set (i.e. the I in I-&gt;j) */<a name="line.40"></a>
-<span class="sourceLineNo">041</span>        private Set&lt;T&gt; itemSet;<a name="line.41"></a>
+<span class="sourceLineNo">040</span>        /** The associated item (i.e. the j in I-&gt;j) */<a name="line.40"></a>
+<span class="sourceLineNo">041</span>        private T associatedItem;<a name="line.41"></a>
 <span class="sourceLineNo">042</span><a name="line.42"></a>
-<span class="sourceLineNo">043</span>        /** The associated item (i.e. the j in I-&gt;j) */<a name="line.43"></a>
-<span class="sourceLineNo">044</span>        private T associatedItem;<a name="line.44"></a>
+<span class="sourceLineNo">043</span>        /** The confidence level [0..1] */<a name="line.43"></a>
+<span class="sourceLineNo">044</span>        private double confidence;<a name="line.44"></a>
 <span class="sourceLineNo">045</span><a name="line.45"></a>
-<span class="sourceLineNo">046</span>        /** The confidence level [0..1] */<a name="line.46"></a>
-<span class="sourceLineNo">047</span>        private double confidence;<a name="line.47"></a>
-<span class="sourceLineNo">048</span><a name="line.48"></a>
-<span class="sourceLineNo">049</span>        /** Constructor */<a name="line.49"></a>
-<span class="sourceLineNo">050</span>        public AssociationRule(Set&lt;T&gt; itemSet, T associatedItem, double confidence) {<a name="line.50"></a>
-<span class="sourceLineNo">051</span>                this.itemSet = itemSet;<a name="line.51"></a>
-<span class="sourceLineNo">052</span>                this.associatedItem = associatedItem;<a name="line.52"></a>
-<span class="sourceLineNo">053</span>                this.confidence = confidence;<a name="line.53"></a>
-<span class="sourceLineNo">054</span>        }<a name="line.54"></a>
-<span class="sourceLineNo">055</span><a name="line.55"></a>
-<span class="sourceLineNo">056</span>        /** Returns the item set */<a name="line.56"></a>
-<span class="sourceLineNo">057</span>        public Set&lt;T&gt; getItemSet() {<a name="line.57"></a>
-<span class="sourceLineNo">058</span>                return itemSet;<a name="line.58"></a>
-<span class="sourceLineNo">059</span>        }<a name="line.59"></a>
-<span class="sourceLineNo">060</span><a name="line.60"></a>
-<span class="sourceLineNo">061</span>        /** Returns the associated item */<a name="line.61"></a>
-<span class="sourceLineNo">062</span>        public T getAssociatedItem() {<a name="line.62"></a>
-<span class="sourceLineNo">063</span>                return associatedItem;<a name="line.63"></a>
-<span class="sourceLineNo">064</span>        }<a name="line.64"></a>
-<span class="sourceLineNo">065</span><a name="line.65"></a>
-<span class="sourceLineNo">066</span>        /** Returns the confidence. */<a name="line.66"></a>
-<span class="sourceLineNo">067</span>        public double getConfidence() {<a name="line.67"></a>
-<span class="sourceLineNo">068</span>                return confidence;<a name="line.68"></a>
-<span class="sourceLineNo">069</span>        }<a name="line.69"></a>
-<span class="sourceLineNo">070</span><a name="line.70"></a>
-<span class="sourceLineNo">071</span>        /** {@inheritDoc} */<a name="line.71"></a>
-<span class="sourceLineNo">072</span>        @Override<a name="line.72"></a>
-<span class="sourceLineNo">073</span>        public String toString() {<a name="line.73"></a>
-<span class="sourceLineNo">074</span>                return CollectionUtils.sort(itemSet, new Comparator&lt;T&gt;() {<a name="line.74"></a>
-<span class="sourceLineNo">075</span>                        @Override<a name="line.75"></a>
-<span class="sourceLineNo">076</span>                        public int compare(T t1, T t2) {<a name="line.76"></a>
-<span class="sourceLineNo">077</span>                                return t1.toString().compareTo(t2.toString());<a name="line.77"></a>
-<span class="sourceLineNo">078</span>                        }<a name="line.78"></a>
-<span class="sourceLineNo">079</span>                }).toString() + " -&gt; " + associatedItem + " (" + confidence + ")";<a name="line.79"></a>
-<span class="sourceLineNo">080</span>        }<a name="line.80"></a>
-<span class="sourceLineNo">081</span>}<a name="line.81"></a>
+<span class="sourceLineNo">046</span>        public AssociationRule(Set&lt;T&gt; itemSet, T associatedItem, double confidence) {<a name="line.46"></a>
+<span class="sourceLineNo">047</span>                this.itemSet = itemSet;<a name="line.47"></a>
+<span class="sourceLineNo">048</span>                this.associatedItem = associatedItem;<a name="line.48"></a>
+<span class="sourceLineNo">049</span>                this.confidence = confidence;<a name="line.49"></a>
+<span class="sourceLineNo">050</span>        }<a name="line.50"></a>
+<span class="sourceLineNo">051</span><a name="line.51"></a>
+<span class="sourceLineNo">052</span>        /** Returns the item set */<a name="line.52"></a>
+<span class="sourceLineNo">053</span>        public Set&lt;T&gt; getItemSet() {<a name="line.53"></a>
+<span class="sourceLineNo">054</span>                return itemSet;<a name="line.54"></a>
+<span class="sourceLineNo">055</span>        }<a name="line.55"></a>
+<span class="sourceLineNo">056</span><a name="line.56"></a>
+<span class="sourceLineNo">057</span>        /** Returns the associated item */<a name="line.57"></a>
+<span class="sourceLineNo">058</span>        public T getAssociatedItem() {<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                return associatedItem;<a name="line.59"></a>
+<span class="sourceLineNo">060</span>        }<a name="line.60"></a>
+<span class="sourceLineNo">061</span><a name="line.61"></a>
+<span class="sourceLineNo">062</span>        /** Returns the confidence. */<a name="line.62"></a>
+<span class="sourceLineNo">063</span>        public double getConfidence() {<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                return confidence;<a name="line.64"></a>
+<span class="sourceLineNo">065</span>        }<a name="line.65"></a>
+<span class="sourceLineNo">066</span><a name="line.66"></a>
+<span class="sourceLineNo">067</span>        /** {@inheritDoc} */<a name="line.67"></a>
+<span class="sourceLineNo">068</span>        @Override<a name="line.68"></a>
+<span class="sourceLineNo">069</span>        public String toString() {<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                return CollectionUtils.sort(itemSet, new Comparator&lt;T&gt;() {<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                        @Override<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                        public int compare(T t1, T t2) {<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                                return t1.toString().compareTo(t2.toString());<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                        }<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                }).toString() + " -&gt; " + associatedItem + " (" + confidence + ")";<a name="line.75"></a>
+<span class="sourceLineNo">076</span>        }<a name="line.76"></a>
+<span class="sourceLineNo">077</span>}<a name="line.77"></a>
 
 
 

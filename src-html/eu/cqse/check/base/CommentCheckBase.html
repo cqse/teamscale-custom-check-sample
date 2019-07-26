@@ -10,52 +10,54 @@
 <span class="sourceLineNo">002</span><a name="line.2"></a>
 <span class="sourceLineNo">003</span>import eu.cqse.check.framework.core.CheckException;<a name="line.3"></a>
 <span class="sourceLineNo">004</span>import eu.cqse.check.framework.core.CheckImplementationBase;<a name="line.4"></a>
-<span class="sourceLineNo">005</span>import eu.cqse.check.framework.scanner.ETokenType.ETokenClass;<a name="line.5"></a>
-<span class="sourceLineNo">006</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.6"></a>
-<span class="sourceLineNo">007</span>import eu.cqse.check.framework.util.TokenUtils;<a name="line.7"></a>
-<span class="sourceLineNo">008</span><a name="line.8"></a>
-<span class="sourceLineNo">009</span>/**<a name="line.9"></a>
-<span class="sourceLineNo">010</span> * Base class for checks which inspects all comments in a resource.<a name="line.10"></a>
-<span class="sourceLineNo">011</span> */<a name="line.11"></a>
-<span class="sourceLineNo">012</span>public abstract class CommentCheckBase extends CheckImplementationBase {<a name="line.12"></a>
-<span class="sourceLineNo">013</span><a name="line.13"></a>
-<span class="sourceLineNo">014</span>        /** {@inheritDoc} */<a name="line.14"></a>
-<span class="sourceLineNo">015</span>        @Override<a name="line.15"></a>
-<span class="sourceLineNo">016</span>        public void execute() throws CheckException {<a name="line.16"></a>
-<span class="sourceLineNo">017</span>                for (int i = 0; i &lt; context.getTokens().size(); i++) {<a name="line.17"></a>
-<span class="sourceLineNo">018</span>                        IToken token = context.getTokens().get(i);<a name="line.18"></a>
-<span class="sourceLineNo">019</span><a name="line.19"></a>
-<span class="sourceLineNo">020</span>                        if (token.getType().getTokenClass() == ETokenClass.COMMENT) {<a name="line.20"></a>
-<span class="sourceLineNo">021</span>                                int commentEndLine = 0;<a name="line.21"></a>
-<span class="sourceLineNo">022</span><a name="line.22"></a>
-<span class="sourceLineNo">023</span>                                if (i == context.getTokens().size() - 1) {<a name="line.23"></a>
-<span class="sourceLineNo">024</span>                                        commentEndLine = TokenUtils.calculateEndLineByCountingLines(token);<a name="line.24"></a>
-<span class="sourceLineNo">025</span>                                } else {<a name="line.25"></a>
-<span class="sourceLineNo">026</span>                                        // Estimate the end line for better performance whenever<a name="line.26"></a>
-<span class="sourceLineNo">027</span>                                        // possible.<a name="line.27"></a>
-<span class="sourceLineNo">028</span>                                        commentEndLine = TokenUtils.estimateEndLineByLookahead(token, context.getTokens().get(i + 1));<a name="line.28"></a>
-<span class="sourceLineNo">029</span>                                }<a name="line.29"></a>
-<span class="sourceLineNo">030</span><a name="line.30"></a>
-<span class="sourceLineNo">031</span>                                processComment(token, token.getLineNumber() + 1, commentEndLine + 1);<a name="line.31"></a>
-<span class="sourceLineNo">032</span>                        }<a name="line.32"></a>
-<span class="sourceLineNo">033</span>                }<a name="line.33"></a>
-<span class="sourceLineNo">034</span>        }<a name="line.34"></a>
-<span class="sourceLineNo">035</span><a name="line.35"></a>
-<span class="sourceLineNo">036</span>        /**<a name="line.36"></a>
-<span class="sourceLineNo">037</span>         * When implemented in a subclass, processes the specified comment token,<a name="line.37"></a>
-<span class="sourceLineNo">038</span>         * which runs from the provided start line to the provided end line.<a name="line.38"></a>
-<span class="sourceLineNo">039</span>         *<a name="line.39"></a>
-<span class="sourceLineNo">040</span>         * @param token<a name="line.40"></a>
-<span class="sourceLineNo">041</span>         *            the comment token to process<a name="line.41"></a>
-<span class="sourceLineNo">042</span>         * @param startLine<a name="line.42"></a>
-<span class="sourceLineNo">043</span>         *            the 1-based start line of the comment token in the analyzed<a name="line.43"></a>
-<span class="sourceLineNo">044</span>         *            resource.<a name="line.44"></a>
-<span class="sourceLineNo">045</span>         * @param endLine<a name="line.45"></a>
-<span class="sourceLineNo">046</span>         *            the 1-based end line of the comment token in the analyzed<a name="line.46"></a>
-<span class="sourceLineNo">047</span>         *            resource.<a name="line.47"></a>
-<span class="sourceLineNo">048</span>         */<a name="line.48"></a>
-<span class="sourceLineNo">049</span>        protected abstract void processComment(IToken token, int startLine, int endLine) throws CheckException;<a name="line.49"></a>
-<span class="sourceLineNo">050</span>}<a name="line.50"></a>
+<span class="sourceLineNo">005</span>import eu.cqse.check.framework.core.phase.ECodeViewOption;<a name="line.5"></a>
+<span class="sourceLineNo">006</span>import eu.cqse.check.framework.scanner.ETokenType.ETokenClass;<a name="line.6"></a>
+<span class="sourceLineNo">007</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.7"></a>
+<span class="sourceLineNo">008</span>import eu.cqse.check.framework.util.tokens.TokenUtils;<a name="line.8"></a>
+<span class="sourceLineNo">009</span><a name="line.9"></a>
+<span class="sourceLineNo">010</span>/**<a name="line.10"></a>
+<span class="sourceLineNo">011</span> * Base class for checks which inspects all comments in a resource.<a name="line.11"></a>
+<span class="sourceLineNo">012</span> */<a name="line.12"></a>
+<span class="sourceLineNo">013</span>public abstract class CommentCheckBase extends CheckImplementationBase {<a name="line.13"></a>
+<span class="sourceLineNo">014</span><a name="line.14"></a>
+<span class="sourceLineNo">015</span>        /** {@inheritDoc} */<a name="line.15"></a>
+<span class="sourceLineNo">016</span>        @Override<a name="line.16"></a>
+<span class="sourceLineNo">017</span>        public void execute() throws CheckException {<a name="line.17"></a>
+<span class="sourceLineNo">018</span>                for (int i = 0; i &lt; context.getTokens(ECodeViewOption.FILTERED_PREPROCESSED).size(); i++) {<a name="line.18"></a>
+<span class="sourceLineNo">019</span>                        IToken token = context.getTokens(ECodeViewOption.FILTERED_PREPROCESSED).get(i);<a name="line.19"></a>
+<span class="sourceLineNo">020</span><a name="line.20"></a>
+<span class="sourceLineNo">021</span>                        if (token.getType().getTokenClass() == ETokenClass.COMMENT) {<a name="line.21"></a>
+<span class="sourceLineNo">022</span>                                int commentEndLine = 0;<a name="line.22"></a>
+<span class="sourceLineNo">023</span><a name="line.23"></a>
+<span class="sourceLineNo">024</span>                                if (i == context.getTokens(ECodeViewOption.FILTERED_PREPROCESSED).size() - 1) {<a name="line.24"></a>
+<span class="sourceLineNo">025</span>                                        commentEndLine = TokenUtils.calculateEndLineByCountingLines(token);<a name="line.25"></a>
+<span class="sourceLineNo">026</span>                                } else {<a name="line.26"></a>
+<span class="sourceLineNo">027</span>                                        // Estimate the end line for better performance whenever<a name="line.27"></a>
+<span class="sourceLineNo">028</span>                                        // possible.<a name="line.28"></a>
+<span class="sourceLineNo">029</span>                                        commentEndLine = TokenUtils.estimateEndLineByLookahead(token,<a name="line.29"></a>
+<span class="sourceLineNo">030</span>                                                        context.getTokens(ECodeViewOption.FILTERED_PREPROCESSED).get(i + 1));<a name="line.30"></a>
+<span class="sourceLineNo">031</span>                                }<a name="line.31"></a>
+<span class="sourceLineNo">032</span><a name="line.32"></a>
+<span class="sourceLineNo">033</span>                                processComment(token, token.getLineNumber() + 1, commentEndLine + 1);<a name="line.33"></a>
+<span class="sourceLineNo">034</span>                        }<a name="line.34"></a>
+<span class="sourceLineNo">035</span>                }<a name="line.35"></a>
+<span class="sourceLineNo">036</span>        }<a name="line.36"></a>
+<span class="sourceLineNo">037</span><a name="line.37"></a>
+<span class="sourceLineNo">038</span>        /**<a name="line.38"></a>
+<span class="sourceLineNo">039</span>         * When implemented in a subclass, processes the specified comment token, which<a name="line.39"></a>
+<span class="sourceLineNo">040</span>         * runs from the provided start line to the provided end line.<a name="line.40"></a>
+<span class="sourceLineNo">041</span>         *<a name="line.41"></a>
+<span class="sourceLineNo">042</span>         * @param token<a name="line.42"></a>
+<span class="sourceLineNo">043</span>         *            the comment token to process<a name="line.43"></a>
+<span class="sourceLineNo">044</span>         * @param startLine<a name="line.44"></a>
+<span class="sourceLineNo">045</span>         *            the 1-based start line of the comment token in the analyzed<a name="line.45"></a>
+<span class="sourceLineNo">046</span>         *            resource.<a name="line.46"></a>
+<span class="sourceLineNo">047</span>         * @param endLine<a name="line.47"></a>
+<span class="sourceLineNo">048</span>         *            the 1-based end line of the comment token in the analyzed<a name="line.48"></a>
+<span class="sourceLineNo">049</span>         *            resource.<a name="line.49"></a>
+<span class="sourceLineNo">050</span>         */<a name="line.50"></a>
+<span class="sourceLineNo">051</span>        protected abstract void processComment(IToken token, int startLine, int endLine) throws CheckException;<a name="line.51"></a>
+<span class="sourceLineNo">052</span>}<a name="line.52"></a>
 
 
 

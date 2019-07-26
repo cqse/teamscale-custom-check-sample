@@ -24,36 +24,38 @@
 <span class="sourceLineNo">016</span>+-------------------------------------------------------------------------*/<a name="line.16"></a>
 <span class="sourceLineNo">017</span>package org.conqat.lib.commons.predicate;<a name="line.17"></a>
 <span class="sourceLineNo">018</span><a name="line.18"></a>
-<span class="sourceLineNo">019</span>/**<a name="line.19"></a>
-<span class="sourceLineNo">020</span> * Predicate that inverts another predicate.<a name="line.20"></a>
-<span class="sourceLineNo">021</span> * <a name="line.21"></a>
-<span class="sourceLineNo">022</span> * @param &lt;T&gt;<a name="line.22"></a>
-<span class="sourceLineNo">023</span> *            the element type the predicate works on.<a name="line.23"></a>
-<span class="sourceLineNo">024</span> */<a name="line.24"></a>
-<span class="sourceLineNo">025</span>public class InvertingPredicate&lt;T&gt; implements IPredicate&lt;T&gt; {<a name="line.25"></a>
-<span class="sourceLineNo">026</span><a name="line.26"></a>
-<span class="sourceLineNo">027</span>        /** The delegate predicate. */<a name="line.27"></a>
-<span class="sourceLineNo">028</span>        private final IPredicate&lt;T&gt; inner;<a name="line.28"></a>
-<span class="sourceLineNo">029</span><a name="line.29"></a>
-<span class="sourceLineNo">030</span>        /** Constructor. */<a name="line.30"></a>
-<span class="sourceLineNo">031</span>        public InvertingPredicate(IPredicate&lt;T&gt; inner) {<a name="line.31"></a>
-<span class="sourceLineNo">032</span>                this.inner = inner;<a name="line.32"></a>
-<span class="sourceLineNo">033</span>        }<a name="line.33"></a>
-<span class="sourceLineNo">034</span><a name="line.34"></a>
-<span class="sourceLineNo">035</span>        /** {@inheritDoc} */<a name="line.35"></a>
-<span class="sourceLineNo">036</span>        @Override<a name="line.36"></a>
-<span class="sourceLineNo">037</span>        public boolean isContained(T element) {<a name="line.37"></a>
-<span class="sourceLineNo">038</span>                return !inner.isContained(element);<a name="line.38"></a>
-<span class="sourceLineNo">039</span>        }<a name="line.39"></a>
-<span class="sourceLineNo">040</span><a name="line.40"></a>
-<span class="sourceLineNo">041</span>        /**<a name="line.41"></a>
-<span class="sourceLineNo">042</span>         * Factory method for creating an inverting predicate. This is used to<a name="line.42"></a>
-<span class="sourceLineNo">043</span>         * exploit generic type inference (i.e. syntactic reasons).<a name="line.43"></a>
-<span class="sourceLineNo">044</span>         */<a name="line.44"></a>
-<span class="sourceLineNo">045</span>        public static &lt;T&gt; InvertingPredicate&lt;T&gt; create(IPredicate&lt;T&gt; inner) {<a name="line.45"></a>
-<span class="sourceLineNo">046</span>                return new InvertingPredicate&lt;T&gt;(inner);<a name="line.46"></a>
-<span class="sourceLineNo">047</span>        }<a name="line.47"></a>
-<span class="sourceLineNo">048</span>}<a name="line.48"></a>
+<span class="sourceLineNo">019</span>import java.util.function.Predicate;<a name="line.19"></a>
+<span class="sourceLineNo">020</span><a name="line.20"></a>
+<span class="sourceLineNo">021</span>/**<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * Predicate that inverts another predicate.<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * <a name="line.23"></a>
+<span class="sourceLineNo">024</span> * @param &lt;T&gt;<a name="line.24"></a>
+<span class="sourceLineNo">025</span> *            the element type the predicate works on.<a name="line.25"></a>
+<span class="sourceLineNo">026</span> */<a name="line.26"></a>
+<span class="sourceLineNo">027</span>public class InvertingPredicate&lt;T&gt; implements Predicate&lt;T&gt; {<a name="line.27"></a>
+<span class="sourceLineNo">028</span><a name="line.28"></a>
+<span class="sourceLineNo">029</span>        /** The delegate predicate. */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>        private final Predicate&lt;T&gt; inner;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>        /** Constructor. */<a name="line.32"></a>
+<span class="sourceLineNo">033</span>        public InvertingPredicate(Predicate&lt;T&gt; inner) {<a name="line.33"></a>
+<span class="sourceLineNo">034</span>                this.inner = inner;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>        }<a name="line.35"></a>
+<span class="sourceLineNo">036</span><a name="line.36"></a>
+<span class="sourceLineNo">037</span>        /** {@inheritDoc} */<a name="line.37"></a>
+<span class="sourceLineNo">038</span>        @Override<a name="line.38"></a>
+<span class="sourceLineNo">039</span>        public boolean test(T element) {<a name="line.39"></a>
+<span class="sourceLineNo">040</span>                return !inner.test(element);<a name="line.40"></a>
+<span class="sourceLineNo">041</span>        }<a name="line.41"></a>
+<span class="sourceLineNo">042</span><a name="line.42"></a>
+<span class="sourceLineNo">043</span>        /**<a name="line.43"></a>
+<span class="sourceLineNo">044</span>         * Factory method for creating an inverting predicate. This is used to exploit<a name="line.44"></a>
+<span class="sourceLineNo">045</span>         * generic type inference (i.e. syntactic reasons).<a name="line.45"></a>
+<span class="sourceLineNo">046</span>         */<a name="line.46"></a>
+<span class="sourceLineNo">047</span>        public static &lt;T&gt; InvertingPredicate&lt;T&gt; create(Predicate&lt;T&gt; inner) {<a name="line.47"></a>
+<span class="sourceLineNo">048</span>                return new InvertingPredicate&lt;T&gt;(inner);<a name="line.48"></a>
+<span class="sourceLineNo">049</span>        }<a name="line.49"></a>
+<span class="sourceLineNo">050</span>}<a name="line.50"></a>
 
 
 

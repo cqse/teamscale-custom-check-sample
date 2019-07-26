@@ -34,9 +34,9 @@
 <span class="sourceLineNo">026</span>import org.conqat.lib.commons.collections.PairList;<a name="line.26"></a>
 <span class="sourceLineNo">027</span><a name="line.27"></a>
 <span class="sourceLineNo">028</span>import eu.cqse.check.framework.scanner.ETokenType;<a name="line.28"></a>
-<span class="sourceLineNo">029</span>import eu.cqse.check.framework.scanner.ETokenType.ETokenClass;<a name="line.29"></a>
-<span class="sourceLineNo">030</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.30"></a>
-<span class="sourceLineNo">031</span>import eu.cqse.check.framework.shallowparser.IShallowParser;<a name="line.31"></a>
+<span class="sourceLineNo">029</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.29"></a>
+<span class="sourceLineNo">030</span>import eu.cqse.check.framework.shallowparser.IShallowParser;<a name="line.30"></a>
+<span class="sourceLineNo">031</span>import eu.cqse.check.framework.util.tokens.TokenUtils;<a name="line.31"></a>
 <span class="sourceLineNo">032</span><a name="line.32"></a>
 <span class="sourceLineNo">033</span>/**<a name="line.33"></a>
 <span class="sourceLineNo">034</span> * Base class for shallow parsers that implements most of the generic parsing<a name="line.34"></a>
@@ -103,7 +103,7 @@
 <span class="sourceLineNo">095</span>         *            filtering). This may be null is no previous token exists.<a name="line.95"></a>
 <span class="sourceLineNo">096</span>         */<a name="line.96"></a>
 <span class="sourceLineNo">097</span>        protected boolean isFilteredToken(IToken token, IToken previousToken) {<a name="line.97"></a>
-<span class="sourceLineNo">098</span>                return token.getType().getTokenClass() == ETokenClass.COMMENT;<a name="line.98"></a>
+<span class="sourceLineNo">098</span>                return TokenUtils.isCommentToken(token);<a name="line.98"></a>
 <span class="sourceLineNo">099</span>        }<a name="line.99"></a>
 <span class="sourceLineNo">100</span><a name="line.100"></a>
 <span class="sourceLineNo">101</span>        /** {@inheritDoc} */<a name="line.101"></a>

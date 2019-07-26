@@ -45,43 +45,47 @@
 <span class="sourceLineNo">037</span> * because it outputs trace information to the console, which brings no benefit<a name="line.37"></a>
 <span class="sourceLineNo">038</span> * to users of an application.<a name="line.38"></a>
 <span class="sourceLineNo">039</span> */<a name="line.39"></a>
-<span class="sourceLineNo">040</span>@ACheck(name = "Call to printStackTrace()", description = "Avoid use of printStackTrace() calls.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.YELLOW, languages = {<a name="line.40"></a>
+<span class="sourceLineNo">040</span>@ACheck(name = "Call to printStackTrace()", description = PrintStackTraceCheck.DESCRIPTION, groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.YELLOW, languages = {<a name="line.40"></a>
 <span class="sourceLineNo">041</span>                ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })<a name="line.41"></a>
 <span class="sourceLineNo">042</span>public class PrintStackTraceCheck extends EntityFindingCheckBase {<a name="line.42"></a>
 <span class="sourceLineNo">043</span><a name="line.43"></a>
 <span class="sourceLineNo">044</span>        /** Name of the printStackTrace method. */<a name="line.44"></a>
 <span class="sourceLineNo">045</span>        private static final String PRINT_STACK_TRACE = "printStackTrace";<a name="line.45"></a>
 <span class="sourceLineNo">046</span><a name="line.46"></a>
-<span class="sourceLineNo">047</span>        /** {@inheritDoc} */<a name="line.47"></a>
-<span class="sourceLineNo">048</span>        @Override<a name="line.48"></a>
-<span class="sourceLineNo">049</span>        protected String getFindingMessage(ShallowEntity entity) {<a name="line.49"></a>
-<span class="sourceLineNo">050</span>                return "Avoid use of printStackTrace() calls.";<a name="line.50"></a>
-<span class="sourceLineNo">051</span>        }<a name="line.51"></a>
-<span class="sourceLineNo">052</span><a name="line.52"></a>
-<span class="sourceLineNo">053</span>        /** {@inheritDoc} */<a name="line.53"></a>
-<span class="sourceLineNo">054</span>        @Override<a name="line.54"></a>
-<span class="sourceLineNo">055</span>        protected void processEntity(ShallowEntity entity) throws CheckException {<a name="line.55"></a>
+<span class="sourceLineNo">047</span>        /** Description of this finding */<a name="line.47"></a>
+<span class="sourceLineNo">048</span>        protected static final String DESCRIPTION = "Using printStackTrace() is considered bad practice as it will only print the stack trace to standard out."<a name="line.48"></a>
+<span class="sourceLineNo">049</span>                        + "In production environments this information will likely be lost. Therefore, it is recommended to use a logging framework instead.";<a name="line.49"></a>
+<span class="sourceLineNo">050</span><a name="line.50"></a>
+<span class="sourceLineNo">051</span>        /** {@inheritDoc} */<a name="line.51"></a>
+<span class="sourceLineNo">052</span>        @Override<a name="line.52"></a>
+<span class="sourceLineNo">053</span>        protected String getFindingMessage(ShallowEntity entity) {<a name="line.53"></a>
+<span class="sourceLineNo">054</span>                return "The `printStackTrace()` method should not be called";<a name="line.54"></a>
+<span class="sourceLineNo">055</span>        }<a name="line.55"></a>
 <span class="sourceLineNo">056</span><a name="line.56"></a>
-<span class="sourceLineNo">057</span>                // get all sequences of .&lt;IDENTIFIER&gt;() and check<a name="line.57"></a>
-<span class="sourceLineNo">058</span>                // if the identifier is 'printStackTrace'<a name="line.58"></a>
-<span class="sourceLineNo">059</span>                List&lt;IToken&gt; statementTokens = entity.includedTokens();<a name="line.59"></a>
-<span class="sourceLineNo">060</span>                List&lt;Integer&gt; callIndices = TokenStreamUtils.firstTokenOfTypeSequences(statementTokens, 0, ETokenType.DOT,<a name="line.60"></a>
-<span class="sourceLineNo">061</span>                                ETokenType.IDENTIFIER, ETokenType.LPAREN, ETokenType.RPAREN);<a name="line.61"></a>
-<span class="sourceLineNo">062</span>                for (int index : callIndices) {<a name="line.62"></a>
-<span class="sourceLineNo">063</span>                        if (statementTokens.get(index + 1).getText().equals(PRINT_STACK_TRACE)) {<a name="line.63"></a>
-<span class="sourceLineNo">064</span>                                createFinding(getFindingMessage(entity), entity);<a name="line.64"></a>
-<span class="sourceLineNo">065</span>                        }<a name="line.65"></a>
-<span class="sourceLineNo">066</span>                }<a name="line.66"></a>
-<span class="sourceLineNo">067</span><a name="line.67"></a>
-<span class="sourceLineNo">068</span>        }<a name="line.68"></a>
-<span class="sourceLineNo">069</span><a name="line.69"></a>
-<span class="sourceLineNo">070</span>        /** {@inheritDoc} */<a name="line.70"></a>
-<span class="sourceLineNo">071</span>        @Override<a name="line.71"></a>
-<span class="sourceLineNo">072</span>        protected String getXPathSelectionString() {<a name="line.72"></a>
-<span class="sourceLineNo">073</span>                return "//STATEMENT[subtype('" + SubTypeNames.SIMPLE_STATEMENT + "')]";<a name="line.73"></a>
-<span class="sourceLineNo">074</span>        }<a name="line.74"></a>
-<span class="sourceLineNo">075</span><a name="line.75"></a>
-<span class="sourceLineNo">076</span>}<a name="line.76"></a>
+<span class="sourceLineNo">057</span>        /** {@inheritDoc} */<a name="line.57"></a>
+<span class="sourceLineNo">058</span>        @Override<a name="line.58"></a>
+<span class="sourceLineNo">059</span>        protected void processEntity(ShallowEntity entity) throws CheckException {<a name="line.59"></a>
+<span class="sourceLineNo">060</span><a name="line.60"></a>
+<span class="sourceLineNo">061</span>                // get all sequences of .&lt;IDENTIFIER&gt;() and check<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                // if the identifier is 'printStackTrace'<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                List&lt;IToken&gt; statementTokens = entity.includedTokens();<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                List&lt;Integer&gt; callIndices = TokenStreamUtils.firstTokenOfTypeSequences(statementTokens, 0, ETokenType.DOT,<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                                ETokenType.IDENTIFIER, ETokenType.LPAREN, ETokenType.RPAREN);<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                for (int index : callIndices) {<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                        if (statementTokens.get(index + 1).getText().equals(PRINT_STACK_TRACE)) {<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                                createFinding(getFindingMessage(entity), entity);<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                        }<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                }<a name="line.70"></a>
+<span class="sourceLineNo">071</span><a name="line.71"></a>
+<span class="sourceLineNo">072</span>        }<a name="line.72"></a>
+<span class="sourceLineNo">073</span><a name="line.73"></a>
+<span class="sourceLineNo">074</span>        /** {@inheritDoc} */<a name="line.74"></a>
+<span class="sourceLineNo">075</span>        @Override<a name="line.75"></a>
+<span class="sourceLineNo">076</span>        protected String getXPathSelectionString() {<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                return "//STATEMENT[subtype('" + SubTypeNames.SIMPLE_STATEMENT + "')]";<a name="line.77"></a>
+<span class="sourceLineNo">078</span>        }<a name="line.78"></a>
+<span class="sourceLineNo">079</span><a name="line.79"></a>
+<span class="sourceLineNo">080</span>}<a name="line.80"></a>
 
 
 

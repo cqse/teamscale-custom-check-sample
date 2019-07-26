@@ -27,570 +27,695 @@
 <span class="sourceLineNo">019</span>import java.io.Serializable;<a name="line.19"></a>
 <span class="sourceLineNo">020</span>import java.util.ArrayList;<a name="line.20"></a>
 <span class="sourceLineNo">021</span>import java.util.Arrays;<a name="line.21"></a>
-<span class="sourceLineNo">022</span>import java.util.Collection;<a name="line.22"></a>
-<span class="sourceLineNo">023</span>import java.util.Collections;<a name="line.23"></a>
-<span class="sourceLineNo">024</span>import java.util.Comparator;<a name="line.24"></a>
-<span class="sourceLineNo">025</span>import java.util.EnumSet;<a name="line.25"></a>
+<span class="sourceLineNo">022</span>import java.util.Collections;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import java.util.Comparator;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import java.util.EnumSet;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import java.util.HashMap;<a name="line.25"></a>
 <span class="sourceLineNo">026</span>import java.util.Iterator;<a name="line.26"></a>
 <span class="sourceLineNo">027</span>import java.util.List;<a name="line.27"></a>
 <span class="sourceLineNo">028</span>import java.util.Map;<a name="line.28"></a>
 <span class="sourceLineNo">029</span>import java.util.Map.Entry;<a name="line.29"></a>
 <span class="sourceLineNo">030</span>import java.util.Objects;<a name="line.30"></a>
-<span class="sourceLineNo">031</span>import java.util.Set;<a name="line.31"></a>
-<span class="sourceLineNo">032</span>import java.util.Spliterator;<a name="line.32"></a>
-<span class="sourceLineNo">033</span>import java.util.Spliterators;<a name="line.33"></a>
-<span class="sourceLineNo">034</span>import java.util.function.BiConsumer;<a name="line.34"></a>
-<span class="sourceLineNo">035</span>import java.util.function.BinaryOperator;<a name="line.35"></a>
-<span class="sourceLineNo">036</span>import java.util.function.Consumer;<a name="line.36"></a>
-<span class="sourceLineNo">037</span>import java.util.function.Function;<a name="line.37"></a>
-<span class="sourceLineNo">038</span>import java.util.function.Supplier;<a name="line.38"></a>
-<span class="sourceLineNo">039</span>import java.util.stream.Collector;<a name="line.39"></a>
-<span class="sourceLineNo">040</span>import java.util.stream.Collectors;<a name="line.40"></a>
-<span class="sourceLineNo">041</span>import java.util.stream.Stream;<a name="line.41"></a>
-<span class="sourceLineNo">042</span>import java.util.stream.StreamSupport;<a name="line.42"></a>
-<span class="sourceLineNo">043</span><a name="line.43"></a>
-<span class="sourceLineNo">044</span>import org.conqat.lib.commons.assertion.CCSMAssert;<a name="line.44"></a>
-<span class="sourceLineNo">045</span>import org.conqat.lib.commons.equals.HashCodeUtils;<a name="line.45"></a>
-<span class="sourceLineNo">046</span><a name="line.46"></a>
-<span class="sourceLineNo">047</span>/**<a name="line.47"></a>
-<span class="sourceLineNo">048</span> * A list for storing pairs in a specific order.<a name="line.48"></a>
-<span class="sourceLineNo">049</span> */<a name="line.49"></a>
-<span class="sourceLineNo">050</span>public class PairList&lt;S, T&gt; implements Serializable, Iterable&lt;Pair&lt;S, T&gt;&gt; {<a name="line.50"></a>
+<span class="sourceLineNo">031</span>import java.util.Optional;<a name="line.31"></a>
+<span class="sourceLineNo">032</span>import java.util.Set;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import java.util.Spliterator;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import java.util.Spliterators;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import java.util.function.BiConsumer;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import java.util.function.BiFunction;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import java.util.function.BinaryOperator;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import java.util.function.Consumer;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import java.util.function.Function;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import java.util.function.Supplier;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>import java.util.stream.Collector;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>import java.util.stream.Collectors;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>import java.util.stream.Stream;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>import java.util.stream.StreamSupport;<a name="line.44"></a>
+<span class="sourceLineNo">045</span><a name="line.45"></a>
+<span class="sourceLineNo">046</span>import org.conqat.lib.commons.assertion.CCSMAssert;<a name="line.46"></a>
+<span class="sourceLineNo">047</span>import org.conqat.lib.commons.collections.CollectionUtils.FunctionWithException;<a name="line.47"></a>
+<span class="sourceLineNo">048</span>import org.conqat.lib.commons.equals.HashCodeUtils;<a name="line.48"></a>
+<span class="sourceLineNo">049</span><a name="line.49"></a>
+<span class="sourceLineNo">050</span>import com.fasterxml.jackson.annotation.JsonProperty;<a name="line.50"></a>
 <span class="sourceLineNo">051</span><a name="line.51"></a>
-<span class="sourceLineNo">052</span>        /** Version used for serialization. */<a name="line.52"></a>
-<span class="sourceLineNo">053</span>        private static final long serialVersionUID = 1;<a name="line.53"></a>
-<span class="sourceLineNo">054</span><a name="line.54"></a>
-<span class="sourceLineNo">055</span>        /** The current size. */<a name="line.55"></a>
-<span class="sourceLineNo">056</span>        private int size = 0;<a name="line.56"></a>
-<span class="sourceLineNo">057</span><a name="line.57"></a>
-<span class="sourceLineNo">058</span>        /** The array used for storing the S. */<a name="line.58"></a>
-<span class="sourceLineNo">059</span>        private Object[] firstElements;<a name="line.59"></a>
-<span class="sourceLineNo">060</span><a name="line.60"></a>
-<span class="sourceLineNo">061</span>        /** The array used for storing the T. */<a name="line.61"></a>
-<span class="sourceLineNo">062</span>        private Object[] secondElements;<a name="line.62"></a>
+<span class="sourceLineNo">052</span>/**<a name="line.52"></a>
+<span class="sourceLineNo">053</span> * A list for storing pairs in a specific order.<a name="line.53"></a>
+<span class="sourceLineNo">054</span> */<a name="line.54"></a>
+<span class="sourceLineNo">055</span>public class PairList&lt;S, T&gt; implements Serializable, Iterable&lt;Pair&lt;S, T&gt;&gt; {<a name="line.55"></a>
+<span class="sourceLineNo">056</span><a name="line.56"></a>
+<span class="sourceLineNo">057</span>        /** Version used for serialization. */<a name="line.57"></a>
+<span class="sourceLineNo">058</span>        private static final long serialVersionUID = 1;<a name="line.58"></a>
+<span class="sourceLineNo">059</span><a name="line.59"></a>
+<span class="sourceLineNo">060</span>        /** The current size. */<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        @JsonProperty("size")<a name="line.61"></a>
+<span class="sourceLineNo">062</span>        private int size = 0;<a name="line.62"></a>
 <span class="sourceLineNo">063</span><a name="line.63"></a>
-<span class="sourceLineNo">064</span>        /** Constructor. */<a name="line.64"></a>
-<span class="sourceLineNo">065</span>        public PairList() {<a name="line.65"></a>
-<span class="sourceLineNo">066</span>                this(16);<a name="line.66"></a>
-<span class="sourceLineNo">067</span>        }<a name="line.67"></a>
-<span class="sourceLineNo">068</span><a name="line.68"></a>
-<span class="sourceLineNo">069</span>        /** Constructor. */<a name="line.69"></a>
-<span class="sourceLineNo">070</span>        public PairList(int initialCapacity) {<a name="line.70"></a>
-<span class="sourceLineNo">071</span>                if (initialCapacity &lt; 1) {<a name="line.71"></a>
-<span class="sourceLineNo">072</span>                        initialCapacity = 1;<a name="line.72"></a>
-<span class="sourceLineNo">073</span>                }<a name="line.73"></a>
-<span class="sourceLineNo">074</span>                firstElements = new Object[initialCapacity];<a name="line.74"></a>
-<span class="sourceLineNo">075</span>                secondElements = new Object[initialCapacity];<a name="line.75"></a>
-<span class="sourceLineNo">076</span>        }<a name="line.76"></a>
-<span class="sourceLineNo">077</span><a name="line.77"></a>
-<span class="sourceLineNo">078</span>        /** Copy constructor. */<a name="line.78"></a>
-<span class="sourceLineNo">079</span>        public PairList(PairList&lt;S, T&gt; other) {<a name="line.79"></a>
-<span class="sourceLineNo">080</span>                this(other.size);<a name="line.80"></a>
-<span class="sourceLineNo">081</span>                addAll(other);<a name="line.81"></a>
-<span class="sourceLineNo">082</span>        }<a name="line.82"></a>
-<span class="sourceLineNo">083</span><a name="line.83"></a>
-<span class="sourceLineNo">084</span>        /**<a name="line.84"></a>
-<span class="sourceLineNo">085</span>         * Constructor to convert a map into a pair list.<a name="line.85"></a>
-<span class="sourceLineNo">086</span>         */<a name="line.86"></a>
-<span class="sourceLineNo">087</span>        public PairList(Map&lt;S, T&gt; map) {<a name="line.87"></a>
-<span class="sourceLineNo">088</span>                this(map.size());<a name="line.88"></a>
-<span class="sourceLineNo">089</span>                for (Entry&lt;S, T&gt; entry : map.entrySet()) {<a name="line.89"></a>
-<span class="sourceLineNo">090</span>                        add(entry.getKey(), entry.getValue());<a name="line.90"></a>
-<span class="sourceLineNo">091</span>                }<a name="line.91"></a>
-<span class="sourceLineNo">092</span>        }<a name="line.92"></a>
-<span class="sourceLineNo">093</span><a name="line.93"></a>
-<span class="sourceLineNo">094</span>        /** Returns whether the list is empty. */<a name="line.94"></a>
-<span class="sourceLineNo">095</span>        public boolean isEmpty() {<a name="line.95"></a>
-<span class="sourceLineNo">096</span>                return size == 0;<a name="line.96"></a>
-<span class="sourceLineNo">097</span>        }<a name="line.97"></a>
-<span class="sourceLineNo">098</span><a name="line.98"></a>
-<span class="sourceLineNo">099</span>        /** Returns the size of the list. */<a name="line.99"></a>
-<span class="sourceLineNo">100</span>        public int size() {<a name="line.100"></a>
-<span class="sourceLineNo">101</span>                return size;<a name="line.101"></a>
-<span class="sourceLineNo">102</span>        }<a name="line.102"></a>
-<span class="sourceLineNo">103</span><a name="line.103"></a>
-<span class="sourceLineNo">104</span>        /** Add the given pair to the list. */<a name="line.104"></a>
-<span class="sourceLineNo">105</span>        public void add(S first, T second) {<a name="line.105"></a>
-<span class="sourceLineNo">106</span>                ensureSpace(size + 1);<a name="line.106"></a>
-<span class="sourceLineNo">107</span>                firstElements[size] = first;<a name="line.107"></a>
-<span class="sourceLineNo">108</span>                secondElements[size] = second;<a name="line.108"></a>
-<span class="sourceLineNo">109</span>                ++size;<a name="line.109"></a>
-<span class="sourceLineNo">110</span>        }<a name="line.110"></a>
-<span class="sourceLineNo">111</span><a name="line.111"></a>
-<span class="sourceLineNo">112</span>        /** Adds all pairs from another list. */<a name="line.112"></a>
-<span class="sourceLineNo">113</span>        public void addAll(PairList&lt;S, T&gt; other) {<a name="line.113"></a>
-<span class="sourceLineNo">114</span>                // we have to store this in a local var, as other.size may change if<a name="line.114"></a>
-<span class="sourceLineNo">115</span>                // other == this<a name="line.115"></a>
-<span class="sourceLineNo">116</span>                int otherSize = other.size;<a name="line.116"></a>
+<span class="sourceLineNo">064</span>        /** The array used for storing the S. */<a name="line.64"></a>
+<span class="sourceLineNo">065</span>        @JsonProperty("firstElements")<a name="line.65"></a>
+<span class="sourceLineNo">066</span>        private Object[] firstElements;<a name="line.66"></a>
+<span class="sourceLineNo">067</span><a name="line.67"></a>
+<span class="sourceLineNo">068</span>        /** The array used for storing the T. */<a name="line.68"></a>
+<span class="sourceLineNo">069</span>        @JsonProperty("secondElements")<a name="line.69"></a>
+<span class="sourceLineNo">070</span>        private Object[] secondElements;<a name="line.70"></a>
+<span class="sourceLineNo">071</span><a name="line.71"></a>
+<span class="sourceLineNo">072</span>        /** Constructor. */<a name="line.72"></a>
+<span class="sourceLineNo">073</span>        public PairList() {<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                this(16);<a name="line.74"></a>
+<span class="sourceLineNo">075</span>        }<a name="line.75"></a>
+<span class="sourceLineNo">076</span><a name="line.76"></a>
+<span class="sourceLineNo">077</span>        /** Constructor. */<a name="line.77"></a>
+<span class="sourceLineNo">078</span>        public PairList(int initialCapacity) {<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                if (initialCapacity &lt; 1) {<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                        initialCapacity = 1;<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                }<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                firstElements = new Object[initialCapacity];<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                secondElements = new Object[initialCapacity];<a name="line.83"></a>
+<span class="sourceLineNo">084</span>        }<a name="line.84"></a>
+<span class="sourceLineNo">085</span><a name="line.85"></a>
+<span class="sourceLineNo">086</span>        /** Copy constructor. */<a name="line.86"></a>
+<span class="sourceLineNo">087</span>        public PairList(PairList&lt;S, T&gt; other) {<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                this(other.size);<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                addAll(other);<a name="line.89"></a>
+<span class="sourceLineNo">090</span>        }<a name="line.90"></a>
+<span class="sourceLineNo">091</span><a name="line.91"></a>
+<span class="sourceLineNo">092</span>        /**<a name="line.92"></a>
+<span class="sourceLineNo">093</span>         * Constructor to convert a map into a pair list.<a name="line.93"></a>
+<span class="sourceLineNo">094</span>         */<a name="line.94"></a>
+<span class="sourceLineNo">095</span>        public PairList(Map&lt;S, T&gt; map) {<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                this(map.size());<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                for (Entry&lt;S, T&gt; entry : map.entrySet()) {<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                        add(entry.getKey(), entry.getValue());<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                }<a name="line.99"></a>
+<span class="sourceLineNo">100</span>        }<a name="line.100"></a>
+<span class="sourceLineNo">101</span><a name="line.101"></a>
+<span class="sourceLineNo">102</span>        /**<a name="line.102"></a>
+<span class="sourceLineNo">103</span>         * Creates a new pair list initialized with a single key/value pair. This is<a name="line.103"></a>
+<span class="sourceLineNo">104</span>         * especially helpful for construction of small pair lists, as type inference<a name="line.104"></a>
+<span class="sourceLineNo">105</span>         * reduces writing overhead.<a name="line.105"></a>
+<span class="sourceLineNo">106</span>         */<a name="line.106"></a>
+<span class="sourceLineNo">107</span>        public static &lt;S, T&gt; PairList&lt;S, T&gt; from(S key, T value) {<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                PairList&lt;S, T&gt; result = new PairList&lt;&gt;();<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                result.add(key, value);<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                return result;<a name="line.110"></a>
+<span class="sourceLineNo">111</span>        }<a name="line.111"></a>
+<span class="sourceLineNo">112</span><a name="line.112"></a>
+<span class="sourceLineNo">113</span>        /** Returns whether the list is empty. */<a name="line.113"></a>
+<span class="sourceLineNo">114</span>        public boolean isEmpty() {<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                return size == 0;<a name="line.115"></a>
+<span class="sourceLineNo">116</span>        }<a name="line.116"></a>
 <span class="sourceLineNo">117</span><a name="line.117"></a>
-<span class="sourceLineNo">118</span>                ensureSpace(size + otherSize);<a name="line.118"></a>
-<span class="sourceLineNo">119</span>                for (int i = 0; i &lt; otherSize; ++i) {<a name="line.119"></a>
-<span class="sourceLineNo">120</span>                        firstElements[size] = other.firstElements[i];<a name="line.120"></a>
-<span class="sourceLineNo">121</span>                        secondElements[size] = other.secondElements[i];<a name="line.121"></a>
-<span class="sourceLineNo">122</span>                        ++size;<a name="line.122"></a>
-<span class="sourceLineNo">123</span>                }<a name="line.123"></a>
-<span class="sourceLineNo">124</span>        }<a name="line.124"></a>
-<span class="sourceLineNo">125</span><a name="line.125"></a>
-<span class="sourceLineNo">126</span>        /** Make sure there is space for at least the given amount of elements. */<a name="line.126"></a>
-<span class="sourceLineNo">127</span>        protected void ensureSpace(int space) {<a name="line.127"></a>
-<span class="sourceLineNo">128</span>                if (space &lt;= firstElements.length) {<a name="line.128"></a>
-<span class="sourceLineNo">129</span>                        return;<a name="line.129"></a>
-<span class="sourceLineNo">130</span>                }<a name="line.130"></a>
-<span class="sourceLineNo">131</span><a name="line.131"></a>
-<span class="sourceLineNo">132</span>                Object[] oldFirst = firstElements;<a name="line.132"></a>
-<span class="sourceLineNo">133</span>                Object[] oldSecond = secondElements;<a name="line.133"></a>
-<span class="sourceLineNo">134</span>                int newSize = firstElements.length * 2;<a name="line.134"></a>
-<span class="sourceLineNo">135</span>                while (newSize &lt; space) {<a name="line.135"></a>
-<span class="sourceLineNo">136</span>                        newSize *= 2;<a name="line.136"></a>
-<span class="sourceLineNo">137</span>                }<a name="line.137"></a>
-<span class="sourceLineNo">138</span><a name="line.138"></a>
-<span class="sourceLineNo">139</span>                firstElements = new Object[newSize];<a name="line.139"></a>
-<span class="sourceLineNo">140</span>                secondElements = new Object[newSize];<a name="line.140"></a>
-<span class="sourceLineNo">141</span>                System.arraycopy(oldFirst, 0, firstElements, 0, size);<a name="line.141"></a>
-<span class="sourceLineNo">142</span>                System.arraycopy(oldSecond, 0, secondElements, 0, size);<a name="line.142"></a>
+<span class="sourceLineNo">118</span>        /** Returns the size of the list. */<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        public int size() {<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                return size;<a name="line.120"></a>
+<span class="sourceLineNo">121</span>        }<a name="line.121"></a>
+<span class="sourceLineNo">122</span><a name="line.122"></a>
+<span class="sourceLineNo">123</span>        /** Add the given pair to the list. */<a name="line.123"></a>
+<span class="sourceLineNo">124</span>        public void add(S first, T second) {<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                ensureSpace(size + 1);<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                firstElements[size] = first;<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                secondElements[size] = second;<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                ++size;<a name="line.128"></a>
+<span class="sourceLineNo">129</span>        }<a name="line.129"></a>
+<span class="sourceLineNo">130</span><a name="line.130"></a>
+<span class="sourceLineNo">131</span>        /** Adds all pairs from another list. */<a name="line.131"></a>
+<span class="sourceLineNo">132</span>        public void addAll(PairList&lt;S, T&gt; other) {<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                // we have to store this in a local var, as other.size may change if<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                // other == this<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                int otherSize = other.size;<a name="line.135"></a>
+<span class="sourceLineNo">136</span><a name="line.136"></a>
+<span class="sourceLineNo">137</span>                ensureSpace(size + otherSize);<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                for (int i = 0; i &lt; otherSize; ++i) {<a name="line.138"></a>
+<span class="sourceLineNo">139</span>                        firstElements[size] = other.firstElements[i];<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                        secondElements[size] = other.secondElements[i];<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                        ++size;<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                }<a name="line.142"></a>
 <span class="sourceLineNo">143</span>        }<a name="line.143"></a>
 <span class="sourceLineNo">144</span><a name="line.144"></a>
-<span class="sourceLineNo">145</span>        /** Returns the first element at given index. */<a name="line.145"></a>
-<span class="sourceLineNo">146</span>        @SuppressWarnings("unchecked")<a name="line.146"></a>
-<span class="sourceLineNo">147</span>        public S getFirst(int i) {<a name="line.147"></a>
-<span class="sourceLineNo">148</span>                checkWithinBounds(i);<a name="line.148"></a>
-<span class="sourceLineNo">149</span>                return (S) firstElements[i];<a name="line.149"></a>
-<span class="sourceLineNo">150</span>        }<a name="line.150"></a>
-<span class="sourceLineNo">151</span><a name="line.151"></a>
-<span class="sourceLineNo">152</span>        /**<a name="line.152"></a>
-<span class="sourceLineNo">153</span>         * Checks whether the given &lt;code&gt;i&lt;/code&gt; is within the bounds. Throws an<a name="line.153"></a>
-<span class="sourceLineNo">154</span>         * exception otherwise.<a name="line.154"></a>
-<span class="sourceLineNo">155</span>         */<a name="line.155"></a>
-<span class="sourceLineNo">156</span>        private void checkWithinBounds(int i) {<a name="line.156"></a>
-<span class="sourceLineNo">157</span>                if (i &lt; 0 || i &gt;= size) {<a name="line.157"></a>
-<span class="sourceLineNo">158</span>                        throw new IndexOutOfBoundsException("Out of bounds: " + i);<a name="line.158"></a>
-<span class="sourceLineNo">159</span>                }<a name="line.159"></a>
-<span class="sourceLineNo">160</span>        }<a name="line.160"></a>
-<span class="sourceLineNo">161</span><a name="line.161"></a>
-<span class="sourceLineNo">162</span>        /** Sets the first element at given index. */<a name="line.162"></a>
-<span class="sourceLineNo">163</span>        public void setFirst(int i, S value) {<a name="line.163"></a>
-<span class="sourceLineNo">164</span>                checkWithinBounds(i);<a name="line.164"></a>
-<span class="sourceLineNo">165</span>                firstElements[i] = value;<a name="line.165"></a>
-<span class="sourceLineNo">166</span>        }<a name="line.166"></a>
-<span class="sourceLineNo">167</span><a name="line.167"></a>
-<span class="sourceLineNo">168</span>        /** Returns the second element at given index. */<a name="line.168"></a>
-<span class="sourceLineNo">169</span>        @SuppressWarnings("unchecked")<a name="line.169"></a>
-<span class="sourceLineNo">170</span>        public T getSecond(int i) {<a name="line.170"></a>
-<span class="sourceLineNo">171</span>                checkWithinBounds(i);<a name="line.171"></a>
-<span class="sourceLineNo">172</span>                return (T) secondElements[i];<a name="line.172"></a>
-<span class="sourceLineNo">173</span>        }<a name="line.173"></a>
-<span class="sourceLineNo">174</span><a name="line.174"></a>
-<span class="sourceLineNo">175</span>        /** Sets the first element at given index. */<a name="line.175"></a>
-<span class="sourceLineNo">176</span>        public void setSecond(int i, T value) {<a name="line.176"></a>
-<span class="sourceLineNo">177</span>                checkWithinBounds(i);<a name="line.177"></a>
-<span class="sourceLineNo">178</span>                secondElements[i] = value;<a name="line.178"></a>
+<span class="sourceLineNo">145</span>        /** Make sure there is space for at least the given amount of elements. */<a name="line.145"></a>
+<span class="sourceLineNo">146</span>        protected void ensureSpace(int space) {<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                if (space &lt;= firstElements.length) {<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                        return;<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                }<a name="line.149"></a>
+<span class="sourceLineNo">150</span><a name="line.150"></a>
+<span class="sourceLineNo">151</span>                Object[] oldFirst = firstElements;<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                Object[] oldSecond = secondElements;<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                int newSize = firstElements.length * 2;<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                while (newSize &lt; space) {<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                        newSize *= 2;<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                }<a name="line.156"></a>
+<span class="sourceLineNo">157</span><a name="line.157"></a>
+<span class="sourceLineNo">158</span>                firstElements = new Object[newSize];<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                secondElements = new Object[newSize];<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                System.arraycopy(oldFirst, 0, firstElements, 0, size);<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                System.arraycopy(oldSecond, 0, secondElements, 0, size);<a name="line.161"></a>
+<span class="sourceLineNo">162</span>        }<a name="line.162"></a>
+<span class="sourceLineNo">163</span><a name="line.163"></a>
+<span class="sourceLineNo">164</span>        /** Returns the first element at given index. */<a name="line.164"></a>
+<span class="sourceLineNo">165</span>        @SuppressWarnings("unchecked")<a name="line.165"></a>
+<span class="sourceLineNo">166</span>        public S getFirst(int i) {<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                checkWithinBounds(i);<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                return (S) firstElements[i];<a name="line.168"></a>
+<span class="sourceLineNo">169</span>        }<a name="line.169"></a>
+<span class="sourceLineNo">170</span><a name="line.170"></a>
+<span class="sourceLineNo">171</span>        /**<a name="line.171"></a>
+<span class="sourceLineNo">172</span>         * Checks whether the given &lt;code&gt;i&lt;/code&gt; is within the bounds. Throws an<a name="line.172"></a>
+<span class="sourceLineNo">173</span>         * exception otherwise.<a name="line.173"></a>
+<span class="sourceLineNo">174</span>         */<a name="line.174"></a>
+<span class="sourceLineNo">175</span>        private void checkWithinBounds(int i) {<a name="line.175"></a>
+<span class="sourceLineNo">176</span>                if (i &lt; 0 || i &gt;= size) {<a name="line.176"></a>
+<span class="sourceLineNo">177</span>                        throw new IndexOutOfBoundsException("Out of bounds: " + i);<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                }<a name="line.178"></a>
 <span class="sourceLineNo">179</span>        }<a name="line.179"></a>
 <span class="sourceLineNo">180</span><a name="line.180"></a>
-<span class="sourceLineNo">181</span>        /** Creates a new list containing all first elements. */<a name="line.181"></a>
-<span class="sourceLineNo">182</span>        @SuppressWarnings("unchecked")<a name="line.182"></a>
-<span class="sourceLineNo">183</span>        public List&lt;S&gt; extractFirstList() {<a name="line.183"></a>
-<span class="sourceLineNo">184</span>                List&lt;S&gt; result = new ArrayList&lt;S&gt;(size + 1);<a name="line.184"></a>
-<span class="sourceLineNo">185</span>                for (int i = 0; i &lt; size; ++i) {<a name="line.185"></a>
-<span class="sourceLineNo">186</span>                        result.add((S) firstElements[i]);<a name="line.186"></a>
-<span class="sourceLineNo">187</span>                }<a name="line.187"></a>
-<span class="sourceLineNo">188</span>                return result;<a name="line.188"></a>
-<span class="sourceLineNo">189</span>        }<a name="line.189"></a>
-<span class="sourceLineNo">190</span><a name="line.190"></a>
-<span class="sourceLineNo">191</span>        /** Creates a new list containing all second elements. */<a name="line.191"></a>
-<span class="sourceLineNo">192</span>        @SuppressWarnings("unchecked")<a name="line.192"></a>
-<span class="sourceLineNo">193</span>        public List&lt;T&gt; extractSecondList() {<a name="line.193"></a>
-<span class="sourceLineNo">194</span>                List&lt;T&gt; result = new ArrayList&lt;T&gt;(size + 1);<a name="line.194"></a>
-<span class="sourceLineNo">195</span>                for (int i = 0; i &lt; size; ++i) {<a name="line.195"></a>
-<span class="sourceLineNo">196</span>                        result.add((T) secondElements[i]);<a name="line.196"></a>
-<span class="sourceLineNo">197</span>                }<a name="line.197"></a>
-<span class="sourceLineNo">198</span>                return result;<a name="line.198"></a>
-<span class="sourceLineNo">199</span>        }<a name="line.199"></a>
-<span class="sourceLineNo">200</span><a name="line.200"></a>
-<span class="sourceLineNo">201</span>        /**<a name="line.201"></a>
-<span class="sourceLineNo">202</span>         * Swaps the pairs of this list. Is S and T are different types, this will<a name="line.202"></a>
-<span class="sourceLineNo">203</span>         * be extremely dangerous.<a name="line.203"></a>
-<span class="sourceLineNo">204</span>         */<a name="line.204"></a>
-<span class="sourceLineNo">205</span>        public void swapPairs() {<a name="line.205"></a>
-<span class="sourceLineNo">206</span>                Object[] temp = firstElements;<a name="line.206"></a>
-<span class="sourceLineNo">207</span>                firstElements = secondElements;<a name="line.207"></a>
-<span class="sourceLineNo">208</span>                secondElements = temp;<a name="line.208"></a>
-<span class="sourceLineNo">209</span>        }<a name="line.209"></a>
-<span class="sourceLineNo">210</span><a name="line.210"></a>
-<span class="sourceLineNo">211</span>        /** Swaps the entries located at indexes i and j. */<a name="line.211"></a>
-<span class="sourceLineNo">212</span>        public void swapEntries(int i, int j) {<a name="line.212"></a>
-<span class="sourceLineNo">213</span>                S tmp1 = getFirst(i);<a name="line.213"></a>
-<span class="sourceLineNo">214</span>                T tmp2 = getSecond(i);<a name="line.214"></a>
-<span class="sourceLineNo">215</span>                setFirst(i, getFirst(j));<a name="line.215"></a>
-<span class="sourceLineNo">216</span>                setSecond(i, getSecond(j));<a name="line.216"></a>
-<span class="sourceLineNo">217</span>                setFirst(j, tmp1);<a name="line.217"></a>
-<span class="sourceLineNo">218</span>                setSecond(j, tmp2);<a name="line.218"></a>
-<span class="sourceLineNo">219</span>        }<a name="line.219"></a>
-<span class="sourceLineNo">220</span><a name="line.220"></a>
-<span class="sourceLineNo">221</span>        /** Clears this list. */<a name="line.221"></a>
-<span class="sourceLineNo">222</span>        public void clear() {<a name="line.222"></a>
-<span class="sourceLineNo">223</span>                size = 0;<a name="line.223"></a>
+<span class="sourceLineNo">181</span>        /** Sets the first element at given index. */<a name="line.181"></a>
+<span class="sourceLineNo">182</span>        public void setFirst(int i, S value) {<a name="line.182"></a>
+<span class="sourceLineNo">183</span>                checkWithinBounds(i);<a name="line.183"></a>
+<span class="sourceLineNo">184</span>                firstElements[i] = value;<a name="line.184"></a>
+<span class="sourceLineNo">185</span>        }<a name="line.185"></a>
+<span class="sourceLineNo">186</span><a name="line.186"></a>
+<span class="sourceLineNo">187</span>        /** Returns the second element at given index. */<a name="line.187"></a>
+<span class="sourceLineNo">188</span>        @SuppressWarnings("unchecked")<a name="line.188"></a>
+<span class="sourceLineNo">189</span>        public T getSecond(int i) {<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                checkWithinBounds(i);<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                return (T) secondElements[i];<a name="line.191"></a>
+<span class="sourceLineNo">192</span>        }<a name="line.192"></a>
+<span class="sourceLineNo">193</span><a name="line.193"></a>
+<span class="sourceLineNo">194</span>        /** Sets the first element at given index. */<a name="line.194"></a>
+<span class="sourceLineNo">195</span>        public void setSecond(int i, T value) {<a name="line.195"></a>
+<span class="sourceLineNo">196</span>                checkWithinBounds(i);<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                secondElements[i] = value;<a name="line.197"></a>
+<span class="sourceLineNo">198</span>        }<a name="line.198"></a>
+<span class="sourceLineNo">199</span><a name="line.199"></a>
+<span class="sourceLineNo">200</span>        /** Creates a new list containing all first elements. */<a name="line.200"></a>
+<span class="sourceLineNo">201</span>        @SuppressWarnings("unchecked")<a name="line.201"></a>
+<span class="sourceLineNo">202</span>        public List&lt;S&gt; extractFirstList() {<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                List&lt;S&gt; result = new ArrayList&lt;&gt;(size + 1);<a name="line.203"></a>
+<span class="sourceLineNo">204</span>                for (int i = 0; i &lt; size; ++i) {<a name="line.204"></a>
+<span class="sourceLineNo">205</span>                        result.add((S) firstElements[i]);<a name="line.205"></a>
+<span class="sourceLineNo">206</span>                }<a name="line.206"></a>
+<span class="sourceLineNo">207</span>                return result;<a name="line.207"></a>
+<span class="sourceLineNo">208</span>        }<a name="line.208"></a>
+<span class="sourceLineNo">209</span><a name="line.209"></a>
+<span class="sourceLineNo">210</span>        /** Returns a list view of the first elements backed directly by the array. */<a name="line.210"></a>
+<span class="sourceLineNo">211</span>        @SuppressWarnings("unchecked")<a name="line.211"></a>
+<span class="sourceLineNo">212</span>        public UnmodifiableList&lt;S&gt; getFirstList() {<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                return (UnmodifiableList&lt;S&gt;) CollectionUtils.asUnmodifiable(Arrays.asList(firstElements).subList(0, size));<a name="line.213"></a>
+<span class="sourceLineNo">214</span>        }<a name="line.214"></a>
+<span class="sourceLineNo">215</span><a name="line.215"></a>
+<span class="sourceLineNo">216</span>        /** Creates a new list containing all second elements. */<a name="line.216"></a>
+<span class="sourceLineNo">217</span>        @SuppressWarnings("unchecked")<a name="line.217"></a>
+<span class="sourceLineNo">218</span>        public List&lt;T&gt; extractSecondList() {<a name="line.218"></a>
+<span class="sourceLineNo">219</span>                List&lt;T&gt; result = new ArrayList&lt;&gt;(size + 1);<a name="line.219"></a>
+<span class="sourceLineNo">220</span>                for (int i = 0; i &lt; size; ++i) {<a name="line.220"></a>
+<span class="sourceLineNo">221</span>                        result.add((T) secondElements[i]);<a name="line.221"></a>
+<span class="sourceLineNo">222</span>                }<a name="line.222"></a>
+<span class="sourceLineNo">223</span>                return result;<a name="line.223"></a>
 <span class="sourceLineNo">224</span>        }<a name="line.224"></a>
 <span class="sourceLineNo">225</span><a name="line.225"></a>
-<span class="sourceLineNo">226</span>        /** Removes the last element of the list. */<a name="line.226"></a>
-<span class="sourceLineNo">227</span>        public void removeLast() {<a name="line.227"></a>
-<span class="sourceLineNo">228</span>                CCSMAssert.isTrue(size &gt; 0, "Size must be positive!");<a name="line.228"></a>
-<span class="sourceLineNo">229</span>                size -= 1;<a name="line.229"></a>
+<span class="sourceLineNo">226</span>        /** Returns a list view of the second elements backed directly by the array. */<a name="line.226"></a>
+<span class="sourceLineNo">227</span>        @SuppressWarnings("unchecked")<a name="line.227"></a>
+<span class="sourceLineNo">228</span>        public UnmodifiableList&lt;T&gt; getSecondList() {<a name="line.228"></a>
+<span class="sourceLineNo">229</span>                return (UnmodifiableList&lt;T&gt;) CollectionUtils.asUnmodifiable(Arrays.asList(secondElements).subList(0, size));<a name="line.229"></a>
 <span class="sourceLineNo">230</span>        }<a name="line.230"></a>
 <span class="sourceLineNo">231</span><a name="line.231"></a>
-<span class="sourceLineNo">232</span>        /** {@inheritDoc} */<a name="line.232"></a>
-<span class="sourceLineNo">233</span>        @Override<a name="line.233"></a>
-<span class="sourceLineNo">234</span>        public String toString() {<a name="line.234"></a>
-<span class="sourceLineNo">235</span>                StringBuffer result = new StringBuffer();<a name="line.235"></a>
-<span class="sourceLineNo">236</span>                result.append('[');<a name="line.236"></a>
-<span class="sourceLineNo">237</span>                for (int i = 0; i &lt; size; i++) {<a name="line.237"></a>
-<span class="sourceLineNo">238</span>                        if (i != 0) {<a name="line.238"></a>
-<span class="sourceLineNo">239</span>                                result.append(',');<a name="line.239"></a>
-<span class="sourceLineNo">240</span>                        }<a name="line.240"></a>
-<span class="sourceLineNo">241</span>                        result.append('(');<a name="line.241"></a>
-<span class="sourceLineNo">242</span>                        result.append(String.valueOf(firstElements[i]));<a name="line.242"></a>
-<span class="sourceLineNo">243</span>                        result.append(',');<a name="line.243"></a>
-<span class="sourceLineNo">244</span>                        result.append(String.valueOf(secondElements[i]));<a name="line.244"></a>
-<span class="sourceLineNo">245</span>                        result.append(')');<a name="line.245"></a>
-<span class="sourceLineNo">246</span>                }<a name="line.246"></a>
-<span class="sourceLineNo">247</span>                result.append(']');<a name="line.247"></a>
-<span class="sourceLineNo">248</span>                return result.toString();<a name="line.248"></a>
-<span class="sourceLineNo">249</span>        }<a name="line.249"></a>
-<span class="sourceLineNo">250</span><a name="line.250"></a>
-<span class="sourceLineNo">251</span>        /** {@inheritDoc} */<a name="line.251"></a>
-<span class="sourceLineNo">252</span>        @Override<a name="line.252"></a>
-<span class="sourceLineNo">253</span>        public int hashCode() {<a name="line.253"></a>
-<span class="sourceLineNo">254</span>                int prime = 31;<a name="line.254"></a>
-<span class="sourceLineNo">255</span>                int hash = size;<a name="line.255"></a>
-<span class="sourceLineNo">256</span>                hash = prime * hash + HashCodeUtils.hashArrayPart(firstElements, 0, size);<a name="line.256"></a>
-<span class="sourceLineNo">257</span>                return prime * hash + HashCodeUtils.hashArrayPart(secondElements, 0, size);<a name="line.257"></a>
-<span class="sourceLineNo">258</span>        }<a name="line.258"></a>
-<span class="sourceLineNo">259</span><a name="line.259"></a>
-<span class="sourceLineNo">260</span>        /** {@inheritDoc} */<a name="line.260"></a>
-<span class="sourceLineNo">261</span>        @Override<a name="line.261"></a>
-<span class="sourceLineNo">262</span>        public boolean equals(Object obj) {<a name="line.262"></a>
-<span class="sourceLineNo">263</span>                if (this == obj) {<a name="line.263"></a>
-<span class="sourceLineNo">264</span>                        return true;<a name="line.264"></a>
-<span class="sourceLineNo">265</span>                }<a name="line.265"></a>
-<span class="sourceLineNo">266</span>                if (!(obj instanceof PairList)) {<a name="line.266"></a>
-<span class="sourceLineNo">267</span>                        return false;<a name="line.267"></a>
-<span class="sourceLineNo">268</span>                }<a name="line.268"></a>
-<span class="sourceLineNo">269</span><a name="line.269"></a>
-<span class="sourceLineNo">270</span>                PairList&lt;?, ?&gt; other = (PairList&lt;?, ?&gt;) obj;<a name="line.270"></a>
-<span class="sourceLineNo">271</span>                if (size != other.size) {<a name="line.271"></a>
-<span class="sourceLineNo">272</span>                        return false;<a name="line.272"></a>
-<span class="sourceLineNo">273</span>                }<a name="line.273"></a>
-<span class="sourceLineNo">274</span>                for (int i = 0; i &lt; size; i++) {<a name="line.274"></a>
-<span class="sourceLineNo">275</span>                        if (!Objects.equals(firstElements[i], other.firstElements[i])<a name="line.275"></a>
-<span class="sourceLineNo">276</span>                                        || !Objects.equals(secondElements[i], secondElements[i])) {<a name="line.276"></a>
-<span class="sourceLineNo">277</span>                                return false;<a name="line.277"></a>
-<span class="sourceLineNo">278</span>                        }<a name="line.278"></a>
-<span class="sourceLineNo">279</span>                }<a name="line.279"></a>
-<span class="sourceLineNo">280</span>                return true;<a name="line.280"></a>
-<span class="sourceLineNo">281</span>        }<a name="line.281"></a>
-<span class="sourceLineNo">282</span><a name="line.282"></a>
-<span class="sourceLineNo">283</span>        /** {@inheritDoc} */<a name="line.283"></a>
-<span class="sourceLineNo">284</span>        @Override<a name="line.284"></a>
-<span class="sourceLineNo">285</span>        public Iterator&lt;Pair&lt;S, T&gt;&gt; iterator() {<a name="line.285"></a>
-<span class="sourceLineNo">286</span>                return new Iterator&lt;Pair&lt;S, T&gt;&gt;() {<a name="line.286"></a>
-<span class="sourceLineNo">287</span>                        int index = 0;<a name="line.287"></a>
-<span class="sourceLineNo">288</span><a name="line.288"></a>
-<span class="sourceLineNo">289</span>                        /** {@inheritDoc} */<a name="line.289"></a>
-<span class="sourceLineNo">290</span>                        @Override<a name="line.290"></a>
-<span class="sourceLineNo">291</span>                        public boolean hasNext() {<a name="line.291"></a>
-<span class="sourceLineNo">292</span>                                return index &lt; size;<a name="line.292"></a>
-<span class="sourceLineNo">293</span>                        }<a name="line.293"></a>
-<span class="sourceLineNo">294</span><a name="line.294"></a>
-<span class="sourceLineNo">295</span>                        /** {@inheritDoc} */<a name="line.295"></a>
-<span class="sourceLineNo">296</span>                        @Override<a name="line.296"></a>
-<span class="sourceLineNo">297</span>                        public Pair&lt;S, T&gt; next() {<a name="line.297"></a>
-<span class="sourceLineNo">298</span>                                checkWithinBounds(index);<a name="line.298"></a>
-<span class="sourceLineNo">299</span>                                int oldIndex = index;<a name="line.299"></a>
-<span class="sourceLineNo">300</span>                                index++;<a name="line.300"></a>
-<span class="sourceLineNo">301</span>                                return createPairForIndex(oldIndex);<a name="line.301"></a>
-<span class="sourceLineNo">302</span>                        }<a name="line.302"></a>
-<span class="sourceLineNo">303</span>                };<a name="line.303"></a>
-<span class="sourceLineNo">304</span>        }<a name="line.304"></a>
-<span class="sourceLineNo">305</span><a name="line.305"></a>
-<span class="sourceLineNo">306</span>        /**<a name="line.306"></a>
-<span class="sourceLineNo">307</span>         * Returns a non-parallel stream of {@link Pair}s from this list.<a name="line.307"></a>
-<span class="sourceLineNo">308</span>         * &lt;p&gt;<a name="line.308"></a>
-<span class="sourceLineNo">309</span>         * NOTE: the underlying {@link Spliterator} implementation does currently<a name="line.309"></a>
-<span class="sourceLineNo">310</span>         * not support splitting. Thus, trying to use the returned stream in<a name="line.310"></a>
-<span class="sourceLineNo">311</span>         * parallel execution will fail.<a name="line.311"></a>
-<span class="sourceLineNo">312</span>         *<a name="line.312"></a>
-<span class="sourceLineNo">313</span>         * @see PairListSpliterator#trySplit()<a name="line.313"></a>
-<span class="sourceLineNo">314</span>         */<a name="line.314"></a>
-<span class="sourceLineNo">315</span>        public Stream&lt;Pair&lt;S, T&gt;&gt; stream() {<a name="line.315"></a>
-<span class="sourceLineNo">316</span>                return StreamSupport.stream(new PairListSpliterator(), false);<a name="line.316"></a>
-<span class="sourceLineNo">317</span>        }<a name="line.317"></a>
-<span class="sourceLineNo">318</span><a name="line.318"></a>
-<span class="sourceLineNo">319</span>        /**<a name="line.319"></a>
-<span class="sourceLineNo">320</span>         * Converts this {@link PairList} into a {@link Map}.<a name="line.320"></a>
-<span class="sourceLineNo">321</span>         *<a name="line.321"></a>
-<span class="sourceLineNo">322</span>         * If the first elements contain duplicates (according to<a name="line.322"></a>
-<span class="sourceLineNo">323</span>         * {@link Object#equals(Object)}, an {@link IllegalStateException} is<a name="line.323"></a>
-<span class="sourceLineNo">324</span>         * thrown. If the first elements may have duplicates, use<a name="line.324"></a>
-<span class="sourceLineNo">325</span>         * {@link #toMap(BinaryOperator)} instead.<a name="line.325"></a>
-<span class="sourceLineNo">326</span>         */<a name="line.326"></a>
-<span class="sourceLineNo">327</span>        public Map&lt;S, T&gt; toMap() {<a name="line.327"></a>
-<span class="sourceLineNo">328</span>                return stream().collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));<a name="line.328"></a>
-<span class="sourceLineNo">329</span>        }<a name="line.329"></a>
-<span class="sourceLineNo">330</span><a name="line.330"></a>
-<span class="sourceLineNo">331</span>        /**<a name="line.331"></a>
-<span class="sourceLineNo">332</span>         * Converts this {@link PairList} into a {@link Map}.<a name="line.332"></a>
-<span class="sourceLineNo">333</span>         *<a name="line.333"></a>
-<span class="sourceLineNo">334</span>         * If the first elements contain duplicates (according to<a name="line.334"></a>
-<span class="sourceLineNo">335</span>         * {@link Object#equals(Object)}, the respective second elements are merged<a name="line.335"></a>
-<span class="sourceLineNo">336</span>         * using the provided merging function..<a name="line.336"></a>
-<span class="sourceLineNo">337</span>         */<a name="line.337"></a>
-<span class="sourceLineNo">338</span>        public Map&lt;S, T&gt; toMap(BinaryOperator&lt;T&gt; mergeFunction) {<a name="line.338"></a>
-<span class="sourceLineNo">339</span>                return stream().collect(Collectors.toMap(Pair::getFirst, Pair::getSecond, mergeFunction));<a name="line.339"></a>
-<span class="sourceLineNo">340</span>        }<a name="line.340"></a>
-<span class="sourceLineNo">341</span><a name="line.341"></a>
-<span class="sourceLineNo">342</span>        /**<a name="line.342"></a>
-<span class="sourceLineNo">343</span>         * Creates a pair from the values at the given index in this list.<a name="line.343"></a>
-<span class="sourceLineNo">344</span>         *<a name="line.344"></a>
-<span class="sourceLineNo">345</span>         * We suppress unchecked cast warnings since the PairList stores all<a name="line.345"></a>
-<span class="sourceLineNo">346</span>         * elements as plain Objects.<a name="line.346"></a>
-<span class="sourceLineNo">347</span>         */<a name="line.347"></a>
-<span class="sourceLineNo">348</span>        @SuppressWarnings("unchecked")<a name="line.348"></a>
-<span class="sourceLineNo">349</span>        private Pair&lt;S, T&gt; createPairForIndex(int index) {<a name="line.349"></a>
-<span class="sourceLineNo">350</span>                return new Pair&lt;S, T&gt;((S) firstElements[index], (T) secondElements[index]);<a name="line.350"></a>
-<span class="sourceLineNo">351</span>        }<a name="line.351"></a>
-<span class="sourceLineNo">352</span><a name="line.352"></a>
-<span class="sourceLineNo">353</span>        /**<a name="line.353"></a>
-<span class="sourceLineNo">354</span>         * Spliterator for the {@link PairList}.<a name="line.354"></a>
-<span class="sourceLineNo">355</span>         */<a name="line.355"></a>
-<span class="sourceLineNo">356</span>        private final class PairListSpliterator implements Spliterator&lt;Pair&lt;S, T&gt;&gt; {<a name="line.356"></a>
-<span class="sourceLineNo">357</span><a name="line.357"></a>
-<span class="sourceLineNo">358</span>                /**<a name="line.358"></a>
-<span class="sourceLineNo">359</span>                 * The next element to process when {@link #tryAdvance(Consumer)} is<a name="line.359"></a>
-<span class="sourceLineNo">360</span>                 * called.<a name="line.360"></a>
-<span class="sourceLineNo">361</span>                 */<a name="line.361"></a>
-<span class="sourceLineNo">362</span>                private int nextElementToProcess;<a name="line.362"></a>
-<span class="sourceLineNo">363</span><a name="line.363"></a>
-<span class="sourceLineNo">364</span>                /** {@inheritDoc} */<a name="line.364"></a>
-<span class="sourceLineNo">365</span>                @Override<a name="line.365"></a>
-<span class="sourceLineNo">366</span>                public int characteristics() {<a name="line.366"></a>
-<span class="sourceLineNo">367</span>                        // the Spliterator is not subsized since we don't support splitting<a name="line.367"></a>
-<span class="sourceLineNo">368</span>                        // at the moment<a name="line.368"></a>
-<span class="sourceLineNo">369</span>                        return Spliterator.IMMUTABLE | Spliterator.ORDERED | Spliterator.SIZED;<a name="line.369"></a>
-<span class="sourceLineNo">370</span>                }<a name="line.370"></a>
-<span class="sourceLineNo">371</span><a name="line.371"></a>
-<span class="sourceLineNo">372</span>                /** {@inheritDoc} */<a name="line.372"></a>
-<span class="sourceLineNo">373</span>                @Override<a name="line.373"></a>
-<span class="sourceLineNo">374</span>                public long estimateSize() {<a name="line.374"></a>
-<span class="sourceLineNo">375</span>                        return size - nextElementToProcess;<a name="line.375"></a>
-<span class="sourceLineNo">376</span>                }<a name="line.376"></a>
-<span class="sourceLineNo">377</span><a name="line.377"></a>
-<span class="sourceLineNo">378</span>                /** {@inheritDoc} */<a name="line.378"></a>
-<span class="sourceLineNo">379</span>                @Override<a name="line.379"></a>
-<span class="sourceLineNo">380</span>                public boolean tryAdvance(Consumer&lt;? super Pair&lt;S, T&gt;&gt; action) {<a name="line.380"></a>
-<span class="sourceLineNo">381</span>                        if (nextElementToProcess == size) {<a name="line.381"></a>
-<span class="sourceLineNo">382</span>                                return false;<a name="line.382"></a>
-<span class="sourceLineNo">383</span>                        }<a name="line.383"></a>
-<span class="sourceLineNo">384</span><a name="line.384"></a>
-<span class="sourceLineNo">385</span>                        action.accept(createPairForIndex(nextElementToProcess));<a name="line.385"></a>
-<span class="sourceLineNo">386</span>                        nextElementToProcess++;<a name="line.386"></a>
-<span class="sourceLineNo">387</span>                        return true;<a name="line.387"></a>
-<span class="sourceLineNo">388</span>                }<a name="line.388"></a>
-<span class="sourceLineNo">389</span><a name="line.389"></a>
-<span class="sourceLineNo">390</span>                /**<a name="line.390"></a>
-<span class="sourceLineNo">391</span>                 * {@inheritDoc}<a name="line.391"></a>
-<span class="sourceLineNo">392</span>                 *<a name="line.392"></a>
-<span class="sourceLineNo">393</span>                 * We return &lt;code&gt;null&lt;/code&gt; to indicate that this {@link Spliterator}<a name="line.393"></a>
-<span class="sourceLineNo">394</span>                 * cannot be split. If parallel execution is required, this method must<a name="line.394"></a>
-<span class="sourceLineNo">395</span>                 * be implemented and the subsized characteristic should be adhered to.<a name="line.395"></a>
-<span class="sourceLineNo">396</span>                 */<a name="line.396"></a>
-<span class="sourceLineNo">397</span>                @Override<a name="line.397"></a>
-<span class="sourceLineNo">398</span>                public Spliterator&lt;Pair&lt;S, T&gt;&gt; trySplit() {<a name="line.398"></a>
-<span class="sourceLineNo">399</span>                        return null;<a name="line.399"></a>
-<span class="sourceLineNo">400</span>                }<a name="line.400"></a>
-<span class="sourceLineNo">401</span>        }<a name="line.401"></a>
-<span class="sourceLineNo">402</span><a name="line.402"></a>
-<span class="sourceLineNo">403</span>        /**<a name="line.403"></a>
-<span class="sourceLineNo">404</span>         * Collects a stream of pairs into a {@link PairList}.<a name="line.404"></a>
-<span class="sourceLineNo">405</span>         */<a name="line.405"></a>
-<span class="sourceLineNo">406</span>        private static class PairListCollector&lt;S, T&gt; implements Collector&lt;Pair&lt;S, T&gt;, PairList&lt;S, T&gt;, PairList&lt;S, T&gt;&gt; {<a name="line.406"></a>
-<span class="sourceLineNo">407</span><a name="line.407"></a>
-<span class="sourceLineNo">408</span>                /** {@inheritDoc} */<a name="line.408"></a>
-<span class="sourceLineNo">409</span>                @Override<a name="line.409"></a>
-<span class="sourceLineNo">410</span>                public Supplier&lt;PairList&lt;S, T&gt;&gt; supplier() {<a name="line.410"></a>
-<span class="sourceLineNo">411</span>                        return PairList::new;<a name="line.411"></a>
-<span class="sourceLineNo">412</span>                }<a name="line.412"></a>
-<span class="sourceLineNo">413</span><a name="line.413"></a>
-<span class="sourceLineNo">414</span>                /** {@inheritDoc} */<a name="line.414"></a>
-<span class="sourceLineNo">415</span>                @Override<a name="line.415"></a>
-<span class="sourceLineNo">416</span>                public BiConsumer&lt;PairList&lt;S, T&gt;, Pair&lt;S, T&gt;&gt; accumulator() {<a name="line.416"></a>
-<span class="sourceLineNo">417</span>                        return (list, pair) -&gt; list.add(pair.getFirst(), pair.getSecond());<a name="line.417"></a>
-<span class="sourceLineNo">418</span>                }<a name="line.418"></a>
+<span class="sourceLineNo">232</span>        /**<a name="line.232"></a>
+<span class="sourceLineNo">233</span>         * Swaps the pairs of this list. Is S and T are different types, this will be<a name="line.233"></a>
+<span class="sourceLineNo">234</span>         * extremely dangerous.<a name="line.234"></a>
+<span class="sourceLineNo">235</span>         */<a name="line.235"></a>
+<span class="sourceLineNo">236</span>        public void swapPairs() {<a name="line.236"></a>
+<span class="sourceLineNo">237</span>                Object[] temp = firstElements;<a name="line.237"></a>
+<span class="sourceLineNo">238</span>                firstElements = secondElements;<a name="line.238"></a>
+<span class="sourceLineNo">239</span>                secondElements = temp;<a name="line.239"></a>
+<span class="sourceLineNo">240</span>        }<a name="line.240"></a>
+<span class="sourceLineNo">241</span><a name="line.241"></a>
+<span class="sourceLineNo">242</span>        /** Swaps the entries located at indexes i and j. */<a name="line.242"></a>
+<span class="sourceLineNo">243</span>        public void swapEntries(int i, int j) {<a name="line.243"></a>
+<span class="sourceLineNo">244</span>                S tmp1 = getFirst(i);<a name="line.244"></a>
+<span class="sourceLineNo">245</span>                T tmp2 = getSecond(i);<a name="line.245"></a>
+<span class="sourceLineNo">246</span>                setFirst(i, getFirst(j));<a name="line.246"></a>
+<span class="sourceLineNo">247</span>                setSecond(i, getSecond(j));<a name="line.247"></a>
+<span class="sourceLineNo">248</span>                setFirst(j, tmp1);<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                setSecond(j, tmp2);<a name="line.249"></a>
+<span class="sourceLineNo">250</span>        }<a name="line.250"></a>
+<span class="sourceLineNo">251</span><a name="line.251"></a>
+<span class="sourceLineNo">252</span>        /** Clears this list. */<a name="line.252"></a>
+<span class="sourceLineNo">253</span>        public void clear() {<a name="line.253"></a>
+<span class="sourceLineNo">254</span>                size = 0;<a name="line.254"></a>
+<span class="sourceLineNo">255</span>        }<a name="line.255"></a>
+<span class="sourceLineNo">256</span><a name="line.256"></a>
+<span class="sourceLineNo">257</span>        /** Removes the last element of the list. */<a name="line.257"></a>
+<span class="sourceLineNo">258</span>        public void removeLast() {<a name="line.258"></a>
+<span class="sourceLineNo">259</span>                CCSMAssert.isTrue(size &gt; 0, "Size must be positive!");<a name="line.259"></a>
+<span class="sourceLineNo">260</span>                size -= 1;<a name="line.260"></a>
+<span class="sourceLineNo">261</span>        }<a name="line.261"></a>
+<span class="sourceLineNo">262</span><a name="line.262"></a>
+<span class="sourceLineNo">263</span>        /** {@inheritDoc} */<a name="line.263"></a>
+<span class="sourceLineNo">264</span>        @Override<a name="line.264"></a>
+<span class="sourceLineNo">265</span>        public String toString() {<a name="line.265"></a>
+<span class="sourceLineNo">266</span>                StringBuffer result = new StringBuffer();<a name="line.266"></a>
+<span class="sourceLineNo">267</span>                result.append('[');<a name="line.267"></a>
+<span class="sourceLineNo">268</span>                for (int i = 0; i &lt; size; i++) {<a name="line.268"></a>
+<span class="sourceLineNo">269</span>                        if (i != 0) {<a name="line.269"></a>
+<span class="sourceLineNo">270</span>                                result.append(',');<a name="line.270"></a>
+<span class="sourceLineNo">271</span>                        }<a name="line.271"></a>
+<span class="sourceLineNo">272</span>                        result.append('(');<a name="line.272"></a>
+<span class="sourceLineNo">273</span>                        result.append(String.valueOf(firstElements[i]));<a name="line.273"></a>
+<span class="sourceLineNo">274</span>                        result.append(',');<a name="line.274"></a>
+<span class="sourceLineNo">275</span>                        result.append(String.valueOf(secondElements[i]));<a name="line.275"></a>
+<span class="sourceLineNo">276</span>                        result.append(')');<a name="line.276"></a>
+<span class="sourceLineNo">277</span>                }<a name="line.277"></a>
+<span class="sourceLineNo">278</span>                result.append(']');<a name="line.278"></a>
+<span class="sourceLineNo">279</span>                return result.toString();<a name="line.279"></a>
+<span class="sourceLineNo">280</span>        }<a name="line.280"></a>
+<span class="sourceLineNo">281</span><a name="line.281"></a>
+<span class="sourceLineNo">282</span>        /** {@inheritDoc} */<a name="line.282"></a>
+<span class="sourceLineNo">283</span>        @Override<a name="line.283"></a>
+<span class="sourceLineNo">284</span>        public int hashCode() {<a name="line.284"></a>
+<span class="sourceLineNo">285</span>                int prime = 31;<a name="line.285"></a>
+<span class="sourceLineNo">286</span>                int hash = size;<a name="line.286"></a>
+<span class="sourceLineNo">287</span>                hash = prime * hash + HashCodeUtils.hashArrayPart(firstElements, 0, size);<a name="line.287"></a>
+<span class="sourceLineNo">288</span>                return prime * hash + HashCodeUtils.hashArrayPart(secondElements, 0, size);<a name="line.288"></a>
+<span class="sourceLineNo">289</span>        }<a name="line.289"></a>
+<span class="sourceLineNo">290</span><a name="line.290"></a>
+<span class="sourceLineNo">291</span>        /** {@inheritDoc} */<a name="line.291"></a>
+<span class="sourceLineNo">292</span>        @Override<a name="line.292"></a>
+<span class="sourceLineNo">293</span>        public boolean equals(Object obj) {<a name="line.293"></a>
+<span class="sourceLineNo">294</span>                if (this == obj) {<a name="line.294"></a>
+<span class="sourceLineNo">295</span>                        return true;<a name="line.295"></a>
+<span class="sourceLineNo">296</span>                }<a name="line.296"></a>
+<span class="sourceLineNo">297</span>                if (!(obj instanceof PairList)) {<a name="line.297"></a>
+<span class="sourceLineNo">298</span>                        return false;<a name="line.298"></a>
+<span class="sourceLineNo">299</span>                }<a name="line.299"></a>
+<span class="sourceLineNo">300</span><a name="line.300"></a>
+<span class="sourceLineNo">301</span>                PairList&lt;?, ?&gt; other = (PairList&lt;?, ?&gt;) obj;<a name="line.301"></a>
+<span class="sourceLineNo">302</span>                if (size != other.size) {<a name="line.302"></a>
+<span class="sourceLineNo">303</span>                        return false;<a name="line.303"></a>
+<span class="sourceLineNo">304</span>                }<a name="line.304"></a>
+<span class="sourceLineNo">305</span>                for (int i = 0; i &lt; size; i++) {<a name="line.305"></a>
+<span class="sourceLineNo">306</span>                        if (!Objects.equals(firstElements[i], other.firstElements[i])<a name="line.306"></a>
+<span class="sourceLineNo">307</span>                                        || !Objects.equals(secondElements[i], secondElements[i])) {<a name="line.307"></a>
+<span class="sourceLineNo">308</span>                                return false;<a name="line.308"></a>
+<span class="sourceLineNo">309</span>                        }<a name="line.309"></a>
+<span class="sourceLineNo">310</span>                }<a name="line.310"></a>
+<span class="sourceLineNo">311</span>                return true;<a name="line.311"></a>
+<span class="sourceLineNo">312</span>        }<a name="line.312"></a>
+<span class="sourceLineNo">313</span><a name="line.313"></a>
+<span class="sourceLineNo">314</span>        /** {@inheritDoc} */<a name="line.314"></a>
+<span class="sourceLineNo">315</span>        @Override<a name="line.315"></a>
+<span class="sourceLineNo">316</span>        public Iterator&lt;Pair&lt;S, T&gt;&gt; iterator() {<a name="line.316"></a>
+<span class="sourceLineNo">317</span>                return new Iterator&lt;Pair&lt;S, T&gt;&gt;() {<a name="line.317"></a>
+<span class="sourceLineNo">318</span>                        int index = 0;<a name="line.318"></a>
+<span class="sourceLineNo">319</span><a name="line.319"></a>
+<span class="sourceLineNo">320</span>                        /** {@inheritDoc} */<a name="line.320"></a>
+<span class="sourceLineNo">321</span>                        @Override<a name="line.321"></a>
+<span class="sourceLineNo">322</span>                        public boolean hasNext() {<a name="line.322"></a>
+<span class="sourceLineNo">323</span>                                return index &lt; size;<a name="line.323"></a>
+<span class="sourceLineNo">324</span>                        }<a name="line.324"></a>
+<span class="sourceLineNo">325</span><a name="line.325"></a>
+<span class="sourceLineNo">326</span>                        /** {@inheritDoc} */<a name="line.326"></a>
+<span class="sourceLineNo">327</span>                        @Override<a name="line.327"></a>
+<span class="sourceLineNo">328</span>                        public Pair&lt;S, T&gt; next() {<a name="line.328"></a>
+<span class="sourceLineNo">329</span>                                checkWithinBounds(index);<a name="line.329"></a>
+<span class="sourceLineNo">330</span>                                int oldIndex = index;<a name="line.330"></a>
+<span class="sourceLineNo">331</span>                                index++;<a name="line.331"></a>
+<span class="sourceLineNo">332</span>                                return createPairForIndex(oldIndex);<a name="line.332"></a>
+<span class="sourceLineNo">333</span>                        }<a name="line.333"></a>
+<span class="sourceLineNo">334</span>                };<a name="line.334"></a>
+<span class="sourceLineNo">335</span>        }<a name="line.335"></a>
+<span class="sourceLineNo">336</span><a name="line.336"></a>
+<span class="sourceLineNo">337</span>        /**<a name="line.337"></a>
+<span class="sourceLineNo">338</span>         * Returns a non-parallel stream of {@link Pair}s from this list.<a name="line.338"></a>
+<span class="sourceLineNo">339</span>         * &lt;p&gt;<a name="line.339"></a>
+<span class="sourceLineNo">340</span>         * NOTE: the underlying {@link Spliterator} implementation does currently not<a name="line.340"></a>
+<span class="sourceLineNo">341</span>         * support splitting. Thus, trying to use the returned stream in parallel<a name="line.341"></a>
+<span class="sourceLineNo">342</span>         * execution will fail.<a name="line.342"></a>
+<span class="sourceLineNo">343</span>         *<a name="line.343"></a>
+<span class="sourceLineNo">344</span>         * @see PairListSpliterator#trySplit()<a name="line.344"></a>
+<span class="sourceLineNo">345</span>         */<a name="line.345"></a>
+<span class="sourceLineNo">346</span>        public Stream&lt;Pair&lt;S, T&gt;&gt; stream() {<a name="line.346"></a>
+<span class="sourceLineNo">347</span>                return StreamSupport.stream(new PairListSpliterator(), false);<a name="line.347"></a>
+<span class="sourceLineNo">348</span>        }<a name="line.348"></a>
+<span class="sourceLineNo">349</span><a name="line.349"></a>
+<span class="sourceLineNo">350</span>        /**<a name="line.350"></a>
+<span class="sourceLineNo">351</span>         * Converts this {@link PairList} into a {@link Map}.<a name="line.351"></a>
+<span class="sourceLineNo">352</span>         *<a name="line.352"></a>
+<span class="sourceLineNo">353</span>         * If the first elements contain duplicates (according to<a name="line.353"></a>
+<span class="sourceLineNo">354</span>         * {@link Object#equals(Object)}, an {@link IllegalStateException} is thrown. If<a name="line.354"></a>
+<span class="sourceLineNo">355</span>         * the first elements may have duplicates, use {@link #toMap(BinaryOperator)}<a name="line.355"></a>
+<span class="sourceLineNo">356</span>         * instead.<a name="line.356"></a>
+<span class="sourceLineNo">357</span>         */<a name="line.357"></a>
+<span class="sourceLineNo">358</span>        public Map&lt;S, T&gt; toMap() {<a name="line.358"></a>
+<span class="sourceLineNo">359</span>                Map&lt;S, T&gt; result = new HashMap&lt;&gt;();<a name="line.359"></a>
+<span class="sourceLineNo">360</span>                // must use explicit put, as stream collector does not support null<a name="line.360"></a>
+<span class="sourceLineNo">361</span>                // values<a name="line.361"></a>
+<span class="sourceLineNo">362</span>                forEach(result::put);<a name="line.362"></a>
+<span class="sourceLineNo">363</span>                return result;<a name="line.363"></a>
+<span class="sourceLineNo">364</span>        }<a name="line.364"></a>
+<span class="sourceLineNo">365</span><a name="line.365"></a>
+<span class="sourceLineNo">366</span>        /**<a name="line.366"></a>
+<span class="sourceLineNo">367</span>         * Converts this {@link PairList} into a {@link Map}.<a name="line.367"></a>
+<span class="sourceLineNo">368</span>         *<a name="line.368"></a>
+<span class="sourceLineNo">369</span>         * If the first elements contain duplicates (according to<a name="line.369"></a>
+<span class="sourceLineNo">370</span>         * {@link Object#equals(Object)}, the respective second elements are merged<a name="line.370"></a>
+<span class="sourceLineNo">371</span>         * using the provided merging function..<a name="line.371"></a>
+<span class="sourceLineNo">372</span>         */<a name="line.372"></a>
+<span class="sourceLineNo">373</span>        public Map&lt;S, T&gt; toMap(BinaryOperator&lt;T&gt; mergeFunction) {<a name="line.373"></a>
+<span class="sourceLineNo">374</span>                return stream().collect(Collectors.toMap(Pair::getFirst, Pair::getSecond, mergeFunction));<a name="line.374"></a>
+<span class="sourceLineNo">375</span>        }<a name="line.375"></a>
+<span class="sourceLineNo">376</span><a name="line.376"></a>
+<span class="sourceLineNo">377</span>        /**<a name="line.377"></a>
+<span class="sourceLineNo">378</span>         * Creates a pair from the values at the given index in this list.<a name="line.378"></a>
+<span class="sourceLineNo">379</span>         *<a name="line.379"></a>
+<span class="sourceLineNo">380</span>         * We suppress unchecked cast warnings since the PairList stores all elements as<a name="line.380"></a>
+<span class="sourceLineNo">381</span>         * plain Objects.<a name="line.381"></a>
+<span class="sourceLineNo">382</span>         */<a name="line.382"></a>
+<span class="sourceLineNo">383</span>        @SuppressWarnings("unchecked")<a name="line.383"></a>
+<span class="sourceLineNo">384</span>        private Pair&lt;S, T&gt; createPairForIndex(int index) {<a name="line.384"></a>
+<span class="sourceLineNo">385</span>                return new Pair&lt;&gt;((S) firstElements[index], (T) secondElements[index]);<a name="line.385"></a>
+<span class="sourceLineNo">386</span>        }<a name="line.386"></a>
+<span class="sourceLineNo">387</span><a name="line.387"></a>
+<span class="sourceLineNo">388</span>        /**<a name="line.388"></a>
+<span class="sourceLineNo">389</span>         * Spliterator for the {@link PairList}.<a name="line.389"></a>
+<span class="sourceLineNo">390</span>         */<a name="line.390"></a>
+<span class="sourceLineNo">391</span>        private final class PairListSpliterator implements Spliterator&lt;Pair&lt;S, T&gt;&gt; {<a name="line.391"></a>
+<span class="sourceLineNo">392</span><a name="line.392"></a>
+<span class="sourceLineNo">393</span>                /**<a name="line.393"></a>
+<span class="sourceLineNo">394</span>                 * The next element to process when {@link #tryAdvance(Consumer)} is called.<a name="line.394"></a>
+<span class="sourceLineNo">395</span>                 */<a name="line.395"></a>
+<span class="sourceLineNo">396</span>                @JsonProperty("nextElementToProcess")<a name="line.396"></a>
+<span class="sourceLineNo">397</span>                private int nextElementToProcess;<a name="line.397"></a>
+<span class="sourceLineNo">398</span><a name="line.398"></a>
+<span class="sourceLineNo">399</span>                /** {@inheritDoc} */<a name="line.399"></a>
+<span class="sourceLineNo">400</span>                @Override<a name="line.400"></a>
+<span class="sourceLineNo">401</span>                public int characteristics() {<a name="line.401"></a>
+<span class="sourceLineNo">402</span>                        // the Spliterator is not subsized since we don't support splitting<a name="line.402"></a>
+<span class="sourceLineNo">403</span>                        // at the moment<a name="line.403"></a>
+<span class="sourceLineNo">404</span>                        return Spliterator.IMMUTABLE | Spliterator.ORDERED | Spliterator.SIZED;<a name="line.404"></a>
+<span class="sourceLineNo">405</span>                }<a name="line.405"></a>
+<span class="sourceLineNo">406</span><a name="line.406"></a>
+<span class="sourceLineNo">407</span>                /** {@inheritDoc} */<a name="line.407"></a>
+<span class="sourceLineNo">408</span>                @Override<a name="line.408"></a>
+<span class="sourceLineNo">409</span>                public long estimateSize() {<a name="line.409"></a>
+<span class="sourceLineNo">410</span>                        return size - nextElementToProcess;<a name="line.410"></a>
+<span class="sourceLineNo">411</span>                }<a name="line.411"></a>
+<span class="sourceLineNo">412</span><a name="line.412"></a>
+<span class="sourceLineNo">413</span>                /** {@inheritDoc} */<a name="line.413"></a>
+<span class="sourceLineNo">414</span>                @Override<a name="line.414"></a>
+<span class="sourceLineNo">415</span>                public boolean tryAdvance(Consumer&lt;? super Pair&lt;S, T&gt;&gt; action) {<a name="line.415"></a>
+<span class="sourceLineNo">416</span>                        if (nextElementToProcess == size) {<a name="line.416"></a>
+<span class="sourceLineNo">417</span>                                return false;<a name="line.417"></a>
+<span class="sourceLineNo">418</span>                        }<a name="line.418"></a>
 <span class="sourceLineNo">419</span><a name="line.419"></a>
-<span class="sourceLineNo">420</span>                /** {@inheritDoc} */<a name="line.420"></a>
-<span class="sourceLineNo">421</span>                @Override<a name="line.421"></a>
-<span class="sourceLineNo">422</span>                public BinaryOperator&lt;PairList&lt;S, T&gt;&gt; combiner() {<a name="line.422"></a>
-<span class="sourceLineNo">423</span>                        return (list1, list2) -&gt; {<a name="line.423"></a>
-<span class="sourceLineNo">424</span>                                list1.addAll(list2);<a name="line.424"></a>
-<span class="sourceLineNo">425</span>                                return list1;<a name="line.425"></a>
-<span class="sourceLineNo">426</span>                        };<a name="line.426"></a>
-<span class="sourceLineNo">427</span>                }<a name="line.427"></a>
-<span class="sourceLineNo">428</span><a name="line.428"></a>
-<span class="sourceLineNo">429</span>                /** {@inheritDoc} */<a name="line.429"></a>
-<span class="sourceLineNo">430</span>                @Override<a name="line.430"></a>
-<span class="sourceLineNo">431</span>                public Function&lt;PairList&lt;S, T&gt;, PairList&lt;S, T&gt;&gt; finisher() {<a name="line.431"></a>
-<span class="sourceLineNo">432</span>                        return list -&gt; list;<a name="line.432"></a>
-<span class="sourceLineNo">433</span>                }<a name="line.433"></a>
-<span class="sourceLineNo">434</span><a name="line.434"></a>
-<span class="sourceLineNo">435</span>                /** {@inheritDoc} */<a name="line.435"></a>
-<span class="sourceLineNo">436</span>                @Override<a name="line.436"></a>
-<span class="sourceLineNo">437</span>                public Set&lt;java.util.stream.Collector.Characteristics&gt; characteristics() {<a name="line.437"></a>
-<span class="sourceLineNo">438</span>                        return EnumSet.of(Characteristics.IDENTITY_FINISH);<a name="line.438"></a>
-<span class="sourceLineNo">439</span>                }<a name="line.439"></a>
-<span class="sourceLineNo">440</span><a name="line.440"></a>
-<span class="sourceLineNo">441</span>        }<a name="line.441"></a>
+<span class="sourceLineNo">420</span>                        action.accept(createPairForIndex(nextElementToProcess));<a name="line.420"></a>
+<span class="sourceLineNo">421</span>                        nextElementToProcess++;<a name="line.421"></a>
+<span class="sourceLineNo">422</span>                        return true;<a name="line.422"></a>
+<span class="sourceLineNo">423</span>                }<a name="line.423"></a>
+<span class="sourceLineNo">424</span><a name="line.424"></a>
+<span class="sourceLineNo">425</span>                /**<a name="line.425"></a>
+<span class="sourceLineNo">426</span>                 * {@inheritDoc}<a name="line.426"></a>
+<span class="sourceLineNo">427</span>                 *<a name="line.427"></a>
+<span class="sourceLineNo">428</span>                 * We return &lt;code&gt;null&lt;/code&gt; to indicate that this {@link Spliterator} cannot<a name="line.428"></a>
+<span class="sourceLineNo">429</span>                 * be split. If parallel execution is required, this method must be implemented<a name="line.429"></a>
+<span class="sourceLineNo">430</span>                 * and the subsized characteristic should be adhered to.<a name="line.430"></a>
+<span class="sourceLineNo">431</span>                 */<a name="line.431"></a>
+<span class="sourceLineNo">432</span>                @Override<a name="line.432"></a>
+<span class="sourceLineNo">433</span>                public Spliterator&lt;Pair&lt;S, T&gt;&gt; trySplit() {<a name="line.433"></a>
+<span class="sourceLineNo">434</span>                        return null;<a name="line.434"></a>
+<span class="sourceLineNo">435</span>                }<a name="line.435"></a>
+<span class="sourceLineNo">436</span>        }<a name="line.436"></a>
+<span class="sourceLineNo">437</span><a name="line.437"></a>
+<span class="sourceLineNo">438</span>        /**<a name="line.438"></a>
+<span class="sourceLineNo">439</span>         * Collects a stream of pairs into a {@link PairList}.<a name="line.439"></a>
+<span class="sourceLineNo">440</span>         */<a name="line.440"></a>
+<span class="sourceLineNo">441</span>        private static class PairListCollector&lt;S, T&gt; implements Collector&lt;Pair&lt;S, T&gt;, PairList&lt;S, T&gt;, PairList&lt;S, T&gt;&gt; {<a name="line.441"></a>
 <span class="sourceLineNo">442</span><a name="line.442"></a>
-<span class="sourceLineNo">443</span>        /**<a name="line.443"></a>
-<span class="sourceLineNo">444</span>         * Returns a collector for collecting a stream of pairs into a<a name="line.444"></a>
-<span class="sourceLineNo">445</span>         * {@link PairList}.<a name="line.445"></a>
-<span class="sourceLineNo">446</span>         */<a name="line.446"></a>
-<span class="sourceLineNo">447</span>        public static &lt;S, T&gt; PairListCollector&lt;S, T&gt; toPairList() {<a name="line.447"></a>
-<span class="sourceLineNo">448</span>                return new PairListCollector&lt;&gt;();<a name="line.448"></a>
-<span class="sourceLineNo">449</span>        }<a name="line.449"></a>
-<span class="sourceLineNo">450</span><a name="line.450"></a>
-<span class="sourceLineNo">451</span>        /**<a name="line.451"></a>
-<span class="sourceLineNo">452</span>         * Creates a {@link PairList} that consists of pairs of values taken from<a name="line.452"></a>
-<span class="sourceLineNo">453</span>         * the two collections. I.e. entry i in the resulting {@link PairList} will<a name="line.453"></a>
-<span class="sourceLineNo">454</span>         * consists of the pair (a, b) where a is the entry at index i in the first<a name="line.454"></a>
-<span class="sourceLineNo">455</span>         * collection and b is the entry at index i of the second collection.<a name="line.455"></a>
-<span class="sourceLineNo">456</span>         *<a name="line.456"></a>
-<span class="sourceLineNo">457</span>         * Both collections must be of the same size. The order of insertion into<a name="line.457"></a>
-<span class="sourceLineNo">458</span>         * the new {@link PairList} is determined by the order imposed by the<a name="line.458"></a>
-<span class="sourceLineNo">459</span>         * collections' iterators.<a name="line.459"></a>
-<span class="sourceLineNo">460</span>         */<a name="line.460"></a>
-<span class="sourceLineNo">461</span>        public static &lt;S, T&gt; PairList&lt;S, T&gt; zip(Collection&lt;S&gt; firstValues, Collection&lt;T&gt; secondValues) {<a name="line.461"></a>
-<span class="sourceLineNo">462</span>                CCSMAssert.isTrue(firstValues.size() == secondValues.size(),<a name="line.462"></a>
-<span class="sourceLineNo">463</span>                                "Can only zip together collections of the same size.");<a name="line.463"></a>
-<span class="sourceLineNo">464</span>                PairList&lt;S, T&gt; result = new PairList&lt;&gt;(firstValues.size());<a name="line.464"></a>
-<span class="sourceLineNo">465</span>                Iterator&lt;S&gt; firstIterator = firstValues.iterator();<a name="line.465"></a>
-<span class="sourceLineNo">466</span>                Iterator&lt;T&gt; secondIterator = secondValues.iterator();<a name="line.466"></a>
-<span class="sourceLineNo">467</span>                while (firstIterator.hasNext()) {<a name="line.467"></a>
-<span class="sourceLineNo">468</span>                        result.add(firstIterator.next(), secondIterator.next());<a name="line.468"></a>
-<span class="sourceLineNo">469</span>                }<a name="line.469"></a>
-<span class="sourceLineNo">470</span>                return result;<a name="line.470"></a>
-<span class="sourceLineNo">471</span>        }<a name="line.471"></a>
-<span class="sourceLineNo">472</span><a name="line.472"></a>
-<span class="sourceLineNo">473</span>        /**<a name="line.473"></a>
-<span class="sourceLineNo">474</span>         * For each element pair in this list, calls the given consumer with the<a name="line.474"></a>
-<span class="sourceLineNo">475</span>         * first and second value from the pair as the only arguments.<a name="line.475"></a>
-<span class="sourceLineNo">476</span>         */<a name="line.476"></a>
-<span class="sourceLineNo">477</span>        public void forEach(BiConsumer&lt;S, T&gt; consumer) {<a name="line.477"></a>
-<span class="sourceLineNo">478</span>                for (int i = 0; i &lt; size; i++) {<a name="line.478"></a>
-<span class="sourceLineNo">479</span>                        consumer.accept(getFirst(i), getSecond(i));<a name="line.479"></a>
-<span class="sourceLineNo">480</span>                }<a name="line.480"></a>
-<span class="sourceLineNo">481</span>        }<a name="line.481"></a>
-<span class="sourceLineNo">482</span><a name="line.482"></a>
-<span class="sourceLineNo">483</span>        /** Returns a reversed copy of this list. */<a name="line.483"></a>
-<span class="sourceLineNo">484</span>        public PairList&lt;S, T&gt; reverse() {<a name="line.484"></a>
-<span class="sourceLineNo">485</span>                PairList&lt;S, T&gt; reversed = new PairList&lt;&gt;();<a name="line.485"></a>
-<span class="sourceLineNo">486</span>                for (int i = size() - 1; i &gt;= 0; i--) {<a name="line.486"></a>
-<span class="sourceLineNo">487</span>                        reversed.add(getFirst(i), getSecond(i));<a name="line.487"></a>
-<span class="sourceLineNo">488</span>                }<a name="line.488"></a>
-<span class="sourceLineNo">489</span>                return reversed;<a name="line.489"></a>
-<span class="sourceLineNo">490</span>        }<a name="line.490"></a>
-<span class="sourceLineNo">491</span><a name="line.491"></a>
-<span class="sourceLineNo">492</span>        /**<a name="line.492"></a>
-<span class="sourceLineNo">493</span>         * Returns a newly allocated array containing all of the elements in this<a name="line.493"></a>
-<span class="sourceLineNo">494</span>         * PairList as an array of Pair&lt;S,T&gt;s.<a name="line.494"></a>
-<span class="sourceLineNo">495</span>         */<a name="line.495"></a>
-<span class="sourceLineNo">496</span>        @SuppressWarnings("unchecked")<a name="line.496"></a>
-<span class="sourceLineNo">497</span>        public Pair&lt;S, T&gt;[] toArray() {<a name="line.497"></a>
-<span class="sourceLineNo">498</span>                Pair&lt;S, T&gt;[] result = new Pair[size];<a name="line.498"></a>
-<span class="sourceLineNo">499</span>                for (int i = 0; i &lt; size; i++) {<a name="line.499"></a>
-<span class="sourceLineNo">500</span>                        result[i] = new Pair&lt;&gt;((S) firstElements[i], (T) secondElements[i]);<a name="line.500"></a>
-<span class="sourceLineNo">501</span>                }<a name="line.501"></a>
-<span class="sourceLineNo">502</span>                return result;<a name="line.502"></a>
-<span class="sourceLineNo">503</span>        }<a name="line.503"></a>
-<span class="sourceLineNo">504</span><a name="line.504"></a>
-<span class="sourceLineNo">505</span>        /**<a name="line.505"></a>
-<span class="sourceLineNo">506</span>         * Sorts the PairList according to the given comparator.<a name="line.506"></a>
-<span class="sourceLineNo">507</span>         */<a name="line.507"></a>
-<span class="sourceLineNo">508</span>        public void sort(Comparator&lt;Pair&lt;S, T&gt;&gt; comparator) {<a name="line.508"></a>
-<span class="sourceLineNo">509</span>                Pair&lt;S, T&gt;[] sorted = this.toArray();<a name="line.509"></a>
-<span class="sourceLineNo">510</span>                Arrays.sort(sorted, comparator);<a name="line.510"></a>
-<span class="sourceLineNo">511</span>                for (int i = 0; i &lt; sorted.length; i++) {<a name="line.511"></a>
-<span class="sourceLineNo">512</span>                        setFirst(i, sorted[i].getFirst());<a name="line.512"></a>
-<span class="sourceLineNo">513</span>                        setSecond(i, sorted[i].getSecond());<a name="line.513"></a>
+<span class="sourceLineNo">443</span>                /** {@inheritDoc} */<a name="line.443"></a>
+<span class="sourceLineNo">444</span>                @Override<a name="line.444"></a>
+<span class="sourceLineNo">445</span>                public Supplier&lt;PairList&lt;S, T&gt;&gt; supplier() {<a name="line.445"></a>
+<span class="sourceLineNo">446</span>                        return PairList::new;<a name="line.446"></a>
+<span class="sourceLineNo">447</span>                }<a name="line.447"></a>
+<span class="sourceLineNo">448</span><a name="line.448"></a>
+<span class="sourceLineNo">449</span>                /** {@inheritDoc} */<a name="line.449"></a>
+<span class="sourceLineNo">450</span>                @Override<a name="line.450"></a>
+<span class="sourceLineNo">451</span>                public BiConsumer&lt;PairList&lt;S, T&gt;, Pair&lt;S, T&gt;&gt; accumulator() {<a name="line.451"></a>
+<span class="sourceLineNo">452</span>                        return (list, pair) -&gt; list.add(pair.getFirst(), pair.getSecond());<a name="line.452"></a>
+<span class="sourceLineNo">453</span>                }<a name="line.453"></a>
+<span class="sourceLineNo">454</span><a name="line.454"></a>
+<span class="sourceLineNo">455</span>                /** {@inheritDoc} */<a name="line.455"></a>
+<span class="sourceLineNo">456</span>                @Override<a name="line.456"></a>
+<span class="sourceLineNo">457</span>                public BinaryOperator&lt;PairList&lt;S, T&gt;&gt; combiner() {<a name="line.457"></a>
+<span class="sourceLineNo">458</span>                        return (list1, list2) -&gt; {<a name="line.458"></a>
+<span class="sourceLineNo">459</span>                                list1.addAll(list2);<a name="line.459"></a>
+<span class="sourceLineNo">460</span>                                return list1;<a name="line.460"></a>
+<span class="sourceLineNo">461</span>                        };<a name="line.461"></a>
+<span class="sourceLineNo">462</span>                }<a name="line.462"></a>
+<span class="sourceLineNo">463</span><a name="line.463"></a>
+<span class="sourceLineNo">464</span>                /** {@inheritDoc} */<a name="line.464"></a>
+<span class="sourceLineNo">465</span>                @Override<a name="line.465"></a>
+<span class="sourceLineNo">466</span>                public Function&lt;PairList&lt;S, T&gt;, PairList&lt;S, T&gt;&gt; finisher() {<a name="line.466"></a>
+<span class="sourceLineNo">467</span>                        return list -&gt; list;<a name="line.467"></a>
+<span class="sourceLineNo">468</span>                }<a name="line.468"></a>
+<span class="sourceLineNo">469</span><a name="line.469"></a>
+<span class="sourceLineNo">470</span>                /** {@inheritDoc} */<a name="line.470"></a>
+<span class="sourceLineNo">471</span>                @Override<a name="line.471"></a>
+<span class="sourceLineNo">472</span>                public Set&lt;java.util.stream.Collector.Characteristics&gt; characteristics() {<a name="line.472"></a>
+<span class="sourceLineNo">473</span>                        return EnumSet.of(Characteristics.IDENTITY_FINISH);<a name="line.473"></a>
+<span class="sourceLineNo">474</span>                }<a name="line.474"></a>
+<span class="sourceLineNo">475</span><a name="line.475"></a>
+<span class="sourceLineNo">476</span>        }<a name="line.476"></a>
+<span class="sourceLineNo">477</span><a name="line.477"></a>
+<span class="sourceLineNo">478</span>        /**<a name="line.478"></a>
+<span class="sourceLineNo">479</span>         * Returns a collector for collecting a stream of pairs into a {@link PairList}.<a name="line.479"></a>
+<span class="sourceLineNo">480</span>         */<a name="line.480"></a>
+<span class="sourceLineNo">481</span>        public static &lt;S, T&gt; PairListCollector&lt;S, T&gt; toPairList() {<a name="line.481"></a>
+<span class="sourceLineNo">482</span>                return new PairListCollector&lt;&gt;();<a name="line.482"></a>
+<span class="sourceLineNo">483</span>        }<a name="line.483"></a>
+<span class="sourceLineNo">484</span><a name="line.484"></a>
+<span class="sourceLineNo">485</span>        /**<a name="line.485"></a>
+<span class="sourceLineNo">486</span>         * Creates a {@link PairList} that consists of pairs of values taken from the<a name="line.486"></a>
+<span class="sourceLineNo">487</span>         * two {@link List}s. I.e. entry i in the resulting {@link PairList} will<a name="line.487"></a>
+<span class="sourceLineNo">488</span>         * consists of the pair (a, b) where a is the entry at index i in the first<a name="line.488"></a>
+<span class="sourceLineNo">489</span>         * collection and b is the entry at index i of the second collection.<a name="line.489"></a>
+<span class="sourceLineNo">490</span>         *<a name="line.490"></a>
+<span class="sourceLineNo">491</span>         * Both collections must be of the same size. The order of insertion into the<a name="line.491"></a>
+<span class="sourceLineNo">492</span>         * new {@link PairList} is determined by the order imposed by the collections'<a name="line.492"></a>
+<span class="sourceLineNo">493</span>         * iterators.<a name="line.493"></a>
+<span class="sourceLineNo">494</span>         */<a name="line.494"></a>
+<span class="sourceLineNo">495</span>        public static &lt;S, T&gt; PairList&lt;S, T&gt; zip(List&lt;S&gt; firstValues, List&lt;T&gt; secondValues) {<a name="line.495"></a>
+<span class="sourceLineNo">496</span>                CCSMAssert.isTrue(firstValues.size() == secondValues.size(),<a name="line.496"></a>
+<span class="sourceLineNo">497</span>                                "Can only zip together collections of the same size.");<a name="line.497"></a>
+<span class="sourceLineNo">498</span>                PairList&lt;S, T&gt; result = new PairList&lt;&gt;(firstValues.size());<a name="line.498"></a>
+<span class="sourceLineNo">499</span>                Iterator&lt;S&gt; firstIterator = firstValues.iterator();<a name="line.499"></a>
+<span class="sourceLineNo">500</span>                Iterator&lt;T&gt; secondIterator = secondValues.iterator();<a name="line.500"></a>
+<span class="sourceLineNo">501</span>                while (firstIterator.hasNext()) {<a name="line.501"></a>
+<span class="sourceLineNo">502</span>                        result.add(firstIterator.next(), secondIterator.next());<a name="line.502"></a>
+<span class="sourceLineNo">503</span>                }<a name="line.503"></a>
+<span class="sourceLineNo">504</span>                return result;<a name="line.504"></a>
+<span class="sourceLineNo">505</span>        }<a name="line.505"></a>
+<span class="sourceLineNo">506</span><a name="line.506"></a>
+<span class="sourceLineNo">507</span>        /**<a name="line.507"></a>
+<span class="sourceLineNo">508</span>         * For each element pair in this list, calls the given consumer with the first<a name="line.508"></a>
+<span class="sourceLineNo">509</span>         * and second value from the pair as the only arguments.<a name="line.509"></a>
+<span class="sourceLineNo">510</span>         */<a name="line.510"></a>
+<span class="sourceLineNo">511</span>        public void forEach(BiConsumer&lt;S, T&gt; consumer) {<a name="line.511"></a>
+<span class="sourceLineNo">512</span>                for (int i = 0; i &lt; size; i++) {<a name="line.512"></a>
+<span class="sourceLineNo">513</span>                        consumer.accept(getFirst(i), getSecond(i));<a name="line.513"></a>
 <span class="sourceLineNo">514</span>                }<a name="line.514"></a>
 <span class="sourceLineNo">515</span>        }<a name="line.515"></a>
 <span class="sourceLineNo">516</span><a name="line.516"></a>
 <span class="sourceLineNo">517</span>        /**<a name="line.517"></a>
-<span class="sourceLineNo">518</span>         * The empty list (immutable). This list is serializable.<a name="line.518"></a>
-<span class="sourceLineNo">519</span>         */<a name="line.519"></a>
-<span class="sourceLineNo">520</span>        @SuppressWarnings("rawtypes")<a name="line.520"></a>
-<span class="sourceLineNo">521</span>        private static final PairList EMPTY_PAIR_LIST = new PairList&lt;Object, Object&gt;(Collections.emptyMap()) {<a name="line.521"></a>
-<span class="sourceLineNo">522</span><a name="line.522"></a>
-<span class="sourceLineNo">523</span>                /** default */<a name="line.523"></a>
-<span class="sourceLineNo">524</span>                private static final long serialVersionUID = 1;<a name="line.524"></a>
-<span class="sourceLineNo">525</span><a name="line.525"></a>
-<span class="sourceLineNo">526</span>                /** {@inheritDoc} */<a name="line.526"></a>
-<span class="sourceLineNo">527</span>                @Override<a name="line.527"></a>
-<span class="sourceLineNo">528</span>                public Iterator&lt;Pair&lt;Object, Object&gt;&gt; iterator() {<a name="line.528"></a>
-<span class="sourceLineNo">529</span>                        return Collections.emptyIterator();<a name="line.529"></a>
-<span class="sourceLineNo">530</span>                }<a name="line.530"></a>
-<span class="sourceLineNo">531</span><a name="line.531"></a>
-<span class="sourceLineNo">532</span>                /** {@inheritDoc} */<a name="line.532"></a>
-<span class="sourceLineNo">533</span>                @Override<a name="line.533"></a>
-<span class="sourceLineNo">534</span>                public Spliterator&lt;Pair&lt;Object, Object&gt;&gt; spliterator() {<a name="line.534"></a>
-<span class="sourceLineNo">535</span>                        return Spliterators.emptySpliterator();<a name="line.535"></a>
+<span class="sourceLineNo">518</span>         * Returns a new {@link PairList}, where both mappers are applied to the<a name="line.518"></a>
+<span class="sourceLineNo">519</span>         * elements of the current {@link PairList} (input for each mapper is the pair<a name="line.519"></a>
+<span class="sourceLineNo">520</span>         * of elements at each position).<a name="line.520"></a>
+<span class="sourceLineNo">521</span>         */<a name="line.521"></a>
+<span class="sourceLineNo">522</span>        public &lt;S2, T2&gt; PairList&lt;S2, T2&gt; map(BiFunction&lt;S, T, S2&gt; firstMapper, BiFunction&lt;S, T, T2&gt; secondMapper) {<a name="line.522"></a>
+<span class="sourceLineNo">523</span>                PairList&lt;S2, T2&gt; result = new PairList&lt;&gt;(size);<a name="line.523"></a>
+<span class="sourceLineNo">524</span>                forEach((key, value) -&gt; result.add(firstMapper.apply(key, value), secondMapper.apply(key, value)));<a name="line.524"></a>
+<span class="sourceLineNo">525</span>                return result;<a name="line.525"></a>
+<span class="sourceLineNo">526</span>        }<a name="line.526"></a>
+<span class="sourceLineNo">527</span><a name="line.527"></a>
+<span class="sourceLineNo">528</span>        /**<a name="line.528"></a>
+<span class="sourceLineNo">529</span>         * Returns a new {@link PairList}, where the first elements are obtained by<a name="line.529"></a>
+<span class="sourceLineNo">530</span>         * applying the given mapper function to the first elements of this list.<a name="line.530"></a>
+<span class="sourceLineNo">531</span>         */<a name="line.531"></a>
+<span class="sourceLineNo">532</span>        public &lt;U, E extends Exception&gt; PairList&lt;U, T&gt; mapFirst(FunctionWithException&lt;S, U, ? extends E&gt; mapper) throws E {<a name="line.532"></a>
+<span class="sourceLineNo">533</span>                PairList&lt;U, T&gt; mappedList = new PairList&lt;&gt;(size);<a name="line.533"></a>
+<span class="sourceLineNo">534</span>                for (int i = 0; i &lt; size; i++) {<a name="line.534"></a>
+<span class="sourceLineNo">535</span>                        mappedList.add(mapper.apply(getFirst(i)), getSecond(i));<a name="line.535"></a>
 <span class="sourceLineNo">536</span>                }<a name="line.536"></a>
-<span class="sourceLineNo">537</span><a name="line.537"></a>
-<span class="sourceLineNo">538</span>                /** {@inheritDoc} */<a name="line.538"></a>
-<span class="sourceLineNo">539</span>                @Override<a name="line.539"></a>
-<span class="sourceLineNo">540</span>                public void add(Object first, Object second) {<a name="line.540"></a>
-<span class="sourceLineNo">541</span>                        throw new UnsupportedOperationException();<a name="line.541"></a>
-<span class="sourceLineNo">542</span>                }<a name="line.542"></a>
-<span class="sourceLineNo">543</span><a name="line.543"></a>
-<span class="sourceLineNo">544</span>                /** {@inheritDoc} */<a name="line.544"></a>
-<span class="sourceLineNo">545</span>                @Override<a name="line.545"></a>
-<span class="sourceLineNo">546</span>                public void addAll(PairList&lt;Object, Object&gt; other) {<a name="line.546"></a>
-<span class="sourceLineNo">547</span>                        throw new UnsupportedOperationException();<a name="line.547"></a>
+<span class="sourceLineNo">537</span>                return mappedList;<a name="line.537"></a>
+<span class="sourceLineNo">538</span>        }<a name="line.538"></a>
+<span class="sourceLineNo">539</span><a name="line.539"></a>
+<span class="sourceLineNo">540</span>        /**<a name="line.540"></a>
+<span class="sourceLineNo">541</span>         * Returns a new {@link PairList}, where the second elements are obtained by<a name="line.541"></a>
+<span class="sourceLineNo">542</span>         * applying the given mapper function to the second elements of this list.<a name="line.542"></a>
+<span class="sourceLineNo">543</span>         */<a name="line.543"></a>
+<span class="sourceLineNo">544</span>        public &lt;U, E extends Exception&gt; PairList&lt;S, U&gt; mapSecond(FunctionWithException&lt;T, U, ? extends E&gt; mapper) throws E {<a name="line.544"></a>
+<span class="sourceLineNo">545</span>                PairList&lt;S, U&gt; mappedList = new PairList&lt;&gt;(size);<a name="line.545"></a>
+<span class="sourceLineNo">546</span>                for (int i = 0; i &lt; size; i++) {<a name="line.546"></a>
+<span class="sourceLineNo">547</span>                        mappedList.add(getFirst(i), mapper.apply(getSecond(i)));<a name="line.547"></a>
 <span class="sourceLineNo">548</span>                }<a name="line.548"></a>
-<span class="sourceLineNo">549</span><a name="line.549"></a>
-<span class="sourceLineNo">550</span>                /** {@inheritDoc} */<a name="line.550"></a>
-<span class="sourceLineNo">551</span>                @Override<a name="line.551"></a>
-<span class="sourceLineNo">552</span>                public List&lt;Object&gt; extractFirstList() {<a name="line.552"></a>
-<span class="sourceLineNo">553</span>                        return Collections.emptyList();<a name="line.553"></a>
-<span class="sourceLineNo">554</span>                }<a name="line.554"></a>
-<span class="sourceLineNo">555</span><a name="line.555"></a>
-<span class="sourceLineNo">556</span>                /** {@inheritDoc} */<a name="line.556"></a>
-<span class="sourceLineNo">557</span>                @Override<a name="line.557"></a>
-<span class="sourceLineNo">558</span>                public List&lt;Object&gt; extractSecondList() {<a name="line.558"></a>
-<span class="sourceLineNo">559</span>                        return Collections.emptyList();<a name="line.559"></a>
-<span class="sourceLineNo">560</span>                }<a name="line.560"></a>
-<span class="sourceLineNo">561</span>        };<a name="line.561"></a>
-<span class="sourceLineNo">562</span><a name="line.562"></a>
-<span class="sourceLineNo">563</span>        /**<a name="line.563"></a>
-<span class="sourceLineNo">564</span>         * Returns an empty list (immutable). This list is serializable. This is<a name="line.564"></a>
-<span class="sourceLineNo">565</span>         * inspired by the Java Collections.emptyList() method.<a name="line.565"></a>
-<span class="sourceLineNo">566</span>         *<a name="line.566"></a>
-<span class="sourceLineNo">567</span>         * &lt;p&gt;<a name="line.567"></a>
-<span class="sourceLineNo">568</span>         * This example illustrates the type-safe way to obtain an empty Pairlist:<a name="line.568"></a>
-<span class="sourceLineNo">569</span>         *<a name="line.569"></a>
-<span class="sourceLineNo">570</span>         * &lt;pre&gt;<a name="line.570"></a>
-<span class="sourceLineNo">571</span>         * PairList&amp;lt;String, String&amp;gt; s = PairList.emptyPairList();<a name="line.571"></a>
-<span class="sourceLineNo">572</span>         * &lt;/pre&gt;<a name="line.572"></a>
-<span class="sourceLineNo">573</span>         *<a name="line.573"></a>
-<span class="sourceLineNo">574</span>         * @param &lt;S&gt;<a name="line.574"></a>
-<span class="sourceLineNo">575</span>         *            key type of elements, if there were any, in the list<a name="line.575"></a>
-<span class="sourceLineNo">576</span>         * @param &lt;T&gt;<a name="line.576"></a>
-<span class="sourceLineNo">577</span>         *            value type of elements, if there were any, in the list<a name="line.577"></a>
-<span class="sourceLineNo">578</span>         * @return an empty immutable list<a name="line.578"></a>
-<span class="sourceLineNo">579</span>         *<a name="line.579"></a>
-<span class="sourceLineNo">580</span>         */<a name="line.580"></a>
-<span class="sourceLineNo">581</span>        @SuppressWarnings("unchecked")<a name="line.581"></a>
-<span class="sourceLineNo">582</span>        public static final &lt;S, T&gt; PairList&lt;S, T&gt; emptyPairList() {<a name="line.582"></a>
-<span class="sourceLineNo">583</span>                return EMPTY_PAIR_LIST;<a name="line.583"></a>
-<span class="sourceLineNo">584</span>        }<a name="line.584"></a>
-<span class="sourceLineNo">585</span>}<a name="line.585"></a>
+<span class="sourceLineNo">549</span>                return mappedList;<a name="line.549"></a>
+<span class="sourceLineNo">550</span>        }<a name="line.550"></a>
+<span class="sourceLineNo">551</span><a name="line.551"></a>
+<span class="sourceLineNo">552</span>        /**<a name="line.552"></a>
+<span class="sourceLineNo">553</span>         * Filters the pairlist by testing all items against the predicate and returning<a name="line.553"></a>
+<span class="sourceLineNo">554</span>         * a pairlist of those for which it returns true. This method does not modify<a name="line.554"></a>
+<span class="sourceLineNo">555</span>         * the original pairlist.<a name="line.555"></a>
+<span class="sourceLineNo">556</span>         */<a name="line.556"></a>
+<span class="sourceLineNo">557</span>        public PairList&lt;S, T&gt; filter(BiFunction&lt;S, T, Boolean&gt; filterPredicate) {<a name="line.557"></a>
+<span class="sourceLineNo">558</span>                PairList&lt;S, T&gt; filteredList = new PairList&lt;&gt;(size);<a name="line.558"></a>
+<span class="sourceLineNo">559</span>                for (int i = 0; i &lt; size; i++) {<a name="line.559"></a>
+<span class="sourceLineNo">560</span>                        if (filterPredicate.apply(getFirst(i), getSecond(i))) {<a name="line.560"></a>
+<span class="sourceLineNo">561</span>                                filteredList.add(getFirst(i), getSecond(i));<a name="line.561"></a>
+<span class="sourceLineNo">562</span>                        }<a name="line.562"></a>
+<span class="sourceLineNo">563</span>                }<a name="line.563"></a>
+<span class="sourceLineNo">564</span>                return filteredList;<a name="line.564"></a>
+<span class="sourceLineNo">565</span>        }<a name="line.565"></a>
+<span class="sourceLineNo">566</span><a name="line.566"></a>
+<span class="sourceLineNo">567</span>        /** Returns a reversed copy of this list. */<a name="line.567"></a>
+<span class="sourceLineNo">568</span>        public PairList&lt;S, T&gt; reverse() {<a name="line.568"></a>
+<span class="sourceLineNo">569</span>                PairList&lt;S, T&gt; reversed = new PairList&lt;&gt;();<a name="line.569"></a>
+<span class="sourceLineNo">570</span>                for (int i = size() - 1; i &gt;= 0; i--) {<a name="line.570"></a>
+<span class="sourceLineNo">571</span>                        reversed.add(getFirst(i), getSecond(i));<a name="line.571"></a>
+<span class="sourceLineNo">572</span>                }<a name="line.572"></a>
+<span class="sourceLineNo">573</span>                return reversed;<a name="line.573"></a>
+<span class="sourceLineNo">574</span>        }<a name="line.574"></a>
+<span class="sourceLineNo">575</span><a name="line.575"></a>
+<span class="sourceLineNo">576</span>        /**<a name="line.576"></a>
+<span class="sourceLineNo">577</span>         * Returns a newly allocated array containing all of the elements in this<a name="line.577"></a>
+<span class="sourceLineNo">578</span>         * PairList as an array of Pair&lt;S,T&gt;s.<a name="line.578"></a>
+<span class="sourceLineNo">579</span>         */<a name="line.579"></a>
+<span class="sourceLineNo">580</span>        @SuppressWarnings("unchecked")<a name="line.580"></a>
+<span class="sourceLineNo">581</span>        public Pair&lt;S, T&gt;[] toArray() {<a name="line.581"></a>
+<span class="sourceLineNo">582</span>                Pair&lt;S, T&gt;[] result = new Pair[size];<a name="line.582"></a>
+<span class="sourceLineNo">583</span>                for (int i = 0; i &lt; size; i++) {<a name="line.583"></a>
+<span class="sourceLineNo">584</span>                        result[i] = new Pair&lt;&gt;((S) firstElements[i], (T) secondElements[i]);<a name="line.584"></a>
+<span class="sourceLineNo">585</span>                }<a name="line.585"></a>
+<span class="sourceLineNo">586</span>                return result;<a name="line.586"></a>
+<span class="sourceLineNo">587</span>        }<a name="line.587"></a>
+<span class="sourceLineNo">588</span><a name="line.588"></a>
+<span class="sourceLineNo">589</span>        /**<a name="line.589"></a>
+<span class="sourceLineNo">590</span>         * Returns a newly allocated list containing all of the elements in this<a name="line.590"></a>
+<span class="sourceLineNo">591</span>         * PairList as a list of Pair&lt;S,T&gt;s.<a name="line.591"></a>
+<span class="sourceLineNo">592</span>         */<a name="line.592"></a>
+<span class="sourceLineNo">593</span>        public List&lt;Pair&lt;S, T&gt;&gt; toList() {<a name="line.593"></a>
+<span class="sourceLineNo">594</span>                List&lt;Pair&lt;S, T&gt;&gt; result = new ArrayList&lt;&gt;(size);<a name="line.594"></a>
+<span class="sourceLineNo">595</span>                for (int i = 0; i &lt; size; i++) {<a name="line.595"></a>
+<span class="sourceLineNo">596</span>                        result.add(new Pair&lt;&gt;((S) firstElements[i], (T) secondElements[i]));<a name="line.596"></a>
+<span class="sourceLineNo">597</span>                }<a name="line.597"></a>
+<span class="sourceLineNo">598</span>                return result;<a name="line.598"></a>
+<span class="sourceLineNo">599</span>        }<a name="line.599"></a>
+<span class="sourceLineNo">600</span><a name="line.600"></a>
+<span class="sourceLineNo">601</span>        /**<a name="line.601"></a>
+<span class="sourceLineNo">602</span>         * Sorts the PairList according to the given comparator.<a name="line.602"></a>
+<span class="sourceLineNo">603</span>         */<a name="line.603"></a>
+<span class="sourceLineNo">604</span>        public void sort(Comparator&lt;Pair&lt;S, T&gt;&gt; comparator) {<a name="line.604"></a>
+<span class="sourceLineNo">605</span>                Pair&lt;S, T&gt;[] sorted = this.toArray();<a name="line.605"></a>
+<span class="sourceLineNo">606</span>                Arrays.sort(sorted, comparator);<a name="line.606"></a>
+<span class="sourceLineNo">607</span>                for (int i = 0; i &lt; sorted.length; i++) {<a name="line.607"></a>
+<span class="sourceLineNo">608</span>                        setFirst(i, sorted[i].getFirst());<a name="line.608"></a>
+<span class="sourceLineNo">609</span>                        setSecond(i, sorted[i].getSecond());<a name="line.609"></a>
+<span class="sourceLineNo">610</span>                }<a name="line.610"></a>
+<span class="sourceLineNo">611</span>        }<a name="line.611"></a>
+<span class="sourceLineNo">612</span><a name="line.612"></a>
+<span class="sourceLineNo">613</span>        /**<a name="line.613"></a>
+<span class="sourceLineNo">614</span>         * The empty list (immutable). This list is serializable.<a name="line.614"></a>
+<span class="sourceLineNo">615</span>         */<a name="line.615"></a>
+<span class="sourceLineNo">616</span>        @SuppressWarnings("rawtypes")<a name="line.616"></a>
+<span class="sourceLineNo">617</span>        private static final PairList EMPTY_PAIR_LIST = new PairList&lt;Object, Object&gt;(Collections.emptyMap()) {<a name="line.617"></a>
+<span class="sourceLineNo">618</span><a name="line.618"></a>
+<span class="sourceLineNo">619</span>                /** default */<a name="line.619"></a>
+<span class="sourceLineNo">620</span>                private static final long serialVersionUID = 1;<a name="line.620"></a>
+<span class="sourceLineNo">621</span><a name="line.621"></a>
+<span class="sourceLineNo">622</span>                /** {@inheritDoc} */<a name="line.622"></a>
+<span class="sourceLineNo">623</span>                @Override<a name="line.623"></a>
+<span class="sourceLineNo">624</span>                public Iterator&lt;Pair&lt;Object, Object&gt;&gt; iterator() {<a name="line.624"></a>
+<span class="sourceLineNo">625</span>                        return Collections.emptyIterator();<a name="line.625"></a>
+<span class="sourceLineNo">626</span>                }<a name="line.626"></a>
+<span class="sourceLineNo">627</span><a name="line.627"></a>
+<span class="sourceLineNo">628</span>                /** {@inheritDoc} */<a name="line.628"></a>
+<span class="sourceLineNo">629</span>                @Override<a name="line.629"></a>
+<span class="sourceLineNo">630</span>                public Spliterator&lt;Pair&lt;Object, Object&gt;&gt; spliterator() {<a name="line.630"></a>
+<span class="sourceLineNo">631</span>                        return Spliterators.emptySpliterator();<a name="line.631"></a>
+<span class="sourceLineNo">632</span>                }<a name="line.632"></a>
+<span class="sourceLineNo">633</span><a name="line.633"></a>
+<span class="sourceLineNo">634</span>                /** {@inheritDoc} */<a name="line.634"></a>
+<span class="sourceLineNo">635</span>                @Override<a name="line.635"></a>
+<span class="sourceLineNo">636</span>                public void add(Object first, Object second) {<a name="line.636"></a>
+<span class="sourceLineNo">637</span>                        throw new UnsupportedOperationException();<a name="line.637"></a>
+<span class="sourceLineNo">638</span>                }<a name="line.638"></a>
+<span class="sourceLineNo">639</span><a name="line.639"></a>
+<span class="sourceLineNo">640</span>                /** {@inheritDoc} */<a name="line.640"></a>
+<span class="sourceLineNo">641</span>                @Override<a name="line.641"></a>
+<span class="sourceLineNo">642</span>                public void addAll(PairList&lt;Object, Object&gt; other) {<a name="line.642"></a>
+<span class="sourceLineNo">643</span>                        throw new UnsupportedOperationException();<a name="line.643"></a>
+<span class="sourceLineNo">644</span>                }<a name="line.644"></a>
+<span class="sourceLineNo">645</span><a name="line.645"></a>
+<span class="sourceLineNo">646</span>                /** {@inheritDoc} */<a name="line.646"></a>
+<span class="sourceLineNo">647</span>                @Override<a name="line.647"></a>
+<span class="sourceLineNo">648</span>                public List&lt;Object&gt; extractFirstList() {<a name="line.648"></a>
+<span class="sourceLineNo">649</span>                        return Collections.emptyList();<a name="line.649"></a>
+<span class="sourceLineNo">650</span>                }<a name="line.650"></a>
+<span class="sourceLineNo">651</span><a name="line.651"></a>
+<span class="sourceLineNo">652</span>                /** {@inheritDoc} */<a name="line.652"></a>
+<span class="sourceLineNo">653</span>                @Override<a name="line.653"></a>
+<span class="sourceLineNo">654</span>                public List&lt;Object&gt; extractSecondList() {<a name="line.654"></a>
+<span class="sourceLineNo">655</span>                        return Collections.emptyList();<a name="line.655"></a>
+<span class="sourceLineNo">656</span>                }<a name="line.656"></a>
+<span class="sourceLineNo">657</span>        };<a name="line.657"></a>
+<span class="sourceLineNo">658</span><a name="line.658"></a>
+<span class="sourceLineNo">659</span>        /**<a name="line.659"></a>
+<span class="sourceLineNo">660</span>         * Returns an empty list (immutable). This list is serializable. This is<a name="line.660"></a>
+<span class="sourceLineNo">661</span>         * inspired by the Java Collections.emptyList() method.<a name="line.661"></a>
+<span class="sourceLineNo">662</span>         *<a name="line.662"></a>
+<span class="sourceLineNo">663</span>         * &lt;p&gt;<a name="line.663"></a>
+<span class="sourceLineNo">664</span>         * This example illustrates the type-safe way to obtain an empty Pairlist:<a name="line.664"></a>
+<span class="sourceLineNo">665</span>         *<a name="line.665"></a>
+<span class="sourceLineNo">666</span>         * &lt;pre&gt;<a name="line.666"></a>
+<span class="sourceLineNo">667</span>         * PairList&amp;lt;String, String&amp;gt; s = PairList.emptyPairList();<a name="line.667"></a>
+<span class="sourceLineNo">668</span>         * &lt;/pre&gt;<a name="line.668"></a>
+<span class="sourceLineNo">669</span>         *<a name="line.669"></a>
+<span class="sourceLineNo">670</span>         * @param &lt;S&gt;<a name="line.670"></a>
+<span class="sourceLineNo">671</span>         *            key type of elements, if there were any, in the list<a name="line.671"></a>
+<span class="sourceLineNo">672</span>         * @param &lt;T&gt;<a name="line.672"></a>
+<span class="sourceLineNo">673</span>         *            value type of elements, if there were any, in the list<a name="line.673"></a>
+<span class="sourceLineNo">674</span>         * @return an empty immutable list<a name="line.674"></a>
+<span class="sourceLineNo">675</span>         *<a name="line.675"></a>
+<span class="sourceLineNo">676</span>         */<a name="line.676"></a>
+<span class="sourceLineNo">677</span>        @SuppressWarnings("unchecked")<a name="line.677"></a>
+<span class="sourceLineNo">678</span>        public static final &lt;S, T&gt; PairList&lt;S, T&gt; emptyPairList() {<a name="line.678"></a>
+<span class="sourceLineNo">679</span>                return EMPTY_PAIR_LIST;<a name="line.679"></a>
+<span class="sourceLineNo">680</span>        }<a name="line.680"></a>
+<span class="sourceLineNo">681</span><a name="line.681"></a>
+<span class="sourceLineNo">682</span>        /** Add the given pair to the list, if it is present. */<a name="line.682"></a>
+<span class="sourceLineNo">683</span>        public void addIfPresent(Optional&lt;Pair&lt;S, T&gt;&gt; pair) {<a name="line.683"></a>
+<span class="sourceLineNo">684</span>                if (pair.isPresent()) {<a name="line.684"></a>
+<span class="sourceLineNo">685</span>                        add(pair.get().getFirst(), pair.get().getSecond());<a name="line.685"></a>
+<span class="sourceLineNo">686</span>                }<a name="line.686"></a>
+<span class="sourceLineNo">687</span>        }<a name="line.687"></a>
+<span class="sourceLineNo">688</span><a name="line.688"></a>
+<span class="sourceLineNo">689</span>        /**<a name="line.689"></a>
+<span class="sourceLineNo">690</span>         * Maps a pair list to another one using separate mappers for keys and values.<a name="line.690"></a>
+<span class="sourceLineNo">691</span>         */<a name="line.691"></a>
+<span class="sourceLineNo">692</span>        public &lt;S2, T2&gt; PairList&lt;S2, T2&gt; map(Function&lt;S, S2&gt; keyMapper, Function&lt;T, T2&gt; valueMapper) {<a name="line.692"></a>
+<span class="sourceLineNo">693</span>                PairList&lt;S2, T2&gt; result = new PairList&lt;&gt;();<a name="line.693"></a>
+<span class="sourceLineNo">694</span>                forEach((key, value) -&gt; result.add(keyMapper.apply(key), valueMapper.apply(value)));<a name="line.694"></a>
+<span class="sourceLineNo">695</span>                return result;<a name="line.695"></a>
+<span class="sourceLineNo">696</span>        }<a name="line.696"></a>
+<span class="sourceLineNo">697</span><a name="line.697"></a>
+<span class="sourceLineNo">698</span>        /**<a name="line.698"></a>
+<span class="sourceLineNo">699</span>         * Returns the index of the given object in the "first" list of this PairList or<a name="line.699"></a>
+<span class="sourceLineNo">700</span>         * Optional.empty if none of the first objects is equal to the given object.<a name="line.700"></a>
+<span class="sourceLineNo">701</span>         */<a name="line.701"></a>
+<span class="sourceLineNo">702</span>        public Optional&lt;Integer&gt; indexOfFirst(S firstSearchObject) {<a name="line.702"></a>
+<span class="sourceLineNo">703</span>                for (int i = 0; i &lt; size; i++) {<a name="line.703"></a>
+<span class="sourceLineNo">704</span>                        if (Objects.equals(firstElements[i], firstSearchObject)) {<a name="line.704"></a>
+<span class="sourceLineNo">705</span>                                return Optional.of(i);<a name="line.705"></a>
+<span class="sourceLineNo">706</span>                        }<a name="line.706"></a>
+<span class="sourceLineNo">707</span>                }<a name="line.707"></a>
+<span class="sourceLineNo">708</span>                return Optional.empty();<a name="line.708"></a>
+<span class="sourceLineNo">709</span>        }<a name="line.709"></a>
+<span class="sourceLineNo">710</span>}<a name="line.710"></a>
 
 
 

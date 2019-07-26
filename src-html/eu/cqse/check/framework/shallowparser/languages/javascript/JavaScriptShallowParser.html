@@ -24,480 +24,817 @@
 <span class="sourceLineNo">016</span>+-------------------------------------------------------------------------*/<a name="line.16"></a>
 <span class="sourceLineNo">017</span>package eu.cqse.check.framework.shallowparser.languages.javascript;<a name="line.17"></a>
 <span class="sourceLineNo">018</span><a name="line.18"></a>
-<span class="sourceLineNo">019</span>import static eu.cqse.check.framework.scanner.ETokenType.CASE;<a name="line.19"></a>
-<span class="sourceLineNo">020</span>import static eu.cqse.check.framework.scanner.ETokenType.CATCH;<a name="line.20"></a>
-<span class="sourceLineNo">021</span>import static eu.cqse.check.framework.scanner.ETokenType.CLASS;<a name="line.21"></a>
-<span class="sourceLineNo">022</span>import static eu.cqse.check.framework.scanner.ETokenType.COLON;<a name="line.22"></a>
-<span class="sourceLineNo">023</span>import static eu.cqse.check.framework.scanner.ETokenType.COMMA;<a name="line.23"></a>
-<span class="sourceLineNo">024</span>import static eu.cqse.check.framework.scanner.ETokenType.CONST;<a name="line.24"></a>
-<span class="sourceLineNo">025</span>import static eu.cqse.check.framework.scanner.ETokenType.CONSTRUCTOR;<a name="line.25"></a>
-<span class="sourceLineNo">026</span>import static eu.cqse.check.framework.scanner.ETokenType.DECLARE;<a name="line.26"></a>
-<span class="sourceLineNo">027</span>import static eu.cqse.check.framework.scanner.ETokenType.DEFAULT;<a name="line.27"></a>
-<span class="sourceLineNo">028</span>import static eu.cqse.check.framework.scanner.ETokenType.DO;<a name="line.28"></a>
-<span class="sourceLineNo">029</span>import static eu.cqse.check.framework.scanner.ETokenType.DOT;<a name="line.29"></a>
-<span class="sourceLineNo">030</span>import static eu.cqse.check.framework.scanner.ETokenType.DOUBLE_ARROW;<a name="line.30"></a>
-<span class="sourceLineNo">031</span>import static eu.cqse.check.framework.scanner.ETokenType.ELSE;<a name="line.31"></a>
-<span class="sourceLineNo">032</span>import static eu.cqse.check.framework.scanner.ETokenType.ENUM;<a name="line.32"></a>
-<span class="sourceLineNo">033</span>import static eu.cqse.check.framework.scanner.ETokenType.EQ;<a name="line.33"></a>
-<span class="sourceLineNo">034</span>import static eu.cqse.check.framework.scanner.ETokenType.EXPORT;<a name="line.34"></a>
-<span class="sourceLineNo">035</span>import static eu.cqse.check.framework.scanner.ETokenType.EXTENDS;<a name="line.35"></a>
-<span class="sourceLineNo">036</span>import static eu.cqse.check.framework.scanner.ETokenType.FINALLY;<a name="line.36"></a>
-<span class="sourceLineNo">037</span>import static eu.cqse.check.framework.scanner.ETokenType.FOR;<a name="line.37"></a>
-<span class="sourceLineNo">038</span>import static eu.cqse.check.framework.scanner.ETokenType.FUNCTION;<a name="line.38"></a>
-<span class="sourceLineNo">039</span>import static eu.cqse.check.framework.scanner.ETokenType.GET;<a name="line.39"></a>
-<span class="sourceLineNo">040</span>import static eu.cqse.check.framework.scanner.ETokenType.IDENTIFIER;<a name="line.40"></a>
-<span class="sourceLineNo">041</span>import static eu.cqse.check.framework.scanner.ETokenType.IDENTIFIERS;<a name="line.41"></a>
-<span class="sourceLineNo">042</span>import static eu.cqse.check.framework.scanner.ETokenType.IF;<a name="line.42"></a>
-<span class="sourceLineNo">043</span>import static eu.cqse.check.framework.scanner.ETokenType.IMPLEMENTS;<a name="line.43"></a>
-<span class="sourceLineNo">044</span>import static eu.cqse.check.framework.scanner.ETokenType.IMPORT;<a name="line.44"></a>
-<span class="sourceLineNo">045</span>import static eu.cqse.check.framework.scanner.ETokenType.INSTANCEOF;<a name="line.45"></a>
-<span class="sourceLineNo">046</span>import static eu.cqse.check.framework.scanner.ETokenType.INTERFACE;<a name="line.46"></a>
-<span class="sourceLineNo">047</span>import static eu.cqse.check.framework.scanner.ETokenType.*;<a name="line.47"></a>
-<span class="sourceLineNo">048</span>import static eu.cqse.check.framework.scanner.ETokenType.LITERALS;<a name="line.48"></a>
-<span class="sourceLineNo">049</span>import static eu.cqse.check.framework.scanner.ETokenType.LPAREN;<a name="line.49"></a>
-<span class="sourceLineNo">050</span>import static eu.cqse.check.framework.scanner.ETokenType.MODULE;<a name="line.50"></a>
-<span class="sourceLineNo">051</span>import static eu.cqse.check.framework.scanner.ETokenType.NAMESPACE;<a name="line.51"></a>
-<span class="sourceLineNo">052</span>import static eu.cqse.check.framework.scanner.ETokenType.PRIVATE;<a name="line.52"></a>
-<span class="sourceLineNo">053</span>import static eu.cqse.check.framework.scanner.ETokenType.PROTECTED;<a name="line.53"></a>
-<span class="sourceLineNo">054</span>import static eu.cqse.check.framework.scanner.ETokenType.PROTOTYPE;<a name="line.54"></a>
-<span class="sourceLineNo">055</span>import static eu.cqse.check.framework.scanner.ETokenType.PUBLIC;<a name="line.55"></a>
-<span class="sourceLineNo">056</span>import static eu.cqse.check.framework.scanner.ETokenType.QUESTION;<a name="line.56"></a>
-<span class="sourceLineNo">057</span>import static eu.cqse.check.framework.scanner.ETokenType.RBRACE;<a name="line.57"></a>
-<span class="sourceLineNo">058</span>import static eu.cqse.check.framework.scanner.ETokenType.RBRACK;<a name="line.58"></a>
-<span class="sourceLineNo">059</span>import static eu.cqse.check.framework.scanner.ETokenType.READONLY;<a name="line.59"></a>
-<span class="sourceLineNo">060</span>import static eu.cqse.check.framework.scanner.ETokenType.RPAREN;<a name="line.60"></a>
-<span class="sourceLineNo">061</span>import static eu.cqse.check.framework.scanner.ETokenType.SEMICOLON;<a name="line.61"></a>
-<span class="sourceLineNo">062</span>import static eu.cqse.check.framework.scanner.ETokenType.SET;<a name="line.62"></a>
-<span class="sourceLineNo">063</span>import static eu.cqse.check.framework.scanner.ETokenType.STATIC;<a name="line.63"></a>
-<span class="sourceLineNo">064</span>import static eu.cqse.check.framework.scanner.ETokenType.STRING_LITERAL;<a name="line.64"></a>
-<span class="sourceLineNo">065</span>import static eu.cqse.check.framework.scanner.ETokenType.SWITCH;<a name="line.65"></a>
-<span class="sourceLineNo">066</span>import static eu.cqse.check.framework.scanner.ETokenType.TRY;<a name="line.66"></a>
-<span class="sourceLineNo">067</span>import static eu.cqse.check.framework.scanner.ETokenType.TYPE;<a name="line.67"></a>
-<span class="sourceLineNo">068</span>import static eu.cqse.check.framework.scanner.ETokenType.VAR;<a name="line.68"></a>
-<span class="sourceLineNo">069</span>import static eu.cqse.check.framework.scanner.ETokenType.WHILE;<a name="line.69"></a>
-<span class="sourceLineNo">070</span>import static eu.cqse.check.framework.scanner.ETokenType.WITH;<a name="line.70"></a>
-<span class="sourceLineNo">071</span>import static eu.cqse.check.framework.shallowparser.languages.javascript.JavaScriptShallowParser.EJavaScriptParserStates.ANY;<a name="line.71"></a>
-<span class="sourceLineNo">072</span>import static eu.cqse.check.framework.shallowparser.languages.javascript.JavaScriptShallowParser.EJavaScriptParserStates.BASE_JS_EXTEND;<a name="line.72"></a>
-<span class="sourceLineNo">073</span>import static eu.cqse.check.framework.shallowparser.languages.javascript.JavaScriptShallowParser.EJavaScriptParserStates.CLOSURE_CONSTRUCTOR;<a name="line.73"></a>
-<span class="sourceLineNo">074</span>import static eu.cqse.check.framework.shallowparser.languages.javascript.JavaScriptShallowParser.EJavaScriptParserStates.IN_LAMBDA;<a name="line.74"></a>
-<span class="sourceLineNo">075</span>import static eu.cqse.check.framework.shallowparser.languages.javascript.JavaScriptShallowParser.EJavaScriptParserStates.IN_TYPE;<a name="line.75"></a>
-<span class="sourceLineNo">076</span>import static eu.cqse.check.framework.shallowparser.languages.javascript.JavaScriptShallowParser.EJavaScriptParserStates.TOP_LEVEL;<a name="line.76"></a>
-<span class="sourceLineNo">077</span><a name="line.77"></a>
-<span class="sourceLineNo">078</span>import java.util.EnumSet;<a name="line.78"></a>
-<span class="sourceLineNo">079</span>import java.util.HashSet;<a name="line.79"></a>
-<span class="sourceLineNo">080</span><a name="line.80"></a>
-<span class="sourceLineNo">081</span>import org.conqat.lib.commons.region.Region;<a name="line.81"></a>
-<span class="sourceLineNo">082</span><a name="line.82"></a>
-<span class="sourceLineNo">083</span>import eu.cqse.check.framework.scanner.ETokenType;<a name="line.83"></a>
-<span class="sourceLineNo">084</span>import eu.cqse.check.framework.shallowparser.SubTypeNames;<a name="line.84"></a>
-<span class="sourceLineNo">085</span>import eu.cqse.check.framework.shallowparser.framework.AllLowercaseIdentifierMatcher;<a name="line.85"></a>
-<span class="sourceLineNo">086</span>import eu.cqse.check.framework.shallowparser.framework.EShallowEntityType;<a name="line.86"></a>
-<span class="sourceLineNo">087</span>import eu.cqse.check.framework.shallowparser.framework.ExactIdentifierMatcher;<a name="line.87"></a>
-<span class="sourceLineNo">088</span>import eu.cqse.check.framework.shallowparser.framework.RecognizerBase;<a name="line.88"></a>
-<span class="sourceLineNo">089</span>import eu.cqse.check.framework.shallowparser.framework.ShallowParserBase;<a name="line.89"></a>
-<span class="sourceLineNo">090</span>import eu.cqse.check.framework.shallowparser.framework.UpperCaseStartIdentifierMatcher;<a name="line.90"></a>
-<span class="sourceLineNo">091</span>import eu.cqse.check.framework.shallowparser.languages.javascript.JavaScriptShallowParser.EJavaScriptParserStates;<a name="line.91"></a>
-<span class="sourceLineNo">092</span><a name="line.92"></a>
-<span class="sourceLineNo">093</span>/**<a name="line.93"></a>
-<span class="sourceLineNo">094</span> * Shallow parser for JavaScript. The parser also supports various newer<a name="line.94"></a>
-<span class="sourceLineNo">095</span> * language features from EcmaScript as well as TypeScript. Additionally,<a name="line.95"></a>
-<span class="sourceLineNo">096</span> * library specific constructs from multiple libraries (e.g., Google Closure,<a name="line.96"></a>
-<span class="sourceLineNo">097</span> * Base.js, AngularJS) are handled explicitly.<a name="line.97"></a>
-<span class="sourceLineNo">098</span> */<a name="line.98"></a>
-<span class="sourceLineNo">099</span>public class JavaScriptShallowParser extends ShallowParserBase&lt;EJavaScriptParserStates&gt; {<a name="line.99"></a>
-<span class="sourceLineNo">100</span><a name="line.100"></a>
-<span class="sourceLineNo">101</span>        /** The states used in this parser. */<a name="line.101"></a>
-<span class="sourceLineNo">102</span>        public static enum EJavaScriptParserStates {<a name="line.102"></a>
-<span class="sourceLineNo">103</span><a name="line.103"></a>
-<span class="sourceLineNo">104</span>                /** Top-level parsing state. */<a name="line.104"></a>
-<span class="sourceLineNo">105</span>                TOP_LEVEL,<a name="line.105"></a>
-<span class="sourceLineNo">106</span><a name="line.106"></a>
-<span class="sourceLineNo">107</span>                /** Generic state, as many constructs can occur at any place. */<a name="line.107"></a>
-<span class="sourceLineNo">108</span>                ANY,<a name="line.108"></a>
-<span class="sourceLineNo">109</span><a name="line.109"></a>
-<span class="sourceLineNo">110</span>                /** Parsing within a type, such as a TypeScript class. */<a name="line.110"></a>
-<span class="sourceLineNo">111</span>                IN_TYPE,<a name="line.111"></a>
-<span class="sourceLineNo">112</span><a name="line.112"></a>
-<span class="sourceLineNo">113</span>                /** Parses a lambda (arrow notation) construct. */<a name="line.113"></a>
-<span class="sourceLineNo">114</span>                IN_LAMBDA,<a name="line.114"></a>
-<span class="sourceLineNo">115</span><a name="line.115"></a>
-<span class="sourceLineNo">116</span>                /**<a name="line.116"></a>
-<span class="sourceLineNo">117</span>                 * Special state that is only valid in the constructor of a google<a name="line.117"></a>
-<span class="sourceLineNo">118</span>                 * closure type<a name="line.118"></a>
-<span class="sourceLineNo">119</span>                 */<a name="line.119"></a>
-<span class="sourceLineNo">120</span>                CLOSURE_CONSTRUCTOR,<a name="line.120"></a>
+<span class="sourceLineNo">019</span>import static eu.cqse.check.framework.scanner.ETokenType.AND;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import static eu.cqse.check.framework.scanner.ETokenType.AS;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import static eu.cqse.check.framework.scanner.ETokenType.ASYNC;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import static eu.cqse.check.framework.scanner.ETokenType.CASE;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import static eu.cqse.check.framework.scanner.ETokenType.CATCH;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import static eu.cqse.check.framework.scanner.ETokenType.CLASS;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import static eu.cqse.check.framework.scanner.ETokenType.COLON;<a name="line.25"></a>
+<span class="sourceLineNo">026</span>import static eu.cqse.check.framework.scanner.ETokenType.COMMA;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import static eu.cqse.check.framework.scanner.ETokenType.CONST;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import static eu.cqse.check.framework.scanner.ETokenType.CONSTRUCTOR;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>import static eu.cqse.check.framework.scanner.ETokenType.DECLARE;<a name="line.29"></a>
+<span class="sourceLineNo">030</span>import static eu.cqse.check.framework.scanner.ETokenType.DEFAULT;<a name="line.30"></a>
+<span class="sourceLineNo">031</span>import static eu.cqse.check.framework.scanner.ETokenType.DELETE;<a name="line.31"></a>
+<span class="sourceLineNo">032</span>import static eu.cqse.check.framework.scanner.ETokenType.DO;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import static eu.cqse.check.framework.scanner.ETokenType.DOT;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import static eu.cqse.check.framework.scanner.ETokenType.DOUBLE_ARROW;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import static eu.cqse.check.framework.scanner.ETokenType.ELSE;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import static eu.cqse.check.framework.scanner.ETokenType.ENUM;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import static eu.cqse.check.framework.scanner.ETokenType.EQ;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import static eu.cqse.check.framework.scanner.ETokenType.EXPORT;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import static eu.cqse.check.framework.scanner.ETokenType.EXTENDS;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import static eu.cqse.check.framework.scanner.ETokenType.FINALLY;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>import static eu.cqse.check.framework.scanner.ETokenType.FOR;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>import static eu.cqse.check.framework.scanner.ETokenType.FROM;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>import static eu.cqse.check.framework.scanner.ETokenType.FUNCTION;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>import static eu.cqse.check.framework.scanner.ETokenType.GET;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>import static eu.cqse.check.framework.scanner.ETokenType.GT;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>import static eu.cqse.check.framework.scanner.ETokenType.GTEQ;<a name="line.46"></a>
+<span class="sourceLineNo">047</span>import static eu.cqse.check.framework.scanner.ETokenType.IDENTIFIER;<a name="line.47"></a>
+<span class="sourceLineNo">048</span>import static eu.cqse.check.framework.scanner.ETokenType.IDENTIFIERS;<a name="line.48"></a>
+<span class="sourceLineNo">049</span>import static eu.cqse.check.framework.scanner.ETokenType.IF;<a name="line.49"></a>
+<span class="sourceLineNo">050</span>import static eu.cqse.check.framework.scanner.ETokenType.IMPLEMENTS;<a name="line.50"></a>
+<span class="sourceLineNo">051</span>import static eu.cqse.check.framework.scanner.ETokenType.IMPORT;<a name="line.51"></a>
+<span class="sourceLineNo">052</span>import static eu.cqse.check.framework.scanner.ETokenType.INSTANCEOF;<a name="line.52"></a>
+<span class="sourceLineNo">053</span>import static eu.cqse.check.framework.scanner.ETokenType.INTERFACE;<a name="line.53"></a>
+<span class="sourceLineNo">054</span>import static eu.cqse.check.framework.scanner.ETokenType.LBRACE;<a name="line.54"></a>
+<span class="sourceLineNo">055</span>import static eu.cqse.check.framework.scanner.ETokenType.LBRACK;<a name="line.55"></a>
+<span class="sourceLineNo">056</span>import static eu.cqse.check.framework.scanner.ETokenType.LET;<a name="line.56"></a>
+<span class="sourceLineNo">057</span>import static eu.cqse.check.framework.scanner.ETokenType.LITERALS;<a name="line.57"></a>
+<span class="sourceLineNo">058</span>import static eu.cqse.check.framework.scanner.ETokenType.LPAREN;<a name="line.58"></a>
+<span class="sourceLineNo">059</span>import static eu.cqse.check.framework.scanner.ETokenType.LT;<a name="line.59"></a>
+<span class="sourceLineNo">060</span>import static eu.cqse.check.framework.scanner.ETokenType.MODULE;<a name="line.60"></a>
+<span class="sourceLineNo">061</span>import static eu.cqse.check.framework.scanner.ETokenType.MULT;<a name="line.61"></a>
+<span class="sourceLineNo">062</span>import static eu.cqse.check.framework.scanner.ETokenType.NAMESPACE;<a name="line.62"></a>
+<span class="sourceLineNo">063</span>import static eu.cqse.check.framework.scanner.ETokenType.OR;<a name="line.63"></a>
+<span class="sourceLineNo">064</span>import static eu.cqse.check.framework.scanner.ETokenType.PRIVATE;<a name="line.64"></a>
+<span class="sourceLineNo">065</span>import static eu.cqse.check.framework.scanner.ETokenType.PROTECTED;<a name="line.65"></a>
+<span class="sourceLineNo">066</span>import static eu.cqse.check.framework.scanner.ETokenType.PROTOTYPE;<a name="line.66"></a>
+<span class="sourceLineNo">067</span>import static eu.cqse.check.framework.scanner.ETokenType.PUBLIC;<a name="line.67"></a>
+<span class="sourceLineNo">068</span>import static eu.cqse.check.framework.scanner.ETokenType.QUESTION;<a name="line.68"></a>
+<span class="sourceLineNo">069</span>import static eu.cqse.check.framework.scanner.ETokenType.RBRACE;<a name="line.69"></a>
+<span class="sourceLineNo">070</span>import static eu.cqse.check.framework.scanner.ETokenType.RBRACK;<a name="line.70"></a>
+<span class="sourceLineNo">071</span>import static eu.cqse.check.framework.scanner.ETokenType.READONLY;<a name="line.71"></a>
+<span class="sourceLineNo">072</span>import static eu.cqse.check.framework.scanner.ETokenType.RPAREN;<a name="line.72"></a>
+<span class="sourceLineNo">073</span>import static eu.cqse.check.framework.scanner.ETokenType.RSHIFTEQ;<a name="line.73"></a>
+<span class="sourceLineNo">074</span>import static eu.cqse.check.framework.scanner.ETokenType.SEMICOLON;<a name="line.74"></a>
+<span class="sourceLineNo">075</span>import static eu.cqse.check.framework.scanner.ETokenType.SET;<a name="line.75"></a>
+<span class="sourceLineNo">076</span>import static eu.cqse.check.framework.scanner.ETokenType.STATIC;<a name="line.76"></a>
+<span class="sourceLineNo">077</span>import static eu.cqse.check.framework.scanner.ETokenType.STRING_LITERAL;<a name="line.77"></a>
+<span class="sourceLineNo">078</span>import static eu.cqse.check.framework.scanner.ETokenType.SWITCH;<a name="line.78"></a>
+<span class="sourceLineNo">079</span>import static eu.cqse.check.framework.scanner.ETokenType.TRY;<a name="line.79"></a>
+<span class="sourceLineNo">080</span>import static eu.cqse.check.framework.scanner.ETokenType.TYPE;<a name="line.80"></a>
+<span class="sourceLineNo">081</span>import static eu.cqse.check.framework.scanner.ETokenType.VAR;<a name="line.81"></a>
+<span class="sourceLineNo">082</span>import static eu.cqse.check.framework.scanner.ETokenType.VOID;<a name="line.82"></a>
+<span class="sourceLineNo">083</span>import static eu.cqse.check.framework.scanner.ETokenType.WHILE;<a name="line.83"></a>
+<span class="sourceLineNo">084</span>import static eu.cqse.check.framework.scanner.ETokenType.WITH;<a name="line.84"></a>
+<span class="sourceLineNo">085</span>import static eu.cqse.check.framework.shallowparser.SubTypeNames.METHOD;<a name="line.85"></a>
+<span class="sourceLineNo">086</span>import static eu.cqse.check.framework.shallowparser.languages.javascript.JavaScriptShallowParser.EJavaScriptParserStates.ANY;<a name="line.86"></a>
+<span class="sourceLineNo">087</span>import static eu.cqse.check.framework.shallowparser.languages.javascript.JavaScriptShallowParser.EJavaScriptParserStates.BASE_JS_EXTEND;<a name="line.87"></a>
+<span class="sourceLineNo">088</span>import static eu.cqse.check.framework.shallowparser.languages.javascript.JavaScriptShallowParser.EJavaScriptParserStates.CLOSURE_CONSTRUCTOR;<a name="line.88"></a>
+<span class="sourceLineNo">089</span>import static eu.cqse.check.framework.shallowparser.languages.javascript.JavaScriptShallowParser.EJavaScriptParserStates.EXT_JS_TYPE;<a name="line.89"></a>
+<span class="sourceLineNo">090</span>import static eu.cqse.check.framework.shallowparser.languages.javascript.JavaScriptShallowParser.EJavaScriptParserStates.IN_LAMBDA;<a name="line.90"></a>
+<span class="sourceLineNo">091</span>import static eu.cqse.check.framework.shallowparser.languages.javascript.JavaScriptShallowParser.EJavaScriptParserStates.IN_TYPE;<a name="line.91"></a>
+<span class="sourceLineNo">092</span>import static eu.cqse.check.framework.shallowparser.languages.javascript.JavaScriptShallowParser.EJavaScriptParserStates.TOP_LEVEL;<a name="line.92"></a>
+<span class="sourceLineNo">093</span>import static eu.cqse.check.framework.util.javascript.TypeScriptDependencyExtractor.TYPESCRIPT_IMPORT_SEPARATOR;<a name="line.93"></a>
+<span class="sourceLineNo">094</span><a name="line.94"></a>
+<span class="sourceLineNo">095</span>import java.util.EnumSet;<a name="line.95"></a>
+<span class="sourceLineNo">096</span>import java.util.HashSet;<a name="line.96"></a>
+<span class="sourceLineNo">097</span><a name="line.97"></a>
+<span class="sourceLineNo">098</span>import org.conqat.lib.commons.region.Region;<a name="line.98"></a>
+<span class="sourceLineNo">099</span><a name="line.99"></a>
+<span class="sourceLineNo">100</span>import eu.cqse.check.framework.scanner.ETokenType;<a name="line.100"></a>
+<span class="sourceLineNo">101</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.101"></a>
+<span class="sourceLineNo">102</span>import eu.cqse.check.framework.shallowparser.SubTypeNames;<a name="line.102"></a>
+<span class="sourceLineNo">103</span>import eu.cqse.check.framework.shallowparser.framework.AllLowercaseIdentifierMatcher;<a name="line.103"></a>
+<span class="sourceLineNo">104</span>import eu.cqse.check.framework.shallowparser.framework.EShallowEntityType;<a name="line.104"></a>
+<span class="sourceLineNo">105</span>import eu.cqse.check.framework.shallowparser.framework.ExactIdentifierMatcher;<a name="line.105"></a>
+<span class="sourceLineNo">106</span>import eu.cqse.check.framework.shallowparser.framework.RecognizerBase;<a name="line.106"></a>
+<span class="sourceLineNo">107</span>import eu.cqse.check.framework.shallowparser.framework.ShallowParserBase;<a name="line.107"></a>
+<span class="sourceLineNo">108</span>import eu.cqse.check.framework.shallowparser.framework.UpperCaseStartIdentifierMatcher;<a name="line.108"></a>
+<span class="sourceLineNo">109</span>import eu.cqse.check.framework.shallowparser.languages.javascript.JavaScriptShallowParser.EJavaScriptParserStates;<a name="line.109"></a>
+<span class="sourceLineNo">110</span><a name="line.110"></a>
+<span class="sourceLineNo">111</span>/**<a name="line.111"></a>
+<span class="sourceLineNo">112</span> * Shallow parser for JavaScript. The parser also supports various newer<a name="line.112"></a>
+<span class="sourceLineNo">113</span> * language features from EcmaScript as well as TypeScript. Additionally,<a name="line.113"></a>
+<span class="sourceLineNo">114</span> * library specific constructs from multiple libraries (e.g., Google Closure,<a name="line.114"></a>
+<span class="sourceLineNo">115</span> * Base.js, AngularJS) are handled explicitly.<a name="line.115"></a>
+<span class="sourceLineNo">116</span> */<a name="line.116"></a>
+<span class="sourceLineNo">117</span>public class JavaScriptShallowParser extends ShallowParserBase&lt;EJavaScriptParserStates&gt; {<a name="line.117"></a>
+<span class="sourceLineNo">118</span><a name="line.118"></a>
+<span class="sourceLineNo">119</span>        /** The states used in this parser. */<a name="line.119"></a>
+<span class="sourceLineNo">120</span>        public enum EJavaScriptParserStates {<a name="line.120"></a>
 <span class="sourceLineNo">121</span><a name="line.121"></a>
-<span class="sourceLineNo">122</span>                /** Special state used inside of the base.js extend method */<a name="line.122"></a>
-<span class="sourceLineNo">123</span>                BASE_JS_EXTEND;<a name="line.123"></a>
-<span class="sourceLineNo">124</span>        }<a name="line.124"></a>
-<span class="sourceLineNo">125</span><a name="line.125"></a>
-<span class="sourceLineNo">126</span>        /**<a name="line.126"></a>
-<span class="sourceLineNo">127</span>         * All possible identifiers, including new keywords, which can be used as<a name="line.127"></a>
-<span class="sourceLineNo">128</span>         * identifiers in older JavaScript files.<a name="line.128"></a>
-<span class="sourceLineNo">129</span>         */<a name="line.129"></a>
-<span class="sourceLineNo">130</span>        private static final EnumSet&lt;ETokenType&gt; ALL_IDENTIFIERS = EnumSet.of(IDENTIFIER, CLASS, IMPLEMENTS, DECLARE, ENUM,<a name="line.130"></a>
-<span class="sourceLineNo">131</span>                        EXPORT, EXTENDS, IMPLEMENTS, IMPORT, INSTANCEOF, INTERFACE, MODULE, NAMESPACE, PRIVATE, PROTECTED, PUBLIC,<a name="line.131"></a>
-<span class="sourceLineNo">132</span>                        STATIC, TYPE, SET, GET);<a name="line.132"></a>
+<span class="sourceLineNo">122</span>                /** Top-level parsing state. */<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                TOP_LEVEL,<a name="line.123"></a>
+<span class="sourceLineNo">124</span><a name="line.124"></a>
+<span class="sourceLineNo">125</span>                /** Generic state, as many constructs can occur at any place. */<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                ANY,<a name="line.126"></a>
+<span class="sourceLineNo">127</span><a name="line.127"></a>
+<span class="sourceLineNo">128</span>                /** Parsing within a type, such as a TypeScript class. */<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                IN_TYPE,<a name="line.129"></a>
+<span class="sourceLineNo">130</span><a name="line.130"></a>
+<span class="sourceLineNo">131</span>                /** Parses a lambda (arrow notation) construct. */<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                IN_LAMBDA,<a name="line.132"></a>
 <span class="sourceLineNo">133</span><a name="line.133"></a>
-<span class="sourceLineNo">134</span>        /** Valid modifiers in TypeScript. */<a name="line.134"></a>
-<span class="sourceLineNo">135</span>        private static final EnumSet&lt;ETokenType&gt; TYPESCRIPT_MODIFIERS = EnumSet.of(STATIC, PUBLIC, PRIVATE, PROTECTED,<a name="line.135"></a>
-<span class="sourceLineNo">136</span>                        READONLY, GET, SET);<a name="line.136"></a>
-<span class="sourceLineNo">137</span><a name="line.137"></a>
-<span class="sourceLineNo">138</span>        /** Constructor. */<a name="line.138"></a>
-<span class="sourceLineNo">139</span>        public JavaScriptShallowParser() {<a name="line.139"></a>
-<span class="sourceLineNo">140</span>                super(EJavaScriptParserStates.class, EJavaScriptParserStates.TOP_LEVEL);<a name="line.140"></a>
+<span class="sourceLineNo">134</span>                /**<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                 * Special state that is only valid in the constructor of a google closure type.<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                 */<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                CLOSURE_CONSTRUCTOR,<a name="line.137"></a>
+<span class="sourceLineNo">138</span><a name="line.138"></a>
+<span class="sourceLineNo">139</span>                /** Special state used inside of the base.js extend method */<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                BASE_JS_EXTEND,<a name="line.140"></a>
 <span class="sourceLineNo">141</span><a name="line.141"></a>
-<span class="sourceLineNo">142</span>                createLambdaRules();<a name="line.142"></a>
-<span class="sourceLineNo">143</span>                createMetaRules();<a name="line.143"></a>
-<span class="sourceLineNo">144</span>                createAngularRules();<a name="line.144"></a>
-<span class="sourceLineNo">145</span>                createModuleRules();<a name="line.145"></a>
-<span class="sourceLineNo">146</span>                createBaseJSRules();<a name="line.146"></a>
-<span class="sourceLineNo">147</span>                createClosureRecognizers();<a name="line.147"></a>
-<span class="sourceLineNo">148</span>                createTypeRules();<a name="line.148"></a>
-<span class="sourceLineNo">149</span>                createTypeMemberRules();<a name="line.149"></a>
-<span class="sourceLineNo">150</span>                createFunctionRules();<a name="line.150"></a>
-<span class="sourceLineNo">151</span>                createStatementRules();<a name="line.151"></a>
-<span class="sourceLineNo">152</span>        }<a name="line.152"></a>
+<span class="sourceLineNo">142</span>                /** Special state used inside of the ext.js types. */<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                EXT_JS_TYPE<a name="line.143"></a>
+<span class="sourceLineNo">144</span>        }<a name="line.144"></a>
+<span class="sourceLineNo">145</span><a name="line.145"></a>
+<span class="sourceLineNo">146</span>        /**<a name="line.146"></a>
+<span class="sourceLineNo">147</span>         * All possible identifiers, including new keywords, which can be used as<a name="line.147"></a>
+<span class="sourceLineNo">148</span>         * identifiers in older JavaScript files.<a name="line.148"></a>
+<span class="sourceLineNo">149</span>         */<a name="line.149"></a>
+<span class="sourceLineNo">150</span>        public static final EnumSet&lt;ETokenType&gt; ALL_IDENTIFIERS = EnumSet.of(IDENTIFIER, CLASS, IMPLEMENTS, DECLARE, ENUM,<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                        EXPORT, EXTENDS, IMPLEMENTS, IMPORT, INSTANCEOF, INTERFACE, MODULE, NAMESPACE, PRIVATE, PROTECTED, PUBLIC,<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                        STATIC, TYPE, SET, GET, ASYNC, DELETE, IMPORT);<a name="line.152"></a>
 <span class="sourceLineNo">153</span><a name="line.153"></a>
-<span class="sourceLineNo">154</span>        /** Creates the rules for handling lambda expressions (arrow notation). */<a name="line.154"></a>
-<span class="sourceLineNo">155</span>        private void createLambdaRules() {<a name="line.155"></a>
-<span class="sourceLineNo">156</span>                completeLambda(inState(IN_LAMBDA, ANY).sequence(IDENTIFIER));<a name="line.156"></a>
-<span class="sourceLineNo">157</span>                completeLambda(inState(IN_LAMBDA, ANY).sequence(LPAREN).skipToWithNesting(RPAREN, LPAREN, RPAREN));<a name="line.157"></a>
-<span class="sourceLineNo">158</span><a name="line.158"></a>
-<span class="sourceLineNo">159</span>                // additional rule for parsing lambda expressions (without braces). see<a name="line.159"></a>
-<span class="sourceLineNo">160</span>                // completeLambda() for details<a name="line.160"></a>
-<span class="sourceLineNo">161</span>                // the node start is moved one token to the right so the shallow<a name="line.161"></a>
-<span class="sourceLineNo">162</span>                // entities produced by this rule don't include the double arrow<a name="line.162"></a>
-<span class="sourceLineNo">163</span>                // (instead it will be included in the parent entity)<a name="line.163"></a>
-<span class="sourceLineNo">164</span>                inState(IN_LAMBDA).sequence(DOUBLE_ARROW)<a name="line.164"></a>
-<span class="sourceLineNo">165</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.LAMBDA_EXPRESSION, null, 1)<a name="line.165"></a>
-<span class="sourceLineNo">166</span>                                .skipBeforeWithNesting(EnumSet.of(RPAREN, SEMICOLON, RBRACE, RBRACK, COMMA), LPAREN, RPAREN).endNode();<a name="line.166"></a>
-<span class="sourceLineNo">167</span>        }<a name="line.167"></a>
-<span class="sourceLineNo">168</span><a name="line.168"></a>
-<span class="sourceLineNo">169</span>        /**<a name="line.169"></a>
-<span class="sourceLineNo">170</span>         * Completes a rule for parsing lambda expressions.<a name="line.170"></a>
-<span class="sourceLineNo">171</span>         * <a name="line.171"></a>
-<span class="sourceLineNo">172</span>         * Lambdas may optionally specify the type of the return value, e.g:<a name="line.172"></a>
-<span class="sourceLineNo">173</span>         * &lt;code&gt;() : any =&gt; {}&lt;/code&gt;<a name="line.173"></a>
-<span class="sourceLineNo">174</span>         */<a name="line.174"></a>
-<span class="sourceLineNo">175</span>        private static void completeLambda(RecognizerBase&lt;EJavaScriptParserStates&gt; ruleStart) {<a name="line.175"></a>
-<span class="sourceLineNo">176</span><a name="line.176"></a>
-<span class="sourceLineNo">177</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; lambdaAlternativeWithReturnType = ruleStart.sequence(COLON)<a name="line.177"></a>
-<span class="sourceLineNo">178</span>                                // we don't want to arbitrarily consume tokens until we find a<a name="line.178"></a>
-<span class="sourceLineNo">179</span>                                // double arrow, since we are not yet sure that we are actually<a name="line.179"></a>
-<span class="sourceLineNo">180</span>                                // parsing a lambda. So we skip to either a double arrow (in<a name="line.180"></a>
-<span class="sourceLineNo">181</span>                                // which case this is a lambda) or a token that we know cannot<a name="line.181"></a>
-<span class="sourceLineNo">182</span>                                // occur before the double arrow<a name="line.182"></a>
-<span class="sourceLineNo">183</span>                                .skipBefore(EnumSet.of(DOUBLE_ARROW, LBRACE, COMMA, SEMICOLON)).sequenceBefore(DOUBLE_ARROW)<a name="line.183"></a>
-<span class="sourceLineNo">184</span>                                .createNode(EShallowEntityType.METHOD, "lambda");<a name="line.184"></a>
-<span class="sourceLineNo">185</span>                lambdaAlternativeWithReturnType.sequence(DOUBLE_ARROW, LBRACE).parseUntil(ANY).sequence(RBRACE).endNode();<a name="line.185"></a>
+<span class="sourceLineNo">154</span>        /** Valid modifiers in TypeScript. */<a name="line.154"></a>
+<span class="sourceLineNo">155</span>        private static final EnumSet&lt;ETokenType&gt; TYPESCRIPT_MODIFIERS = EnumSet.of(STATIC, PUBLIC, PRIVATE, PROTECTED,<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                        READONLY, GET, SET, ASYNC);<a name="line.156"></a>
+<span class="sourceLineNo">157</span><a name="line.157"></a>
+<span class="sourceLineNo">158</span>        /** Constructor. */<a name="line.158"></a>
+<span class="sourceLineNo">159</span>        public JavaScriptShallowParser() {<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                super(EJavaScriptParserStates.class, EJavaScriptParserStates.TOP_LEVEL);<a name="line.160"></a>
+<span class="sourceLineNo">161</span><a name="line.161"></a>
+<span class="sourceLineNo">162</span>                createLambdaRules();<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                createMetaRules();<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                createAngularRules();<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                createModuleRules();<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                createBaseJSRules();<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                createClosureRecognizers();<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                createClosureES6Recognizers();<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                createTypeRules();<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                createExtJsTypeSupport();<a name="line.170"></a>
+<span class="sourceLineNo">171</span>                createTypeMemberRules();<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                createFunctionRules();<a name="line.172"></a>
+<span class="sourceLineNo">173</span>                createStatementRules();<a name="line.173"></a>
+<span class="sourceLineNo">174</span>        }<a name="line.174"></a>
+<span class="sourceLineNo">175</span><a name="line.175"></a>
+<span class="sourceLineNo">176</span>        /** Creates the rules for handling lambda expressions (arrow notation). */<a name="line.176"></a>
+<span class="sourceLineNo">177</span>        private void createLambdaRules() {<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                /*<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                 * Start of a lambda without parentheses. Also need to start in state IN_LAMBDA<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                 * here since JavaScriptFunctionRecognizer starts an IN_LAMBDA parse on an<a name="line.180"></a>
+<span class="sourceLineNo">181</span>                 * "IDENTIFIER DOUBLE_ARROW" sequence.<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                 */<a name="line.182"></a>
+<span class="sourceLineNo">183</span>                completeLambda(inState(IN_LAMBDA, ANY).repeated(IDENTIFIER, DOT).sequence(IDENTIFIER));<a name="line.183"></a>
+<span class="sourceLineNo">184</span>                /* Start of a lambda with parentheses, e.g "(el1, el2) =&gt; {...}"*/<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                completeLambda(inState(IN_LAMBDA, ANY).optional(ASYNC).sequence(LPAREN).skipToWithNesting(RPAREN, LPAREN, RPAREN));<a name="line.185"></a>
 <span class="sourceLineNo">186</span><a name="line.186"></a>
-<span class="sourceLineNo">187</span>                // we start parsing before the double arrow (=&gt;) as this allows our<a name="line.187"></a>
-<span class="sourceLineNo">188</span>                // special statement rule to capture this case. This is required, as<a name="line.188"></a>
-<span class="sourceLineNo">189</span>                // this kind of expression is not terminated by a semicolon.<a name="line.189"></a>
-<span class="sourceLineNo">190</span>                lambdaAlternativeWithReturnType.parseOnce(IN_LAMBDA).endNode();<a name="line.190"></a>
-<span class="sourceLineNo">191</span><a name="line.191"></a>
-<span class="sourceLineNo">192</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; lambdaAlternative = ruleStart.sequenceBefore(DOUBLE_ARROW)<a name="line.192"></a>
-<span class="sourceLineNo">193</span>                                .createNode(EShallowEntityType.METHOD, "lambda");<a name="line.193"></a>
-<span class="sourceLineNo">194</span>                lambdaAlternative.sequence(DOUBLE_ARROW, LBRACE).parseUntil(ANY).sequence(RBRACE).endNode();<a name="line.194"></a>
-<span class="sourceLineNo">195</span><a name="line.195"></a>
-<span class="sourceLineNo">196</span>                // we start parsing before the double arrow (=&gt;) as this allows our<a name="line.196"></a>
-<span class="sourceLineNo">197</span>                // special statement rule to capture this case. This is required, as<a name="line.197"></a>
-<span class="sourceLineNo">198</span>                // this kind of expression is not terminated by a semicolon.<a name="line.198"></a>
-<span class="sourceLineNo">199</span>                lambdaAlternative.parseOnce(IN_LAMBDA).endNode();<a name="line.199"></a>
-<span class="sourceLineNo">200</span>        }<a name="line.200"></a>
-<span class="sourceLineNo">201</span><a name="line.201"></a>
-<span class="sourceLineNo">202</span>        /** Creates parsing rules for meta elements. */<a name="line.202"></a>
-<span class="sourceLineNo">203</span>        private void createMetaRules() {<a name="line.203"></a>
-<span class="sourceLineNo">204</span>                // Closure special commands (require, provide, inherits)<a name="line.204"></a>
-<span class="sourceLineNo">205</span>                inState(TOP_LEVEL).sequence(identifiers("goog"), DOT, identifiers("provide", "require", "inherits"), LPAREN)<a name="line.205"></a>
-<span class="sourceLineNo">206</span>                                .skipTo(RPAREN).createNode(EShallowEntityType.META, new Region(0, 2), new Region(4, -2))<a name="line.206"></a>
-<span class="sourceLineNo">207</span>                                .optional(SEMICOLON).endNode();<a name="line.207"></a>
-<span class="sourceLineNo">208</span><a name="line.208"></a>
-<span class="sourceLineNo">209</span>                // Support for namespace.js<a name="line.209"></a>
-<span class="sourceLineNo">210</span>                inState(TOP_LEVEL).sequence(NAMESPACE, LPAREN).createNode(EShallowEntityType.META, SubTypeNames.NAMESPACE, 2)<a name="line.210"></a>
-<span class="sourceLineNo">211</span>                                .skipTo(RPAREN).optional(SEMICOLON).endNode();<a name="line.211"></a>
-<span class="sourceLineNo">212</span>        }<a name="line.212"></a>
-<span class="sourceLineNo">213</span><a name="line.213"></a>
-<span class="sourceLineNo">214</span>        /** Returns a matcher for exact identifiers of given names. */<a name="line.214"></a>
-<span class="sourceLineNo">215</span>        private static ExactIdentifierMatcher identifiers(String... names) {<a name="line.215"></a>
-<span class="sourceLineNo">216</span>                return new ExactIdentifierMatcher(names);<a name="line.216"></a>
-<span class="sourceLineNo">217</span>        }<a name="line.217"></a>
-<span class="sourceLineNo">218</span><a name="line.218"></a>
-<span class="sourceLineNo">219</span>        /**<a name="line.219"></a>
-<span class="sourceLineNo">220</span>         * Creates type rules specific to the Base.JS Framework<a name="line.220"></a>
-<span class="sourceLineNo">221</span>         * http://dean.edwards.name/weblog/2006/03/base/<a name="line.221"></a>
-<span class="sourceLineNo">222</span>         */<a name="line.222"></a>
-<span class="sourceLineNo">223</span>        private void createBaseJSRules() {<a name="line.223"></a>
-<span class="sourceLineNo">224</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; baseJSTypeRecognizer = inState(TOP_LEVEL).repeated(ALL_IDENTIFIERS, DOT)<a name="line.224"></a>
-<span class="sourceLineNo">225</span>                                .markStart().sequence(new UpperCaseStartIdentifierMatcher(), EQ)<a name="line.225"></a>
-<span class="sourceLineNo">226</span>                                .repeated(new AllLowercaseIdentifierMatcher(), DOT)<a name="line.226"></a>
-<span class="sourceLineNo">227</span>                                .sequence(new UpperCaseStartIdentifierMatcher(), DOT, new ExactIdentifierMatcher("extend"), LPAREN,<a name="line.227"></a>
-<span class="sourceLineNo">228</span>                                                LBRACE)<a name="line.228"></a>
-<span class="sourceLineNo">229</span>                                .createNode(EShallowEntityType.TYPE, SubTypeNames.CLASS, 0).parseUntil(BASE_JS_EXTEND).sequence(RBRACE);<a name="line.229"></a>
-<span class="sourceLineNo">230</span><a name="line.230"></a>
-<span class="sourceLineNo">231</span>                baseJSTypeRecognizer.sequence(RPAREN).optional(SEMICOLON).endNode();<a name="line.231"></a>
-<span class="sourceLineNo">232</span><a name="line.232"></a>
-<span class="sourceLineNo">233</span>                baseJSTypeRecognizer.sequence(COMMA, LBRACE).parseUntil(BASE_JS_EXTEND).sequence(RBRACE, RPAREN)<a name="line.233"></a>
-<span class="sourceLineNo">234</span>                                .optional(SEMICOLON).endNode();<a name="line.234"></a>
-<span class="sourceLineNo">235</span>        }<a name="line.235"></a>
-<span class="sourceLineNo">236</span><a name="line.236"></a>
-<span class="sourceLineNo">237</span>        /** Creates recognizers for the google closure framework */<a name="line.237"></a>
-<span class="sourceLineNo">238</span>        private void createClosureRecognizers() {<a name="line.238"></a>
-<span class="sourceLineNo">239</span>                // Google closure constructor, displayed as method here, as that is what<a name="line.239"></a>
-<span class="sourceLineNo">240</span>                // it technically is<a name="line.240"></a>
-<span class="sourceLineNo">241</span>                inState(TOP_LEVEL).repeated(ALL_IDENTIFIERS, DOT).markStart()<a name="line.241"></a>
-<span class="sourceLineNo">242</span>                                .sequence(new UpperCaseStartIdentifierMatcher(), EQ, FUNCTION)<a name="line.242"></a>
-<span class="sourceLineNo">243</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.CONSTRUCTOR, new Region(0, -3)).skipTo(LBRACE)<a name="line.243"></a>
-<span class="sourceLineNo">244</span>                                .parseUntil(CLOSURE_CONSTRUCTOR).sequence(RBRACE).optional(SEMICOLON).endNode();<a name="line.244"></a>
-<span class="sourceLineNo">245</span><a name="line.245"></a>
-<span class="sourceLineNo">246</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; attributeBeginning = inState(CLOSURE_CONSTRUCTOR)<a name="line.246"></a>
-<span class="sourceLineNo">247</span>                                .sequence(ETokenType.THIS, DOT, ALL_IDENTIFIERS)<a name="line.247"></a>
-<span class="sourceLineNo">248</span>                                .createNode(EShallowEntityType.ATTRIBUTE, SubTypeNames.ATTRIBUTE, new Region(0, 2));<a name="line.248"></a>
-<span class="sourceLineNo">249</span>                attributeBeginning.sequence(SEMICOLON).endNode();<a name="line.249"></a>
-<span class="sourceLineNo">250</span><a name="line.250"></a>
-<span class="sourceLineNo">251</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; attributeAssignment = attributeBeginning.sequence(EQ);<a name="line.251"></a>
-<span class="sourceLineNo">252</span>                attributeAssignment.sequenceBefore(LBRACE).skipToWithNesting(SEMICOLON, LBRACE, RBRACE).endNode();<a name="line.252"></a>
-<span class="sourceLineNo">253</span><a name="line.253"></a>
-<span class="sourceLineNo">254</span>                attributeAssignment.skipToWithNesting(SEMICOLON, LPAREN, RPAREN).endNode();<a name="line.254"></a>
+<span class="sourceLineNo">187</span>                createLambdaBodyRules();<a name="line.187"></a>
+<span class="sourceLineNo">188</span>        }<a name="line.188"></a>
+<span class="sourceLineNo">189</span><a name="line.189"></a>
+<span class="sourceLineNo">190</span>        /**<a name="line.190"></a>
+<span class="sourceLineNo">191</span>         * Rules for the body of a lambda ("=&gt;" and everything afterwards). Rules are<a name="line.191"></a>
+<span class="sourceLineNo">192</span>         * triggered by completeLambda() of the parent expression. The node start is<a name="line.192"></a>
+<span class="sourceLineNo">193</span>         * moved one token to the right so the shallow entities produced by this rule<a name="line.193"></a>
+<span class="sourceLineNo">194</span>         * don't include the double arrow (instead it will be included in the parent<a name="line.194"></a>
+<span class="sourceLineNo">195</span>         * entity).<a name="line.195"></a>
+<span class="sourceLineNo">196</span>         * <a name="line.196"></a>
+<span class="sourceLineNo">197</span>         * Creates parsers for the following token patterns (in state<a name="line.197"></a>
+<span class="sourceLineNo">198</span>         * {@link #IN_LAMBDA}):<a name="line.198"></a>
+<span class="sourceLineNo">199</span>         * &lt;ul&gt;<a name="line.199"></a>
+<span class="sourceLineNo">200</span>         * &lt;li&gt;=&gt; \&lt;type\&gt;identifier[...]&lt;/li&gt;<a name="line.200"></a>
+<span class="sourceLineNo">201</span>         * &lt;li&gt;=&gt; \&lt;type\&gt;identifier(...)&lt;/li&gt;<a name="line.201"></a>
+<span class="sourceLineNo">202</span>         * &lt;li&gt;=&gt; \&lt;type\&gt;identifier&lt;/li&gt;<a name="line.202"></a>
+<span class="sourceLineNo">203</span>         * &lt;/ul&gt;<a name="line.203"></a>
+<span class="sourceLineNo">204</span>         */<a name="line.204"></a>
+<span class="sourceLineNo">205</span>        private void createLambdaBodyRules() {<a name="line.205"></a>
+<span class="sourceLineNo">206</span>                EnumSet&lt;ETokenType&gt; lambdaBodyEndTokens = EnumSet.of(RPAREN, SEMICOLON, RBRACE, RBRACK, COMMA);<a name="line.206"></a>
+<span class="sourceLineNo">207</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; lambdaBodyStart = inState(IN_LAMBDA).sequence(DOUBLE_ARROW)<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                                .optional(LT, IDENTIFIER, GT).sequence(IDENTIFIER).repeated(DOT, IDENTIFIER);<a name="line.208"></a>
+<span class="sourceLineNo">209</span>                // lambda with brackets: =&gt; &lt;type&gt;identifier[...]<a name="line.209"></a>
+<span class="sourceLineNo">210</span>                lambdaBodyStart.sequence(LBRACK)<a name="line.210"></a>
+<span class="sourceLineNo">211</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.LAMBDA_EXPRESSION, null, 1)<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                                .skipToWithNesting(lambdaBodyEndTokens, LBRACK, RBRACK).endNode();<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                // lambda with parentheses: =&gt; &lt;type&gt;identifier(...)<a name="line.213"></a>
+<span class="sourceLineNo">214</span>                lambdaBodyStart.sequence(LPAREN)<a name="line.214"></a>
+<span class="sourceLineNo">215</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.LAMBDA_EXPRESSION, null, 1)<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                                .skipToWithNesting(lambdaBodyEndTokens, LPAREN, RPAREN).endNode();<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                // lambda with simple value: =&gt; identifier<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                lambdaBodyStart.createNode(EShallowEntityType.STATEMENT, SubTypeNames.LAMBDA_EXPRESSION, null, 1).endNode();<a name="line.218"></a>
+<span class="sourceLineNo">219</span><a name="line.219"></a>
+<span class="sourceLineNo">220</span>                inState(IN_LAMBDA).sequence(DOUBLE_ARROW)<a name="line.220"></a>
+<span class="sourceLineNo">221</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.LAMBDA_EXPRESSION, null, 1)<a name="line.221"></a>
+<span class="sourceLineNo">222</span>                                .skipBeforeWithNesting(lambdaBodyEndTokens, LPAREN, RPAREN).endNode();<a name="line.222"></a>
+<span class="sourceLineNo">223</span>        }<a name="line.223"></a>
+<span class="sourceLineNo">224</span><a name="line.224"></a>
+<span class="sourceLineNo">225</span>        /**<a name="line.225"></a>
+<span class="sourceLineNo">226</span>         * Completes a rule for parsing lambda expressions. The generated parser matches<a name="line.226"></a>
+<span class="sourceLineNo">227</span>         * on token streams where given &lt;code&gt;ruleStart&lt;/code&gt; continues with one of the<a name="line.227"></a>
+<span class="sourceLineNo">228</span>         * following patterns (Notation is BNF where ANY and IN_LAMBDA denote subparsers<a name="line.228"></a>
+<span class="sourceLineNo">229</span>         * with the respective state):<a name="line.229"></a>
+<span class="sourceLineNo">230</span>         * &lt;ul&gt;<a name="line.230"></a>
+<span class="sourceLineNo">231</span>         * &lt;li&gt;=&gt; { ANY }&lt;/li&gt;<a name="line.231"></a>
+<span class="sourceLineNo">232</span>         * &lt;li&gt;: ... =&gt; IN_LAMBDA&lt;/li&gt;<a name="line.232"></a>
+<span class="sourceLineNo">233</span>         * &lt;li&gt;=&gt; IN_LAMBDA&lt;/li&gt;<a name="line.233"></a>
+<span class="sourceLineNo">234</span>         * &lt;li&gt;: ... =&gt; { ANY }&lt;/li&gt;<a name="line.234"></a>
+<span class="sourceLineNo">235</span>         * &lt;/ul&gt;<a name="line.235"></a>
+<span class="sourceLineNo">236</span>         * The subparser used for IN_LAMBDA is started before the =&gt; token, to allow<a name="line.236"></a>
+<span class="sourceLineNo">237</span>         * precise matching. This is required, as this kind of expression is not<a name="line.237"></a>
+<span class="sourceLineNo">238</span>         * terminated by a semicolon.<a name="line.238"></a>
+<span class="sourceLineNo">239</span>         * <a name="line.239"></a>
+<span class="sourceLineNo">240</span>         * Lambdas may optionally specify the type of the return value, e.g:<a name="line.240"></a>
+<span class="sourceLineNo">241</span>         * &lt;code&gt;() : any =&gt; {}&lt;/code&gt;<a name="line.241"></a>
+<span class="sourceLineNo">242</span>         */<a name="line.242"></a>
+<span class="sourceLineNo">243</span>        private static void completeLambda(RecognizerBase&lt;EJavaScriptParserStates&gt; ruleStart) {<a name="line.243"></a>
+<span class="sourceLineNo">244</span><a name="line.244"></a>
+<span class="sourceLineNo">245</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; lambdaAlternativeWithReturnType = ruleStart.sequence(COLON)<a name="line.245"></a>
+<span class="sourceLineNo">246</span>                                // we don't want to arbitrarily consume tokens until we find a<a name="line.246"></a>
+<span class="sourceLineNo">247</span>                                // double arrow, since we are not yet sure that we are actually<a name="line.247"></a>
+<span class="sourceLineNo">248</span>                                // parsing a lambda. So we skip to either a double arrow (in<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                                // which case this is a lambda) or a token that we know cannot<a name="line.249"></a>
+<span class="sourceLineNo">250</span>                                // occur before the double arrow<a name="line.250"></a>
+<span class="sourceLineNo">251</span>                                .skipBefore(EnumSet.of(DOUBLE_ARROW, SEMICOLON)).sequenceBefore(DOUBLE_ARROW)<a name="line.251"></a>
+<span class="sourceLineNo">252</span>                                .createNode(EShallowEntityType.METHOD, "lambda");<a name="line.252"></a>
+<span class="sourceLineNo">253</span>                lambdaAlternativeWithReturnType.sequence(DOUBLE_ARROW, LBRACE).parseUntil(ANY).sequence(RBRACE).endNode();<a name="line.253"></a>
+<span class="sourceLineNo">254</span>                lambdaAlternativeWithReturnType.parseOnce(IN_LAMBDA).endNode();<a name="line.254"></a>
 <span class="sourceLineNo">255</span><a name="line.255"></a>
-<span class="sourceLineNo">256</span>        }<a name="line.256"></a>
-<span class="sourceLineNo">257</span><a name="line.257"></a>
-<span class="sourceLineNo">258</span>        /** Creates parsing rules specifically for AngularJS. */<a name="line.258"></a>
-<span class="sourceLineNo">259</span>        private void createAngularRules() {<a name="line.259"></a>
-<span class="sourceLineNo">260</span>                // angular modules<a name="line.260"></a>
-<span class="sourceLineNo">261</span>                inState(TOP_LEVEL).optional(VAR, ALL_IDENTIFIERS, EQ).sequence(identifiers("angular"), DOT, MODULE, LPAREN)<a name="line.261"></a>
-<span class="sourceLineNo">262</span>                                .createNode(EShallowEntityType.META, "AngularJS module declaration")<a name="line.262"></a>
-<span class="sourceLineNo">263</span>                                .skipToWithNesting(RPAREN, LPAREN, ETokenType.RPAREN).optional(SEMICOLON).endNode();<a name="line.263"></a>
-<span class="sourceLineNo">264</span><a name="line.264"></a>
-<span class="sourceLineNo">265</span>                // angular style for unnamed and named functions<a name="line.265"></a>
-<span class="sourceLineNo">266</span>                inState(TOP_LEVEL).optional(ALL_IDENTIFIERS).markStart().sequence(DOT, identifiers("config"), LPAREN, FUNCTION)<a name="line.266"></a>
-<span class="sourceLineNo">267</span>                                .createNode(EShallowEntityType.METHOD, new Object[] { "AngularJS", 1 }).skipTo(LBRACE).parseUntil(ANY)<a name="line.267"></a>
-<span class="sourceLineNo">268</span>                                .sequence(RBRACE, RPAREN).optional(SEMICOLON).endNode();<a name="line.268"></a>
-<span class="sourceLineNo">269</span>                inState(TOP_LEVEL).optional(ALL_IDENTIFIERS).markStart()<a name="line.269"></a>
-<span class="sourceLineNo">270</span>                                .sequence(DOT, identifiers("controller", "filter", "factory", "directive", "constant"), LPAREN,<a name="line.270"></a>
-<span class="sourceLineNo">271</span>                                                STRING_LITERAL, COMMA)<a name="line.271"></a>
-<span class="sourceLineNo">272</span>                                .optional(LBRACK).sequence(FUNCTION)<a name="line.272"></a>
-<span class="sourceLineNo">273</span>                                .createNode(EShallowEntityType.METHOD, new Object[] { "AngularJS", 1 }, 3).skipTo(LBRACE)<a name="line.273"></a>
-<span class="sourceLineNo">274</span>                                .parseUntil(ANY).sequence(RBRACE).optional(RBRACK).sequence(RPAREN).optional(SEMICOLON).endNode();<a name="line.274"></a>
-<span class="sourceLineNo">275</span>        }<a name="line.275"></a>
-<span class="sourceLineNo">276</span><a name="line.276"></a>
-<span class="sourceLineNo">277</span>        /**<a name="line.277"></a>
-<span class="sourceLineNo">278</span>         * Creates rules for parsing namespace/module constructs. These are used to<a name="line.278"></a>
-<span class="sourceLineNo">279</span>         * handle those constructs provided by well-known libraries, as JavaScript<a name="line.279"></a>
-<span class="sourceLineNo">280</span>         * itself does not provide a direct namespace concept.<a name="line.280"></a>
-<span class="sourceLineNo">281</span>         */<a name="line.281"></a>
-<span class="sourceLineNo">282</span>        private void createModuleRules() {<a name="line.282"></a>
-<span class="sourceLineNo">283</span>                // YUI library, see http://yuilibrary.com/yui/docs/yui/<a name="line.283"></a>
-<span class="sourceLineNo">284</span>                completeModuleRecognizer(inAnyState().ensureTopLevel().subRecognizer(new YuiCallRecognizer("add"), 1, 1)<a name="line.284"></a>
-<span class="sourceLineNo">285</span>                                .skipTo(STRING_LITERAL).createNode(EShallowEntityType.MODULE, "YUI module", -1));<a name="line.285"></a>
-<span class="sourceLineNo">286</span>                completeModuleRecognizer(inAnyState().ensureTopLevel().subRecognizer(new YuiCallRecognizer("use"), 1, 1)<a name="line.286"></a>
-<span class="sourceLineNo">287</span>                                .createNode(EShallowEntityType.MODULE, "YUI code", -1));<a name="line.287"></a>
-<span class="sourceLineNo">288</span><a name="line.288"></a>
-<span class="sourceLineNo">289</span>                // TypeScript namespace<a name="line.289"></a>
-<span class="sourceLineNo">290</span>                inState(TOP_LEVEL).repeated(EnumSet.of(DECLARE, EXPORT)).markStart().sequence(EnumSet.of(NAMESPACE, MODULE))<a name="line.290"></a>
-<span class="sourceLineNo">291</span>                                .sequence(IDENTIFIER).repeated(DOT, IDENTIFIER).sequence(LBRACE)<a name="line.291"></a>
-<span class="sourceLineNo">292</span>                                .createNode(EShallowEntityType.MODULE, 0, new Region(1, -2)).parseUntil(TOP_LEVEL).sequence(RBRACE)<a name="line.292"></a>
-<span class="sourceLineNo">293</span>                                .endNode();<a name="line.293"></a>
-<span class="sourceLineNo">294</span>        }<a name="line.294"></a>
-<span class="sourceLineNo">295</span><a name="line.295"></a>
-<span class="sourceLineNo">296</span>        /** Completes a recognizer for modules. */<a name="line.296"></a>
-<span class="sourceLineNo">297</span>        private static void completeModuleRecognizer(RecognizerBase&lt;EJavaScriptParserStates&gt; recognizer) {<a name="line.297"></a>
-<span class="sourceLineNo">298</span>                recognizer.skipTo(FUNCTION).skipTo(LBRACE).parseUntil(ANY).sequence(RBRACE)<a name="line.298"></a>
-<span class="sourceLineNo">299</span>                                .skipToWithNesting(RPAREN, LPAREN, RPAREN).optional(SEMICOLON).endNode();<a name="line.299"></a>
-<span class="sourceLineNo">300</span>        }<a name="line.300"></a>
-<span class="sourceLineNo">301</span><a name="line.301"></a>
-<span class="sourceLineNo">302</span>        /** Creates rules for TypeScript types. */<a name="line.302"></a>
-<span class="sourceLineNo">303</span>        private void createTypeRules() {<a name="line.303"></a>
-<span class="sourceLineNo">304</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; typeRecognizer = inAnyState().repeated(EnumSet.of(DECLARE, EXPORT))<a name="line.304"></a>
-<span class="sourceLineNo">305</span>                                .markStart();<a name="line.305"></a>
-<span class="sourceLineNo">306</span>                typeRecognizer.sequence(TYPE, IDENTIFIER, EQ).skipTo(SEMICOLON).createNode(EShallowEntityType.TYPE, 0, 1)<a name="line.306"></a>
-<span class="sourceLineNo">307</span>                                .endNode();<a name="line.307"></a>
-<span class="sourceLineNo">308</span>                typeRecognizer.sequence(EnumSet.of(CLASS, INTERFACE), IDENTIFIER).createNode(EShallowEntityType.TYPE, 0, 1)<a name="line.308"></a>
-<span class="sourceLineNo">309</span>                                .skipTo(LBRACE).parseUntil(IN_TYPE).sequence(RBRACE).endNode();<a name="line.309"></a>
-<span class="sourceLineNo">310</span><a name="line.310"></a>
-<span class="sourceLineNo">311</span>                // enums<a name="line.311"></a>
-<span class="sourceLineNo">312</span>                inAnyState().repeated(EnumSet.of(DECLARE, EXPORT, CONST)).markStart().sequence(ENUM, IDENTIFIER, LBRACE)<a name="line.312"></a>
-<span class="sourceLineNo">313</span>                                .createNode(EShallowEntityType.TYPE, 0, 1).skipToWithNesting(RBRACE, ETokenType.LBRACE, RBRACE)<a name="line.313"></a>
-<span class="sourceLineNo">314</span>                                .endNode();<a name="line.314"></a>
-<span class="sourceLineNo">315</span>        }<a name="line.315"></a>
-<span class="sourceLineNo">316</span><a name="line.316"></a>
-<span class="sourceLineNo">317</span>        /** Creates rules for TypeScript type members. */<a name="line.317"></a>
-<span class="sourceLineNo">318</span>        private void createTypeMemberRules() {<a name="line.318"></a>
-<span class="sourceLineNo">319</span>                // constructor<a name="line.319"></a>
-<span class="sourceLineNo">320</span>                inState(IN_TYPE).repeated(TYPESCRIPT_MODIFIERS).markStart().sequence(CONSTRUCTOR)<a name="line.320"></a>
-<span class="sourceLineNo">321</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.CONSTRUCTOR).skipNested(ETokenType.LPAREN, RPAREN)<a name="line.321"></a>
-<span class="sourceLineNo">322</span>                                .sequence(LBRACE).parseUntil(ANY).sequence(RBRACE).endNode();<a name="line.322"></a>
-<span class="sourceLineNo">323</span><a name="line.323"></a>
-<span class="sourceLineNo">324</span>                // "normal" methods<a name="line.324"></a>
-<span class="sourceLineNo">325</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; methodAlternative = inState(IN_TYPE).repeated(TYPESCRIPT_MODIFIERS)<a name="line.325"></a>
-<span class="sourceLineNo">326</span>                                .markStart().repeatedAtLeastOnce(IDENTIFIER).sequence(LPAREN).skipTo(RPAREN)<a name="line.326"></a>
-<span class="sourceLineNo">327</span>                                .skipBefore(EnumSet.of(LBRACE, SEMICOLON));<a name="line.327"></a>
-<span class="sourceLineNo">328</span>                methodAlternative.sequence(SEMICOLON).createNode(EShallowEntityType.METHOD, SubTypeNames.METHOD_DECLARATION, 0)<a name="line.328"></a>
-<span class="sourceLineNo">329</span>                                .endNode();<a name="line.329"></a>
-<span class="sourceLineNo">330</span>                methodAlternative.sequence(LBRACE).createNode(EShallowEntityType.METHOD, "method", 0).parseUntil(ANY)<a name="line.330"></a>
-<span class="sourceLineNo">331</span>                                .sequence(RBRACE).endNode();<a name="line.331"></a>
-<span class="sourceLineNo">332</span><a name="line.332"></a>
-<span class="sourceLineNo">333</span>                // attributes<a name="line.333"></a>
-<span class="sourceLineNo">334</span>                // the semicolon at the end of attribute declarations is optional, so we<a name="line.334"></a>
-<span class="sourceLineNo">335</span>                // have to use a simple statement recognizer to find the correct end of<a name="line.335"></a>
-<span class="sourceLineNo">336</span>                // the current statement<a name="line.336"></a>
-<span class="sourceLineNo">337</span>                inState(IN_TYPE).repeated(TYPESCRIPT_MODIFIERS).markStart()<a name="line.337"></a>
-<span class="sourceLineNo">338</span>                                .sequenceBefore(IDENTIFIER, EnumSet.of(EQ, COLON, QUESTION))<a name="line.338"></a>
-<span class="sourceLineNo">339</span>                                .subRecognizer(new JavaScriptSimpleStatementRecognizer(EShallowEntityType.ATTRIBUTE,<a name="line.339"></a>
-<span class="sourceLineNo">340</span>                                                SubTypeNames.ATTRIBUTE, true), 1, 1)<a name="line.340"></a>
-<span class="sourceLineNo">341</span>                                .endNode();<a name="line.341"></a>
-<span class="sourceLineNo">342</span>        }<a name="line.342"></a>
-<span class="sourceLineNo">343</span><a name="line.343"></a>
-<span class="sourceLineNo">344</span>        /** Creates parsing rules for functions. */<a name="line.344"></a>
-<span class="sourceLineNo">345</span>        private void createFunctionRules() {<a name="line.345"></a>
-<span class="sourceLineNo">346</span>                createAssignedFunctionRule();<a name="line.346"></a>
-<span class="sourceLineNo">347</span>                createNamedFunctionRule();<a name="line.347"></a>
-<span class="sourceLineNo">348</span>                createAttributeFunctionRule();<a name="line.348"></a>
-<span class="sourceLineNo">349</span>                createAnonymousFunctionRule();<a name="line.349"></a>
-<span class="sourceLineNo">350</span>        }<a name="line.350"></a>
-<span class="sourceLineNo">351</span><a name="line.351"></a>
-<span class="sourceLineNo">352</span>        /** Creates parsing rule for assigned functions. */<a name="line.352"></a>
-<span class="sourceLineNo">353</span>        private void createAssignedFunctionRule() {<a name="line.353"></a>
-<span class="sourceLineNo">354</span>                inAnyState().repeated(EnumSet.of(DECLARE, EXPORT)).optional(VAR).markStart().sequence(ALL_IDENTIFIERS)<a name="line.354"></a>
-<span class="sourceLineNo">355</span>                                .repeated(DOT, extendAllIdentifiers(PROTOTYPE)).sequence(EQ, FUNCTION)<a name="line.355"></a>
-<span class="sourceLineNo">356</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.ASSIGNED_FUNCTION, new Region(0, -3))<a name="line.356"></a>
-<span class="sourceLineNo">357</span>                                .skipNested(LPAREN, RPAREN).skipTo(LBRACE).parseUntil(ANY).sequence(RBRACE).optional(SEMICOLON)<a name="line.357"></a>
-<span class="sourceLineNo">358</span>                                .endNode();<a name="line.358"></a>
-<span class="sourceLineNo">359</span>        }<a name="line.359"></a>
-<span class="sourceLineNo">360</span><a name="line.360"></a>
-<span class="sourceLineNo">361</span>        /** Creates parsing rule for named functions. */<a name="line.361"></a>
-<span class="sourceLineNo">362</span>        private void createNamedFunctionRule() {<a name="line.362"></a>
-<span class="sourceLineNo">363</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; namedFunctionAlternative = inAnyState()<a name="line.363"></a>
-<span class="sourceLineNo">364</span>                                .repeated(EnumSet.of(DECLARE, EXPORT)).markStart().sequence(FUNCTION, ALL_IDENTIFIERS)<a name="line.364"></a>
-<span class="sourceLineNo">365</span>                                .skipNested(LPAREN, RPAREN).skipBefore(EnumSet.of(LBRACE, SEMICOLON));<a name="line.365"></a>
-<span class="sourceLineNo">366</span>                namedFunctionAlternative.sequence(SEMICOLON)<a name="line.366"></a>
-<span class="sourceLineNo">367</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.FUNCTION_DECLARATION, 1).endNode();<a name="line.367"></a>
-<span class="sourceLineNo">368</span>                namedFunctionAlternative.sequence(LBRACE).createNode(EShallowEntityType.METHOD, SubTypeNames.NAMED_FUNCTION, 1)<a name="line.368"></a>
-<span class="sourceLineNo">369</span>                                .parseUntil(ANY).sequence(RBRACE).endNode();<a name="line.369"></a>
-<span class="sourceLineNo">370</span>        }<a name="line.370"></a>
-<span class="sourceLineNo">371</span><a name="line.371"></a>
-<span class="sourceLineNo">372</span>        /** Creates parsing rule for attribute functions. */<a name="line.372"></a>
-<span class="sourceLineNo">373</span>        private void createAttributeFunctionRule() {<a name="line.373"></a>
-<span class="sourceLineNo">374</span>                inAnyState().sequence(extendAllIdentifiers(STRING_LITERAL), COLON, FUNCTION)<a name="line.374"></a>
-<span class="sourceLineNo">375</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.ATTRIBUTE_FUNCTION, 0).skipNested(LPAREN, RPAREN)<a name="line.375"></a>
-<span class="sourceLineNo">376</span>                                .skipTo(LBRACE).parseUntil(ANY).sequence(RBRACE).optional(COMMA).endNode();<a name="line.376"></a>
-<span class="sourceLineNo">377</span>        }<a name="line.377"></a>
-<span class="sourceLineNo">378</span><a name="line.378"></a>
-<span class="sourceLineNo">379</span>        /** Creates parsing rule for anonymous functions. */<a name="line.379"></a>
-<span class="sourceLineNo">380</span>        private void createAnonymousFunctionRule() {<a name="line.380"></a>
-<span class="sourceLineNo">381</span>                inAnyState().sequence(FUNCTION).createNode(EShallowEntityType.METHOD, SubTypeNames.ANONYMOUS_FUNCTION)<a name="line.381"></a>
-<span class="sourceLineNo">382</span>                                .skipNested(LPAREN, RPAREN).skipTo(LBRACE).parseUntil(ANY).sequence(RBRACE).endNode();<a name="line.382"></a>
+<span class="sourceLineNo">256</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; lambdaAlternative = ruleStart.sequenceBefore(DOUBLE_ARROW)<a name="line.256"></a>
+<span class="sourceLineNo">257</span>                                .createNode(EShallowEntityType.METHOD, "lambda");<a name="line.257"></a>
+<span class="sourceLineNo">258</span>                lambdaAlternative.sequence(DOUBLE_ARROW, LBRACE).parseUntil(ANY).sequence(RBRACE).endNode();<a name="line.258"></a>
+<span class="sourceLineNo">259</span>                lambdaAlternative.parseOnce(IN_LAMBDA).endNode();<a name="line.259"></a>
+<span class="sourceLineNo">260</span>        }<a name="line.260"></a>
+<span class="sourceLineNo">261</span><a name="line.261"></a>
+<span class="sourceLineNo">262</span>        /** Creates parsing rules for meta elements. */<a name="line.262"></a>
+<span class="sourceLineNo">263</span>        private void createMetaRules() {<a name="line.263"></a>
+<span class="sourceLineNo">264</span>                // Closure special commands (require, provide, inherits, module)<a name="line.264"></a>
+<span class="sourceLineNo">265</span>                inState(TOP_LEVEL).sequence(identifiers("goog"), DOT, identifiers("provide", "require", "inherits"), LPAREN)<a name="line.265"></a>
+<span class="sourceLineNo">266</span>                                .skipTo(RPAREN).createNode(EShallowEntityType.META, new Region(0, 2), new Region(4, -2))<a name="line.266"></a>
+<span class="sourceLineNo">267</span>                                .optional(SEMICOLON).endNode();<a name="line.267"></a>
+<span class="sourceLineNo">268</span>                inState(TOP_LEVEL).sequence(identifiers("goog"), DOT, MODULE, LPAREN).skipTo(RPAREN)<a name="line.268"></a>
+<span class="sourceLineNo">269</span>                                .createNode(EShallowEntityType.META, new Region(0, 2), new Region(4, -2)).optional(SEMICOLON).endNode();<a name="line.269"></a>
+<span class="sourceLineNo">270</span><a name="line.270"></a>
+<span class="sourceLineNo">271</span>                // modules style abbreviated goog.require<a name="line.271"></a>
+<span class="sourceLineNo">272</span>                inState(TOP_LEVEL)<a name="line.272"></a>
+<span class="sourceLineNo">273</span>                                .sequence(EnumSet.of(VAR, CONST), IDENTIFIER, EQ, identifiers("goog"), DOT, identifiers("require"),<a name="line.273"></a>
+<span class="sourceLineNo">274</span>                                                LPAREN)<a name="line.274"></a>
+<span class="sourceLineNo">275</span>                                .skipTo(RPAREN).createNode(EShallowEntityType.META, new Region(3, 5), new Region(7, -2))<a name="line.275"></a>
+<span class="sourceLineNo">276</span>                                .optional(SEMICOLON).endNode();<a name="line.276"></a>
+<span class="sourceLineNo">277</span><a name="line.277"></a>
+<span class="sourceLineNo">278</span>                // Support for namespace.js<a name="line.278"></a>
+<span class="sourceLineNo">279</span>                inState(TOP_LEVEL).sequence(NAMESPACE, LPAREN).createNode(EShallowEntityType.META, SubTypeNames.NAMESPACE, 2)<a name="line.279"></a>
+<span class="sourceLineNo">280</span>                                .skipTo(RPAREN).optional(SEMICOLON).endNode();<a name="line.280"></a>
+<span class="sourceLineNo">281</span><a name="line.281"></a>
+<span class="sourceLineNo">282</span>                // support for TypeScript imports<a name="line.282"></a>
+<span class="sourceLineNo">283</span>                recognizeTypeScriptImports();<a name="line.283"></a>
+<span class="sourceLineNo">284</span>                recognizeTypeScriptExports();<a name="line.284"></a>
+<span class="sourceLineNo">285</span><a name="line.285"></a>
+<span class="sourceLineNo">286</span>                // support for TypeScript decorators<a name="line.286"></a>
+<span class="sourceLineNo">287</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; decoratorStart = inAnyState().sequence(ETokenType.AT, IDENTIFIER)<a name="line.287"></a>
+<span class="sourceLineNo">288</span>                                .createNode(EShallowEntityType.META, SubTypeNames.DECORATOR, new Region(0, 1));<a name="line.288"></a>
+<span class="sourceLineNo">289</span>                decoratorStart.sequence(LPAREN).skipToWithNesting(RPAREN, LPAREN, RPAREN).endNode();<a name="line.289"></a>
+<span class="sourceLineNo">290</span>                decoratorStart.endNode();<a name="line.290"></a>
+<span class="sourceLineNo">291</span><a name="line.291"></a>
+<span class="sourceLineNo">292</span>        }<a name="line.292"></a>
+<span class="sourceLineNo">293</span><a name="line.293"></a>
+<span class="sourceLineNo">294</span>        /** Recognizes TypeScript Import statements */<a name="line.294"></a>
+<span class="sourceLineNo">295</span>        private void recognizeTypeScriptImports() {<a name="line.295"></a>
+<span class="sourceLineNo">296</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; identifierRecognizer = emptyRecognizer();<a name="line.296"></a>
+<span class="sourceLineNo">297</span>                identifierRecognizer.sequence(IDENTIFIER).optional(AS, IDENTIFIER);<a name="line.297"></a>
+<span class="sourceLineNo">298</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; multipleImportRecognizer = emptyRecognizer();<a name="line.298"></a>
+<span class="sourceLineNo">299</span>                multipleImportRecognizer.optional(COMMA).subRecognizer(identifierRecognizer);<a name="line.299"></a>
+<span class="sourceLineNo">300</span><a name="line.300"></a>
+<span class="sourceLineNo">301</span>                inState(TOP_LEVEL).sequence(IMPORT, LBRACE).subRecognizer(identifierRecognizer)<a name="line.301"></a>
+<span class="sourceLineNo">302</span>                                .repeatedSubRecognizer(multipleImportRecognizer).sequence(RBRACE, FROM, STRING_LITERAL)<a name="line.302"></a>
+<span class="sourceLineNo">303</span>                                .createNode(EShallowEntityType.META, SubTypeNames.IMPORT,<a name="line.303"></a>
+<span class="sourceLineNo">304</span>                                                new Object[] { new Region(2, 2), TYPESCRIPT_IMPORT_SEPARATOR, new Region(-1, -1) })<a name="line.304"></a>
+<span class="sourceLineNo">305</span>                                .optional(SEMICOLON).endNode();<a name="line.305"></a>
+<span class="sourceLineNo">306</span><a name="line.306"></a>
+<span class="sourceLineNo">307</span>                // star imports<a name="line.307"></a>
+<span class="sourceLineNo">308</span>                inState(TOP_LEVEL).sequence(IMPORT, MULT).skipTo(FROM).skipTo(STRING_LITERAL)<a name="line.308"></a>
+<span class="sourceLineNo">309</span>                                .createNode(EShallowEntityType.META, SubTypeNames.STAR_IMPORT, -1).optional(SEMICOLON).endNode();<a name="line.309"></a>
+<span class="sourceLineNo">310</span>                // default export import<a name="line.310"></a>
+<span class="sourceLineNo">311</span>                inState(TOP_LEVEL).sequence(IMPORT, IDENTIFIER, FROM, STRING_LITERAL)<a name="line.311"></a>
+<span class="sourceLineNo">312</span>                                .createNode(EShallowEntityType.META, SubTypeNames.DEFAULT_EXPORT_IMPORT, -1).optional(SEMICOLON)<a name="line.312"></a>
+<span class="sourceLineNo">313</span>                                .endNode();<a name="line.313"></a>
+<span class="sourceLineNo">314</span>                // triple slash directive import<a name="line.314"></a>
+<span class="sourceLineNo">315</span>                inState(TOP_LEVEL).sequence(ETokenType.TRIPLE_SLASH_DIRECTIVE)<a name="line.315"></a>
+<span class="sourceLineNo">316</span>                                .createNode(EShallowEntityType.META, SubTypeNames.TRIPLE_SLASH_DIRECTIVE_IMPORT, 0).endNode();<a name="line.316"></a>
+<span class="sourceLineNo">317</span>                // exported object import<a name="line.317"></a>
+<span class="sourceLineNo">318</span>                inState(TOP_LEVEL).sequence(IMPORT, IDENTIFIER, EQ, identifiers("require"), LPAREN, STRING_LITERAL)<a name="line.318"></a>
+<span class="sourceLineNo">319</span>                                .createNode(EShallowEntityType.META, SubTypeNames.OBJECT_EXPORT_IMPORT, -1).sequence(RPAREN)<a name="line.319"></a>
+<span class="sourceLineNo">320</span>                                .optional(SEMICOLON).endNode();<a name="line.320"></a>
+<span class="sourceLineNo">321</span>                // abbreviations<a name="line.321"></a>
+<span class="sourceLineNo">322</span>                inState(TOP_LEVEL).sequence(IMPORT, IDENTIFIER, EQ).markStart().repeated(EnumSet.of(IDENTIFIER, DOT))<a name="line.322"></a>
+<span class="sourceLineNo">323</span>                                .createNode(EShallowEntityType.META, SubTypeNames.IMPORT, new Region(0, -1)).optional(SEMICOLON)<a name="line.323"></a>
+<span class="sourceLineNo">324</span>                                .endNode();<a name="line.324"></a>
+<span class="sourceLineNo">325</span>        }<a name="line.325"></a>
+<span class="sourceLineNo">326</span><a name="line.326"></a>
+<span class="sourceLineNo">327</span>        /** Recognizes TypeScript Export statements */<a name="line.327"></a>
+<span class="sourceLineNo">328</span>        private void recognizeTypeScriptExports() {<a name="line.328"></a>
+<span class="sourceLineNo">329</span>                inState(TOP_LEVEL).sequence(EXPORT, LBRACE).optional(IDENTIFIER, AS).sequence(IDENTIFIER, RBRACE)<a name="line.329"></a>
+<span class="sourceLineNo">330</span>                                .createNode(EShallowEntityType.META, SubTypeNames.EXPORT, -2).optional(SEMICOLON).endNode();<a name="line.330"></a>
+<span class="sourceLineNo">331</span>                inState(TOP_LEVEL).sequence(EXPORT, ETokenType.EQ, IDENTIFIER)<a name="line.331"></a>
+<span class="sourceLineNo">332</span>                                .createNode(EShallowEntityType.META, SubTypeNames.OBJECT_EXPORT, -1).optional(SEMICOLON).endNode();<a name="line.332"></a>
+<span class="sourceLineNo">333</span>        }<a name="line.333"></a>
+<span class="sourceLineNo">334</span><a name="line.334"></a>
+<span class="sourceLineNo">335</span>        /**<a name="line.335"></a>
+<span class="sourceLineNo">336</span>         * Returns a matcher for {@link ETokenType#IDENTIFIER} tokens with given texts.<a name="line.336"></a>
+<span class="sourceLineNo">337</span>         */<a name="line.337"></a>
+<span class="sourceLineNo">338</span>        private static ExactIdentifierMatcher identifiers(String... names) {<a name="line.338"></a>
+<span class="sourceLineNo">339</span>                return new ExactIdentifierMatcher(names);<a name="line.339"></a>
+<span class="sourceLineNo">340</span>        }<a name="line.340"></a>
+<span class="sourceLineNo">341</span><a name="line.341"></a>
+<span class="sourceLineNo">342</span>        /**<a name="line.342"></a>
+<span class="sourceLineNo">343</span>         * Creates type rules specific to the Base.JS Framework<a name="line.343"></a>
+<span class="sourceLineNo">344</span>         * http://dean.edwards.name/weblog/2006/03/base/<a name="line.344"></a>
+<span class="sourceLineNo">345</span>         */<a name="line.345"></a>
+<span class="sourceLineNo">346</span>        private void createBaseJSRules() {<a name="line.346"></a>
+<span class="sourceLineNo">347</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; baseJSTypeRecognizer = inState(TOP_LEVEL).repeated(ALL_IDENTIFIERS, DOT)<a name="line.347"></a>
+<span class="sourceLineNo">348</span>                                .markStart().sequence(new UpperCaseStartIdentifierMatcher(), EQ)<a name="line.348"></a>
+<span class="sourceLineNo">349</span>                                .repeated(new AllLowercaseIdentifierMatcher(), DOT)<a name="line.349"></a>
+<span class="sourceLineNo">350</span>                                .sequence(new UpperCaseStartIdentifierMatcher(), DOT, new ExactIdentifierMatcher("extend"), LPAREN,<a name="line.350"></a>
+<span class="sourceLineNo">351</span>                                                LBRACE)<a name="line.351"></a>
+<span class="sourceLineNo">352</span>                                .createNode(EShallowEntityType.TYPE, SubTypeNames.CLASS, 0).parseUntil(BASE_JS_EXTEND).sequence(RBRACE);<a name="line.352"></a>
+<span class="sourceLineNo">353</span><a name="line.353"></a>
+<span class="sourceLineNo">354</span>                baseJSTypeRecognizer.sequence(RPAREN).optional(SEMICOLON).endNode();<a name="line.354"></a>
+<span class="sourceLineNo">355</span><a name="line.355"></a>
+<span class="sourceLineNo">356</span>                baseJSTypeRecognizer.sequence(COMMA, LBRACE).parseUntil(BASE_JS_EXTEND).sequence(RBRACE, RPAREN)<a name="line.356"></a>
+<span class="sourceLineNo">357</span>                                .optional(SEMICOLON).endNode();<a name="line.357"></a>
+<span class="sourceLineNo">358</span>        }<a name="line.358"></a>
+<span class="sourceLineNo">359</span><a name="line.359"></a>
+<span class="sourceLineNo">360</span>        /** Creates recognizers for the google closure framework */<a name="line.360"></a>
+<span class="sourceLineNo">361</span>        private void createClosureRecognizers() {<a name="line.361"></a>
+<span class="sourceLineNo">362</span>                // Google closure constructor, displayed as method here, as that is what<a name="line.362"></a>
+<span class="sourceLineNo">363</span>                // it technically is<a name="line.363"></a>
+<span class="sourceLineNo">364</span>                inState(TOP_LEVEL).repeated(ALL_IDENTIFIERS, DOT).markStart()<a name="line.364"></a>
+<span class="sourceLineNo">365</span>                                .sequence(new UpperCaseStartIdentifierMatcher(), EQ, FUNCTION)<a name="line.365"></a>
+<span class="sourceLineNo">366</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.CONSTRUCTOR, new Region(0, -3)).skipTo(LBRACE)<a name="line.366"></a>
+<span class="sourceLineNo">367</span>                                .parseUntil(CLOSURE_CONSTRUCTOR).sequence(RBRACE).optional(SEMICOLON).endNode();<a name="line.367"></a>
+<span class="sourceLineNo">368</span><a name="line.368"></a>
+<span class="sourceLineNo">369</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; attributeBeginning = inState(CLOSURE_CONSTRUCTOR)<a name="line.369"></a>
+<span class="sourceLineNo">370</span>                                .sequence(ETokenType.THIS, DOT, ALL_IDENTIFIERS);<a name="line.370"></a>
+<span class="sourceLineNo">371</span>                attributeBeginning.sequenceBefore(EnumSet.of(ETokenType.THIS, RBRACE, SEMICOLON)).optional(SEMICOLON)<a name="line.371"></a>
+<span class="sourceLineNo">372</span>                                .createNode(EShallowEntityType.ATTRIBUTE, SubTypeNames.ATTRIBUTE, new Region(0, 2)).endNode();<a name="line.372"></a>
+<span class="sourceLineNo">373</span><a name="line.373"></a>
+<span class="sourceLineNo">374</span>                attributeBeginning.sequence(EQ, FUNCTION)<a name="line.374"></a>
+<span class="sourceLineNo">375</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.METHOD, new Region(0, 2)).skipTo(LBRACE)<a name="line.375"></a>
+<span class="sourceLineNo">376</span>                                .parseUntil(ANY).sequence(RBRACE).optional(SEMICOLON).endNode();<a name="line.376"></a>
+<span class="sourceLineNo">377</span><a name="line.377"></a>
+<span class="sourceLineNo">378</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; attributeAssignment = attributeBeginning.sequence(EQ)<a name="line.378"></a>
+<span class="sourceLineNo">379</span>                                .createNode(EShallowEntityType.ATTRIBUTE, SubTypeNames.ATTRIBUTE, new Region(0, 2));<a name="line.379"></a>
+<span class="sourceLineNo">380</span>                attributeAssignment.sequenceBefore(LBRACE).skipToWithNesting(SEMICOLON, LBRACE, RBRACE).endNode();<a name="line.380"></a>
+<span class="sourceLineNo">381</span>                attributeAssignment.skipBeforeWithNesting(EnumSet.of(SEMICOLON, RBRACE, ETokenType.THIS), LPAREN, RPAREN)<a name="line.381"></a>
+<span class="sourceLineNo">382</span>                                .optional(SEMICOLON).endNode();<a name="line.382"></a>
 <span class="sourceLineNo">383</span>        }<a name="line.383"></a>
 <span class="sourceLineNo">384</span><a name="line.384"></a>
-<span class="sourceLineNo">385</span>        /**<a name="line.385"></a>
-<span class="sourceLineNo">386</span>         * Returns a copy of {@link #ALL_IDENTIFIERS} extended by the given type.<a name="line.386"></a>
-<span class="sourceLineNo">387</span>         */<a name="line.387"></a>
-<span class="sourceLineNo">388</span>        private static EnumSet&lt;ETokenType&gt; extendAllIdentifiers(ETokenType extension) {<a name="line.388"></a>
-<span class="sourceLineNo">389</span>                EnumSet&lt;ETokenType&gt; result = EnumSet.copyOf(ALL_IDENTIFIERS);<a name="line.389"></a>
-<span class="sourceLineNo">390</span>                result.add(extension);<a name="line.390"></a>
-<span class="sourceLineNo">391</span>                return result;<a name="line.391"></a>
-<span class="sourceLineNo">392</span>        }<a name="line.392"></a>
-<span class="sourceLineNo">393</span><a name="line.393"></a>
-<span class="sourceLineNo">394</span>        /** Creates parsing rules for statements. */<a name="line.394"></a>
-<span class="sourceLineNo">395</span>        private void createStatementRules() {<a name="line.395"></a>
-<span class="sourceLineNo">396</span><a name="line.396"></a>
-<span class="sourceLineNo">397</span>                // empty statement<a name="line.397"></a>
-<span class="sourceLineNo">398</span>                inAnyState().sequence(SEMICOLON).createNode(EShallowEntityType.STATEMENT, SubTypeNames.EMPTY_STATEMENT)<a name="line.398"></a>
-<span class="sourceLineNo">399</span>                                .endNode();<a name="line.399"></a>
-<span class="sourceLineNo">400</span><a name="line.400"></a>
-<span class="sourceLineNo">401</span>                // Attributes<a name="line.401"></a>
-<span class="sourceLineNo">402</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; baseJsAttribute = inState(BASE_JS_EXTEND)<a name="line.402"></a>
-<span class="sourceLineNo">403</span>                                .sequence(ALL_IDENTIFIERS, COLON).createNode(EShallowEntityType.ATTRIBUTE, SubTypeNames.ATTRIBUTE, 0);<a name="line.403"></a>
-<span class="sourceLineNo">404</span>                baseJsAttribute.skipToWithNesting(COMMA, LBRACE, RBRACE).endNode();<a name="line.404"></a>
-<span class="sourceLineNo">405</span>                // Might be the last one in the constructor<a name="line.405"></a>
-<span class="sourceLineNo">406</span>                baseJsAttribute.skipBeforeWithNesting(RBRACE, LBRACE, RBRACE).endNode();<a name="line.406"></a>
-<span class="sourceLineNo">407</span><a name="line.407"></a>
-<span class="sourceLineNo">408</span>                // filter out labels as meta as they do not increase statement count<a name="line.408"></a>
-<span class="sourceLineNo">409</span>                inAnyState().sequence(ALL_IDENTIFIERS, COLON).createNode(EShallowEntityType.META, SubTypeNames.LABEL, 0)<a name="line.409"></a>
-<span class="sourceLineNo">410</span>                                .endNode();<a name="line.410"></a>
-<span class="sourceLineNo">411</span><a name="line.411"></a>
-<span class="sourceLineNo">412</span>                createElseIfRule();<a name="line.412"></a>
-<span class="sourceLineNo">413</span>                createSimpleBlockRules();<a name="line.413"></a>
-<span class="sourceLineNo">414</span>                createSwitchCaseRules();<a name="line.414"></a>
-<span class="sourceLineNo">415</span>                createDoWhileRules();<a name="line.415"></a>
-<span class="sourceLineNo">416</span><a name="line.416"></a>
-<span class="sourceLineNo">417</span>                // anonymous block<a name="line.417"></a>
-<span class="sourceLineNo">418</span>                inAnyState().sequence(LBRACE).createNode(EShallowEntityType.STATEMENT, "anonymous block").parseUntil(ANY)<a name="line.418"></a>
-<span class="sourceLineNo">419</span>                                .sequence(RBRACE).endNode();<a name="line.419"></a>
-<span class="sourceLineNo">420</span><a name="line.420"></a>
-<span class="sourceLineNo">421</span>                // variables<a name="line.421"></a>
-<span class="sourceLineNo">422</span>                inAnyState().sequence(EXPORT, EnumSet.of(VAR, CONST, LET))<a name="line.422"></a>
-<span class="sourceLineNo">423</span>                                .subRecognizer(new JavaScriptSimpleStatementRecognizer(EShallowEntityType.ATTRIBUTE,<a name="line.423"></a>
-<span class="sourceLineNo">424</span>                                                SubTypeNames.EXPORTED_VARIABLE, false), 1, 1)<a name="line.424"></a>
-<span class="sourceLineNo">425</span>                                .endNode();<a name="line.425"></a>
-<span class="sourceLineNo">426</span><a name="line.426"></a>
-<span class="sourceLineNo">427</span>                // simple statement<a name="line.427"></a>
-<span class="sourceLineNo">428</span>                inAnyState().subRecognizer(new JavaScriptSimpleStatementRecognizer(EShallowEntityType.STATEMENT,<a name="line.428"></a>
-<span class="sourceLineNo">429</span>                                SubTypeNames.SIMPLE_STATEMENT, false), 1, 1).endNode();<a name="line.429"></a>
-<span class="sourceLineNo">430</span>        }<a name="line.430"></a>
-<span class="sourceLineNo">431</span><a name="line.431"></a>
-<span class="sourceLineNo">432</span>        /** Creates the rule for "else if" construct. */<a name="line.432"></a>
-<span class="sourceLineNo">433</span>        private void createElseIfRule() {<a name="line.433"></a>
-<span class="sourceLineNo">434</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; elseIfAlternative = inAnyState().sequence(ELSE, IF)<a name="line.434"></a>
-<span class="sourceLineNo">435</span>                                .skipNested(LPAREN, RPAREN, new JavaScriptFunctionRecognizer())<a name="line.435"></a>
-<span class="sourceLineNo">436</span>                                .createNode(EShallowEntityType.STATEMENT, new int[] { 0, 1 });<a name="line.436"></a>
-<span class="sourceLineNo">437</span>                endWithPossibleContinuation(elseIfAlternative.sequence(LBRACE).parseUntil(ANY).sequence(RBRACE),<a name="line.437"></a>
-<span class="sourceLineNo">438</span>                                EnumSet.of(ELSE));<a name="line.438"></a>
-<span class="sourceLineNo">439</span>                endWithPossibleContinuation(elseIfAlternative.parseOnce(ANY), EnumSet.of(ELSE));<a name="line.439"></a>
-<span class="sourceLineNo">440</span>        }<a name="line.440"></a>
-<span class="sourceLineNo">441</span><a name="line.441"></a>
-<span class="sourceLineNo">442</span>        /** Creates simple block rules. */<a name="line.442"></a>
-<span class="sourceLineNo">443</span>        private void createSimpleBlockRules() {<a name="line.443"></a>
-<span class="sourceLineNo">444</span>                createBlockRuleWithContinuation(EnumSet.of(WHILE, FOR, SWITCH, WITH), null, true);<a name="line.444"></a>
-<span class="sourceLineNo">445</span>                createBlockRuleWithContinuation(EnumSet.of(ELSE, FINALLY), null, false);<a name="line.445"></a>
-<span class="sourceLineNo">446</span>                createBlockRuleWithContinuation(EnumSet.of(IF), EnumSet.of(ELSE), true);<a name="line.446"></a>
-<span class="sourceLineNo">447</span>                createBlockRuleWithContinuation(EnumSet.of(TRY, CATCH), EnumSet.of(CATCH, FINALLY), true);<a name="line.447"></a>
+<span class="sourceLineNo">385</span>        /** Creates recognizers for the google closure framework at ES6 level */<a name="line.385"></a>
+<span class="sourceLineNo">386</span>        private void createClosureES6Recognizers() {<a name="line.386"></a>
+<span class="sourceLineNo">387</span>                inState(TOP_LEVEL).markStart().repeated(ALL_IDENTIFIERS, DOT)<a name="line.387"></a>
+<span class="sourceLineNo">388</span>                                .sequence(new UpperCaseStartIdentifierMatcher(), EQ, CLASS)<a name="line.388"></a>
+<span class="sourceLineNo">389</span>                                .createNode(EShallowEntityType.TYPE, SubTypeNames.CLASS, new Region(0, -3)).skipTo(LBRACE)<a name="line.389"></a>
+<span class="sourceLineNo">390</span>                                .parseUntil(IN_TYPE).sequence(RBRACE).optional(SEMICOLON).endNode();<a name="line.390"></a>
+<span class="sourceLineNo">391</span>        }<a name="line.391"></a>
+<span class="sourceLineNo">392</span><a name="line.392"></a>
+<span class="sourceLineNo">393</span>        /** Creates parsing rules specifically for AngularJS. */<a name="line.393"></a>
+<span class="sourceLineNo">394</span>        private void createAngularRules() {<a name="line.394"></a>
+<span class="sourceLineNo">395</span>                // angular modules<a name="line.395"></a>
+<span class="sourceLineNo">396</span>                inAnyState().optional(VAR, ALL_IDENTIFIERS, EQ).sequence(identifiers("angular"), DOT, MODULE, LPAREN)<a name="line.396"></a>
+<span class="sourceLineNo">397</span>                                .createNode(EShallowEntityType.META, "AngularJS module declaration")<a name="line.397"></a>
+<span class="sourceLineNo">398</span>                                .skipToWithNesting(RPAREN, LPAREN, RPAREN).optional(SEMICOLON).endNode();<a name="line.398"></a>
+<span class="sourceLineNo">399</span><a name="line.399"></a>
+<span class="sourceLineNo">400</span>                // angular methods in the format: method(string, function)<a name="line.400"></a>
+<span class="sourceLineNo">401</span>                // the function could also be a string referencing a function<a name="line.401"></a>
+<span class="sourceLineNo">402</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; angularMethodDeclarationStart = inAnyState().optional(ALL_IDENTIFIERS)<a name="line.402"></a>
+<span class="sourceLineNo">403</span>                                .markStart().sequence(DOT, identifiers("controller", "filter", "factory", "directive", "provider",<a name="line.403"></a>
+<span class="sourceLineNo">404</span>                                                "service", "decorator", "animation", "value", "component", "constant"), LPAREN);<a name="line.404"></a>
+<span class="sourceLineNo">405</span>                // declaration of a service where we do know the name (string literal)<a name="line.405"></a>
+<span class="sourceLineNo">406</span>                // {@code angular.module("CompanyX.Y").service("ServiceName", DetailService);}<a name="line.406"></a>
+<span class="sourceLineNo">407</span>                createAngularFunctionRule(angularMethodDeclarationStart.sequence(STRING_LITERAL, COMMA), true);<a name="line.407"></a>
+<span class="sourceLineNo">408</span>                // declaration of a service where we do not know the name (reference)<a name="line.408"></a>
+<span class="sourceLineNo">409</span>                // {@code angular.module("CompanyX.Y").service(some.variable, DetailService);}<a name="line.409"></a>
+<span class="sourceLineNo">410</span>                createAngularFunctionRule(angularMethodDeclarationStart.repeated(IDENTIFIER, DOT).sequence(IDENTIFIER, COMMA),<a name="line.410"></a>
+<span class="sourceLineNo">411</span>                                false);<a name="line.411"></a>
+<span class="sourceLineNo">412</span><a name="line.412"></a>
+<span class="sourceLineNo">413</span>                // angular methods in the format: method(function)<a name="line.413"></a>
+<span class="sourceLineNo">414</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; singleParameterMethodRecognizer = inAnyState().optional(ALL_IDENTIFIERS)<a name="line.414"></a>
+<span class="sourceLineNo">415</span>                                .markStart().sequence(DOT, identifiers("config", "run"), LPAREN);<a name="line.415"></a>
+<span class="sourceLineNo">416</span>                createAngularFunctionRule(singleParameterMethodRecognizer, false);<a name="line.416"></a>
+<span class="sourceLineNo">417</span><a name="line.417"></a>
+<span class="sourceLineNo">418</span>                // angular methods in the format: method(string, *)<a name="line.418"></a>
+<span class="sourceLineNo">419</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; angularConstantRecognizer = inAnyState().optional(ALL_IDENTIFIERS)<a name="line.419"></a>
+<span class="sourceLineNo">420</span>                                .markStart().sequence(DOT, identifiers("value", "component", "constant"), LPAREN, STRING_LITERAL, COMMA)<a name="line.420"></a>
+<span class="sourceLineNo">421</span>                                .createNode(EShallowEntityType.METHOD, new Object[] { "AngularJS", 1 }, 3);<a name="line.421"></a>
+<span class="sourceLineNo">422</span>                angularConstantRecognizer.parseUntil(ANY).sequence(RPAREN).optional(SEMICOLON).endNode();<a name="line.422"></a>
+<span class="sourceLineNo">423</span>        }<a name="line.423"></a>
+<span class="sourceLineNo">424</span><a name="line.424"></a>
+<span class="sourceLineNo">425</span>        /**<a name="line.425"></a>
+<span class="sourceLineNo">426</span>         * Creates the Angular rules for functions. Given the recognizer for the method<a name="line.426"></a>
+<span class="sourceLineNo">427</span>         * declaration, it handles the case where the function parameter is a variable<a name="line.427"></a>
+<span class="sourceLineNo">428</span>         * referencing a function (e.g. .filter('methodName', getName)), as well as the<a name="line.428"></a>
+<span class="sourceLineNo">429</span>         * case where the function parameter is initialized (e.g. .filter('methodName',<a name="line.429"></a>
+<span class="sourceLineNo">430</span>         * function() {....}))<a name="line.430"></a>
+<span class="sourceLineNo">431</span>         *<a name="line.431"></a>
+<span class="sourceLineNo">432</span>         * @param angularMethodRecognizer<a name="line.432"></a>
+<span class="sourceLineNo">433</span>         *            the angular method recognizer<a name="line.433"></a>
+<span class="sourceLineNo">434</span>         * @param includeFunctionName<a name="line.434"></a>
+<span class="sourceLineNo">435</span>         *            whether the parser should list the function's name or not<a name="line.435"></a>
+<span class="sourceLineNo">436</span>         */<a name="line.436"></a>
+<span class="sourceLineNo">437</span>        private static void createAngularFunctionRule(RecognizerBase&lt;EJavaScriptParserStates&gt; angularMethodRecognizer,<a name="line.437"></a>
+<span class="sourceLineNo">438</span>                        boolean includeFunctionName) {<a name="line.438"></a>
+<span class="sourceLineNo">439</span>                createAngularMethodNode(<a name="line.439"></a>
+<span class="sourceLineNo">440</span>                                angularMethodRecognizer.repeated(IDENTIFIER, DOT).sequence(EnumSet.of(STRING_LITERAL, IDENTIFIER))<a name="line.440"></a>
+<span class="sourceLineNo">441</span>                                                .skipToWithNesting(RPAREN, LPAREN, RPAREN).optional(SEMICOLON),<a name="line.441"></a>
+<span class="sourceLineNo">442</span>                                includeFunctionName).endNode();<a name="line.442"></a>
+<span class="sourceLineNo">443</span><a name="line.443"></a>
+<span class="sourceLineNo">444</span>                angularMethodRecognizer = angularMethodRecognizer.optional(LBRACK).repeated(STRING_LITERAL, COMMA)<a name="line.444"></a>
+<span class="sourceLineNo">445</span>                                .sequence(FUNCTION);<a name="line.445"></a>
+<span class="sourceLineNo">446</span>                createAngularMethodNode(angularMethodRecognizer, includeFunctionName).skipTo(LBRACE).parseUntil(ANY)<a name="line.446"></a>
+<span class="sourceLineNo">447</span>                                .sequence(RBRACE).optional(RBRACK).sequence(RPAREN).optional(SEMICOLON).endNode();<a name="line.447"></a>
 <span class="sourceLineNo">448</span>        }<a name="line.448"></a>
 <span class="sourceLineNo">449</span><a name="line.449"></a>
-<span class="sourceLineNo">450</span>        /** Creates rules for do/while. */<a name="line.450"></a>
-<span class="sourceLineNo">451</span>        private void createDoWhileRules() {<a name="line.451"></a>
-<span class="sourceLineNo">452</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; doWhileAlternative = inState(ANY).sequence(DO)<a name="line.452"></a>
-<span class="sourceLineNo">453</span>                                .createNode(EShallowEntityType.STATEMENT, 0);<a name="line.453"></a>
-<span class="sourceLineNo">454</span>                doWhileAlternative.sequence(LBRACE).parseUntil(ANY).sequence(RBRACE, WHILE)<a name="line.454"></a>
-<span class="sourceLineNo">455</span>                                .skipNested(LPAREN, RPAREN, new JavaScriptFunctionRecognizer()).endNode();<a name="line.455"></a>
-<span class="sourceLineNo">456</span>                doWhileAlternative.parseOnce(ANY).sequence(WHILE).skipNested(LPAREN, RPAREN, new JavaScriptFunctionRecognizer())<a name="line.456"></a>
-<span class="sourceLineNo">457</span>                                .endNode();<a name="line.457"></a>
-<span class="sourceLineNo">458</span>        }<a name="line.458"></a>
-<span class="sourceLineNo">459</span><a name="line.459"></a>
-<span class="sourceLineNo">460</span>        /** Creates rules for switch/case. */<a name="line.460"></a>
-<span class="sourceLineNo">461</span>        private void createSwitchCaseRules() {<a name="line.461"></a>
-<span class="sourceLineNo">462</span>                HashSet&lt;ETokenType&gt; literalsAndIdentifiers = new HashSet&lt;ETokenType&gt;(LITERALS);<a name="line.462"></a>
-<span class="sourceLineNo">463</span>                literalsAndIdentifiers.addAll(IDENTIFIERS);<a name="line.463"></a>
-<span class="sourceLineNo">464</span>                inAnyState().sequence(CASE, literalsAndIdentifiers, COLON)<a name="line.464"></a>
-<span class="sourceLineNo">465</span>                                .createNode(EShallowEntityType.META, new int[] { 0, 1 }).endNode();<a name="line.465"></a>
-<span class="sourceLineNo">466</span>                inAnyState().sequence(CASE).skipToWithNesting(COLON, LPAREN, RPAREN).createNode(EShallowEntityType.META, 0)<a name="line.466"></a>
-<span class="sourceLineNo">467</span>                                .endNode();<a name="line.467"></a>
-<span class="sourceLineNo">468</span><a name="line.468"></a>
-<span class="sourceLineNo">469</span>                inAnyState().sequence(DEFAULT, COLON).createNode(EShallowEntityType.META, 0).endNode();<a name="line.469"></a>
-<span class="sourceLineNo">470</span>        }<a name="line.470"></a>
-<span class="sourceLineNo">471</span><a name="line.471"></a>
-<span class="sourceLineNo">472</span>        /**<a name="line.472"></a>
-<span class="sourceLineNo">473</span>         * Creates a rule for recognizing a statement starting with a single<a name="line.473"></a>
-<span class="sourceLineNo">474</span>         * keyword, optionally followed by an expression in parentheses, and<a name="line.474"></a>
-<span class="sourceLineNo">475</span>         * followed by a block or a single statement.<a name="line.475"></a>
-<span class="sourceLineNo">476</span>         *<a name="line.476"></a>
-<span class="sourceLineNo">477</span>         * @param continuationTokens<a name="line.477"></a>
-<span class="sourceLineNo">478</span>         *            list of tokens that indicate a continued statement if<a name="line.478"></a>
-<span class="sourceLineNo">479</span>         *            encountered after the block. May be null.<a name="line.479"></a>
-<span class="sourceLineNo">480</span>         */<a name="line.480"></a>
-<span class="sourceLineNo">481</span>        private void createBlockRuleWithContinuation(EnumSet&lt;ETokenType&gt; startTokens,<a name="line.481"></a>
-<span class="sourceLineNo">482</span>                        EnumSet&lt;ETokenType&gt; continuationTokens, boolean canBeFollowedByParentheses) {<a name="line.482"></a>
-<span class="sourceLineNo">483</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; alternative = inAnyState().sequence(startTokens)<a name="line.483"></a>
-<span class="sourceLineNo">484</span>                                .createNode(EShallowEntityType.STATEMENT, 0);<a name="line.484"></a>
-<span class="sourceLineNo">485</span>                if (canBeFollowedByParentheses) {<a name="line.485"></a>
-<span class="sourceLineNo">486</span>                        alternative = alternative.skipNested(LPAREN, RPAREN, new JavaScriptFunctionRecognizer());<a name="line.486"></a>
-<span class="sourceLineNo">487</span>                }<a name="line.487"></a>
-<span class="sourceLineNo">488</span><a name="line.488"></a>
-<span class="sourceLineNo">489</span>                endWithPossibleContinuation(alternative.sequence(LBRACE).parseUntil(ANY).sequence(RBRACE), continuationTokens);<a name="line.489"></a>
-<span class="sourceLineNo">490</span>                endWithPossibleContinuation(alternative.parseOnce(ANY), continuationTokens);<a name="line.490"></a>
-<span class="sourceLineNo">491</span>        }<a name="line.491"></a>
-<span class="sourceLineNo">492</span>}<a name="line.492"></a>
+<span class="sourceLineNo">450</span>        /**<a name="line.450"></a>
+<span class="sourceLineNo">451</span>         * Creates the node for an Angular method and depending on the given boolean, it<a name="line.451"></a>
+<span class="sourceLineNo">452</span>         * is decided whether the parser includes the function name or not.<a name="line.452"></a>
+<span class="sourceLineNo">453</span>         */<a name="line.453"></a>
+<span class="sourceLineNo">454</span>        private static RecognizerBase&lt;EJavaScriptParserStates&gt; createAngularMethodNode(<a name="line.454"></a>
+<span class="sourceLineNo">455</span>                        RecognizerBase&lt;EJavaScriptParserStates&gt; angularMethodRecognizer, boolean includeFunctionName) {<a name="line.455"></a>
+<span class="sourceLineNo">456</span>                if (includeFunctionName) {<a name="line.456"></a>
+<span class="sourceLineNo">457</span>                        return angularMethodRecognizer.createNode(EShallowEntityType.METHOD, new Object[] { "AngularJS", 1 }, 3);<a name="line.457"></a>
+<span class="sourceLineNo">458</span>                }<a name="line.458"></a>
+<span class="sourceLineNo">459</span>                return angularMethodRecognizer.createNode(EShallowEntityType.METHOD, new Object[] { "AngularJS", 1 });<a name="line.459"></a>
+<span class="sourceLineNo">460</span>        }<a name="line.460"></a>
+<span class="sourceLineNo">461</span><a name="line.461"></a>
+<span class="sourceLineNo">462</span>        /**<a name="line.462"></a>
+<span class="sourceLineNo">463</span>         * Creates rules for parsing namespace/module constructs. These are used to<a name="line.463"></a>
+<span class="sourceLineNo">464</span>         * handle those constructs provided by well-known libraries, as JavaScript<a name="line.464"></a>
+<span class="sourceLineNo">465</span>         * itself does not provide a direct namespace concept.<a name="line.465"></a>
+<span class="sourceLineNo">466</span>         */<a name="line.466"></a>
+<span class="sourceLineNo">467</span>        private void createModuleRules() {<a name="line.467"></a>
+<span class="sourceLineNo">468</span>                // YUI library, see http://yuilibrary.com/yui/docs/yui/<a name="line.468"></a>
+<span class="sourceLineNo">469</span>                completeModuleRecognizer(inAnyState().ensureTopLevel().subRecognizer(new YuiCallRecognizer("add"), 1, 1)<a name="line.469"></a>
+<span class="sourceLineNo">470</span>                                .skipTo(STRING_LITERAL).createNode(EShallowEntityType.MODULE, "YUI module", -1));<a name="line.470"></a>
+<span class="sourceLineNo">471</span>                completeModuleRecognizer(inAnyState().ensureTopLevel().subRecognizer(new YuiCallRecognizer("use"), 1, 1)<a name="line.471"></a>
+<span class="sourceLineNo">472</span>                                .createNode(EShallowEntityType.MODULE, "YUI code", -1));<a name="line.472"></a>
+<span class="sourceLineNo">473</span><a name="line.473"></a>
+<span class="sourceLineNo">474</span>                // TypeScript namespace<a name="line.474"></a>
+<span class="sourceLineNo">475</span>                inState(TOP_LEVEL).repeated(EnumSet.of(DECLARE, EXPORT)).markStart().sequence(EnumSet.of(NAMESPACE, MODULE))<a name="line.475"></a>
+<span class="sourceLineNo">476</span>                                .sequence(IDENTIFIER).repeated(DOT, IDENTIFIER).sequence(LBRACE)<a name="line.476"></a>
+<span class="sourceLineNo">477</span>                                .createNode(EShallowEntityType.MODULE, 0, new Region(1, -2)).parseUntil(TOP_LEVEL).sequence(RBRACE)<a name="line.477"></a>
+<span class="sourceLineNo">478</span>                                .endNode();<a name="line.478"></a>
+<span class="sourceLineNo">479</span>        }<a name="line.479"></a>
+<span class="sourceLineNo">480</span><a name="line.480"></a>
+<span class="sourceLineNo">481</span>        /** Completes a recognizer for modules. */<a name="line.481"></a>
+<span class="sourceLineNo">482</span>        private static void completeModuleRecognizer(RecognizerBase&lt;EJavaScriptParserStates&gt; recognizer) {<a name="line.482"></a>
+<span class="sourceLineNo">483</span>                recognizer.skipTo(FUNCTION).skipTo(LBRACE).parseUntil(ANY).sequence(RBRACE)<a name="line.483"></a>
+<span class="sourceLineNo">484</span>                                .skipToWithNesting(RPAREN, LPAREN, RPAREN).optional(SEMICOLON).endNode();<a name="line.484"></a>
+<span class="sourceLineNo">485</span>        }<a name="line.485"></a>
+<span class="sourceLineNo">486</span><a name="line.486"></a>
+<span class="sourceLineNo">487</span>        /**<a name="line.487"></a>
+<span class="sourceLineNo">488</span>         * Creates rules for TypeScript types. See<a name="line.488"></a>
+<span class="sourceLineNo">489</span>         * https://www.typescriptlang.org/docs/handbook/advanced-types.html for type<a name="line.489"></a>
+<span class="sourceLineNo">490</span>         * alias definitions<a name="line.490"></a>
+<span class="sourceLineNo">491</span>         */<a name="line.491"></a>
+<span class="sourceLineNo">492</span>        private void createTypeRules() {<a name="line.492"></a>
+<span class="sourceLineNo">493</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; typeRecognizer = inAnyState()<a name="line.493"></a>
+<span class="sourceLineNo">494</span>                                .repeated(EnumSet.of(DECLARE, EXPORT, DEFAULT)).markStart();<a name="line.494"></a>
+<span class="sourceLineNo">495</span>                createLambdaArrayAndGenericRulesForTypeAlias(<a name="line.495"></a>
+<span class="sourceLineNo">496</span>                                typeRecognizer.sequence(TYPE, IDENTIFIER).skipTo(EnumSet.of(EQ, GTEQ, RSHIFTEQ)));<a name="line.496"></a>
+<span class="sourceLineNo">497</span><a name="line.497"></a>
+<span class="sourceLineNo">498</span>                typeRecognizer.sequence(EnumSet.of(CLASS, INTERFACE), IDENTIFIER).createNode(EShallowEntityType.TYPE, 0, 1)<a name="line.498"></a>
+<span class="sourceLineNo">499</span>                                .skipTo(LBRACE).parseUntil(IN_TYPE).sequence(RBRACE).endNode();<a name="line.499"></a>
+<span class="sourceLineNo">500</span><a name="line.500"></a>
+<span class="sourceLineNo">501</span>                // enums<a name="line.501"></a>
+<span class="sourceLineNo">502</span>                inAnyState().repeated(EnumSet.of(DECLARE, EXPORT, CONST)).markStart().sequence(ENUM, IDENTIFIER, LBRACE)<a name="line.502"></a>
+<span class="sourceLineNo">503</span>                                .createNode(EShallowEntityType.TYPE, 0, 1).skipToWithNesting(RBRACE, ETokenType.LBRACE, RBRACE)<a name="line.503"></a>
+<span class="sourceLineNo">504</span>                                .endNode();<a name="line.504"></a>
+<span class="sourceLineNo">505</span>        }<a name="line.505"></a>
+<span class="sourceLineNo">506</span><a name="line.506"></a>
+<span class="sourceLineNo">507</span>        /**<a name="line.507"></a>
+<span class="sourceLineNo">508</span>         * Creates rule for matching lambda, array and generic expressions in type alias<a name="line.508"></a>
+<span class="sourceLineNo">509</span>         * definitions. Also matches union and intersection expressions that combine<a name="line.509"></a>
+<span class="sourceLineNo">510</span>         * basic type value expressions. Examples of code the rules will match: a)<a name="line.510"></a>
+<span class="sourceLineNo">511</span>         * Lambda. &lt;code&gt;type Callback = () =&gt; void;&lt;/code&gt; b) Array.<a name="line.511"></a>
+<span class="sourceLineNo">512</span>         * &lt;code&gt;type c = [0, null, null, null];&lt;/code&gt; c) Generics.<a name="line.512"></a>
+<span class="sourceLineNo">513</span>         * &lt;code&gt;type Container&lt;T&gt; = { value: T }&lt;/code&gt; d) Others.<a name="line.513"></a>
+<span class="sourceLineNo">514</span>         * &lt;code&gt;type f = [a, b] | [c, d] &amp; [e, g]&lt;/code&gt;<a name="line.514"></a>
+<span class="sourceLineNo">515</span>         */<a name="line.515"></a>
+<span class="sourceLineNo">516</span>        private void createLambdaArrayAndGenericRulesForTypeAlias(<a name="line.516"></a>
+<span class="sourceLineNo">517</span>                        RecognizerBase&lt;EJavaScriptParserStates&gt; typeAliasRecognizer) {<a name="line.517"></a>
+<span class="sourceLineNo">518</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; typeAliasLambdaOrArrayRecognizer = typeAliasRecognizer.sequence(LPAREN)<a name="line.518"></a>
+<span class="sourceLineNo">519</span>                                .skipToWithNesting(RPAREN, LPAREN, RPAREN);<a name="line.519"></a>
+<span class="sourceLineNo">520</span>                typeAliasLambdaOrArrayRecognizer.sequence(DOUBLE_ARROW, EnumSet.of(IDENTIFIER, VOID)).optional(SEMICOLON)<a name="line.520"></a>
+<span class="sourceLineNo">521</span>                                .createNode(EShallowEntityType.TYPE, 0, 1).endNode();<a name="line.521"></a>
+<span class="sourceLineNo">522</span>                typeAliasLambdaOrArrayRecognizer.sequence(LBRACK, RBRACK).optional(SEMICOLON)<a name="line.522"></a>
+<span class="sourceLineNo">523</span>                                .createNode(EShallowEntityType.TYPE, 0, 1).endNode();<a name="line.523"></a>
+<span class="sourceLineNo">524</span>                typeAliasRecognizer.sequence(LBRACE).skipToWithNesting(RBRACE, LBRACE, RBRACE).optional(SEMICOLON)<a name="line.524"></a>
+<span class="sourceLineNo">525</span>                                .createNode(EShallowEntityType.TYPE, 0, 1).endNode();<a name="line.525"></a>
+<span class="sourceLineNo">526</span><a name="line.526"></a>
+<span class="sourceLineNo">527</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; typeNameRecognizer = emptyRecognizer();<a name="line.527"></a>
+<span class="sourceLineNo">528</span>                typeNameRecognizer.sequence(LBRACK).skipToWithNesting(RBRACK, LBRACK, RBRACK);<a name="line.528"></a>
+<span class="sourceLineNo">529</span>                typeNameRecognizer.sequence(LBRACE).skipToWithNesting(RBRACE, LBRACE, RBRACE);<a name="line.529"></a>
+<span class="sourceLineNo">530</span>                typeNameRecognizer.sequence(LT, IDENTIFIER).repeated(OR, IDENTIFIER).sequence(GT);<a name="line.530"></a>
+<span class="sourceLineNo">531</span>                typeNameRecognizer.optional(DOT).sequence(IDENTIFIER);<a name="line.531"></a>
+<span class="sourceLineNo">532</span><a name="line.532"></a>
+<span class="sourceLineNo">533</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; typeNameUnionAndIntersectionRecognizer = emptyRecognizer();<a name="line.533"></a>
+<span class="sourceLineNo">534</span>                typeNameUnionAndIntersectionRecognizer.sequence(EnumSet.of(OR, AND)).subRecognizer(typeNameRecognizer);<a name="line.534"></a>
+<span class="sourceLineNo">535</span><a name="line.535"></a>
+<span class="sourceLineNo">536</span>                typeAliasRecognizer.optional(IDENTIFIER).optionalSubRecognizer(typeNameRecognizer)<a name="line.536"></a>
+<span class="sourceLineNo">537</span>                                .repeatedSubRecognizer(typeNameUnionAndIntersectionRecognizer).optional(SEMICOLON)<a name="line.537"></a>
+<span class="sourceLineNo">538</span>                                .createNode(EShallowEntityType.TYPE, 0, 1).endNode();<a name="line.538"></a>
+<span class="sourceLineNo">539</span>        }<a name="line.539"></a>
+<span class="sourceLineNo">540</span><a name="line.540"></a>
+<span class="sourceLineNo">541</span>        /** Creates support for ext.js library. */<a name="line.541"></a>
+<span class="sourceLineNo">542</span>        private void createExtJsTypeSupport() {<a name="line.542"></a>
+<span class="sourceLineNo">543</span>                // ext.js classes<a name="line.543"></a>
+<span class="sourceLineNo">544</span>                inState(TOP_LEVEL).sequence(identifiers("Ext"), DOT, identifiers("define"), LPAREN, STRING_LITERAL)<a name="line.544"></a>
+<span class="sourceLineNo">545</span>                                .createNode(EShallowEntityType.TYPE, SubTypeNames.CLASS, 4).skipTo(LBRACE).parseUntil(EXT_JS_TYPE)<a name="line.545"></a>
+<span class="sourceLineNo">546</span>                                .sequence(RBRACE).skipToWithNesting(RPAREN, LPAREN, RPAREN).optional(SEMICOLON).endNode();<a name="line.546"></a>
+<span class="sourceLineNo">547</span><a name="line.547"></a>
+<span class="sourceLineNo">548</span>                inState(EXT_JS_TYPE).sequence(identifiers("config"), COLON, LBRACE)<a name="line.548"></a>
+<span class="sourceLineNo">549</span>                                .createNode(EShallowEntityType.ATTRIBUTE, "config section").skipToWithNesting(RBRACE, LBRACE, RBRACE)<a name="line.549"></a>
+<span class="sourceLineNo">550</span>                                .optional(COMMA).endNode();<a name="line.550"></a>
+<span class="sourceLineNo">551</span><a name="line.551"></a>
+<span class="sourceLineNo">552</span>                inState(EXT_JS_TYPE).sequence(CONSTRUCTOR, COLON, FUNCTION)<a name="line.552"></a>
+<span class="sourceLineNo">553</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.CONSTRUCTOR).skipTo(LBRACE).parseUntil(ANY)<a name="line.553"></a>
+<span class="sourceLineNo">554</span>                                .sequence(RBRACE).optional(COMMA).endNode();<a name="line.554"></a>
+<span class="sourceLineNo">555</span><a name="line.555"></a>
+<span class="sourceLineNo">556</span>                inState(EXT_JS_TYPE).sequence(identifiers("statics"), COLON, LBRACE)<a name="line.556"></a>
+<span class="sourceLineNo">557</span>                                .createNode(EShallowEntityType.META, SubTypeNames.STATICS).parseUntil(EXT_JS_TYPE).sequence(RBRACE)<a name="line.557"></a>
+<span class="sourceLineNo">558</span>                                .optional(COMMA).endNode();<a name="line.558"></a>
+<span class="sourceLineNo">559</span><a name="line.559"></a>
+<span class="sourceLineNo">560</span>                inState(EXT_JS_TYPE).sequence(extendAllIdentifiers(STRING_LITERAL), COLON, LITERALS).optional(COMMA)<a name="line.560"></a>
+<span class="sourceLineNo">561</span>                                .createNode(EShallowEntityType.ATTRIBUTE, SubTypeNames.ATTRIBUTE, 0).endNode();<a name="line.561"></a>
+<span class="sourceLineNo">562</span>                inState(EXT_JS_TYPE).sequence(extendAllIdentifiers(STRING_LITERAL), COLON, LBRACE)<a name="line.562"></a>
+<span class="sourceLineNo">563</span>                                .skipToWithNesting(RBRACE, LBRACE, RBRACE).optional(COMMA)<a name="line.563"></a>
+<span class="sourceLineNo">564</span>                                .createNode(EShallowEntityType.ATTRIBUTE, SubTypeNames.ATTRIBUTE, 0).endNode();<a name="line.564"></a>
+<span class="sourceLineNo">565</span>        }<a name="line.565"></a>
+<span class="sourceLineNo">566</span><a name="line.566"></a>
+<span class="sourceLineNo">567</span>        /** Creates rules for TypeScript type members. */<a name="line.567"></a>
+<span class="sourceLineNo">568</span>        private void createTypeMemberRules() {<a name="line.568"></a>
+<span class="sourceLineNo">569</span>                // constructor<a name="line.569"></a>
+<span class="sourceLineNo">570</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; constructorRecognizer = inState(IN_TYPE).repeated(TYPESCRIPT_MODIFIERS)<a name="line.570"></a>
+<span class="sourceLineNo">571</span>                                .markStart().sequence(CONSTRUCTOR).skipNested(ETokenType.LPAREN, RPAREN)<a name="line.571"></a>
+<span class="sourceLineNo">572</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.CONSTRUCTOR, 0);<a name="line.572"></a>
+<span class="sourceLineNo">573</span>                constructorRecognizer.sequence(LBRACE).parseUntil(ANY).sequence(RBRACE).endNode();<a name="line.573"></a>
+<span class="sourceLineNo">574</span>                constructorRecognizer.optional(SEMICOLON).endNode();<a name="line.574"></a>
+<span class="sourceLineNo">575</span><a name="line.575"></a>
+<span class="sourceLineNo">576</span>                createTypeMemberMethodRules();<a name="line.576"></a>
+<span class="sourceLineNo">577</span><a name="line.577"></a>
+<span class="sourceLineNo">578</span>                // attributes<a name="line.578"></a>
+<span class="sourceLineNo">579</span>                // the semicolon at the end of attribute declarations is optional, so we<a name="line.579"></a>
+<span class="sourceLineNo">580</span>                // have to use a simple statement recognizer to find the correct end of<a name="line.580"></a>
+<span class="sourceLineNo">581</span>                // the current statement<a name="line.581"></a>
+<span class="sourceLineNo">582</span>                inState(IN_TYPE).repeated(TYPESCRIPT_MODIFIERS).markStart()<a name="line.582"></a>
+<span class="sourceLineNo">583</span>                                .sequenceBefore(IDENTIFIER, EnumSet.of(EQ, COLON, QUESTION))<a name="line.583"></a>
+<span class="sourceLineNo">584</span>                                .subRecognizer(new JavaScriptSimpleStatementRecognizer(EShallowEntityType.ATTRIBUTE,<a name="line.584"></a>
+<span class="sourceLineNo">585</span>                                                SubTypeNames.ATTRIBUTE, true), 1, 1)<a name="line.585"></a>
+<span class="sourceLineNo">586</span>                                .endNode();<a name="line.586"></a>
+<span class="sourceLineNo">587</span>        }<a name="line.587"></a>
+<span class="sourceLineNo">588</span><a name="line.588"></a>
+<span class="sourceLineNo">589</span>        /**<a name="line.589"></a>
+<span class="sourceLineNo">590</span>         * Create rules for type member methods. We handle parsing of synchronous and<a name="line.590"></a>
+<span class="sourceLineNo">591</span>         * asynchronous methods that turn classes into iterators. See<a name="line.591"></a>
+<span class="sourceLineNo">592</span>         * &lt;code&gt;https://dev.to/nestedsoftware/the-iterators-are-coming-symboliterator-and-symbolasynciterator-in-javascript-hj&lt;/code&gt;<a name="line.592"></a>
+<span class="sourceLineNo">593</span>         */<a name="line.593"></a>
+<span class="sourceLineNo">594</span>        private void createTypeMemberMethodRules() {<a name="line.594"></a>
+<span class="sourceLineNo">595</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; genericDefinitionRecognizer = emptyRecognizer();<a name="line.595"></a>
+<span class="sourceLineNo">596</span>                genericDefinitionRecognizer.sequence(LT).skipToWithNesting(GT, LT, GT);<a name="line.596"></a>
+<span class="sourceLineNo">597</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; methodHeadRecognizer = emptyRecognizer();<a name="line.597"></a>
+<span class="sourceLineNo">598</span>                methodHeadRecognizer.optionalSubRecognizer(genericDefinitionRecognizer).sequence(LPAREN)<a name="line.598"></a>
+<span class="sourceLineNo">599</span>                                .skipToWithNesting(RPAREN, LPAREN, RPAREN);<a name="line.599"></a>
+<span class="sourceLineNo">600</span><a name="line.600"></a>
+<span class="sourceLineNo">601</span>                EnumSet&lt;ETokenType&gt; identifiersWithCatchAndFinally = EnumSet.copyOf(ALL_IDENTIFIERS);<a name="line.601"></a>
+<span class="sourceLineNo">602</span>                identifiersWithCatchAndFinally.add(CATCH);<a name="line.602"></a>
+<span class="sourceLineNo">603</span>                identifiersWithCatchAndFinally.add(FINALLY);<a name="line.603"></a>
+<span class="sourceLineNo">604</span>                EnumSet&lt;ETokenType&gt; modifiersWithoutGetAndSet = EnumSet.copyOf(TYPESCRIPT_MODIFIERS);<a name="line.604"></a>
+<span class="sourceLineNo">605</span>                modifiersWithoutGetAndSet.remove(GET);<a name="line.605"></a>
+<span class="sourceLineNo">606</span>                modifiersWithoutGetAndSet.remove(SET);<a name="line.606"></a>
+<span class="sourceLineNo">607</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; methodAlternative = inState(IN_TYPE)<a name="line.607"></a>
+<span class="sourceLineNo">608</span>                                .repeated(modifiersWithoutGetAndSet);<a name="line.608"></a>
+<span class="sourceLineNo">609</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; methodWithUserDefinedNameAlternative = methodAlternative<a name="line.609"></a>
+<span class="sourceLineNo">610</span>                                .preCondition(new MethodNameIsUserDefinedRecognizer()).optional(EnumSet.of(GET, SET)).markStart()<a name="line.610"></a>
+<span class="sourceLineNo">611</span>                                .repeatedAtLeastOnce(identifiersWithCatchAndFinally).subRecognizer(methodHeadRecognizer);<a name="line.611"></a>
+<span class="sourceLineNo">612</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; methodWithSpecialIdentifierAsNameAlternative = methodAlternative<a name="line.612"></a>
+<span class="sourceLineNo">613</span>                                .markStart().sequence(identifiersWithCatchAndFinally).subRecognizer(methodHeadRecognizer);<a name="line.613"></a>
+<span class="sourceLineNo">614</span>                // Synchronous and asynchronous methods that turn classes into iterators.<a name="line.614"></a>
+<span class="sourceLineNo">615</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; methodAlternativeBrackedNamed = methodAlternative.optional(MULT)<a name="line.615"></a>
+<span class="sourceLineNo">616</span>                                .sequence(LBRACK, IDENTIFIER, DOT).markStart().sequence(IDENTIFIERS).sequence(RBRACK)<a name="line.616"></a>
+<span class="sourceLineNo">617</span>                                .subRecognizer(methodHeadRecognizer);<a name="line.617"></a>
+<span class="sourceLineNo">618</span><a name="line.618"></a>
+<span class="sourceLineNo">619</span>                completeRuleForMethodRecognizer(methodWithUserDefinedNameAlternative);<a name="line.619"></a>
+<span class="sourceLineNo">620</span>                completeRuleForMethodRecognizer(methodWithSpecialIdentifierAsNameAlternative);<a name="line.620"></a>
+<span class="sourceLineNo">621</span>                completeRuleForMethodRecognizer(methodAlternativeBrackedNamed);<a name="line.621"></a>
+<span class="sourceLineNo">622</span>        }<a name="line.622"></a>
+<span class="sourceLineNo">623</span><a name="line.623"></a>
+<span class="sourceLineNo">624</span>        /**<a name="line.624"></a>
+<span class="sourceLineNo">625</span>         * Completes rule for a method recognizer by matching declared return type and<a name="line.625"></a>
+<span class="sourceLineNo">626</span>         * method body definitions.<a name="line.626"></a>
+<span class="sourceLineNo">627</span>         */<a name="line.627"></a>
+<span class="sourceLineNo">628</span>        private static void completeRuleForMethodRecognizer(RecognizerBase&lt;EJavaScriptParserStates&gt; methodAlternative) {<a name="line.628"></a>
+<span class="sourceLineNo">629</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; methodWithDeclaredReturnTypeAlternative = methodAlternative<a name="line.629"></a>
+<span class="sourceLineNo">630</span>                                .sequence(COLON, IDENTIFIER).repeated(DOT, IDENTIFIER).createNode(EShallowEntityType.METHOD, METHOD, 0);<a name="line.630"></a>
+<span class="sourceLineNo">631</span><a name="line.631"></a>
+<span class="sourceLineNo">632</span>                completeRuleForMethodsWithDeclaredReturnType(<a name="line.632"></a>
+<span class="sourceLineNo">633</span>                                methodWithDeclaredReturnTypeAlternative.skipNested(LT, GT).skipNested(LBRACK, RBRACK));<a name="line.633"></a>
+<span class="sourceLineNo">634</span>                completeRuleForMethodsWithDeclaredReturnType(methodWithDeclaredReturnTypeAlternative.sequence(LBRACK, RBRACK));<a name="line.634"></a>
+<span class="sourceLineNo">635</span>                completeRuleForMethodsWithDeclaredReturnType(methodWithDeclaredReturnTypeAlternative);<a name="line.635"></a>
+<span class="sourceLineNo">636</span><a name="line.636"></a>
+<span class="sourceLineNo">637</span>                methodWithDeclaredReturnTypeAlternative.optional(SEMICOLON).endNode();<a name="line.637"></a>
+<span class="sourceLineNo">638</span><a name="line.638"></a>
+<span class="sourceLineNo">639</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; methodNoReturnTypeAlternative = methodAlternative<a name="line.639"></a>
+<span class="sourceLineNo">640</span>                                .skipBefore(EnumSet.of(LBRACE, SEMICOLON));<a name="line.640"></a>
+<span class="sourceLineNo">641</span>                methodNoReturnTypeAlternative.sequence(SEMICOLON)<a name="line.641"></a>
+<span class="sourceLineNo">642</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.METHOD_DECLARATION, 0).endNode();<a name="line.642"></a>
+<span class="sourceLineNo">643</span>                methodNoReturnTypeAlternative.sequence(LBRACE).createNode(EShallowEntityType.METHOD, METHOD, 0).parseUntil(ANY)<a name="line.643"></a>
+<span class="sourceLineNo">644</span>                                .sequence(RBRACE).endNode();<a name="line.644"></a>
+<span class="sourceLineNo">645</span>        }<a name="line.645"></a>
+<span class="sourceLineNo">646</span><a name="line.646"></a>
+<span class="sourceLineNo">647</span>        /**<a name="line.647"></a>
+<span class="sourceLineNo">648</span>         * Completes rule for matching methods with declared return types.<a name="line.648"></a>
+<span class="sourceLineNo">649</span>         */<a name="line.649"></a>
+<span class="sourceLineNo">650</span>        private static void completeRuleForMethodsWithDeclaredReturnType(<a name="line.650"></a>
+<span class="sourceLineNo">651</span>                        RecognizerBase&lt;EJavaScriptParserStates&gt; recognizer) {<a name="line.651"></a>
+<span class="sourceLineNo">652</span>                recognizer.sequence(LBRACE).parseUntil(ANY).sequence(RBRACE).endNode();<a name="line.652"></a>
+<span class="sourceLineNo">653</span>                recognizer.optional(SEMICOLON).endNode();<a name="line.653"></a>
+<span class="sourceLineNo">654</span>        }<a name="line.654"></a>
+<span class="sourceLineNo">655</span><a name="line.655"></a>
+<span class="sourceLineNo">656</span>        /** Creates parsing rules for functions. */<a name="line.656"></a>
+<span class="sourceLineNo">657</span>        private void createFunctionRules() {<a name="line.657"></a>
+<span class="sourceLineNo">658</span>                createAssignedFunctionRule();<a name="line.658"></a>
+<span class="sourceLineNo">659</span>                createNamedFunctionRule();<a name="line.659"></a>
+<span class="sourceLineNo">660</span>                createAttributeFunctionRule();<a name="line.660"></a>
+<span class="sourceLineNo">661</span>                createAnonymousFunctionRule();<a name="line.661"></a>
+<span class="sourceLineNo">662</span>        }<a name="line.662"></a>
+<span class="sourceLineNo">663</span><a name="line.663"></a>
+<span class="sourceLineNo">664</span>        /** Creates parsing rule for assigned functions. */<a name="line.664"></a>
+<span class="sourceLineNo">665</span>        private void createAssignedFunctionRule() {<a name="line.665"></a>
+<span class="sourceLineNo">666</span>                inAnyState().repeated(EnumSet.of(DECLARE, EXPORT)).optional(EnumSet.of(VAR, CONST, LET))<a name="line.666"></a>
+<span class="sourceLineNo">667</span>                                .repeated(extendAllIdentifiers(PROTOTYPE), DOT).markStart().sequence(ALL_IDENTIFIERS)<a name="line.667"></a>
+<span class="sourceLineNo">668</span>                                .sequence(EQ, FUNCTION).createNode(EShallowEntityType.METHOD, SubTypeNames.ASSIGNED_FUNCTION, 0)<a name="line.668"></a>
+<span class="sourceLineNo">669</span>                                .skipNested(LPAREN, RPAREN).skipTo(LBRACE).parseUntil(ANY).sequence(RBRACE).optional(SEMICOLON)<a name="line.669"></a>
+<span class="sourceLineNo">670</span>                                .endNode();<a name="line.670"></a>
+<span class="sourceLineNo">671</span>        }<a name="line.671"></a>
+<span class="sourceLineNo">672</span><a name="line.672"></a>
+<span class="sourceLineNo">673</span>        /** Creates parsing rule for named functions. */<a name="line.673"></a>
+<span class="sourceLineNo">674</span>        private void createNamedFunctionRule() {<a name="line.674"></a>
+<span class="sourceLineNo">675</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; namedFunctionAlternative = inAnyState()<a name="line.675"></a>
+<span class="sourceLineNo">676</span>                                .repeated(EnumSet.of(DECLARE, EXPORT)).optional(ASYNC).markStart().sequence(FUNCTION, ALL_IDENTIFIERS)<a name="line.676"></a>
+<span class="sourceLineNo">677</span>                                .skipNested(LT, GT).skipNested(LPAREN, RPAREN).skipBefore(EnumSet.of(LBRACE, SEMICOLON));<a name="line.677"></a>
+<span class="sourceLineNo">678</span>                namedFunctionAlternative.sequence(SEMICOLON)<a name="line.678"></a>
+<span class="sourceLineNo">679</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.FUNCTION_DECLARATION, 1).endNode();<a name="line.679"></a>
+<span class="sourceLineNo">680</span>                namedFunctionAlternative.sequence(LBRACE).createNode(EShallowEntityType.METHOD, SubTypeNames.NAMED_FUNCTION, 1)<a name="line.680"></a>
+<span class="sourceLineNo">681</span>                                .parseUntil(ANY).sequence(RBRACE).endNode();<a name="line.681"></a>
+<span class="sourceLineNo">682</span>        }<a name="line.682"></a>
+<span class="sourceLineNo">683</span><a name="line.683"></a>
+<span class="sourceLineNo">684</span>        /** Creates parsing rule for attribute functions. */<a name="line.684"></a>
+<span class="sourceLineNo">685</span>        private void createAttributeFunctionRule() {<a name="line.685"></a>
+<span class="sourceLineNo">686</span>                inAnyState().sequence(extendAllIdentifiers(STRING_LITERAL), COLON, FUNCTION)<a name="line.686"></a>
+<span class="sourceLineNo">687</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.ATTRIBUTE_FUNCTION, 0).skipNested(LPAREN, RPAREN)<a name="line.687"></a>
+<span class="sourceLineNo">688</span>                                .skipTo(LBRACE).parseUntil(ANY).sequence(RBRACE).optional(COMMA).endNode();<a name="line.688"></a>
+<span class="sourceLineNo">689</span><a name="line.689"></a>
+<span class="sourceLineNo">690</span>                inAnyState().optional(EnumSet.of(STATIC, ASYNC)).markStart()<a name="line.690"></a>
+<span class="sourceLineNo">691</span>                                .sequence(extendAllIdentifiers(STRING_LITERAL), LPAREN).skipToWithNesting(RPAREN, LPAREN, RPAREN)<a name="line.691"></a>
+<span class="sourceLineNo">692</span>                                .sequence(LBRACE).createNode(EShallowEntityType.METHOD, SubTypeNames.ATTRIBUTE_FUNCTION, 0)<a name="line.692"></a>
+<span class="sourceLineNo">693</span>                                .parseUntil(ANY).sequence(RBRACE).optional(COMMA).endNode();<a name="line.693"></a>
+<span class="sourceLineNo">694</span>        }<a name="line.694"></a>
+<span class="sourceLineNo">695</span><a name="line.695"></a>
+<span class="sourceLineNo">696</span>        /** Creates parsing rule for anonymous functions. */<a name="line.696"></a>
+<span class="sourceLineNo">697</span>        private void createAnonymousFunctionRule() {<a name="line.697"></a>
+<span class="sourceLineNo">698</span>                inAnyState().sequence(FUNCTION).createNode(EShallowEntityType.METHOD, SubTypeNames.ANONYMOUS_FUNCTION)<a name="line.698"></a>
+<span class="sourceLineNo">699</span>                                .skipNested(LPAREN, RPAREN).skipTo(LBRACE).parseUntil(ANY).sequence(RBRACE).endNode();<a name="line.699"></a>
+<span class="sourceLineNo">700</span>        }<a name="line.700"></a>
+<span class="sourceLineNo">701</span><a name="line.701"></a>
+<span class="sourceLineNo">702</span>        /**<a name="line.702"></a>
+<span class="sourceLineNo">703</span>         * Returns a copy of {@link #ALL_IDENTIFIERS} extended by the given type.<a name="line.703"></a>
+<span class="sourceLineNo">704</span>         */<a name="line.704"></a>
+<span class="sourceLineNo">705</span>        private static EnumSet&lt;ETokenType&gt; extendAllIdentifiers(ETokenType extension) {<a name="line.705"></a>
+<span class="sourceLineNo">706</span>                EnumSet&lt;ETokenType&gt; result = EnumSet.copyOf(ALL_IDENTIFIERS);<a name="line.706"></a>
+<span class="sourceLineNo">707</span>                result.add(extension);<a name="line.707"></a>
+<span class="sourceLineNo">708</span>                return result;<a name="line.708"></a>
+<span class="sourceLineNo">709</span>        }<a name="line.709"></a>
+<span class="sourceLineNo">710</span><a name="line.710"></a>
+<span class="sourceLineNo">711</span>        /** Creates parsing rules for statements. */<a name="line.711"></a>
+<span class="sourceLineNo">712</span>        private void createStatementRules() {<a name="line.712"></a>
+<span class="sourceLineNo">713</span><a name="line.713"></a>
+<span class="sourceLineNo">714</span>                // empty statement<a name="line.714"></a>
+<span class="sourceLineNo">715</span>                inAnyState().sequence(SEMICOLON).createNode(EShallowEntityType.STATEMENT, SubTypeNames.EMPTY_STATEMENT)<a name="line.715"></a>
+<span class="sourceLineNo">716</span>                                .endNode();<a name="line.716"></a>
+<span class="sourceLineNo">717</span><a name="line.717"></a>
+<span class="sourceLineNo">718</span>                // Attributes<a name="line.718"></a>
+<span class="sourceLineNo">719</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; baseJsAttribute = inState(BASE_JS_EXTEND)<a name="line.719"></a>
+<span class="sourceLineNo">720</span>                                .sequence(ALL_IDENTIFIERS, COLON).createNode(EShallowEntityType.ATTRIBUTE, SubTypeNames.ATTRIBUTE, 0);<a name="line.720"></a>
+<span class="sourceLineNo">721</span>                baseJsAttribute.skipToWithNesting(COMMA, LBRACE, RBRACE).endNode();<a name="line.721"></a>
+<span class="sourceLineNo">722</span>                // Might be the last one in the constructor<a name="line.722"></a>
+<span class="sourceLineNo">723</span>                baseJsAttribute.skipBeforeWithNesting(RBRACE, LBRACE, RBRACE).endNode();<a name="line.723"></a>
+<span class="sourceLineNo">724</span><a name="line.724"></a>
+<span class="sourceLineNo">725</span>                // filter out labels as meta as they do not increase statement count<a name="line.725"></a>
+<span class="sourceLineNo">726</span>                inAnyState().sequence(ALL_IDENTIFIERS, COLON).createNode(EShallowEntityType.META, SubTypeNames.LABEL, 0)<a name="line.726"></a>
+<span class="sourceLineNo">727</span>                                .endNode();<a name="line.727"></a>
+<span class="sourceLineNo">728</span><a name="line.728"></a>
+<span class="sourceLineNo">729</span>                createElseIfRule();<a name="line.729"></a>
+<span class="sourceLineNo">730</span>                createSimpleBlockRules();<a name="line.730"></a>
+<span class="sourceLineNo">731</span>                createSwitchCaseRules();<a name="line.731"></a>
+<span class="sourceLineNo">732</span>                createDoWhileRules();<a name="line.732"></a>
+<span class="sourceLineNo">733</span><a name="line.733"></a>
+<span class="sourceLineNo">734</span>                // anonymous block<a name="line.734"></a>
+<span class="sourceLineNo">735</span>                inAnyState().sequence(LBRACE).createNode(EShallowEntityType.STATEMENT, SubTypeNames.ANONYMOUS_BLOCK)<a name="line.735"></a>
+<span class="sourceLineNo">736</span>                                .parseUntil(ANY).sequence(RBRACE).endNode();<a name="line.736"></a>
+<span class="sourceLineNo">737</span><a name="line.737"></a>
+<span class="sourceLineNo">738</span>                // variables<a name="line.738"></a>
+<span class="sourceLineNo">739</span>                inAnyState().sequence(EXPORT, EnumSet.of(VAR, CONST, LET))<a name="line.739"></a>
+<span class="sourceLineNo">740</span>                                .subRecognizer(new JavaScriptSimpleStatementRecognizer(EShallowEntityType.ATTRIBUTE,<a name="line.740"></a>
+<span class="sourceLineNo">741</span>                                                SubTypeNames.EXPORTED_VARIABLE, false), 1, 1)<a name="line.741"></a>
+<span class="sourceLineNo">742</span>                                .endNode();<a name="line.742"></a>
+<span class="sourceLineNo">743</span><a name="line.743"></a>
+<span class="sourceLineNo">744</span>                // simple statement<a name="line.744"></a>
+<span class="sourceLineNo">745</span>                inAnyState().subRecognizer(new JavaScriptSimpleStatementRecognizer(EShallowEntityType.STATEMENT,<a name="line.745"></a>
+<span class="sourceLineNo">746</span>                                SubTypeNames.SIMPLE_STATEMENT, true), 1, 1).endNode();<a name="line.746"></a>
+<span class="sourceLineNo">747</span>        }<a name="line.747"></a>
+<span class="sourceLineNo">748</span><a name="line.748"></a>
+<span class="sourceLineNo">749</span>        /** Creates the rule for "else if" construct.<a name="line.749"></a>
+<span class="sourceLineNo">750</span>         * This is separated from the simple block rules as we need a sequence of keywords instead of a single keyword<a name="line.750"></a>
+<span class="sourceLineNo">751</span>         * as start token. */<a name="line.751"></a>
+<span class="sourceLineNo">752</span>        private void createElseIfRule() {<a name="line.752"></a>
+<span class="sourceLineNo">753</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; elseIfAlternative = inAnyState().sequence(ELSE, IF)<a name="line.753"></a>
+<span class="sourceLineNo">754</span>                                .createNode(EShallowEntityType.STATEMENT, new int[] { 0, 1 });<a name="line.754"></a>
+<span class="sourceLineNo">755</span>                blockRuleWithContinuationHelper(elseIfAlternative, EnumSet.of(ELSE), true);<a name="line.755"></a>
+<span class="sourceLineNo">756</span>        }<a name="line.756"></a>
+<span class="sourceLineNo">757</span><a name="line.757"></a>
+<span class="sourceLineNo">758</span>        /** Creates simple block rules. */<a name="line.758"></a>
+<span class="sourceLineNo">759</span>        private void createSimpleBlockRules() {<a name="line.759"></a>
+<span class="sourceLineNo">760</span>                createBlockRuleWithContinuation(EnumSet.of(WHILE, FOR, SWITCH, WITH), null, true);<a name="line.760"></a>
+<span class="sourceLineNo">761</span>                createBlockRuleWithContinuation(EnumSet.of(ELSE, FINALLY), null, false);<a name="line.761"></a>
+<span class="sourceLineNo">762</span>                createBlockRuleWithContinuation(EnumSet.of(IF), EnumSet.of(ELSE), true);<a name="line.762"></a>
+<span class="sourceLineNo">763</span>                createBlockRuleWithContinuation(EnumSet.of(TRY, CATCH), EnumSet.of(CATCH, FINALLY), true);<a name="line.763"></a>
+<span class="sourceLineNo">764</span>        }<a name="line.764"></a>
+<span class="sourceLineNo">765</span><a name="line.765"></a>
+<span class="sourceLineNo">766</span>        /** Creates rules for do/while. */<a name="line.766"></a>
+<span class="sourceLineNo">767</span>        private void createDoWhileRules() {<a name="line.767"></a>
+<span class="sourceLineNo">768</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; doWhileAlternative = inState(ANY).sequence(DO)<a name="line.768"></a>
+<span class="sourceLineNo">769</span>                                .createNode(EShallowEntityType.STATEMENT, 0);<a name="line.769"></a>
+<span class="sourceLineNo">770</span>                doWhileAlternative.sequence(LBRACE).parseUntil(ANY).sequence(RBRACE, WHILE)<a name="line.770"></a>
+<span class="sourceLineNo">771</span>                                .skipNested(LPAREN, RPAREN, new JavaScriptFunctionRecognizer()).endNode();<a name="line.771"></a>
+<span class="sourceLineNo">772</span>                doWhileAlternative.parseOnce(ANY).sequence(WHILE).skipNested(LPAREN, RPAREN, new JavaScriptFunctionRecognizer())<a name="line.772"></a>
+<span class="sourceLineNo">773</span>                                .endNode();<a name="line.773"></a>
+<span class="sourceLineNo">774</span>        }<a name="line.774"></a>
+<span class="sourceLineNo">775</span><a name="line.775"></a>
+<span class="sourceLineNo">776</span>        /** Creates rules for switch/case. */<a name="line.776"></a>
+<span class="sourceLineNo">777</span>        private void createSwitchCaseRules() {<a name="line.777"></a>
+<span class="sourceLineNo">778</span>                HashSet&lt;ETokenType&gt; literalsAndIdentifiers = new HashSet&lt;&gt;(LITERALS);<a name="line.778"></a>
+<span class="sourceLineNo">779</span>                literalsAndIdentifiers.addAll(IDENTIFIERS);<a name="line.779"></a>
+<span class="sourceLineNo">780</span>                inAnyState().sequence(CASE, literalsAndIdentifiers, COLON)<a name="line.780"></a>
+<span class="sourceLineNo">781</span>                                .createNode(EShallowEntityType.META, new int[] { 0, 1 }).endNode();<a name="line.781"></a>
+<span class="sourceLineNo">782</span>                inAnyState().sequence(CASE).skipToWithNesting(COLON, LPAREN, RPAREN).createNode(EShallowEntityType.META, 0)<a name="line.782"></a>
+<span class="sourceLineNo">783</span>                                .endNode();<a name="line.783"></a>
+<span class="sourceLineNo">784</span><a name="line.784"></a>
+<span class="sourceLineNo">785</span>                inAnyState().sequence(DEFAULT, COLON).createNode(EShallowEntityType.META, 0).endNode();<a name="line.785"></a>
+<span class="sourceLineNo">786</span>        }<a name="line.786"></a>
+<span class="sourceLineNo">787</span><a name="line.787"></a>
+<span class="sourceLineNo">788</span>        /**<a name="line.788"></a>
+<span class="sourceLineNo">789</span>         * Creates a rule for recognizing a statement starting with a single keyword,<a name="line.789"></a>
+<span class="sourceLineNo">790</span>         * optionally followed by an expression in parentheses, and followed by a block<a name="line.790"></a>
+<span class="sourceLineNo">791</span>         * or a single statement.<a name="line.791"></a>
+<span class="sourceLineNo">792</span>         *<a name="line.792"></a>
+<span class="sourceLineNo">793</span>         * @param continuationTokens<a name="line.793"></a>
+<span class="sourceLineNo">794</span>         *            list of tokens that indicate a continued statement if encountered<a name="line.794"></a>
+<span class="sourceLineNo">795</span>         *            after the block. May be null.<a name="line.795"></a>
+<span class="sourceLineNo">796</span>         */<a name="line.796"></a>
+<span class="sourceLineNo">797</span>        private void createBlockRuleWithContinuation(EnumSet&lt;ETokenType&gt; startTokens,<a name="line.797"></a>
+<span class="sourceLineNo">798</span>                        EnumSet&lt;ETokenType&gt; continuationTokens, boolean canBeFollowedByParentheses) {<a name="line.798"></a>
+<span class="sourceLineNo">799</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; alternative = inAnyState().sequence(startTokens)<a name="line.799"></a>
+<span class="sourceLineNo">800</span>                                .createNode(EShallowEntityType.STATEMENT, 0);<a name="line.800"></a>
+<span class="sourceLineNo">801</span>                blockRuleWithContinuationHelper(alternative, continuationTokens, canBeFollowedByParentheses);<a name="line.801"></a>
+<span class="sourceLineNo">802</span>        }<a name="line.802"></a>
+<span class="sourceLineNo">803</span><a name="line.803"></a>
+<span class="sourceLineNo">804</span>        /**<a name="line.804"></a>
+<span class="sourceLineNo">805</span>         * This method extracts shared code for block rules with single (e.g. 'for') and multiple keywords ('else if').<a name="line.805"></a>
+<span class="sourceLineNo">806</span>         * @param alternative recognizer<a name="line.806"></a>
+<span class="sourceLineNo">807</span>         * @param continuationTokens list of tokens that indicate a continued statement if encountered<a name="line.807"></a>
+<span class="sourceLineNo">808</span>         *       *            after the block. May be null.<a name="line.808"></a>
+<span class="sourceLineNo">809</span>         * @param canBeFollowedByParentheses True e.g. for 'if' and 'for', False e.g. for 'else' and 'finally'<a name="line.809"></a>
+<span class="sourceLineNo">810</span>         */<a name="line.810"></a>
+<span class="sourceLineNo">811</span>        private void blockRuleWithContinuationHelper(RecognizerBase&lt;EJavaScriptParserStates&gt; alternative,<a name="line.811"></a>
+<span class="sourceLineNo">812</span>                                                                                                 EnumSet&lt;ETokenType&gt; continuationTokens,<a name="line.812"></a>
+<span class="sourceLineNo">813</span>                                                                                                 boolean canBeFollowedByParentheses) {<a name="line.813"></a>
+<span class="sourceLineNo">814</span>                if (canBeFollowedByParentheses) {<a name="line.814"></a>
+<span class="sourceLineNo">815</span>                        alternative = alternative.skipNested(LPAREN, RPAREN, new JavaScriptFunctionRecognizer());<a name="line.815"></a>
+<span class="sourceLineNo">816</span>                }<a name="line.816"></a>
+<span class="sourceLineNo">817</span><a name="line.817"></a>
+<span class="sourceLineNo">818</span>                endWithPossibleContinuation(alternative.sequence(LBRACE).parseUntil(ANY).sequence(RBRACE), continuationTokens);<a name="line.818"></a>
+<span class="sourceLineNo">819</span>                endWithPossibleContinuation(alternative.parseOnce(ANY), continuationTokens);<a name="line.819"></a>
+<span class="sourceLineNo">820</span>        }<a name="line.820"></a>
+<span class="sourceLineNo">821</span><a name="line.821"></a>
+<span class="sourceLineNo">822</span>        /** {@inheritDoc} */<a name="line.822"></a>
+<span class="sourceLineNo">823</span>        @Override<a name="line.823"></a>
+<span class="sourceLineNo">824</span>        protected boolean isFilteredToken(IToken token, IToken previousToken) {<a name="line.824"></a>
+<span class="sourceLineNo">825</span>                // Triple slash directives have ETokenClass COMMENT, but they indicate<a name="line.825"></a>
+<span class="sourceLineNo">826</span>                // TypeScript dependencies. Thus, they should not be filtered out.<a name="line.826"></a>
+<span class="sourceLineNo">827</span>                return super.isFilteredToken(token, previousToken) &amp;&amp; token.getType() != ETokenType.TRIPLE_SLASH_DIRECTIVE;<a name="line.827"></a>
+<span class="sourceLineNo">828</span>        }<a name="line.828"></a>
+<span class="sourceLineNo">829</span>}<a name="line.829"></a>
 
 
 

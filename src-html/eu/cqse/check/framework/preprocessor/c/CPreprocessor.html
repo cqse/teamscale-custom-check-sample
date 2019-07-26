@@ -55,75 +55,77 @@
 <span class="sourceLineNo">047</span>        public static final Pattern INCLUDE_PATTERN = Pattern.compile("#\\s*include +[\"&lt;](.+?)[\"&gt;]");<a name="line.47"></a>
 <span class="sourceLineNo">048</span><a name="line.48"></a>
 <span class="sourceLineNo">049</span>        /**<a name="line.49"></a>
-<span class="sourceLineNo">050</span>         * A post processing operation that removes all tokens that have been<a name="line.50"></a>
-<span class="sourceLineNo">051</span>         * inserted by the C++ preprocessor as result of the macro expansion.<a name="line.51"></a>
-<span class="sourceLineNo">052</span>         */<a name="line.52"></a>
-<span class="sourceLineNo">053</span>        public static List&lt;ShallowEntity&gt; removePreprocessorTokens(List&lt;ShallowEntity&gt; entities) {<a name="line.53"></a>
-<span class="sourceLineNo">054</span>                ShallowEntity.filterTokens(entities,<a name="line.54"></a>
-<span class="sourceLineNo">055</span>                                token -&gt; token.getOriginId().equals(MacroHandlingCPreprocessorBase.MACRO_ORIGIN));<a name="line.55"></a>
-<span class="sourceLineNo">056</span>                return ShallowEntity.collapseEmptyEntities(entities);<a name="line.56"></a>
-<span class="sourceLineNo">057</span>        }<a name="line.57"></a>
-<span class="sourceLineNo">058</span><a name="line.58"></a>
-<span class="sourceLineNo">059</span>        /** Constructor. */<a name="line.59"></a>
-<span class="sourceLineNo">060</span>        public CPreprocessor(IMacroProvider macroProvider) {<a name="line.60"></a>
-<span class="sourceLineNo">061</span>                super(macroProvider);<a name="line.61"></a>
-<span class="sourceLineNo">062</span>        }<a name="line.62"></a>
-<span class="sourceLineNo">063</span><a name="line.63"></a>
-<span class="sourceLineNo">064</span>        /** {@inheritDoc} */<a name="line.64"></a>
-<span class="sourceLineNo">065</span>        @Override<a name="line.65"></a>
-<span class="sourceLineNo">066</span>        protected void handleInclude(String uniformPath, IToken token, List&lt;IToken&gt; result, int inclusionLimit,<a name="line.66"></a>
-<span class="sourceLineNo">067</span>                        Set&lt;String&gt; seenPaths) {<a name="line.67"></a>
-<span class="sourceLineNo">068</span>                if (inclusionLimit &lt;= 0) {<a name="line.68"></a>
-<span class="sourceLineNo">069</span>                        return;<a name="line.69"></a>
-<span class="sourceLineNo">070</span>                }<a name="line.70"></a>
-<span class="sourceLineNo">071</span><a name="line.71"></a>
-<span class="sourceLineNo">072</span>                Matcher matcher = INCLUDE_PATTERN.matcher(token.getText());<a name="line.72"></a>
-<span class="sourceLineNo">073</span>                if (!matcher.find()) {<a name="line.73"></a>
-<span class="sourceLineNo">074</span>                        return;<a name="line.74"></a>
-<span class="sourceLineNo">075</span>                }<a name="line.75"></a>
-<span class="sourceLineNo">076</span><a name="line.76"></a>
-<span class="sourceLineNo">077</span>                String includedName = matcher.group(1);<a name="line.77"></a>
-<span class="sourceLineNo">078</span>                IncludedTokens pathAndTokens = resolveIncludedTokens(uniformPath, includedName);<a name="line.78"></a>
-<span class="sourceLineNo">079</span>                result.addAll(preprocess(pathAndTokens.getFirst(), pathAndTokens.getSecond(), inclusionLimit - 1, seenPaths));<a name="line.79"></a>
-<span class="sourceLineNo">080</span>        }<a name="line.80"></a>
-<span class="sourceLineNo">081</span><a name="line.81"></a>
-<span class="sourceLineNo">082</span>        /**<a name="line.82"></a>
-<span class="sourceLineNo">083</span>         * Returns the included tokens for a given include name.<a name="line.83"></a>
-<span class="sourceLineNo">084</span>         * <a name="line.84"></a>
-<span class="sourceLineNo">085</span>         * @param includingUniformPath<a name="line.85"></a>
-<span class="sourceLineNo">086</span>         *            the uniform path of the file that includes this. May be null<a name="line.86"></a>
-<span class="sourceLineNo">087</span>         *            if no information is available.<a name="line.87"></a>
-<span class="sourceLineNo">088</span>         * @param includedName<a name="line.88"></a>
-<span class="sourceLineNo">089</span>         *            the name of the file to be included.<a name="line.89"></a>
-<span class="sourceLineNo">090</span>         * @return the pair of the name of the resolved uniform path of the include<a name="line.90"></a>
-<span class="sourceLineNo">091</span>         *         file and the file's tokens. The resolved uniform path may be<a name="line.91"></a>
-<span class="sourceLineNo">092</span>         *         null, if it is not available.<a name="line.92"></a>
-<span class="sourceLineNo">093</span>         */<a name="line.93"></a>
-<span class="sourceLineNo">094</span>        protected IncludedTokens resolveIncludedTokens(String includingUniformPath, String includedName) {<a name="line.94"></a>
-<span class="sourceLineNo">095</span>                Pair&lt;String, String&gt; content = resolveIncludeContent(includingUniformPath, includedName);<a name="line.95"></a>
-<span class="sourceLineNo">096</span><a name="line.96"></a>
-<span class="sourceLineNo">097</span>                return new IncludedTokens(content.getFirst(),<a name="line.97"></a>
-<span class="sourceLineNo">098</span>                                ScannerUtils.getTokens(content.getSecond(), ELanguage.CPP, includedName));<a name="line.98"></a>
-<span class="sourceLineNo">099</span>        }<a name="line.99"></a>
-<span class="sourceLineNo">100</span><a name="line.100"></a>
-<span class="sourceLineNo">101</span>        /**<a name="line.101"></a>
-<span class="sourceLineNo">102</span>         * Returns the resolved uniform path and content of an included file. The<a name="line.102"></a>
-<span class="sourceLineNo">103</span>         * default implementation returns a pair of null and the empty string.<a name="line.103"></a>
-<span class="sourceLineNo">104</span>         * <a name="line.104"></a>
-<span class="sourceLineNo">105</span>         * @param includingUniformPath<a name="line.105"></a>
-<span class="sourceLineNo">106</span>         *            the uniform path of the file that includes this. May be null<a name="line.106"></a>
-<span class="sourceLineNo">107</span>         *            if no information is available.<a name="line.107"></a>
-<span class="sourceLineNo">108</span>         * @param includedName<a name="line.108"></a>
-<span class="sourceLineNo">109</span>         *            the name of the file to be included.<a name="line.109"></a>
-<span class="sourceLineNo">110</span>         * @return the pair of the name of the resolved uniform path of the include<a name="line.110"></a>
-<span class="sourceLineNo">111</span>         *         file and the file's content. The resolved uniform path may be<a name="line.111"></a>
-<span class="sourceLineNo">112</span>         *         null, if it is not available.<a name="line.112"></a>
-<span class="sourceLineNo">113</span>         */<a name="line.113"></a>
-<span class="sourceLineNo">114</span>        protected Pair&lt;String, String&gt; resolveIncludeContent(String includingUniformPath, String includedName) {<a name="line.114"></a>
-<span class="sourceLineNo">115</span>                return new Pair&lt;&gt;(null, StringUtils.EMPTY_STRING);<a name="line.115"></a>
-<span class="sourceLineNo">116</span>        }<a name="line.116"></a>
-<span class="sourceLineNo">117</span><a name="line.117"></a>
-<span class="sourceLineNo">118</span>}<a name="line.118"></a>
+<span class="sourceLineNo">050</span>         * A post processing operation that removes all tokens that have been inserted<a name="line.50"></a>
+<span class="sourceLineNo">051</span>         * by the C++ preprocessor as result of the macro expansion.<a name="line.51"></a>
+<span class="sourceLineNo">052</span>         * <a name="line.52"></a>
+<span class="sourceLineNo">053</span>         * Modifies the given collection.<a name="line.53"></a>
+<span class="sourceLineNo">054</span>         */<a name="line.54"></a>
+<span class="sourceLineNo">055</span>        public static void removePreprocessorTokens(List&lt;ShallowEntity&gt; entities) {<a name="line.55"></a>
+<span class="sourceLineNo">056</span>                ShallowEntity.filterTokens(entities,<a name="line.56"></a>
+<span class="sourceLineNo">057</span>                                token -&gt; token.getOriginId().equals(MacroHandlingCPreprocessorBase.MACRO_ORIGIN));<a name="line.57"></a>
+<span class="sourceLineNo">058</span>                ShallowEntity.collapseEmptyEntities(entities);<a name="line.58"></a>
+<span class="sourceLineNo">059</span>        }<a name="line.59"></a>
+<span class="sourceLineNo">060</span><a name="line.60"></a>
+<span class="sourceLineNo">061</span>        /** Constructor. */<a name="line.61"></a>
+<span class="sourceLineNo">062</span>        public CPreprocessor(IMacroProvider macroProvider) {<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                super(macroProvider);<a name="line.63"></a>
+<span class="sourceLineNo">064</span>        }<a name="line.64"></a>
+<span class="sourceLineNo">065</span><a name="line.65"></a>
+<span class="sourceLineNo">066</span>        /** {@inheritDoc} */<a name="line.66"></a>
+<span class="sourceLineNo">067</span>        @Override<a name="line.67"></a>
+<span class="sourceLineNo">068</span>        protected void handleInclude(String uniformPath, IToken token, List&lt;IToken&gt; result, int inclusionLimit,<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                        Set&lt;String&gt; seenPaths) {<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                if (inclusionLimit &lt;= 0) {<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                        return;<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                }<a name="line.72"></a>
+<span class="sourceLineNo">073</span><a name="line.73"></a>
+<span class="sourceLineNo">074</span>                Matcher matcher = INCLUDE_PATTERN.matcher(token.getText());<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                if (!matcher.find()) {<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                        return;<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                }<a name="line.77"></a>
+<span class="sourceLineNo">078</span><a name="line.78"></a>
+<span class="sourceLineNo">079</span>                String includedName = matcher.group(1);<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                IncludedTokens pathAndTokens = resolveIncludedTokens(uniformPath, includedName);<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                result.addAll(preprocess(pathAndTokens.getFirst(), pathAndTokens.getSecond(), inclusionLimit - 1, seenPaths));<a name="line.81"></a>
+<span class="sourceLineNo">082</span>        }<a name="line.82"></a>
+<span class="sourceLineNo">083</span><a name="line.83"></a>
+<span class="sourceLineNo">084</span>        /**<a name="line.84"></a>
+<span class="sourceLineNo">085</span>         * Returns the included tokens for a given include name.<a name="line.85"></a>
+<span class="sourceLineNo">086</span>         * <a name="line.86"></a>
+<span class="sourceLineNo">087</span>         * @param includingUniformPath<a name="line.87"></a>
+<span class="sourceLineNo">088</span>         *            the uniform path of the file that includes this. May be null if no<a name="line.88"></a>
+<span class="sourceLineNo">089</span>         *            information is available.<a name="line.89"></a>
+<span class="sourceLineNo">090</span>         * @param includedName<a name="line.90"></a>
+<span class="sourceLineNo">091</span>         *            the name of the file to be included.<a name="line.91"></a>
+<span class="sourceLineNo">092</span>         * @return the pair of the name of the resolved uniform path of the include file<a name="line.92"></a>
+<span class="sourceLineNo">093</span>         *         and the file's tokens. The resolved uniform path may be null, if it<a name="line.93"></a>
+<span class="sourceLineNo">094</span>         *         is not available.<a name="line.94"></a>
+<span class="sourceLineNo">095</span>         */<a name="line.95"></a>
+<span class="sourceLineNo">096</span>        protected IncludedTokens resolveIncludedTokens(String includingUniformPath, String includedName) {<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                Pair&lt;String, String&gt; content = resolveIncludeContent(includingUniformPath, includedName);<a name="line.97"></a>
+<span class="sourceLineNo">098</span><a name="line.98"></a>
+<span class="sourceLineNo">099</span>                return new IncludedTokens(content.getFirst(),<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                                ScannerUtils.getTokens(content.getSecond(), ELanguage.CPP, includedName));<a name="line.100"></a>
+<span class="sourceLineNo">101</span>        }<a name="line.101"></a>
+<span class="sourceLineNo">102</span><a name="line.102"></a>
+<span class="sourceLineNo">103</span>        /**<a name="line.103"></a>
+<span class="sourceLineNo">104</span>         * Returns the resolved uniform path and content of an included file. The<a name="line.104"></a>
+<span class="sourceLineNo">105</span>         * default implementation returns a pair of null and the empty string.<a name="line.105"></a>
+<span class="sourceLineNo">106</span>         * <a name="line.106"></a>
+<span class="sourceLineNo">107</span>         * @param includingUniformPath<a name="line.107"></a>
+<span class="sourceLineNo">108</span>         *            the uniform path of the file that includes this. May be null if no<a name="line.108"></a>
+<span class="sourceLineNo">109</span>         *            information is available.<a name="line.109"></a>
+<span class="sourceLineNo">110</span>         * @param includedName<a name="line.110"></a>
+<span class="sourceLineNo">111</span>         *            the name of the file to be included.<a name="line.111"></a>
+<span class="sourceLineNo">112</span>         * @return the pair of the name of the resolved uniform path of the include file<a name="line.112"></a>
+<span class="sourceLineNo">113</span>         *         and the file's content. The resolved uniform path may be null, if it<a name="line.113"></a>
+<span class="sourceLineNo">114</span>         *         is not available.<a name="line.114"></a>
+<span class="sourceLineNo">115</span>         */<a name="line.115"></a>
+<span class="sourceLineNo">116</span>        protected Pair&lt;String, String&gt; resolveIncludeContent(String includingUniformPath, String includedName) {<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                return new Pair&lt;&gt;(null, StringUtils.EMPTY_STRING);<a name="line.117"></a>
+<span class="sourceLineNo">118</span>        }<a name="line.118"></a>
+<span class="sourceLineNo">119</span><a name="line.119"></a>
+<span class="sourceLineNo">120</span>}<a name="line.120"></a>
 
 
 

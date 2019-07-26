@@ -51,7 +51,7 @@
 <span class="sourceLineNo">043</span>        private static final long serialVersionUID = -7915139441846763832L;<a name="line.43"></a>
 <span class="sourceLineNo">044</span><a name="line.44"></a>
 <span class="sourceLineNo">045</span>        /** Type name that is used if no type name was given. */<a name="line.45"></a>
-<span class="sourceLineNo">046</span>        private static final String UNKNOWN_TYPE_NAME = "&lt;unknown type&gt;";<a name="line.46"></a>
+<span class="sourceLineNo">046</span>        public static final String UNKNOWN_TYPE_NAME = "&lt;unknown type&gt;";<a name="line.46"></a>
 <span class="sourceLineNo">047</span><a name="line.47"></a>
 <span class="sourceLineNo">048</span>        /** The variable's name. */<a name="line.48"></a>
 <span class="sourceLineNo">049</span>        private final String variableName;<a name="line.49"></a>
@@ -60,18 +60,18 @@
 <span class="sourceLineNo">052</span>        private String typeName;<a name="line.52"></a>
 <span class="sourceLineNo">053</span><a name="line.53"></a>
 <span class="sourceLineNo">054</span>        /**<a name="line.54"></a>
-<span class="sourceLineNo">055</span>         * A list of tokens of variable modifiers. We store the token to get<a name="line.55"></a>
-<span class="sourceLineNo">056</span>         * information about the actual text of the modifier in the source code as<a name="line.56"></a>
-<span class="sourceLineNo">057</span>         * well as it's ETokenType.<a name="line.57"></a>
+<span class="sourceLineNo">055</span>         * A list of tokens of variable modifiers. We store the token to get information<a name="line.55"></a>
+<span class="sourceLineNo">056</span>         * about the actual text of the modifier in the source code as well as it's<a name="line.56"></a>
+<span class="sourceLineNo">057</span>         * ETokenType.<a name="line.57"></a>
 <span class="sourceLineNo">058</span>         */<a name="line.58"></a>
 <span class="sourceLineNo">059</span>        private final List&lt;IToken&gt; modifiers;<a name="line.59"></a>
 <span class="sourceLineNo">060</span><a name="line.60"></a>
 <span class="sourceLineNo">061</span>        /** The entity that defines this variable. */<a name="line.61"></a>
-<span class="sourceLineNo">062</span>        private transient final ShallowEntity declaringEntity;<a name="line.62"></a>
+<span class="sourceLineNo">062</span>        private final transient ShallowEntity declaringEntity;<a name="line.62"></a>
 <span class="sourceLineNo">063</span><a name="line.63"></a>
 <span class="sourceLineNo">064</span>        /**<a name="line.64"></a>
-<span class="sourceLineNo">065</span>         * Creates a new type info object, the variable name and the modifier list<a name="line.65"></a>
-<span class="sourceLineNo">066</span>         * must not be null.<a name="line.66"></a>
+<span class="sourceLineNo">065</span>         * Creates a new type info object, the variable name and the modifier list must<a name="line.65"></a>
+<span class="sourceLineNo">066</span>         * not be null.<a name="line.66"></a>
 <span class="sourceLineNo">067</span>         */<a name="line.67"></a>
 <span class="sourceLineNo">068</span>        public TypedVariable(String variableName, String typeName, List&lt;IToken&gt; modifiers, ShallowEntity definitionEntity) {<a name="line.68"></a>
 <span class="sourceLineNo">069</span>                CCSMAssert.isNotNull(variableName);<a name="line.69"></a>
@@ -116,7 +116,7 @@
 <span class="sourceLineNo">108</span>        public String toString() {<a name="line.108"></a>
 <span class="sourceLineNo">109</span>                StringBuilder builder = new StringBuilder();<a name="line.109"></a>
 <span class="sourceLineNo">110</span>                if (modifiers.size() &gt; 0) {<a name="line.110"></a>
-<span class="sourceLineNo">111</span>                        builder.append(StringUtils.concat(CollectionUtils.map(modifiers, token -&gt; token.getText()), " "));<a name="line.111"></a>
+<span class="sourceLineNo">111</span>                        builder.append(StringUtils.concat(CollectionUtils.map(modifiers, IToken::getText), " "));<a name="line.111"></a>
 <span class="sourceLineNo">112</span>                        builder.append(" ");<a name="line.112"></a>
 <span class="sourceLineNo">113</span>                }<a name="line.113"></a>
 <span class="sourceLineNo">114</span>                builder.append(typeName);<a name="line.114"></a>

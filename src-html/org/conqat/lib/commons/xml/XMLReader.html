@@ -48,7 +48,7 @@
 <span class="sourceLineNo">040</span>/**<a name="line.40"></a>
 <span class="sourceLineNo">041</span> * Utility class for reading XML documents. The XML document can be validated by<a name="line.41"></a>
 <span class="sourceLineNo">042</span> * an optional schema that is passed via {@link #setSchema(URL)}. Please consult<a name="line.42"></a>
-<span class="sourceLineNo">043</span> * test case {@link XMLReaderTest} to see how this class is intended to be used.<a name="line.43"></a>
+<span class="sourceLineNo">043</span> * test case XMLReaderTest to see how this class is intended to be used.<a name="line.43"></a>
 <span class="sourceLineNo">044</span> */<a name="line.44"></a>
 <span class="sourceLineNo">045</span>public abstract class XMLReader&lt;E extends Enum&lt;E&gt;, A extends Enum&lt;A&gt;, X extends Exception&gt; {<a name="line.45"></a>
 <span class="sourceLineNo">046</span><a name="line.46"></a>
@@ -82,307 +82,313 @@
 <span class="sourceLineNo">074</span>         * @param file<a name="line.74"></a>
 <span class="sourceLineNo">075</span>         *            the file to be read<a name="line.75"></a>
 <span class="sourceLineNo">076</span>         * @param encoding<a name="line.76"></a>
-<span class="sourceLineNo">077</span>         *            XML encoding of the file. No encoding is set if<a name="line.77"></a>
-<span class="sourceLineNo">078</span>         *            &lt;code&gt;null&lt;/code&gt;.<a name="line.78"></a>
-<span class="sourceLineNo">079</span>         * @param xmlResolver<a name="line.79"></a>
-<span class="sourceLineNo">080</span>         *            resolvers used by this reader<a name="line.80"></a>
-<span class="sourceLineNo">081</span>         */<a name="line.81"></a>
-<span class="sourceLineNo">082</span>        public XMLReader(File file, String encoding, IXMLResolver&lt;E, A&gt; xmlResolver) throws IOException {<a name="line.82"></a>
-<span class="sourceLineNo">083</span>                this(FileSystemUtils.streamReader(new FileInputStream(file), ensureNotNullEncoding(encoding)), xmlResolver);<a name="line.83"></a>
-<span class="sourceLineNo">084</span>        }<a name="line.84"></a>
-<span class="sourceLineNo">085</span><a name="line.85"></a>
-<span class="sourceLineNo">086</span>        /**<a name="line.86"></a>
-<span class="sourceLineNo">087</span>         * Create reader.<a name="line.87"></a>
-<span class="sourceLineNo">088</span>         * <a name="line.88"></a>
-<span class="sourceLineNo">089</span>         * @param content<a name="line.89"></a>
-<span class="sourceLineNo">090</span>         *            XML string that gets parsed validation will be performed if<a name="line.90"></a>
-<span class="sourceLineNo">091</span>         *            &lt;code&gt;null&lt;/code&gt;.<a name="line.91"></a>
-<span class="sourceLineNo">092</span>         * @param xmlResolver<a name="line.92"></a>
-<span class="sourceLineNo">093</span>         *            resolvers used by this reader<a name="line.93"></a>
-<span class="sourceLineNo">094</span>         */<a name="line.94"></a>
-<span class="sourceLineNo">095</span>        public XMLReader(String content, IXMLResolver&lt;E, A&gt; xmlResolver) {<a name="line.95"></a>
-<span class="sourceLineNo">096</span>                this(new StringReader(content), xmlResolver);<a name="line.96"></a>
-<span class="sourceLineNo">097</span>        }<a name="line.97"></a>
-<span class="sourceLineNo">098</span><a name="line.98"></a>
-<span class="sourceLineNo">099</span>        /**<a name="line.99"></a>
-<span class="sourceLineNo">100</span>         * Create reader.<a name="line.100"></a>
-<span class="sourceLineNo">101</span>         * <a name="line.101"></a>
-<span class="sourceLineNo">102</span>         * @param reader<a name="line.102"></a>
-<span class="sourceLineNo">103</span>         *            the reader used to access the XML document.<a name="line.103"></a>
-<span class="sourceLineNo">104</span>         * @param xmlResolver<a name="line.104"></a>
-<span class="sourceLineNo">105</span>         *            resolvers used by this reader<a name="line.105"></a>
-<span class="sourceLineNo">106</span>         */<a name="line.106"></a>
-<span class="sourceLineNo">107</span>        public XMLReader(Reader reader, IXMLResolver&lt;E, A&gt; xmlResolver) {<a name="line.107"></a>
-<span class="sourceLineNo">108</span>                CCSMAssert.isFalse(reader == null, "Reader may not be null.");<a name="line.108"></a>
-<span class="sourceLineNo">109</span>                CCSMAssert.isFalse(xmlResolver == null, "XML resolver may not be null.");<a name="line.109"></a>
-<span class="sourceLineNo">110</span>                this.reader = reader;<a name="line.110"></a>
-<span class="sourceLineNo">111</span>                this.xmlResolver = xmlResolver;<a name="line.111"></a>
-<span class="sourceLineNo">112</span>        }<a name="line.112"></a>
-<span class="sourceLineNo">113</span><a name="line.113"></a>
-<span class="sourceLineNo">114</span>        /** Replaces a null value with the name of the default encoding. */<a name="line.114"></a>
-<span class="sourceLineNo">115</span>        private static String ensureNotNullEncoding(String encoding) {<a name="line.115"></a>
-<span class="sourceLineNo">116</span>                if (encoding == null) {<a name="line.116"></a>
-<span class="sourceLineNo">117</span>                        return Charset.defaultCharset().name();<a name="line.117"></a>
-<span class="sourceLineNo">118</span>                }<a name="line.118"></a>
-<span class="sourceLineNo">119</span>                return encoding;<a name="line.119"></a>
-<span class="sourceLineNo">120</span>        }<a name="line.120"></a>
-<span class="sourceLineNo">121</span><a name="line.121"></a>
-<span class="sourceLineNo">122</span>        /** Sets the URL pointing to the schema that is used for validation. */<a name="line.122"></a>
-<span class="sourceLineNo">123</span>        protected void setSchema(URL schemaURL) {<a name="line.123"></a>
-<span class="sourceLineNo">124</span>                this.schemaURL = schemaURL;<a name="line.124"></a>
-<span class="sourceLineNo">125</span>        }<a name="line.125"></a>
-<span class="sourceLineNo">126</span><a name="line.126"></a>
-<span class="sourceLineNo">127</span>        /**<a name="line.127"></a>
-<span class="sourceLineNo">128</span>         * Get &lt;code&gt;boolean&lt;/code&gt; value of an attribute.<a name="line.128"></a>
-<span class="sourceLineNo">129</span>         * <a name="line.129"></a>
-<span class="sourceLineNo">130</span>         * @return the boolean value, semantics for non-translatable or empty values<a name="line.130"></a>
-<span class="sourceLineNo">131</span>         *         is defined by {@link Boolean#parseBoolean(String)}.<a name="line.131"></a>
-<span class="sourceLineNo">132</span>         */<a name="line.132"></a>
-<span class="sourceLineNo">133</span>        protected boolean getBooleanAttribute(A attribute) {<a name="line.133"></a>
-<span class="sourceLineNo">134</span>                String value = getStringAttribute(attribute);<a name="line.134"></a>
-<span class="sourceLineNo">135</span>                return Boolean.parseBoolean(value);<a name="line.135"></a>
-<span class="sourceLineNo">136</span>        }<a name="line.136"></a>
-<span class="sourceLineNo">137</span><a name="line.137"></a>
-<span class="sourceLineNo">138</span>        /**<a name="line.138"></a>
-<span class="sourceLineNo">139</span>         * Get the text content of a child element of the current element.<a name="line.139"></a>
-<span class="sourceLineNo">140</span>         * <a name="line.140"></a>
-<span class="sourceLineNo">141</span>         * @param childElement<a name="line.141"></a>
-<span class="sourceLineNo">142</span>         *            the child element<a name="line.142"></a>
-<span class="sourceLineNo">143</span>         * @return the text or &lt;code&gt;null&lt;/code&gt; if the current element doesn't have<a name="line.143"></a>
-<span class="sourceLineNo">144</span>         *         the requested child element<a name="line.144"></a>
-<span class="sourceLineNo">145</span>         */<a name="line.145"></a>
-<span class="sourceLineNo">146</span>        protected String getChildText(E childElement) {<a name="line.146"></a>
-<span class="sourceLineNo">147</span><a name="line.147"></a>
-<span class="sourceLineNo">148</span>                String elementName = xmlResolver.resolveElementName(childElement);<a name="line.148"></a>
-<span class="sourceLineNo">149</span>                Element domElement = XMLUtils.getNamedChild(currentDOMElement, elementName);<a name="line.149"></a>
-<span class="sourceLineNo">150</span>                if (domElement == null) {<a name="line.150"></a>
-<span class="sourceLineNo">151</span>                        return null;<a name="line.151"></a>
-<span class="sourceLineNo">152</span>                }<a name="line.152"></a>
-<span class="sourceLineNo">153</span><a name="line.153"></a>
-<span class="sourceLineNo">154</span>                return domElement.getTextContent();<a name="line.154"></a>
-<span class="sourceLineNo">155</span>        }<a name="line.155"></a>
-<span class="sourceLineNo">156</span><a name="line.156"></a>
-<span class="sourceLineNo">157</span>        /**<a name="line.157"></a>
-<span class="sourceLineNo">158</span>         * Translate attribute value to an enumeration element.<a name="line.158"></a>
-<span class="sourceLineNo">159</span>         * <a name="line.159"></a>
-<span class="sourceLineNo">160</span>         * @param attribute<a name="line.160"></a>
-<span class="sourceLineNo">161</span>         *            the attribute<a name="line.161"></a>
-<span class="sourceLineNo">162</span>         * @param enumClass<a name="line.162"></a>
-<span class="sourceLineNo">163</span>         *            the enumeration class<a name="line.163"></a>
-<span class="sourceLineNo">164</span>         * <a name="line.164"></a>
-<span class="sourceLineNo">165</span>         * @return the enum value, semantics for non-translatable or empty values is<a name="line.165"></a>
-<span class="sourceLineNo">166</span>         *         defined by {@link Enum#valueOf(Class, String)}.<a name="line.166"></a>
-<span class="sourceLineNo">167</span>         */<a name="line.167"></a>
-<span class="sourceLineNo">168</span>        protected &lt;T extends Enum&lt;T&gt;&gt; T getEnumAttribute(A attribute, Class&lt;T&gt; enumClass) {<a name="line.168"></a>
-<span class="sourceLineNo">169</span>                String value = getStringAttribute(attribute);<a name="line.169"></a>
-<span class="sourceLineNo">170</span>                return Enum.valueOf(enumClass, value);<a name="line.170"></a>
-<span class="sourceLineNo">171</span>        }<a name="line.171"></a>
-<span class="sourceLineNo">172</span><a name="line.172"></a>
-<span class="sourceLineNo">173</span>        /**<a name="line.173"></a>
-<span class="sourceLineNo">174</span>         * Translate attribute value to an enumeration element.<a name="line.174"></a>
-<span class="sourceLineNo">175</span>         * <a name="line.175"></a>
-<span class="sourceLineNo">176</span>         * @param attribute<a name="line.176"></a>
-<span class="sourceLineNo">177</span>         *            the attribute<a name="line.177"></a>
-<span class="sourceLineNo">178</span>         * @param enumClass<a name="line.178"></a>
-<span class="sourceLineNo">179</span>         *            the enumeration class<a name="line.179"></a>
-<span class="sourceLineNo">180</span>         * @param defaultValue<a name="line.180"></a>
-<span class="sourceLineNo">181</span>         *            the default value to return in case the attribute is not<a name="line.181"></a>
-<span class="sourceLineNo">182</span>         *            specified or the enumeration does not contain the specified<a name="line.182"></a>
-<span class="sourceLineNo">183</span>         *            value.<a name="line.183"></a>
-<span class="sourceLineNo">184</span>         * <a name="line.184"></a>
-<span class="sourceLineNo">185</span>         * @return The enum value, semantics for non-translatable or empty values is<a name="line.185"></a>
-<span class="sourceLineNo">186</span>         *         defined by {@link EnumUtils#valueOfIgnoreCase(Class, String)}.<a name="line.186"></a>
-<span class="sourceLineNo">187</span>         */<a name="line.187"></a>
-<span class="sourceLineNo">188</span>        protected &lt;T extends Enum&lt;T&gt;&gt; T getEnumAttributeIgnoreCase(A attribute, Class&lt;T&gt; enumClass, T defaultValue) {<a name="line.188"></a>
-<span class="sourceLineNo">189</span>                String value = getStringAttribute(attribute);<a name="line.189"></a>
-<span class="sourceLineNo">190</span>                if (StringUtils.isEmpty(value)) {<a name="line.190"></a>
-<span class="sourceLineNo">191</span>                        return defaultValue;<a name="line.191"></a>
-<span class="sourceLineNo">192</span>                }<a name="line.192"></a>
-<span class="sourceLineNo">193</span>                T result = EnumUtils.valueOfIgnoreCase(enumClass, value);<a name="line.193"></a>
-<span class="sourceLineNo">194</span>                if (result == null) {<a name="line.194"></a>
-<span class="sourceLineNo">195</span>                        return defaultValue;<a name="line.195"></a>
-<span class="sourceLineNo">196</span>                }<a name="line.196"></a>
-<span class="sourceLineNo">197</span>                return result;<a name="line.197"></a>
-<span class="sourceLineNo">198</span>        }<a name="line.198"></a>
-<span class="sourceLineNo">199</span><a name="line.199"></a>
-<span class="sourceLineNo">200</span>        /**<a name="line.200"></a>
-<span class="sourceLineNo">201</span>         * Get &lt;code&gt;int&lt;/code&gt; value of an attribute.<a name="line.201"></a>
-<span class="sourceLineNo">202</span>         * <a name="line.202"></a>
-<span class="sourceLineNo">203</span>         * @return the int value, semantics for non-translatable or empty values is<a name="line.203"></a>
-<span class="sourceLineNo">204</span>         *         defined by {@link Integer#parseInt(String)}.<a name="line.204"></a>
-<span class="sourceLineNo">205</span>         */<a name="line.205"></a>
-<span class="sourceLineNo">206</span>        protected int getIntAttribute(A attribute) {<a name="line.206"></a>
-<span class="sourceLineNo">207</span>                String value = getStringAttribute(attribute);<a name="line.207"></a>
-<span class="sourceLineNo">208</span>                return Integer.parseInt(value);<a name="line.208"></a>
-<span class="sourceLineNo">209</span>        }<a name="line.209"></a>
-<span class="sourceLineNo">210</span><a name="line.210"></a>
-<span class="sourceLineNo">211</span>        /**<a name="line.211"></a>
-<span class="sourceLineNo">212</span>         * Get &lt;code&gt;long&lt;/code&gt; value of an attribute.<a name="line.212"></a>
-<span class="sourceLineNo">213</span>         * <a name="line.213"></a>
-<span class="sourceLineNo">214</span>         * @return the long value, semantics for non-translatable or empty values is<a name="line.214"></a>
-<span class="sourceLineNo">215</span>         *         defined by {@link Long#parseLong(String)}.<a name="line.215"></a>
-<span class="sourceLineNo">216</span>         */<a name="line.216"></a>
-<span class="sourceLineNo">217</span>        protected long getLongAttribute(A attribute) {<a name="line.217"></a>
-<span class="sourceLineNo">218</span>                String value = getStringAttribute(attribute);<a name="line.218"></a>
-<span class="sourceLineNo">219</span>                return Long.parseLong(value);<a name="line.219"></a>
-<span class="sourceLineNo">220</span>        }<a name="line.220"></a>
-<span class="sourceLineNo">221</span><a name="line.221"></a>
-<span class="sourceLineNo">222</span>        /**<a name="line.222"></a>
-<span class="sourceLineNo">223</span>         * Get attribute value.<a name="line.223"></a>
-<span class="sourceLineNo">224</span>         * <a name="line.224"></a>
-<span class="sourceLineNo">225</span>         * <a name="line.225"></a>
-<span class="sourceLineNo">226</span>         * @return the attribute value or the empty string if attribute is<a name="line.226"></a>
-<span class="sourceLineNo">227</span>         *         undefined.<a name="line.227"></a>
-<span class="sourceLineNo">228</span>         */<a name="line.228"></a>
-<span class="sourceLineNo">229</span>        protected String getStringAttribute(A attribute) {<a name="line.229"></a>
-<span class="sourceLineNo">230</span>                return currentDOMElement.getAttribute(xmlResolver.resolveAttributeName(attribute));<a name="line.230"></a>
-<span class="sourceLineNo">231</span>        }<a name="line.231"></a>
-<span class="sourceLineNo">232</span><a name="line.232"></a>
-<span class="sourceLineNo">233</span>        /** Returns true if the current element has a given attribute. */<a name="line.233"></a>
-<span class="sourceLineNo">234</span>        protected boolean hasAttribute(A attribute) {<a name="line.234"></a>
-<span class="sourceLineNo">235</span>                return currentDOMElement.hasAttribute(xmlResolver.resolveAttributeName(attribute));<a name="line.235"></a>
-<span class="sourceLineNo">236</span>        }<a name="line.236"></a>
-<span class="sourceLineNo">237</span><a name="line.237"></a>
-<span class="sourceLineNo">238</span>        /**<a name="line.238"></a>
-<span class="sourceLineNo">239</span>         * Get text content of current node.<a name="line.239"></a>
-<span class="sourceLineNo">240</span>         */<a name="line.240"></a>
-<span class="sourceLineNo">241</span>        protected String getText() {<a name="line.241"></a>
-<span class="sourceLineNo">242</span>                return currentDOMElement.getTextContent();<a name="line.242"></a>
-<span class="sourceLineNo">243</span>        }<a name="line.243"></a>
-<span class="sourceLineNo">244</span><a name="line.244"></a>
-<span class="sourceLineNo">245</span>        /**<a name="line.245"></a>
-<span class="sourceLineNo">246</span>         * Parse file. This sets the current element focus to the document root<a name="line.246"></a>
-<span class="sourceLineNo">247</span>         * element. If schema URL was set the document is validated against the<a name="line.247"></a>
-<span class="sourceLineNo">248</span>         * schema.<a name="line.248"></a>
-<span class="sourceLineNo">249</span>         * &lt;p&gt;<a name="line.249"></a>
-<span class="sourceLineNo">250</span>         * Sub classes should typically wrap this method with a proper error<a name="line.250"></a>
-<span class="sourceLineNo">251</span>         * handling mechanism.<a name="line.251"></a>
-<span class="sourceLineNo">252</span>         * <a name="line.252"></a>
-<span class="sourceLineNo">253</span>         * @throws SAXException<a name="line.253"></a>
-<span class="sourceLineNo">254</span>         *             if a parsing exceptions occurs<a name="line.254"></a>
-<span class="sourceLineNo">255</span>         * @throws IOException<a name="line.255"></a>
-<span class="sourceLineNo">256</span>         *             if an IO exception occurs.<a name="line.256"></a>
-<span class="sourceLineNo">257</span>         */<a name="line.257"></a>
-<span class="sourceLineNo">258</span>        protected void parseFile() throws SAXException, IOException {<a name="line.258"></a>
-<span class="sourceLineNo">259</span>                try {<a name="line.259"></a>
-<span class="sourceLineNo">260</span>                        InputSource input = new InputSource(reader);<a name="line.260"></a>
-<span class="sourceLineNo">261</span>                        Document document;<a name="line.261"></a>
-<span class="sourceLineNo">262</span>                        if (schemaURL == null) {<a name="line.262"></a>
-<span class="sourceLineNo">263</span>                                document = XMLUtils.parse(input);<a name="line.263"></a>
-<span class="sourceLineNo">264</span>                        } else {<a name="line.264"></a>
-<span class="sourceLineNo">265</span>                                document = XMLUtils.parse(input, schemaURL);<a name="line.265"></a>
-<span class="sourceLineNo">266</span>                        }<a name="line.266"></a>
-<span class="sourceLineNo">267</span>                        currentDOMElement = document.getDocumentElement();<a name="line.267"></a>
-<span class="sourceLineNo">268</span>                } finally {<a name="line.268"></a>
-<span class="sourceLineNo">269</span>                        reader.close();<a name="line.269"></a>
-<span class="sourceLineNo">270</span>                }<a name="line.270"></a>
-<span class="sourceLineNo">271</span>        }<a name="line.271"></a>
-<span class="sourceLineNo">272</span><a name="line.272"></a>
-<span class="sourceLineNo">273</span>        /**<a name="line.273"></a>
-<span class="sourceLineNo">274</span>         * Process the child elements of the current element with a given processor.<a name="line.274"></a>
-<span class="sourceLineNo">275</span>         * Target elements are specified by<a name="line.275"></a>
-<span class="sourceLineNo">276</span>         * {@link IXMLElementProcessor#getTargetElement()}.<a name="line.276"></a>
-<span class="sourceLineNo">277</span>         * <a name="line.277"></a>
-<span class="sourceLineNo">278</span>         * @param processor<a name="line.278"></a>
-<span class="sourceLineNo">279</span>         *            the processor used to process the elements<a name="line.279"></a>
-<span class="sourceLineNo">280</span>         * @throws X<a name="line.280"></a>
-<span class="sourceLineNo">281</span>         *             if the processor throws an exception<a name="line.281"></a>
-<span class="sourceLineNo">282</span>         */<a name="line.282"></a>
-<span class="sourceLineNo">283</span>        protected void processChildElements(IXMLElementProcessor&lt;E, X&gt; processor) throws X {<a name="line.283"></a>
-<span class="sourceLineNo">284</span>                String targetElementName = xmlResolver.resolveElementName(processor.getTargetElement());<a name="line.284"></a>
-<span class="sourceLineNo">285</span>                processElementList(processor, XMLUtils.getNamedChildren(currentDOMElement, targetElementName));<a name="line.285"></a>
-<span class="sourceLineNo">286</span>        }<a name="line.286"></a>
-<span class="sourceLineNo">287</span><a name="line.287"></a>
-<span class="sourceLineNo">288</span>        /**<a name="line.288"></a>
-<span class="sourceLineNo">289</span>         * Process all descendant elements of the current element with a given<a name="line.289"></a>
-<span class="sourceLineNo">290</span>         * processor. In contrast to<a name="line.290"></a>
-<span class="sourceLineNo">291</span>         * {@link #processChildElements(IXMLElementProcessor)}, not only direct<a name="line.291"></a>
-<span class="sourceLineNo">292</span>         * child elements are processed. Descendant elements are processed in the<a name="line.292"></a>
-<span class="sourceLineNo">293</span>         * sequence they are found during a top-down, left-right traversal of the<a name="line.293"></a>
-<span class="sourceLineNo">294</span>         * XML document.<a name="line.294"></a>
-<span class="sourceLineNo">295</span>         * &lt;p&gt;<a name="line.295"></a>
-<span class="sourceLineNo">296</span>         * Target elements are specified by<a name="line.296"></a>
-<span class="sourceLineNo">297</span>         * {@link IXMLElementProcessor#getTargetElement()}.<a name="line.297"></a>
-<span class="sourceLineNo">298</span>         * <a name="line.298"></a>
-<span class="sourceLineNo">299</span>         * @param processor<a name="line.299"></a>
-<span class="sourceLineNo">300</span>         *            the processor used to process the elements<a name="line.300"></a>
-<span class="sourceLineNo">301</span>         * @throws X<a name="line.301"></a>
-<span class="sourceLineNo">302</span>         *             if the processor throws an exception<a name="line.302"></a>
-<span class="sourceLineNo">303</span>         */<a name="line.303"></a>
-<span class="sourceLineNo">304</span>        protected void processDecendantElements(IXMLElementProcessor&lt;E, X&gt; processor) throws X {<a name="line.304"></a>
-<span class="sourceLineNo">305</span>                String targetElementName = xmlResolver.resolveElementName(processor.getTargetElement());<a name="line.305"></a>
-<span class="sourceLineNo">306</span><a name="line.306"></a>
-<span class="sourceLineNo">307</span>                NodeList descendantNodes = currentDOMElement.getElementsByTagName(targetElementName);<a name="line.307"></a>
-<span class="sourceLineNo">308</span><a name="line.308"></a>
-<span class="sourceLineNo">309</span>                processElementList(processor, XMLUtils.elementNodes(descendantNodes));<a name="line.309"></a>
-<span class="sourceLineNo">310</span>        }<a name="line.310"></a>
-<span class="sourceLineNo">311</span><a name="line.311"></a>
-<span class="sourceLineNo">312</span>        /**<a name="line.312"></a>
-<span class="sourceLineNo">313</span>         * Processes the elements in the list with the given processor<a name="line.313"></a>
-<span class="sourceLineNo">314</span>         * <a name="line.314"></a>
-<span class="sourceLineNo">315</span>         * @param processor<a name="line.315"></a>
-<span class="sourceLineNo">316</span>         *            the processor used to process the elements<a name="line.316"></a>
-<span class="sourceLineNo">317</span>         * @param elements<a name="line.317"></a>
-<span class="sourceLineNo">318</span>         *            list of elements that get processed<a name="line.318"></a>
-<span class="sourceLineNo">319</span>         * @throws X<a name="line.319"></a>
-<span class="sourceLineNo">320</span>         *             if the processor throws an exception<a name="line.320"></a>
-<span class="sourceLineNo">321</span>         */<a name="line.321"></a>
-<span class="sourceLineNo">322</span>        private void processElementList(IXMLElementProcessor&lt;E, X&gt; processor, List&lt;Element&gt; elements) throws X {<a name="line.322"></a>
-<span class="sourceLineNo">323</span>                Element oldElement = currentDOMElement;<a name="line.323"></a>
-<span class="sourceLineNo">324</span><a name="line.324"></a>
-<span class="sourceLineNo">325</span>                for (Element child : elements) {<a name="line.325"></a>
-<span class="sourceLineNo">326</span>                        currentDOMElement = child;<a name="line.326"></a>
-<span class="sourceLineNo">327</span>                        processor.process();<a name="line.327"></a>
-<span class="sourceLineNo">328</span>                }<a name="line.328"></a>
-<span class="sourceLineNo">329</span><a name="line.329"></a>
-<span class="sourceLineNo">330</span>                currentDOMElement = oldElement;<a name="line.330"></a>
-<span class="sourceLineNo">331</span>        }<a name="line.331"></a>
-<span class="sourceLineNo">332</span><a name="line.332"></a>
-<span class="sourceLineNo">333</span>        /**<a name="line.333"></a>
-<span class="sourceLineNo">334</span>         * This works similar to the template mechanism known from XSLT. It<a name="line.334"></a>
-<span class="sourceLineNo">335</span>         * traverses the DOM tree starting from the current DOM element in<a name="line.335"></a>
-<span class="sourceLineNo">336</span>         * depth-first fashion. For each element it checks if one of the provided<a name="line.336"></a>
-<span class="sourceLineNo">337</span>         * processors has the current element as target element. If a matching<a name="line.337"></a>
-<span class="sourceLineNo">338</span>         * processor is found, it is executed.<a name="line.338"></a>
-<span class="sourceLineNo">339</span>         * <a name="line.339"></a>
-<span class="sourceLineNo">340</span>         * @throws AssertionError<a name="line.340"></a>
-<span class="sourceLineNo">341</span>         *             if multiple processors apply to the same target element<a name="line.341"></a>
-<span class="sourceLineNo">342</span>         */<a name="line.342"></a>
-<span class="sourceLineNo">343</span>        @SuppressWarnings("unchecked")<a name="line.343"></a>
-<span class="sourceLineNo">344</span>        protected void apply(IXMLElementProcessor&lt;E, X&gt;... processors) throws X {<a name="line.344"></a>
-<span class="sourceLineNo">345</span>                Map&lt;String, IXMLElementProcessor&lt;E, X&gt;&gt; processorMap = new HashMap&lt;String, IXMLElementProcessor&lt;E, X&gt;&gt;();<a name="line.345"></a>
-<span class="sourceLineNo">346</span><a name="line.346"></a>
-<span class="sourceLineNo">347</span>                for (IXMLElementProcessor&lt;E, X&gt; processor : processors) {<a name="line.347"></a>
-<span class="sourceLineNo">348</span>                        String targetElementName = xmlResolver.resolveElementName(processor.getTargetElement());<a name="line.348"></a>
-<span class="sourceLineNo">349</span>                        CCSMAssert.isFalse(processorMap.containsKey(targetElementName),<a name="line.349"></a>
-<span class="sourceLineNo">350</span>                                        "Multiple processors found for element: " + targetElementName);<a name="line.350"></a>
-<span class="sourceLineNo">351</span>                        processorMap.put(targetElementName, processor);<a name="line.351"></a>
-<span class="sourceLineNo">352</span>                }<a name="line.352"></a>
-<span class="sourceLineNo">353</span><a name="line.353"></a>
-<span class="sourceLineNo">354</span>                Element oldElement = currentDOMElement;<a name="line.354"></a>
-<span class="sourceLineNo">355</span>                traverse(processorMap);<a name="line.355"></a>
-<span class="sourceLineNo">356</span>                currentDOMElement = oldElement;<a name="line.356"></a>
-<span class="sourceLineNo">357</span>        }<a name="line.357"></a>
-<span class="sourceLineNo">358</span><a name="line.358"></a>
-<span class="sourceLineNo">359</span>        /**<a name="line.359"></a>
-<span class="sourceLineNo">360</span>         * Traverse element tree in depth-first fashion and execute the processors<a name="line.360"></a>
-<span class="sourceLineNo">361</span>         * provided by the processor map.<a name="line.361"></a>
-<span class="sourceLineNo">362</span>         */<a name="line.362"></a>
-<span class="sourceLineNo">363</span>        private void traverse(Map&lt;String, IXMLElementProcessor&lt;E, X&gt;&gt; processorMap) throws X {<a name="line.363"></a>
-<span class="sourceLineNo">364</span>                IXMLElementProcessor&lt;E, X&gt; processor = processorMap.get(currentDOMElement.getTagName());<a name="line.364"></a>
-<span class="sourceLineNo">365</span>                if (processor != null) {<a name="line.365"></a>
-<span class="sourceLineNo">366</span>                        processor.process();<a name="line.366"></a>
-<span class="sourceLineNo">367</span>                }<a name="line.367"></a>
-<span class="sourceLineNo">368</span><a name="line.368"></a>
-<span class="sourceLineNo">369</span>                NodeList nodeList = currentDOMElement.getChildNodes();<a name="line.369"></a>
-<span class="sourceLineNo">370</span><a name="line.370"></a>
-<span class="sourceLineNo">371</span>                for (Element element : XMLUtils.elementNodes(nodeList)) {<a name="line.371"></a>
-<span class="sourceLineNo">372</span>                        currentDOMElement = element;<a name="line.372"></a>
-<span class="sourceLineNo">373</span>                        traverse(processorMap);<a name="line.373"></a>
-<span class="sourceLineNo">374</span>                }<a name="line.374"></a>
-<span class="sourceLineNo">375</span>        }<a name="line.375"></a>
+<span class="sourceLineNo">077</span>         *            XML encoding of the file. No encoding is set if &lt;code&gt;null&lt;/code&gt;.<a name="line.77"></a>
+<span class="sourceLineNo">078</span>         * @param xmlResolver<a name="line.78"></a>
+<span class="sourceLineNo">079</span>         *            resolvers used by this reader<a name="line.79"></a>
+<span class="sourceLineNo">080</span>         */<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        public XMLReader(File file, Charset encoding, IXMLResolver&lt;E, A&gt; xmlResolver) throws IOException {<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                this(FileSystemUtils.streamReader(new FileInputStream(file), ensureNotNullEncoding(encoding)), xmlResolver);<a name="line.82"></a>
+<span class="sourceLineNo">083</span>        }<a name="line.83"></a>
+<span class="sourceLineNo">084</span><a name="line.84"></a>
+<span class="sourceLineNo">085</span>        /**<a name="line.85"></a>
+<span class="sourceLineNo">086</span>         * Create reader.<a name="line.86"></a>
+<span class="sourceLineNo">087</span>         * <a name="line.87"></a>
+<span class="sourceLineNo">088</span>         * @param content<a name="line.88"></a>
+<span class="sourceLineNo">089</span>         *            XML string that gets parsed validation will be performed if<a name="line.89"></a>
+<span class="sourceLineNo">090</span>         *            &lt;code&gt;null&lt;/code&gt;.<a name="line.90"></a>
+<span class="sourceLineNo">091</span>         * @param xmlResolver<a name="line.91"></a>
+<span class="sourceLineNo">092</span>         *            resolvers used by this reader<a name="line.92"></a>
+<span class="sourceLineNo">093</span>         */<a name="line.93"></a>
+<span class="sourceLineNo">094</span>        public XMLReader(String content, IXMLResolver&lt;E, A&gt; xmlResolver) {<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                this(new StringReader(content), xmlResolver);<a name="line.95"></a>
+<span class="sourceLineNo">096</span>        }<a name="line.96"></a>
+<span class="sourceLineNo">097</span><a name="line.97"></a>
+<span class="sourceLineNo">098</span>        /**<a name="line.98"></a>
+<span class="sourceLineNo">099</span>         * Create reader.<a name="line.99"></a>
+<span class="sourceLineNo">100</span>         * <a name="line.100"></a>
+<span class="sourceLineNo">101</span>         * @param reader<a name="line.101"></a>
+<span class="sourceLineNo">102</span>         *            the reader used to access the XML document.<a name="line.102"></a>
+<span class="sourceLineNo">103</span>         * @param xmlResolver<a name="line.103"></a>
+<span class="sourceLineNo">104</span>         *            resolvers used by this reader<a name="line.104"></a>
+<span class="sourceLineNo">105</span>         */<a name="line.105"></a>
+<span class="sourceLineNo">106</span>        public XMLReader(Reader reader, IXMLResolver&lt;E, A&gt; xmlResolver) {<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                CCSMAssert.isFalse(reader == null, "Reader may not be null.");<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                CCSMAssert.isFalse(xmlResolver == null, "XML resolver may not be null.");<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                this.reader = reader;<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                this.xmlResolver = xmlResolver;<a name="line.110"></a>
+<span class="sourceLineNo">111</span>        }<a name="line.111"></a>
+<span class="sourceLineNo">112</span><a name="line.112"></a>
+<span class="sourceLineNo">113</span>        /** Replaces a null value with the name of the default encoding. */<a name="line.113"></a>
+<span class="sourceLineNo">114</span>        private static Charset ensureNotNullEncoding(Charset encoding) {<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                if (encoding == null) {<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                        return Charset.defaultCharset();<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                }<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                return encoding;<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        }<a name="line.119"></a>
+<span class="sourceLineNo">120</span><a name="line.120"></a>
+<span class="sourceLineNo">121</span>        /** Sets the URL pointing to the schema that is used for validation. */<a name="line.121"></a>
+<span class="sourceLineNo">122</span>        protected void setSchema(URL schemaURL) {<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                this.schemaURL = schemaURL;<a name="line.123"></a>
+<span class="sourceLineNo">124</span>        }<a name="line.124"></a>
+<span class="sourceLineNo">125</span><a name="line.125"></a>
+<span class="sourceLineNo">126</span>        /**<a name="line.126"></a>
+<span class="sourceLineNo">127</span>         * Get &lt;code&gt;boolean&lt;/code&gt; value of an attribute.<a name="line.127"></a>
+<span class="sourceLineNo">128</span>         * <a name="line.128"></a>
+<span class="sourceLineNo">129</span>         * @return the boolean value, semantics for non-translatable or empty values is<a name="line.129"></a>
+<span class="sourceLineNo">130</span>         *         defined by {@link Boolean#parseBoolean(String)}.<a name="line.130"></a>
+<span class="sourceLineNo">131</span>         */<a name="line.131"></a>
+<span class="sourceLineNo">132</span>        protected boolean getBooleanAttribute(A attribute) {<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                String value = getStringAttribute(attribute);<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                return Boolean.parseBoolean(value);<a name="line.134"></a>
+<span class="sourceLineNo">135</span>        }<a name="line.135"></a>
+<span class="sourceLineNo">136</span><a name="line.136"></a>
+<span class="sourceLineNo">137</span>        /**<a name="line.137"></a>
+<span class="sourceLineNo">138</span>         * Get the text content of a child element of the current element.<a name="line.138"></a>
+<span class="sourceLineNo">139</span>         * <a name="line.139"></a>
+<span class="sourceLineNo">140</span>         * @param childElement<a name="line.140"></a>
+<span class="sourceLineNo">141</span>         *            the child element<a name="line.141"></a>
+<span class="sourceLineNo">142</span>         * @return the text or &lt;code&gt;null&lt;/code&gt; if the current element doesn't have the<a name="line.142"></a>
+<span class="sourceLineNo">143</span>         *         requested child element<a name="line.143"></a>
+<span class="sourceLineNo">144</span>         */<a name="line.144"></a>
+<span class="sourceLineNo">145</span>        protected String getChildText(E childElement) {<a name="line.145"></a>
+<span class="sourceLineNo">146</span><a name="line.146"></a>
+<span class="sourceLineNo">147</span>                String elementName = xmlResolver.resolveElementName(childElement);<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                Element domElement = XMLUtils.getNamedChild(currentDOMElement, elementName);<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                if (domElement == null) {<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                        return null;<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                }<a name="line.151"></a>
+<span class="sourceLineNo">152</span><a name="line.152"></a>
+<span class="sourceLineNo">153</span>                return domElement.getTextContent();<a name="line.153"></a>
+<span class="sourceLineNo">154</span>        }<a name="line.154"></a>
+<span class="sourceLineNo">155</span><a name="line.155"></a>
+<span class="sourceLineNo">156</span>        /**<a name="line.156"></a>
+<span class="sourceLineNo">157</span>         * Translate attribute value to an enumeration element.<a name="line.157"></a>
+<span class="sourceLineNo">158</span>         * <a name="line.158"></a>
+<span class="sourceLineNo">159</span>         * @param attribute<a name="line.159"></a>
+<span class="sourceLineNo">160</span>         *            the attribute<a name="line.160"></a>
+<span class="sourceLineNo">161</span>         * @param enumClass<a name="line.161"></a>
+<span class="sourceLineNo">162</span>         *            the enumeration class<a name="line.162"></a>
+<span class="sourceLineNo">163</span>         * <a name="line.163"></a>
+<span class="sourceLineNo">164</span>         * @return the enum value, semantics for non-translatable or empty values is<a name="line.164"></a>
+<span class="sourceLineNo">165</span>         *         defined by {@link Enum#valueOf(Class, String)}.<a name="line.165"></a>
+<span class="sourceLineNo">166</span>         */<a name="line.166"></a>
+<span class="sourceLineNo">167</span>        protected &lt;T extends Enum&lt;T&gt;&gt; T getEnumAttribute(A attribute, Class&lt;T&gt; enumClass) {<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                String value = getStringAttribute(attribute);<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                return Enum.valueOf(enumClass, value);<a name="line.169"></a>
+<span class="sourceLineNo">170</span>        }<a name="line.170"></a>
+<span class="sourceLineNo">171</span><a name="line.171"></a>
+<span class="sourceLineNo">172</span>        /**<a name="line.172"></a>
+<span class="sourceLineNo">173</span>         * Translate attribute value to an enumeration element.<a name="line.173"></a>
+<span class="sourceLineNo">174</span>         * <a name="line.174"></a>
+<span class="sourceLineNo">175</span>         * @param attribute<a name="line.175"></a>
+<span class="sourceLineNo">176</span>         *            the attribute<a name="line.176"></a>
+<span class="sourceLineNo">177</span>         * @param enumClass<a name="line.177"></a>
+<span class="sourceLineNo">178</span>         *            the enumeration class<a name="line.178"></a>
+<span class="sourceLineNo">179</span>         * @param defaultValue<a name="line.179"></a>
+<span class="sourceLineNo">180</span>         *            the default value to return in case the attribute is not specified<a name="line.180"></a>
+<span class="sourceLineNo">181</span>         *            or the enumeration does not contain the specified value.<a name="line.181"></a>
+<span class="sourceLineNo">182</span>         * <a name="line.182"></a>
+<span class="sourceLineNo">183</span>         * @return The enum value, semantics for non-translatable or empty values is<a name="line.183"></a>
+<span class="sourceLineNo">184</span>         *         defined by {@link EnumUtils#valueOfIgnoreCase(Class, String)}.<a name="line.184"></a>
+<span class="sourceLineNo">185</span>         */<a name="line.185"></a>
+<span class="sourceLineNo">186</span>        protected &lt;T extends Enum&lt;T&gt;&gt; T getEnumAttributeIgnoreCase(A attribute, Class&lt;T&gt; enumClass, T defaultValue) {<a name="line.186"></a>
+<span class="sourceLineNo">187</span>                String value = getStringAttribute(attribute);<a name="line.187"></a>
+<span class="sourceLineNo">188</span>                if (StringUtils.isEmpty(value)) {<a name="line.188"></a>
+<span class="sourceLineNo">189</span>                        return defaultValue;<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                }<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                T result = EnumUtils.valueOfIgnoreCase(enumClass, value);<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                if (result == null) {<a name="line.192"></a>
+<span class="sourceLineNo">193</span>                        return defaultValue;<a name="line.193"></a>
+<span class="sourceLineNo">194</span>                }<a name="line.194"></a>
+<span class="sourceLineNo">195</span>                return result;<a name="line.195"></a>
+<span class="sourceLineNo">196</span>        }<a name="line.196"></a>
+<span class="sourceLineNo">197</span><a name="line.197"></a>
+<span class="sourceLineNo">198</span>        /**<a name="line.198"></a>
+<span class="sourceLineNo">199</span>         * Get &lt;code&gt;int&lt;/code&gt; value of an attribute.<a name="line.199"></a>
+<span class="sourceLineNo">200</span>         * <a name="line.200"></a>
+<span class="sourceLineNo">201</span>         * @return the int value, semantics for non-translatable or empty values is<a name="line.201"></a>
+<span class="sourceLineNo">202</span>         *         defined by {@link Integer#parseInt(String)}.<a name="line.202"></a>
+<span class="sourceLineNo">203</span>         */<a name="line.203"></a>
+<span class="sourceLineNo">204</span>        protected int getIntAttribute(A attribute) {<a name="line.204"></a>
+<span class="sourceLineNo">205</span>                String value = getStringAttribute(attribute);<a name="line.205"></a>
+<span class="sourceLineNo">206</span>                return Integer.parseInt(value);<a name="line.206"></a>
+<span class="sourceLineNo">207</span>        }<a name="line.207"></a>
+<span class="sourceLineNo">208</span><a name="line.208"></a>
+<span class="sourceLineNo">209</span>        /**<a name="line.209"></a>
+<span class="sourceLineNo">210</span>         * Get &lt;code&gt;long&lt;/code&gt; value of an attribute.<a name="line.210"></a>
+<span class="sourceLineNo">211</span>         * <a name="line.211"></a>
+<span class="sourceLineNo">212</span>         * @return the long value, semantics for non-translatable or empty values is<a name="line.212"></a>
+<span class="sourceLineNo">213</span>         *         defined by {@link Long#parseLong(String)}.<a name="line.213"></a>
+<span class="sourceLineNo">214</span>         */<a name="line.214"></a>
+<span class="sourceLineNo">215</span>        protected long getLongAttribute(A attribute) {<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                String value = getStringAttribute(attribute);<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                return Long.parseLong(value);<a name="line.217"></a>
+<span class="sourceLineNo">218</span>        }<a name="line.218"></a>
+<span class="sourceLineNo">219</span><a name="line.219"></a>
+<span class="sourceLineNo">220</span>        /**<a name="line.220"></a>
+<span class="sourceLineNo">221</span>         * Get attribute value.<a name="line.221"></a>
+<span class="sourceLineNo">222</span>         * <a name="line.222"></a>
+<span class="sourceLineNo">223</span>         * <a name="line.223"></a>
+<span class="sourceLineNo">224</span>         * @return the attribute value or the empty string if attribute is undefined.<a name="line.224"></a>
+<span class="sourceLineNo">225</span>         */<a name="line.225"></a>
+<span class="sourceLineNo">226</span>        protected String getStringAttribute(A attribute) {<a name="line.226"></a>
+<span class="sourceLineNo">227</span>                return currentDOMElement.getAttribute(xmlResolver.resolveAttributeName(attribute));<a name="line.227"></a>
+<span class="sourceLineNo">228</span>        }<a name="line.228"></a>
+<span class="sourceLineNo">229</span><a name="line.229"></a>
+<span class="sourceLineNo">230</span>        /**<a name="line.230"></a>
+<span class="sourceLineNo">231</span>         * Get non-empty attribute value. If the value is null or the empty String, an<a name="line.231"></a>
+<span class="sourceLineNo">232</span>         * {@link IOException} will be thrown.<a name="line.232"></a>
+<span class="sourceLineNo">233</span>         */<a name="line.233"></a>
+<span class="sourceLineNo">234</span>        protected String getNonEmptyStringAttribute(A attribute) throws IOException {<a name="line.234"></a>
+<span class="sourceLineNo">235</span>                String value = getStringAttribute(attribute);<a name="line.235"></a>
+<span class="sourceLineNo">236</span>                if (StringUtils.isEmpty(value)) {<a name="line.236"></a>
+<span class="sourceLineNo">237</span>                        throw new IOException("Expected non-empty value for " + attribute.name());<a name="line.237"></a>
+<span class="sourceLineNo">238</span>                }<a name="line.238"></a>
+<span class="sourceLineNo">239</span>                return value;<a name="line.239"></a>
+<span class="sourceLineNo">240</span>        }<a name="line.240"></a>
+<span class="sourceLineNo">241</span><a name="line.241"></a>
+<span class="sourceLineNo">242</span>        /** Returns true if the current element has a given attribute. */<a name="line.242"></a>
+<span class="sourceLineNo">243</span>        protected boolean hasAttribute(A attribute) {<a name="line.243"></a>
+<span class="sourceLineNo">244</span>                return currentDOMElement.hasAttribute(xmlResolver.resolveAttributeName(attribute));<a name="line.244"></a>
+<span class="sourceLineNo">245</span>        }<a name="line.245"></a>
+<span class="sourceLineNo">246</span><a name="line.246"></a>
+<span class="sourceLineNo">247</span>        /**<a name="line.247"></a>
+<span class="sourceLineNo">248</span>         * Get text content of current node.<a name="line.248"></a>
+<span class="sourceLineNo">249</span>         */<a name="line.249"></a>
+<span class="sourceLineNo">250</span>        protected String getText() {<a name="line.250"></a>
+<span class="sourceLineNo">251</span>                return currentDOMElement.getTextContent();<a name="line.251"></a>
+<span class="sourceLineNo">252</span>        }<a name="line.252"></a>
+<span class="sourceLineNo">253</span><a name="line.253"></a>
+<span class="sourceLineNo">254</span>        /**<a name="line.254"></a>
+<span class="sourceLineNo">255</span>         * Parse file. This sets the current element focus to the document root element.<a name="line.255"></a>
+<span class="sourceLineNo">256</span>         * If schema URL was set the document is validated against the schema.<a name="line.256"></a>
+<span class="sourceLineNo">257</span>         * &lt;p&gt;<a name="line.257"></a>
+<span class="sourceLineNo">258</span>         * Sub classes should typically wrap this method with a proper error handling<a name="line.258"></a>
+<span class="sourceLineNo">259</span>         * mechanism.<a name="line.259"></a>
+<span class="sourceLineNo">260</span>         * <a name="line.260"></a>
+<span class="sourceLineNo">261</span>         * @throws SAXException<a name="line.261"></a>
+<span class="sourceLineNo">262</span>         *             if a parsing exceptions occurs<a name="line.262"></a>
+<span class="sourceLineNo">263</span>         * @throws IOException<a name="line.263"></a>
+<span class="sourceLineNo">264</span>         *             if an IO exception occurs.<a name="line.264"></a>
+<span class="sourceLineNo">265</span>         */<a name="line.265"></a>
+<span class="sourceLineNo">266</span>        protected void parseFile() throws SAXException, IOException {<a name="line.266"></a>
+<span class="sourceLineNo">267</span>                try {<a name="line.267"></a>
+<span class="sourceLineNo">268</span>                        InputSource input = new InputSource(reader);<a name="line.268"></a>
+<span class="sourceLineNo">269</span>                        Document document;<a name="line.269"></a>
+<span class="sourceLineNo">270</span>                        if (schemaURL == null) {<a name="line.270"></a>
+<span class="sourceLineNo">271</span>                                document = XMLUtils.parse(input);<a name="line.271"></a>
+<span class="sourceLineNo">272</span>                        } else {<a name="line.272"></a>
+<span class="sourceLineNo">273</span>                                document = XMLUtils.parse(input, schemaURL);<a name="line.273"></a>
+<span class="sourceLineNo">274</span>                        }<a name="line.274"></a>
+<span class="sourceLineNo">275</span>                        currentDOMElement = document.getDocumentElement();<a name="line.275"></a>
+<span class="sourceLineNo">276</span>                } finally {<a name="line.276"></a>
+<span class="sourceLineNo">277</span>                        reader.close();<a name="line.277"></a>
+<span class="sourceLineNo">278</span>                }<a name="line.278"></a>
+<span class="sourceLineNo">279</span>        }<a name="line.279"></a>
+<span class="sourceLineNo">280</span><a name="line.280"></a>
+<span class="sourceLineNo">281</span>        /**<a name="line.281"></a>
+<span class="sourceLineNo">282</span>         * Process the child elements of the current element with a given processor.<a name="line.282"></a>
+<span class="sourceLineNo">283</span>         * Target elements are specified by<a name="line.283"></a>
+<span class="sourceLineNo">284</span>         * {@link IXMLElementProcessor#getTargetElement()}.<a name="line.284"></a>
+<span class="sourceLineNo">285</span>         * <a name="line.285"></a>
+<span class="sourceLineNo">286</span>         * @param processor<a name="line.286"></a>
+<span class="sourceLineNo">287</span>         *            the processor used to process the elements<a name="line.287"></a>
+<span class="sourceLineNo">288</span>         * @throws X<a name="line.288"></a>
+<span class="sourceLineNo">289</span>         *             if the processor throws an exception<a name="line.289"></a>
+<span class="sourceLineNo">290</span>         */<a name="line.290"></a>
+<span class="sourceLineNo">291</span>        protected void processChildElements(IXMLElementProcessor&lt;E, X&gt; processor) throws X {<a name="line.291"></a>
+<span class="sourceLineNo">292</span>                String targetElementName = xmlResolver.resolveElementName(processor.getTargetElement());<a name="line.292"></a>
+<span class="sourceLineNo">293</span>                processElementList(processor, XMLUtils.getNamedChildren(currentDOMElement, targetElementName));<a name="line.293"></a>
+<span class="sourceLineNo">294</span>        }<a name="line.294"></a>
+<span class="sourceLineNo">295</span><a name="line.295"></a>
+<span class="sourceLineNo">296</span>        /**<a name="line.296"></a>
+<span class="sourceLineNo">297</span>         * Process all descendant elements of the current element with a given<a name="line.297"></a>
+<span class="sourceLineNo">298</span>         * processor. In contrast to<a name="line.298"></a>
+<span class="sourceLineNo">299</span>         * {@link #processChildElements(IXMLElementProcessor)}, not only direct child<a name="line.299"></a>
+<span class="sourceLineNo">300</span>         * elements are processed. Descendant elements are processed in the sequence<a name="line.300"></a>
+<span class="sourceLineNo">301</span>         * they are found during a top-down, left-right traversal of the XML document.<a name="line.301"></a>
+<span class="sourceLineNo">302</span>         * &lt;p&gt;<a name="line.302"></a>
+<span class="sourceLineNo">303</span>         * Target elements are specified by<a name="line.303"></a>
+<span class="sourceLineNo">304</span>         * {@link IXMLElementProcessor#getTargetElement()}.<a name="line.304"></a>
+<span class="sourceLineNo">305</span>         * <a name="line.305"></a>
+<span class="sourceLineNo">306</span>         * @param processor<a name="line.306"></a>
+<span class="sourceLineNo">307</span>         *            the processor used to process the elements<a name="line.307"></a>
+<span class="sourceLineNo">308</span>         * @throws X<a name="line.308"></a>
+<span class="sourceLineNo">309</span>         *             if the processor throws an exception<a name="line.309"></a>
+<span class="sourceLineNo">310</span>         */<a name="line.310"></a>
+<span class="sourceLineNo">311</span>        protected void processDecendantElements(IXMLElementProcessor&lt;E, X&gt; processor) throws X {<a name="line.311"></a>
+<span class="sourceLineNo">312</span>                String targetElementName = xmlResolver.resolveElementName(processor.getTargetElement());<a name="line.312"></a>
+<span class="sourceLineNo">313</span><a name="line.313"></a>
+<span class="sourceLineNo">314</span>                NodeList descendantNodes = currentDOMElement.getElementsByTagName(targetElementName);<a name="line.314"></a>
+<span class="sourceLineNo">315</span><a name="line.315"></a>
+<span class="sourceLineNo">316</span>                processElementList(processor, XMLUtils.elementNodes(descendantNodes));<a name="line.316"></a>
+<span class="sourceLineNo">317</span>        }<a name="line.317"></a>
+<span class="sourceLineNo">318</span><a name="line.318"></a>
+<span class="sourceLineNo">319</span>        /**<a name="line.319"></a>
+<span class="sourceLineNo">320</span>         * Processes the elements in the list with the given processor<a name="line.320"></a>
+<span class="sourceLineNo">321</span>         * <a name="line.321"></a>
+<span class="sourceLineNo">322</span>         * @param processor<a name="line.322"></a>
+<span class="sourceLineNo">323</span>         *            the processor used to process the elements<a name="line.323"></a>
+<span class="sourceLineNo">324</span>         * @param elements<a name="line.324"></a>
+<span class="sourceLineNo">325</span>         *            list of elements that get processed<a name="line.325"></a>
+<span class="sourceLineNo">326</span>         * @throws X<a name="line.326"></a>
+<span class="sourceLineNo">327</span>         *             if the processor throws an exception<a name="line.327"></a>
+<span class="sourceLineNo">328</span>         */<a name="line.328"></a>
+<span class="sourceLineNo">329</span>        private void processElementList(IXMLElementProcessor&lt;E, X&gt; processor, List&lt;Element&gt; elements) throws X {<a name="line.329"></a>
+<span class="sourceLineNo">330</span>                Element oldElement = currentDOMElement;<a name="line.330"></a>
+<span class="sourceLineNo">331</span><a name="line.331"></a>
+<span class="sourceLineNo">332</span>                for (Element child : elements) {<a name="line.332"></a>
+<span class="sourceLineNo">333</span>                        currentDOMElement = child;<a name="line.333"></a>
+<span class="sourceLineNo">334</span>                        processor.process();<a name="line.334"></a>
+<span class="sourceLineNo">335</span>                }<a name="line.335"></a>
+<span class="sourceLineNo">336</span><a name="line.336"></a>
+<span class="sourceLineNo">337</span>                currentDOMElement = oldElement;<a name="line.337"></a>
+<span class="sourceLineNo">338</span>        }<a name="line.338"></a>
+<span class="sourceLineNo">339</span><a name="line.339"></a>
+<span class="sourceLineNo">340</span>        /**<a name="line.340"></a>
+<span class="sourceLineNo">341</span>         * This works similar to the template mechanism known from XSLT. It traverses<a name="line.341"></a>
+<span class="sourceLineNo">342</span>         * the DOM tree starting from the current DOM element in depth-first fashion.<a name="line.342"></a>
+<span class="sourceLineNo">343</span>         * For each element it checks if one of the provided processors has the current<a name="line.343"></a>
+<span class="sourceLineNo">344</span>         * element as target element. If a matching processor is found, it is executed.<a name="line.344"></a>
+<span class="sourceLineNo">345</span>         * <a name="line.345"></a>
+<span class="sourceLineNo">346</span>         * @throws AssertionError<a name="line.346"></a>
+<span class="sourceLineNo">347</span>         *             if multiple processors apply to the same target element<a name="line.347"></a>
+<span class="sourceLineNo">348</span>         */<a name="line.348"></a>
+<span class="sourceLineNo">349</span>        @SuppressWarnings("unchecked")<a name="line.349"></a>
+<span class="sourceLineNo">350</span>        protected void apply(IXMLElementProcessor&lt;E, X&gt;... processors) throws X {<a name="line.350"></a>
+<span class="sourceLineNo">351</span>                Map&lt;String, IXMLElementProcessor&lt;E, X&gt;&gt; processorMap = new HashMap&lt;&gt;();<a name="line.351"></a>
+<span class="sourceLineNo">352</span><a name="line.352"></a>
+<span class="sourceLineNo">353</span>                for (IXMLElementProcessor&lt;E, X&gt; processor : processors) {<a name="line.353"></a>
+<span class="sourceLineNo">354</span>                        String targetElementName = xmlResolver.resolveElementName(processor.getTargetElement());<a name="line.354"></a>
+<span class="sourceLineNo">355</span>                        CCSMAssert.isFalse(processorMap.containsKey(targetElementName),<a name="line.355"></a>
+<span class="sourceLineNo">356</span>                                        "Multiple processors found for element: " + targetElementName);<a name="line.356"></a>
+<span class="sourceLineNo">357</span>                        processorMap.put(targetElementName, processor);<a name="line.357"></a>
+<span class="sourceLineNo">358</span>                }<a name="line.358"></a>
+<span class="sourceLineNo">359</span><a name="line.359"></a>
+<span class="sourceLineNo">360</span>                Element oldElement = currentDOMElement;<a name="line.360"></a>
+<span class="sourceLineNo">361</span>                traverse(processorMap);<a name="line.361"></a>
+<span class="sourceLineNo">362</span>                currentDOMElement = oldElement;<a name="line.362"></a>
+<span class="sourceLineNo">363</span>        }<a name="line.363"></a>
+<span class="sourceLineNo">364</span><a name="line.364"></a>
+<span class="sourceLineNo">365</span>        /**<a name="line.365"></a>
+<span class="sourceLineNo">366</span>         * Traverse element tree in depth-first fashion and execute the processors<a name="line.366"></a>
+<span class="sourceLineNo">367</span>         * provided by the processor map.<a name="line.367"></a>
+<span class="sourceLineNo">368</span>         */<a name="line.368"></a>
+<span class="sourceLineNo">369</span>        private void traverse(Map&lt;String, IXMLElementProcessor&lt;E, X&gt;&gt; processorMap) throws X {<a name="line.369"></a>
+<span class="sourceLineNo">370</span>                IXMLElementProcessor&lt;E, X&gt; processor = processorMap.get(currentDOMElement.getTagName());<a name="line.370"></a>
+<span class="sourceLineNo">371</span>                if (processor != null) {<a name="line.371"></a>
+<span class="sourceLineNo">372</span>                        processor.process();<a name="line.372"></a>
+<span class="sourceLineNo">373</span>                }<a name="line.373"></a>
+<span class="sourceLineNo">374</span><a name="line.374"></a>
+<span class="sourceLineNo">375</span>                NodeList nodeList = currentDOMElement.getChildNodes();<a name="line.375"></a>
 <span class="sourceLineNo">376</span><a name="line.376"></a>
-<span class="sourceLineNo">377</span>}<a name="line.377"></a>
+<span class="sourceLineNo">377</span>                for (Element element : XMLUtils.elementNodes(nodeList)) {<a name="line.377"></a>
+<span class="sourceLineNo">378</span>                        currentDOMElement = element;<a name="line.378"></a>
+<span class="sourceLineNo">379</span>                        traverse(processorMap);<a name="line.379"></a>
+<span class="sourceLineNo">380</span>                }<a name="line.380"></a>
+<span class="sourceLineNo">381</span>        }<a name="line.381"></a>
+<span class="sourceLineNo">382</span><a name="line.382"></a>
+<span class="sourceLineNo">383</span>}<a name="line.383"></a>
 
 
 

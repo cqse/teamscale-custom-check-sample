@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*-----------------------------------------------------------------------+<a name="line.1"></a>
+<span class="sourceLineNo">002</span> | eu.cqse.check<a name="line.2"></a>
+<span class="sourceLineNo">003</span> |                                                                       |<a name="line.3"></a>
+<span class="sourceLineNo">004</span>   $Id: AvoidCursorCheck.java 12398 2016-07-26 09:30:20Z pfaller $            <a name="line.4"></a>
+<span class="sourceLineNo">005</span> |                                                                       |<a name="line.5"></a>
+<span class="sourceLineNo">006</span> | Copyright (c)  2009-2016 CQSE GmbH                                 |<a name="line.6"></a>
+<span class="sourceLineNo">007</span> +-----------------------------------------------------------------------*/<a name="line.7"></a>
+<span class="sourceLineNo">008</span>package eu.cqse.check.sqlscript;<a name="line.8"></a>
+<span class="sourceLineNo">009</span><a name="line.9"></a>
+<span class="sourceLineNo">010</span>import java.util.Set;<a name="line.10"></a>
+<span class="sourceLineNo">011</span><a name="line.11"></a>
+<span class="sourceLineNo">012</span>import org.conqat.lib.commons.collections.SetMap;<a name="line.12"></a>
+<span class="sourceLineNo">013</span><a name="line.13"></a>
+<span class="sourceLineNo">014</span>import eu.cqse.check.framework.core.ACheck;<a name="line.14"></a>
+<span class="sourceLineNo">015</span>import eu.cqse.check.framework.core.CheckException;<a name="line.15"></a>
+<span class="sourceLineNo">016</span>import eu.cqse.check.framework.core.CheckImplementationBase;<a name="line.16"></a>
+<span class="sourceLineNo">017</span>import eu.cqse.check.framework.core.phase.ECodeViewOption;<a name="line.17"></a>
+<span class="sourceLineNo">018</span>import eu.cqse.check.framework.scanner.ELanguage;<a name="line.18"></a>
+<span class="sourceLineNo">019</span>import eu.cqse.check.framework.scanner.ETokenType.ETokenClass;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.20"></a>
+<span class="sourceLineNo">021</span><a name="line.21"></a>
+<span class="sourceLineNo">022</span>/**<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * {@ConQAT.Doc}<a name="line.23"></a>
+<span class="sourceLineNo">024</span> */<a name="line.24"></a>
+<span class="sourceLineNo">025</span>@ACheck(name = "Unquoted identfieres", description = ""<a name="line.25"></a>
+<span class="sourceLineNo">026</span>                + "Internally unquoted identifiers are treated as uppercase. Thus it should be avoided to mix cases. This check "<a name="line.26"></a>
+<span class="sourceLineNo">027</span>                + "will also produce findings for identifiers if the name itself is mixed cased (camel case). Camel-casing should be not used to seperate words in identifiers since "<a name="line.27"></a>
+<span class="sourceLineNo">028</span>                + "this formatting might be lost when auto-formatting of the source code is applied (e.g. uppercase or lowercase all unquoted identifieres).\n\n"<a name="line.28"></a>
+<span class="sourceLineNo">029</span>                + "See also: SAP HANA SQLScript Reference. Document Version: 1.0 - 2016-05-11. SAP SE, Walldorf, Germany, 2016. Chapter 5.1.", groupName = ISqlScriptCheckGroups.BAD_PRACTICE, languages = {<a name="line.29"></a>
+<span class="sourceLineNo">030</span>                                ELanguage.SQLSCRIPT })<a name="line.30"></a>
+<span class="sourceLineNo">031</span>public class UnquotedIdentifiersCheck extends CheckImplementationBase {<a name="line.31"></a>
+<span class="sourceLineNo">032</span><a name="line.32"></a>
+<span class="sourceLineNo">033</span>        /**<a name="line.33"></a>
+<span class="sourceLineNo">034</span>         * Maps the (normalized) identifier name to tokens, used to identify the tokens<a name="line.34"></a>
+<span class="sourceLineNo">035</span>         * from the identifiers in {@link #normalizedToActualNamesMap} to create<a name="line.35"></a>
+<span class="sourceLineNo">036</span>         * findings.<a name="line.36"></a>
+<span class="sourceLineNo">037</span>         */<a name="line.37"></a>
+<span class="sourceLineNo">038</span>        private final SetMap&lt;String, IToken&gt; identifierToTokenMap = new SetMap&lt;&gt;();<a name="line.38"></a>
+<span class="sourceLineNo">039</span><a name="line.39"></a>
+<span class="sourceLineNo">040</span>        /**<a name="line.40"></a>
+<span class="sourceLineNo">041</span>         * Maps the normalized identifier name (converted to upper case) to the actual<a name="line.41"></a>
+<span class="sourceLineNo">042</span>         * identifier names<a name="line.42"></a>
+<span class="sourceLineNo">043</span>         */<a name="line.43"></a>
+<span class="sourceLineNo">044</span>        private final SetMap&lt;String, String&gt; normalizedToActualNamesMap = new SetMap&lt;&gt;();<a name="line.44"></a>
+<span class="sourceLineNo">045</span><a name="line.45"></a>
+<span class="sourceLineNo">046</span>        /** {@inheritDoc} */<a name="line.46"></a>
+<span class="sourceLineNo">047</span>        @Override<a name="line.47"></a>
+<span class="sourceLineNo">048</span>        public void execute() throws CheckException {<a name="line.48"></a>
+<span class="sourceLineNo">049</span><a name="line.49"></a>
+<span class="sourceLineNo">050</span>                identifierToTokenMap.clear();<a name="line.50"></a>
+<span class="sourceLineNo">051</span>                normalizedToActualNamesMap.clear();<a name="line.51"></a>
+<span class="sourceLineNo">052</span><a name="line.52"></a>
+<span class="sourceLineNo">053</span>                for (IToken token : context.getTokens(ECodeViewOption.FILTERED)) {<a name="line.53"></a>
+<span class="sourceLineNo">054</span>                        if (token.getType().getTokenClass() == ETokenClass.IDENTIFIER) {<a name="line.54"></a>
+<span class="sourceLineNo">055</span>                                checkIdentifierAndFillMaps(token);<a name="line.55"></a>
+<span class="sourceLineNo">056</span>                        }<a name="line.56"></a>
+<span class="sourceLineNo">057</span><a name="line.57"></a>
+<span class="sourceLineNo">058</span>                }<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                checkForMixedUsedUnquotedIdentifiers();<a name="line.59"></a>
+<span class="sourceLineNo">060</span>        }<a name="line.60"></a>
+<span class="sourceLineNo">061</span><a name="line.61"></a>
+<span class="sourceLineNo">062</span>        /**<a name="line.62"></a>
+<span class="sourceLineNo">063</span>         * Checks the token which is supposed to be an identifier and creates a finding<a name="line.63"></a>
+<span class="sourceLineNo">064</span>         * if it is malformatted, it also fills the maps {@link #identifierToTokenMap}<a name="line.64"></a>
+<span class="sourceLineNo">065</span>         * and {@link #normalizedToActualNamesMap} which are used in<a name="line.65"></a>
+<span class="sourceLineNo">066</span>         * {@link #checkForMixedUsedUnquotedIdentifiers()}.<a name="line.66"></a>
+<span class="sourceLineNo">067</span>         */<a name="line.67"></a>
+<span class="sourceLineNo">068</span>        private void checkIdentifierAndFillMaps(IToken token) throws CheckException {<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                String identifier = token.getText();<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                if (isDoubleQuoted(identifier)) {<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                        return;<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                }<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                if (isSingleQuoted(identifier)) {<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                        createFinding("Usage of single quotes at " + identifier, token);<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                        return;<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                }<a name="line.76"></a>
+<span class="sourceLineNo">077</span><a name="line.77"></a>
+<span class="sourceLineNo">078</span>                addIdentifierToMaps(token);<a name="line.78"></a>
+<span class="sourceLineNo">079</span><a name="line.79"></a>
+<span class="sourceLineNo">080</span>                if (isMixedCased(identifier)) {<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                        createFinding("Un-quoted identifier '" + identifier + "' with mixed upper and lower case letters", token);<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                }<a name="line.82"></a>
+<span class="sourceLineNo">083</span><a name="line.83"></a>
+<span class="sourceLineNo">084</span>        }<a name="line.84"></a>
+<span class="sourceLineNo">085</span><a name="line.85"></a>
+<span class="sourceLineNo">086</span>        /**<a name="line.86"></a>
+<span class="sourceLineNo">087</span>         * Checks if there are identifiers which are not quoted but used in different<a name="line.87"></a>
+<span class="sourceLineNo">088</span>         * casings.<a name="line.88"></a>
+<span class="sourceLineNo">089</span>         */<a name="line.89"></a>
+<span class="sourceLineNo">090</span>        private void checkForMixedUsedUnquotedIdentifiers() throws CheckException {<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                for (String normalizedName : identifierToTokenMap.getKeys()) {<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                        Set&lt;String&gt; actualNames = normalizedToActualNamesMap.getCollection(normalizedName);<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                        if (actualNames == null || actualNames.size() &lt;= 1) {<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                                continue;<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                        }<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                        String findingsMessge = "Unquoted identifier is used in differnt casings " + actualNames;<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                        for (IToken token : identifierToTokenMap.getCollection(normalizedName)) {<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                                createFinding(findingsMessge, token);<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                        }<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                }<a name="line.100"></a>
+<span class="sourceLineNo">101</span>        }<a name="line.101"></a>
+<span class="sourceLineNo">102</span><a name="line.102"></a>
+<span class="sourceLineNo">103</span>        /**<a name="line.103"></a>
+<span class="sourceLineNo">104</span>         * Adds the identifier of the given token to {@link #identifierToTokenMap} and<a name="line.104"></a>
+<span class="sourceLineNo">105</span>         * {@link #normalizedToActualNamesMap}.<a name="line.105"></a>
+<span class="sourceLineNo">106</span>         */<a name="line.106"></a>
+<span class="sourceLineNo">107</span>        private void addIdentifierToMaps(IToken token) {<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                String normalizedIdentifier = token.getText().toUpperCase();<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                identifierToTokenMap.add(normalizedIdentifier, token);<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                normalizedToActualNamesMap.add(normalizedIdentifier, token.getText());<a name="line.110"></a>
+<span class="sourceLineNo">111</span>        }<a name="line.111"></a>
+<span class="sourceLineNo">112</span><a name="line.112"></a>
+<span class="sourceLineNo">113</span>        /**<a name="line.113"></a>
+<span class="sourceLineNo">114</span>         * @return &lt;code&gt;true&lt;/code&gt; if the identifier is quoted with double quotes.<a name="line.114"></a>
+<span class="sourceLineNo">115</span>         */<a name="line.115"></a>
+<span class="sourceLineNo">116</span>        private static boolean isDoubleQuoted(String identifier) {<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                return identifier.startsWith("\"") &amp;&amp; identifier.endsWith("\"");<a name="line.117"></a>
+<span class="sourceLineNo">118</span>        }<a name="line.118"></a>
+<span class="sourceLineNo">119</span><a name="line.119"></a>
+<span class="sourceLineNo">120</span>        /**<a name="line.120"></a>
+<span class="sourceLineNo">121</span>         * @return &lt;code&gt;true&lt;/code&gt; if the identifier is quoted with single quotes.<a name="line.121"></a>
+<span class="sourceLineNo">122</span>         */<a name="line.122"></a>
+<span class="sourceLineNo">123</span>        private static boolean isSingleQuoted(String identifier) {<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                return identifier.startsWith("'") &amp;&amp; identifier.endsWith("'");<a name="line.124"></a>
+<span class="sourceLineNo">125</span>        }<a name="line.125"></a>
+<span class="sourceLineNo">126</span><a name="line.126"></a>
+<span class="sourceLineNo">127</span>        /**<a name="line.127"></a>
+<span class="sourceLineNo">128</span>         * @return &lt;code&gt;true&lt;/code&gt; if identifier contains lower and upper case letters<a name="line.128"></a>
+<span class="sourceLineNo">129</span>         */<a name="line.129"></a>
+<span class="sourceLineNo">130</span>        private static boolean isMixedCased(String identifier) {<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                boolean containsLowerCaseLetters = !identifier.equals(identifier.toUpperCase());<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                boolean containsUperCaseLetters = !identifier.equals(identifier.toLowerCase());<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                return containsLowerCaseLetters &amp;&amp; containsUperCaseLetters;<a name="line.133"></a>
+<span class="sourceLineNo">134</span>        }<a name="line.134"></a>
+<span class="sourceLineNo">135</span>}<a name="line.135"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

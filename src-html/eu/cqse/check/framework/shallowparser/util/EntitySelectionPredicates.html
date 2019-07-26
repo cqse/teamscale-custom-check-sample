@@ -66,8 +66,8 @@
 <span class="sourceLineNo">058</span>                        ETokenType.PROTECTED);<a name="line.58"></a>
 <span class="sourceLineNo">059</span><a name="line.59"></a>
 <span class="sourceLineNo">060</span>        /**<a name="line.60"></a>
-<span class="sourceLineNo">061</span>         * Selects entities in files with the given language. If the given language<a name="line.61"></a>
-<span class="sourceLineNo">062</span>         * name is invalid, no entities are matched.<a name="line.62"></a>
+<span class="sourceLineNo">061</span>         * Selects entities in files with the given language. If the given language name<a name="line.61"></a>
+<span class="sourceLineNo">062</span>         * is invalid, no entities are matched.<a name="line.62"></a>
 <span class="sourceLineNo">063</span>         */<a name="line.63"></a>
 <span class="sourceLineNo">064</span>        public static Predicate&lt;ShallowEntity&gt; language(String languageName) {<a name="line.64"></a>
 <span class="sourceLineNo">065</span>                ELanguage language = EnumUtils.valueOfIgnoreCase(ELanguage.class, languageName);<a name="line.65"></a>
@@ -95,365 +95,460 @@
 <span class="sourceLineNo">087</span><a name="line.87"></a>
 <span class="sourceLineNo">088</span>        /** Selects all shallow entities whose subtype is a declaration. */<a name="line.88"></a>
 <span class="sourceLineNo">089</span>        public static Predicate&lt;ShallowEntity&gt; declaration() {<a name="line.89"></a>
-<span class="sourceLineNo">090</span>                return new Predicate&lt;ShallowEntity&gt;() {<a name="line.90"></a>
-<span class="sourceLineNo">091</span>                        @Override<a name="line.91"></a>
-<span class="sourceLineNo">092</span>                        public boolean test(ShallowEntity entity) {<a name="line.92"></a>
-<span class="sourceLineNo">093</span>                                if (entity.getSubtype().contains(SubTypeNames.DECLARATION)) {<a name="line.93"></a>
-<span class="sourceLineNo">094</span>                                        return true;<a name="line.94"></a>
-<span class="sourceLineNo">095</span>                                }<a name="line.95"></a>
-<span class="sourceLineNo">096</span><a name="line.96"></a>
-<span class="sourceLineNo">097</span>                                // also consider inline methods in classes<a name="line.97"></a>
-<span class="sourceLineNo">098</span>                                if (ELanguage.CPP.equals(getLanguage(entity))) {<a name="line.98"></a>
-<span class="sourceLineNo">099</span>                                        ShallowEntity parent = entity.getParent();<a name="line.99"></a>
-<span class="sourceLineNo">100</span>                                        return parent != null &amp;&amp; parent.getType() == EShallowEntityType.TYPE;<a name="line.100"></a>
-<span class="sourceLineNo">101</span>                                }<a name="line.101"></a>
-<span class="sourceLineNo">102</span>                                return false;<a name="line.102"></a>
-<span class="sourceLineNo">103</span>                        }<a name="line.103"></a>
-<span class="sourceLineNo">104</span>                };<a name="line.104"></a>
-<span class="sourceLineNo">105</span>        }<a name="line.105"></a>
-<span class="sourceLineNo">106</span><a name="line.106"></a>
-<span class="sourceLineNo">107</span>        /** Selects all shallow entities that are internal (C# keyword). */<a name="line.107"></a>
-<span class="sourceLineNo">108</span>        public static Predicate&lt;ShallowEntity&gt; internal() {<a name="line.108"></a>
-<span class="sourceLineNo">109</span>                return new Predicate&lt;ShallowEntity&gt;() {<a name="line.109"></a>
-<span class="sourceLineNo">110</span>                        @Override<a name="line.110"></a>
-<span class="sourceLineNo">111</span>                        public boolean test(ShallowEntity entity) {<a name="line.111"></a>
-<span class="sourceLineNo">112</span>                                if (TokenStreamUtils.containsAny(entity.ownStartTokens(), ETokenType.INTERNAL)) {<a name="line.112"></a>
-<span class="sourceLineNo">113</span>                                        return true;<a name="line.113"></a>
-<span class="sourceLineNo">114</span>                                }<a name="line.114"></a>
-<span class="sourceLineNo">115</span>                                ShallowEntity parent = entity.getParent();<a name="line.115"></a>
-<span class="sourceLineNo">116</span>                                return parent != null &amp;&amp; TokenStreamUtils.containsAny(parent.ownStartTokens(), ETokenType.INTERNAL);<a name="line.116"></a>
-<span class="sourceLineNo">117</span>                        }<a name="line.117"></a>
-<span class="sourceLineNo">118</span>                };<a name="line.118"></a>
-<span class="sourceLineNo">119</span>        }<a name="line.119"></a>
-<span class="sourceLineNo">120</span><a name="line.120"></a>
-<span class="sourceLineNo">121</span>        /** Selects all attributes. */<a name="line.121"></a>
-<span class="sourceLineNo">122</span>        public static Predicate&lt;ShallowEntity&gt; attribute() {<a name="line.122"></a>
-<span class="sourceLineNo">123</span>                return typePredicate(EShallowEntityType.ATTRIBUTE);<a name="line.123"></a>
-<span class="sourceLineNo">124</span>        }<a name="line.124"></a>
-<span class="sourceLineNo">125</span><a name="line.125"></a>
-<span class="sourceLineNo">126</span>        /**<a name="line.126"></a>
-<span class="sourceLineNo">127</span>         * Selects all properties, defined attributes that have only method<a name="line.127"></a>
-<span class="sourceLineNo">128</span>         * children. More specific: ATTRIBUTE entities that have children and each<a name="line.128"></a>
-<span class="sourceLineNo">129</span>         * child is a METHOD entity. E.g., C# properties.<a name="line.129"></a>
-<span class="sourceLineNo">130</span>         */<a name="line.130"></a>
-<span class="sourceLineNo">131</span>        public static Predicate&lt;ShallowEntity&gt; property() {<a name="line.131"></a>
-<span class="sourceLineNo">132</span>                return new Predicate&lt;ShallowEntity&gt;() {<a name="line.132"></a>
-<span class="sourceLineNo">133</span>                        @Override<a name="line.133"></a>
-<span class="sourceLineNo">134</span>                        public boolean test(ShallowEntity entity) {<a name="line.134"></a>
-<span class="sourceLineNo">135</span>                                if (entity.getType() != EShallowEntityType.ATTRIBUTE) {<a name="line.135"></a>
-<span class="sourceLineNo">136</span>                                        return false;<a name="line.136"></a>
-<span class="sourceLineNo">137</span>                                }<a name="line.137"></a>
-<span class="sourceLineNo">138</span><a name="line.138"></a>
-<span class="sourceLineNo">139</span>                                for (ShallowEntity child : entity.getChildren()) {<a name="line.139"></a>
-<span class="sourceLineNo">140</span>                                        if (child.getType() != EShallowEntityType.METHOD) {<a name="line.140"></a>
-<span class="sourceLineNo">141</span>                                                return false;<a name="line.141"></a>
-<span class="sourceLineNo">142</span>                                        }<a name="line.142"></a>
-<span class="sourceLineNo">143</span>                                }<a name="line.143"></a>
-<span class="sourceLineNo">144</span>                                return !entity.getChildren().isEmpty();<a name="line.144"></a>
-<span class="sourceLineNo">145</span>                        }<a name="line.145"></a>
-<span class="sourceLineNo">146</span>                };<a name="line.146"></a>
-<span class="sourceLineNo">147</span>        }<a name="line.147"></a>
-<span class="sourceLineNo">148</span><a name="line.148"></a>
-<span class="sourceLineNo">149</span>        /** Selects all statements. */<a name="line.149"></a>
-<span class="sourceLineNo">150</span>        public static Predicate&lt;ShallowEntity&gt; statement() {<a name="line.150"></a>
-<span class="sourceLineNo">151</span>                return typePredicate(EShallowEntityType.STATEMENT);<a name="line.151"></a>
-<span class="sourceLineNo">152</span>        }<a name="line.152"></a>
-<span class="sourceLineNo">153</span><a name="line.153"></a>
-<span class="sourceLineNo">154</span>        /** Selects all meta information (defines, annotations, etc.). */<a name="line.154"></a>
-<span class="sourceLineNo">155</span>        public static Predicate&lt;ShallowEntity&gt; meta() {<a name="line.155"></a>
-<span class="sourceLineNo">156</span>                return typePredicate(EShallowEntityType.META);<a name="line.156"></a>
-<span class="sourceLineNo">157</span>        }<a name="line.157"></a>
-<span class="sourceLineNo">158</span><a name="line.158"></a>
-<span class="sourceLineNo">159</span>        /** Creates a predicate for checking the type of an entity. */<a name="line.159"></a>
-<span class="sourceLineNo">160</span>        private static Predicate&lt;ShallowEntity&gt; typePredicate(EShallowEntityType type) {<a name="line.160"></a>
-<span class="sourceLineNo">161</span>                return entity -&gt; entity.getType() == type;<a name="line.161"></a>
-<span class="sourceLineNo">162</span>        }<a name="line.162"></a>
-<span class="sourceLineNo">163</span><a name="line.163"></a>
-<span class="sourceLineNo">164</span>        /**<a name="line.164"></a>
-<span class="sourceLineNo">165</span>         * Matches all public entities as well as methods inside interfaces, which<a name="line.165"></a>
-<span class="sourceLineNo">166</span>         * are considered public in most languages.<a name="line.166"></a>
-<span class="sourceLineNo">167</span>         */<a name="line.167"></a>
-<span class="sourceLineNo">168</span>        public static Predicate&lt;ShallowEntity&gt; selectPublic() {<a name="line.168"></a>
-<span class="sourceLineNo">169</span>                return (modifierPredicate(PUBLIC).or(EntitySelectionPredicates::isInterfaceMethod)<a name="line.169"></a>
-<span class="sourceLineNo">170</span>                                .or(EntitySelectionPredicates::isJavaScriptInterface))<a name="line.170"></a>
-<span class="sourceLineNo">171</span>                                                .and(EntitySelectionPredicates::isNotTypeScriptConstructor);<a name="line.171"></a>
+<span class="sourceLineNo">090</span>                return entity -&gt; {<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                        if (entity.getSubtype().contains(SubTypeNames.DECLARATION)) {<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                                return true;<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                        }<a name="line.93"></a>
+<span class="sourceLineNo">094</span><a name="line.94"></a>
+<span class="sourceLineNo">095</span>                        // also consider inline methods in classes<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                        if (ELanguage.CPP.equals(getLanguage(entity))) {<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                                ShallowEntity parent = entity.getParent();<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                                return parent != null &amp;&amp; parent.getType() == EShallowEntityType.TYPE;<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                        }<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                        return false;<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                };<a name="line.101"></a>
+<span class="sourceLineNo">102</span>        }<a name="line.102"></a>
+<span class="sourceLineNo">103</span><a name="line.103"></a>
+<span class="sourceLineNo">104</span>        /** Selects all shallow entities that are internal (C# keyword). */<a name="line.104"></a>
+<span class="sourceLineNo">105</span>        public static Predicate&lt;ShallowEntity&gt; internal() {<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                return entity -&gt; {<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                        if (TokenStreamUtils.containsAny(entity.ownStartTokens(), ETokenType.INTERNAL)) {<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                                return true;<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                        }<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                        ShallowEntity parent = entity.getParent();<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                        return parent != null &amp;&amp; TokenStreamUtils.containsAny(parent.ownStartTokens(), ETokenType.INTERNAL);<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                };<a name="line.112"></a>
+<span class="sourceLineNo">113</span>        }<a name="line.113"></a>
+<span class="sourceLineNo">114</span><a name="line.114"></a>
+<span class="sourceLineNo">115</span>        /** Selects all attributes. */<a name="line.115"></a>
+<span class="sourceLineNo">116</span>        public static Predicate&lt;ShallowEntity&gt; attribute() {<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                return typePredicate(EShallowEntityType.ATTRIBUTE);<a name="line.117"></a>
+<span class="sourceLineNo">118</span>        }<a name="line.118"></a>
+<span class="sourceLineNo">119</span><a name="line.119"></a>
+<span class="sourceLineNo">120</span>        /**<a name="line.120"></a>
+<span class="sourceLineNo">121</span>         * Selects all properties, defined attributes that have only method children.<a name="line.121"></a>
+<span class="sourceLineNo">122</span>         * More specific: ATTRIBUTE entities that have children and each child is a<a name="line.122"></a>
+<span class="sourceLineNo">123</span>         * METHOD entity. E.g., C# properties.<a name="line.123"></a>
+<span class="sourceLineNo">124</span>         */<a name="line.124"></a>
+<span class="sourceLineNo">125</span>        public static Predicate&lt;ShallowEntity&gt; property() {<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                return entity -&gt; {<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                        if (entity.getType() != EShallowEntityType.ATTRIBUTE) {<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                                return false;<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                        }<a name="line.129"></a>
+<span class="sourceLineNo">130</span><a name="line.130"></a>
+<span class="sourceLineNo">131</span>                        for (ShallowEntity child : entity.getChildren()) {<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                                if (child.getType() != EShallowEntityType.METHOD) {<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                                        return false;<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                                }<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                        }<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                        return !entity.getChildren().isEmpty();<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                };<a name="line.137"></a>
+<span class="sourceLineNo">138</span>        }<a name="line.138"></a>
+<span class="sourceLineNo">139</span><a name="line.139"></a>
+<span class="sourceLineNo">140</span>        /** Selects all statements. */<a name="line.140"></a>
+<span class="sourceLineNo">141</span>        public static Predicate&lt;ShallowEntity&gt; statement() {<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                return typePredicate(EShallowEntityType.STATEMENT);<a name="line.142"></a>
+<span class="sourceLineNo">143</span>        }<a name="line.143"></a>
+<span class="sourceLineNo">144</span><a name="line.144"></a>
+<span class="sourceLineNo">145</span>        /** Selects all meta information (defines, annotations, etc.). */<a name="line.145"></a>
+<span class="sourceLineNo">146</span>        public static Predicate&lt;ShallowEntity&gt; meta() {<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                return typePredicate(EShallowEntityType.META);<a name="line.147"></a>
+<span class="sourceLineNo">148</span>        }<a name="line.148"></a>
+<span class="sourceLineNo">149</span><a name="line.149"></a>
+<span class="sourceLineNo">150</span>        /** Creates a predicate for checking the type of an entity. */<a name="line.150"></a>
+<span class="sourceLineNo">151</span>        private static Predicate&lt;ShallowEntity&gt; typePredicate(EShallowEntityType type) {<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                return entity -&gt; entity.getType() == type;<a name="line.152"></a>
+<span class="sourceLineNo">153</span>        }<a name="line.153"></a>
+<span class="sourceLineNo">154</span><a name="line.154"></a>
+<span class="sourceLineNo">155</span>        /**<a name="line.155"></a>
+<span class="sourceLineNo">156</span>         * Matches all public entities as well as methods inside interfaces, which are<a name="line.156"></a>
+<span class="sourceLineNo">157</span>         * considered public in most languages.<a name="line.157"></a>
+<span class="sourceLineNo">158</span>         */<a name="line.158"></a>
+<span class="sourceLineNo">159</span>        public static Predicate&lt;ShallowEntity&gt; selectPublic() {<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                return (modifierPredicate(PUBLIC).or(EntitySelectionPredicates::isInterfaceMethod)<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                                .or(EntitySelectionPredicates::isJavaScriptInterface))<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                                                .and(EntitySelectionPredicates::isNotTypeScriptConstructor);<a name="line.162"></a>
+<span class="sourceLineNo">163</span>        }<a name="line.163"></a>
+<span class="sourceLineNo">164</span><a name="line.164"></a>
+<span class="sourceLineNo">165</span>        /**<a name="line.165"></a>
+<span class="sourceLineNo">166</span>         * Returns &lt;code&gt;true&lt;/code&gt; if the given entity is is a JavaScript interface.<a name="line.166"></a>
+<span class="sourceLineNo">167</span>         * JavaScript has no modifiers, so all interfaces are public.<a name="line.167"></a>
+<span class="sourceLineNo">168</span>         */<a name="line.168"></a>
+<span class="sourceLineNo">169</span>        private static boolean isJavaScriptInterface(ShallowEntity entity) {<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                return getLanguage(entity) == ELanguage.JAVASCRIPT &amp;&amp; entity.getType() == EShallowEntityType.TYPE<a name="line.170"></a>
+<span class="sourceLineNo">171</span>                                &amp;&amp; modifierPredicate(INTERFACE).test(entity);<a name="line.171"></a>
 <span class="sourceLineNo">172</span>        }<a name="line.172"></a>
 <span class="sourceLineNo">173</span><a name="line.173"></a>
 <span class="sourceLineNo">174</span>        /**<a name="line.174"></a>
-<span class="sourceLineNo">175</span>         * Returns &lt;code&gt;true&lt;/code&gt; if the given entity is is a JavaScript<a name="line.175"></a>
-<span class="sourceLineNo">176</span>         * interface. JavaScript has no modifiers, so all interfaces are public.<a name="line.176"></a>
-<span class="sourceLineNo">177</span>         */<a name="line.177"></a>
-<span class="sourceLineNo">178</span>        private static boolean isJavaScriptInterface(ShallowEntity entity) {<a name="line.178"></a>
-<span class="sourceLineNo">179</span>                return getLanguage(entity) == ELanguage.JAVASCRIPT &amp;&amp; entity.getType() == EShallowEntityType.TYPE<a name="line.179"></a>
-<span class="sourceLineNo">180</span>                                &amp;&amp; modifierPredicate(INTERFACE).test(entity);<a name="line.180"></a>
+<span class="sourceLineNo">175</span>         * Returns &lt;code&gt;true&lt;/code&gt; if the given entity is a method in an interface.<a name="line.175"></a>
+<span class="sourceLineNo">176</span>         */<a name="line.176"></a>
+<span class="sourceLineNo">177</span>        private static boolean isInterfaceMethod(ShallowEntity entity) {<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                ShallowEntity parent = entity.getParent();<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                return entity.getType() == EShallowEntityType.METHOD &amp;&amp; parent != null &amp;&amp; parent.getType() == TYPE<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                                &amp;&amp; modifierPredicate(INTERFACE).test(parent);<a name="line.180"></a>
 <span class="sourceLineNo">181</span>        }<a name="line.181"></a>
 <span class="sourceLineNo">182</span><a name="line.182"></a>
-<span class="sourceLineNo">183</span>        /**<a name="line.183"></a>
-<span class="sourceLineNo">184</span>         * Returns &lt;code&gt;true&lt;/code&gt; if the given entity is a method in an<a name="line.184"></a>
-<span class="sourceLineNo">185</span>         * interface.<a name="line.185"></a>
-<span class="sourceLineNo">186</span>         */<a name="line.186"></a>
-<span class="sourceLineNo">187</span>        private static boolean isInterfaceMethod(ShallowEntity entity) {<a name="line.187"></a>
-<span class="sourceLineNo">188</span>                ShallowEntity parent = entity.getParent();<a name="line.188"></a>
-<span class="sourceLineNo">189</span>                return entity.getType() == EShallowEntityType.METHOD &amp;&amp; parent != null &amp;&amp; parent.getType() == TYPE<a name="line.189"></a>
-<span class="sourceLineNo">190</span>                                &amp;&amp; modifierPredicate(INTERFACE).test(parent);<a name="line.190"></a>
+<span class="sourceLineNo">183</span>        /** Matches all protected entities. */<a name="line.183"></a>
+<span class="sourceLineNo">184</span>        public static Predicate&lt;ShallowEntity&gt; selectProtected() {<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                return modifierPredicate(ETokenType.PROTECTED).and(EntitySelectionPredicates::isNotTypeScriptConstructor);<a name="line.185"></a>
+<span class="sourceLineNo">186</span>        }<a name="line.186"></a>
+<span class="sourceLineNo">187</span><a name="line.187"></a>
+<span class="sourceLineNo">188</span>        /** Matches all entities marked with override. */<a name="line.188"></a>
+<span class="sourceLineNo">189</span>        public static Predicate&lt;ShallowEntity&gt; selectOverride() {<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                return modifierPredicate(ETokenType.OVERRIDE);<a name="line.190"></a>
 <span class="sourceLineNo">191</span>        }<a name="line.191"></a>
 <span class="sourceLineNo">192</span><a name="line.192"></a>
-<span class="sourceLineNo">193</span>        /** Matches all protected entities. */<a name="line.193"></a>
-<span class="sourceLineNo">194</span>        public static Predicate&lt;ShallowEntity&gt; selectProtected() {<a name="line.194"></a>
-<span class="sourceLineNo">195</span>                return modifierPredicate(ETokenType.PROTECTED).and(EntitySelectionPredicates::isNotTypeScriptConstructor);<a name="line.195"></a>
-<span class="sourceLineNo">196</span>        }<a name="line.196"></a>
-<span class="sourceLineNo">197</span><a name="line.197"></a>
-<span class="sourceLineNo">198</span>        /** Matches all entities marked with override. */<a name="line.198"></a>
-<span class="sourceLineNo">199</span>        public static Predicate&lt;ShallowEntity&gt; selectOverride() {<a name="line.199"></a>
-<span class="sourceLineNo">200</span>                return modifierPredicate(ETokenType.OVERRIDE);<a name="line.200"></a>
-<span class="sourceLineNo">201</span>        }<a name="line.201"></a>
-<span class="sourceLineNo">202</span><a name="line.202"></a>
-<span class="sourceLineNo">203</span>        /**<a name="line.203"></a>
-<span class="sourceLineNo">204</span>         * Matches all private entities (except the TypeScript constructor<a name="line.204"></a>
-<span class="sourceLineNo">205</span>         * parameters).<a name="line.205"></a>
-<span class="sourceLineNo">206</span>         */<a name="line.206"></a>
-<span class="sourceLineNo">207</span>        public static Predicate&lt;ShallowEntity&gt; selectPrivate() {<a name="line.207"></a>
-<span class="sourceLineNo">208</span>                return modifierPredicate(PRIVATE).and(EntitySelectionPredicates::isNotTypeScriptConstructor);<a name="line.208"></a>
-<span class="sourceLineNo">209</span>        }<a name="line.209"></a>
-<span class="sourceLineNo">210</span><a name="line.210"></a>
-<span class="sourceLineNo">211</span>        /**<a name="line.211"></a>
-<span class="sourceLineNo">212</span>         * Checks that the entity is not a TypeScript constructor.<a name="line.212"></a>
-<span class="sourceLineNo">213</span>         */<a name="line.213"></a>
-<span class="sourceLineNo">214</span>        private static boolean isNotTypeScriptConstructor(ShallowEntity entity) {<a name="line.214"></a>
-<span class="sourceLineNo">215</span>                if (getLanguage(entity) == ELanguage.JAVASCRIPT) {<a name="line.215"></a>
-<span class="sourceLineNo">216</span>                        return !SubTypeNames.CONSTRUCTOR.equals(entity.getSubtype());<a name="line.216"></a>
-<span class="sourceLineNo">217</span>                }<a name="line.217"></a>
-<span class="sourceLineNo">218</span>                return true;<a name="line.218"></a>
-<span class="sourceLineNo">219</span>        }<a name="line.219"></a>
-<span class="sourceLineNo">220</span><a name="line.220"></a>
-<span class="sourceLineNo">221</span>        /** Matches all entities with default visibility. */<a name="line.221"></a>
-<span class="sourceLineNo">222</span>        public static Predicate&lt;ShallowEntity&gt; selectDefault() {<a name="line.222"></a>
-<span class="sourceLineNo">223</span>                return element -&gt; {<a name="line.223"></a>
-<span class="sourceLineNo">224</span>                        if (getLanguage(element) == ELanguage.JAVASCRIPT) {<a name="line.224"></a>
-<span class="sourceLineNo">225</span>                                return isTypeScriptDefault(element);<a name="line.225"></a>
-<span class="sourceLineNo">226</span>                        }<a name="line.226"></a>
-<span class="sourceLineNo">227</span>                        return hasNoModifiers(element);<a name="line.227"></a>
-<span class="sourceLineNo">228</span>                };<a name="line.228"></a>
-<span class="sourceLineNo">229</span>        }<a name="line.229"></a>
-<span class="sourceLineNo">230</span><a name="line.230"></a>
-<span class="sourceLineNo">231</span>        /**<a name="line.231"></a>
-<span class="sourceLineNo">232</span>         * Checks that the given entity has no modifiers. The method checks for the<a name="line.232"></a>
-<span class="sourceLineNo">233</span>         * following modifiers: PUBLIC, PRIVATE and PROTECTED.<a name="line.233"></a>
-<span class="sourceLineNo">234</span>         */<a name="line.234"></a>
-<span class="sourceLineNo">235</span>        private static boolean hasNoModifiers(ShallowEntity element) {<a name="line.235"></a>
-<span class="sourceLineNo">236</span>                List&lt;IToken&gt; tokens = element.ownStartTokens();<a name="line.236"></a>
-<span class="sourceLineNo">237</span>                return !TokenStreamUtils.containsAny(tokens, 0, tokens.size(), ETokenType.PUBLIC, ETokenType.PROTECTED,<a name="line.237"></a>
-<span class="sourceLineNo">238</span>                                PRIVATE);<a name="line.238"></a>
-<span class="sourceLineNo">239</span>        }<a name="line.239"></a>
-<span class="sourceLineNo">240</span><a name="line.240"></a>
-<span class="sourceLineNo">241</span>        /**<a name="line.241"></a>
-<span class="sourceLineNo">242</span>         * Returns &lt;code&gt;true&lt;/code&gt; if the given entity is a TypeScript attribute<a name="line.242"></a>
-<span class="sourceLineNo">243</span>         * or method that could be selected as 'DEFAULT' and has no explicit<a name="line.243"></a>
-<span class="sourceLineNo">244</span>         * modifier (i.e default visibility). These include: 1. Constructors, 2. All<a name="line.244"></a>
-<span class="sourceLineNo">245</span>         * attributes, 3. All methods except lambda methods (since they will already<a name="line.245"></a>
-<span class="sourceLineNo">246</span>         * be covered by the check on their parent attributes).<a name="line.246"></a>
-<span class="sourceLineNo">247</span>         */<a name="line.247"></a>
-<span class="sourceLineNo">248</span>        private static boolean isTypeScriptDefault(ShallowEntity entity) {<a name="line.248"></a>
-<span class="sourceLineNo">249</span>                boolean isConstructor = entity.getType() == EShallowEntityType.METHOD<a name="line.249"></a>
-<span class="sourceLineNo">250</span>                                &amp;&amp; SubTypeNames.CONSTRUCTOR.equals(entity.getSubtype());<a name="line.250"></a>
-<span class="sourceLineNo">251</span>                boolean isNonLambdaMethod = entity.getType() == EShallowEntityType.METHOD<a name="line.251"></a>
-<span class="sourceLineNo">252</span>                                &amp;&amp; !SubTypeNames.LAMBDA.equals(entity.getSubtype());<a name="line.252"></a>
-<span class="sourceLineNo">253</span>                boolean isDeafultAttributeOrMethod = (entity.getType() == EShallowEntityType.ATTRIBUTE || isNonLambdaMethod)<a name="line.253"></a>
-<span class="sourceLineNo">254</span>                                &amp;&amp; hasNoModifiers(entity);<a name="line.254"></a>
-<span class="sourceLineNo">255</span>                return getLanguage(entity) == ELanguage.JAVASCRIPT &amp;&amp; (isConstructor || isDeafultAttributeOrMethod);<a name="line.255"></a>
-<span class="sourceLineNo">256</span><a name="line.256"></a>
-<span class="sourceLineNo">257</span>        }<a name="line.257"></a>
+<span class="sourceLineNo">193</span>        /**<a name="line.193"></a>
+<span class="sourceLineNo">194</span>         * Matches all private entities (except the TypeScript constructor parameters).<a name="line.194"></a>
+<span class="sourceLineNo">195</span>         */<a name="line.195"></a>
+<span class="sourceLineNo">196</span>        public static Predicate&lt;ShallowEntity&gt; selectPrivate() {<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                return modifierPredicate(PRIVATE).and(EntitySelectionPredicates::isNotTypeScriptConstructor);<a name="line.197"></a>
+<span class="sourceLineNo">198</span>        }<a name="line.198"></a>
+<span class="sourceLineNo">199</span><a name="line.199"></a>
+<span class="sourceLineNo">200</span>        /**<a name="line.200"></a>
+<span class="sourceLineNo">201</span>         * Checks that the entity is not a TypeScript constructor.<a name="line.201"></a>
+<span class="sourceLineNo">202</span>         */<a name="line.202"></a>
+<span class="sourceLineNo">203</span>        private static boolean isNotTypeScriptConstructor(ShallowEntity entity) {<a name="line.203"></a>
+<span class="sourceLineNo">204</span>                if (getLanguage(entity) == ELanguage.JAVASCRIPT) {<a name="line.204"></a>
+<span class="sourceLineNo">205</span>                        return !SubTypeNames.CONSTRUCTOR.equals(entity.getSubtype());<a name="line.205"></a>
+<span class="sourceLineNo">206</span>                }<a name="line.206"></a>
+<span class="sourceLineNo">207</span>                return true;<a name="line.207"></a>
+<span class="sourceLineNo">208</span>        }<a name="line.208"></a>
+<span class="sourceLineNo">209</span><a name="line.209"></a>
+<span class="sourceLineNo">210</span>        /** Matches all entities with default visibility. */<a name="line.210"></a>
+<span class="sourceLineNo">211</span>        public static Predicate&lt;ShallowEntity&gt; selectDefault() {<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                return element -&gt; {<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                        if (getLanguage(element) == ELanguage.JAVASCRIPT) {<a name="line.213"></a>
+<span class="sourceLineNo">214</span>                                return isTypeScriptDefault(element);<a name="line.214"></a>
+<span class="sourceLineNo">215</span>                        }<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                        return hasNoModifiers(element);<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                };<a name="line.217"></a>
+<span class="sourceLineNo">218</span>        }<a name="line.218"></a>
+<span class="sourceLineNo">219</span><a name="line.219"></a>
+<span class="sourceLineNo">220</span>        /**<a name="line.220"></a>
+<span class="sourceLineNo">221</span>         * Checks that the given entity has no modifiers. The method checks for the<a name="line.221"></a>
+<span class="sourceLineNo">222</span>         * following modifiers: PUBLIC, PRIVATE and PROTECTED.<a name="line.222"></a>
+<span class="sourceLineNo">223</span>         */<a name="line.223"></a>
+<span class="sourceLineNo">224</span>        private static boolean hasNoModifiers(ShallowEntity element) {<a name="line.224"></a>
+<span class="sourceLineNo">225</span>                List&lt;IToken&gt; tokens = element.ownStartTokens();<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                return !TokenStreamUtils.containsAny(tokens, 0, tokens.size(), ETokenType.PUBLIC, ETokenType.PROTECTED,<a name="line.226"></a>
+<span class="sourceLineNo">227</span>                                PRIVATE);<a name="line.227"></a>
+<span class="sourceLineNo">228</span>        }<a name="line.228"></a>
+<span class="sourceLineNo">229</span><a name="line.229"></a>
+<span class="sourceLineNo">230</span>        /**<a name="line.230"></a>
+<span class="sourceLineNo">231</span>         * Returns &lt;code&gt;true&lt;/code&gt; if the given entity is a TypeScript attribute or<a name="line.231"></a>
+<span class="sourceLineNo">232</span>         * method that could be selected as 'DEFAULT' and has no explicit modifier (i.e<a name="line.232"></a>
+<span class="sourceLineNo">233</span>         * default visibility). These include:<a name="line.233"></a>
+<span class="sourceLineNo">234</span>         * &lt;ol&gt;<a name="line.234"></a>
+<span class="sourceLineNo">235</span>         * &lt;li&gt;Types&lt;/li&gt;<a name="line.235"></a>
+<span class="sourceLineNo">236</span>         * &lt;li&gt;Constructors&lt;/li&gt;<a name="line.236"></a>
+<span class="sourceLineNo">237</span>         * &lt;li&gt;All methods except lambda methods (since they will already be covered by<a name="line.237"></a>
+<span class="sourceLineNo">238</span>         * the check on their parent attributes)&lt;/li&gt;<a name="line.238"></a>
+<span class="sourceLineNo">239</span>         * &lt;li&gt;Attributes&lt;/li&gt;<a name="line.239"></a>
+<span class="sourceLineNo">240</span>         * &lt;/ol&gt;<a name="line.240"></a>
+<span class="sourceLineNo">241</span>         */<a name="line.241"></a>
+<span class="sourceLineNo">242</span>        private static boolean isTypeScriptDefault(ShallowEntity entity) {<a name="line.242"></a>
+<span class="sourceLineNo">243</span>                if (getLanguage(entity) != ELanguage.JAVASCRIPT) {<a name="line.243"></a>
+<span class="sourceLineNo">244</span>                        return false;<a name="line.244"></a>
+<span class="sourceLineNo">245</span>                }<a name="line.245"></a>
+<span class="sourceLineNo">246</span><a name="line.246"></a>
+<span class="sourceLineNo">247</span>                // Special handling of constructors needed to support public attributes<a name="line.247"></a>
+<span class="sourceLineNo">248</span>                // / members, e.g.<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                // constructor(public pos: Vector, lookAt: Vector) { ... }<a name="line.249"></a>
+<span class="sourceLineNo">250</span>                boolean isConstructor = entity.getType() == EShallowEntityType.METHOD<a name="line.250"></a>
+<span class="sourceLineNo">251</span>                                &amp;&amp; SubTypeNames.CONSTRUCTOR.equals(entity.getSubtype());<a name="line.251"></a>
+<span class="sourceLineNo">252</span>                if (isConstructor) {<a name="line.252"></a>
+<span class="sourceLineNo">253</span>                        UnmodifiableList&lt;IToken&gt; tokens = entity.ownStartTokens();<a name="line.253"></a>
+<span class="sourceLineNo">254</span>                        if (!tokens.isEmpty() &amp;&amp; tokens.get(0).getText().equals(SubTypeNames.CONSTRUCTOR)) {<a name="line.254"></a>
+<span class="sourceLineNo">255</span>                                return true;<a name="line.255"></a>
+<span class="sourceLineNo">256</span>                        }<a name="line.256"></a>
+<span class="sourceLineNo">257</span>                }<a name="line.257"></a>
 <span class="sourceLineNo">258</span><a name="line.258"></a>
-<span class="sourceLineNo">259</span>        /** Matches all final entities. */<a name="line.259"></a>
-<span class="sourceLineNo">260</span>        public static Predicate&lt;ShallowEntity&gt; selectFinal() {<a name="line.260"></a>
-<span class="sourceLineNo">261</span>                return modifierPredicate(ETokenType.FINAL);<a name="line.261"></a>
-<span class="sourceLineNo">262</span>        }<a name="line.262"></a>
-<span class="sourceLineNo">263</span><a name="line.263"></a>
-<span class="sourceLineNo">264</span>        /** Matches all static entities. */<a name="line.264"></a>
-<span class="sourceLineNo">265</span>        public static Predicate&lt;ShallowEntity&gt; selectStatic() {<a name="line.265"></a>
-<span class="sourceLineNo">266</span>                return modifierPredicate(ETokenType.STATIC);<a name="line.266"></a>
-<span class="sourceLineNo">267</span>        }<a name="line.267"></a>
-<span class="sourceLineNo">268</span><a name="line.268"></a>
-<span class="sourceLineNo">269</span>        /** Matches all export entities. */<a name="line.269"></a>
-<span class="sourceLineNo">270</span>        public static Predicate&lt;ShallowEntity&gt; export() {<a name="line.270"></a>
-<span class="sourceLineNo">271</span>                return modifierPredicate(ETokenType.EXPORT);<a name="line.271"></a>
-<span class="sourceLineNo">272</span>        }<a name="line.272"></a>
-<span class="sourceLineNo">273</span><a name="line.273"></a>
-<span class="sourceLineNo">274</span>        /** Returns a predicate that checks for existence of the given modifier. */<a name="line.274"></a>
-<span class="sourceLineNo">275</span>        private static Predicate&lt;ShallowEntity&gt; modifierPredicate(final ETokenType modifier) {<a name="line.275"></a>
-<span class="sourceLineNo">276</span>                return element -&gt; {<a name="line.276"></a>
-<span class="sourceLineNo">277</span>                        if (TokenStreamUtils.firstTokenOfType(element.ownStartTokens(), modifier) != TokenStreamUtils.NOT_FOUND) {<a name="line.277"></a>
-<span class="sourceLineNo">278</span>                                return true;<a name="line.278"></a>
-<span class="sourceLineNo">279</span>                        }<a name="line.279"></a>
-<span class="sourceLineNo">280</span><a name="line.280"></a>
-<span class="sourceLineNo">281</span>                        if (ELanguage.CPP == getLanguage(element) &amp;&amp; CPP_VISIBILITY_MODIFIERS.contains(modifier)) {<a name="line.281"></a>
-<span class="sourceLineNo">282</span>                                return hasCppVisibilityModifer(element, modifier);<a name="line.282"></a>
-<span class="sourceLineNo">283</span>                        }<a name="line.283"></a>
-<span class="sourceLineNo">284</span>                        return false;<a name="line.284"></a>
-<span class="sourceLineNo">285</span>                };<a name="line.285"></a>
-<span class="sourceLineNo">286</span>        }<a name="line.286"></a>
-<span class="sourceLineNo">287</span><a name="line.287"></a>
-<span class="sourceLineNo">288</span>        /**<a name="line.288"></a>
-<span class="sourceLineNo">289</span>         * Determines the language of the given entity or &lt;code&gt;null&lt;/code&gt; if it<a name="line.289"></a>
-<span class="sourceLineNo">290</span>         * cannot be determined<a name="line.290"></a>
-<span class="sourceLineNo">291</span>         */<a name="line.291"></a>
-<span class="sourceLineNo">292</span>        private static ELanguage getLanguage(ShallowEntity entity) {<a name="line.292"></a>
-<span class="sourceLineNo">293</span>                UnmodifiableList&lt;IToken&gt; tokens = entity.includedTokens();<a name="line.293"></a>
-<span class="sourceLineNo">294</span>                if (tokens.isEmpty()) {<a name="line.294"></a>
-<span class="sourceLineNo">295</span>                        return null;<a name="line.295"></a>
-<span class="sourceLineNo">296</span>                }<a name="line.296"></a>
-<span class="sourceLineNo">297</span>                return CollectionUtils.getAny(tokens).getLanguage();<a name="line.297"></a>
-<span class="sourceLineNo">298</span>        }<a name="line.298"></a>
-<span class="sourceLineNo">299</span><a name="line.299"></a>
-<span class="sourceLineNo">300</span>        /**<a name="line.300"></a>
-<span class="sourceLineNo">301</span>         * Checks whether the given shallow entity is affected by the specified C++<a name="line.301"></a>
-<span class="sourceLineNo">302</span>         * visibility modifier by backwards searching the sibling shallow entities.<a name="line.302"></a>
-<span class="sourceLineNo">303</span>         * The given modifier must be one of public, protected, or private.<a name="line.303"></a>
+<span class="sourceLineNo">259</span>                if (!hasNoModifiers(entity)) {<a name="line.259"></a>
+<span class="sourceLineNo">260</span>                        return false;<a name="line.260"></a>
+<span class="sourceLineNo">261</span>                }<a name="line.261"></a>
+<span class="sourceLineNo">262</span><a name="line.262"></a>
+<span class="sourceLineNo">263</span>                // ignore lambdas<a name="line.263"></a>
+<span class="sourceLineNo">264</span>                if (entity.getType() == EShallowEntityType.METHOD &amp;&amp; SubTypeNames.LAMBDA.equals(entity.getSubtype())) {<a name="line.264"></a>
+<span class="sourceLineNo">265</span>                        return false;<a name="line.265"></a>
+<span class="sourceLineNo">266</span>                }<a name="line.266"></a>
+<span class="sourceLineNo">267</span><a name="line.267"></a>
+<span class="sourceLineNo">268</span>                return entity.getType() == EShallowEntityType.TYPE || entity.getType() == EShallowEntityType.METHOD<a name="line.268"></a>
+<span class="sourceLineNo">269</span>                                || entity.getType() == EShallowEntityType.ATTRIBUTE;<a name="line.269"></a>
+<span class="sourceLineNo">270</span>        }<a name="line.270"></a>
+<span class="sourceLineNo">271</span><a name="line.271"></a>
+<span class="sourceLineNo">272</span>        /** Matches all final entities. */<a name="line.272"></a>
+<span class="sourceLineNo">273</span>        public static Predicate&lt;ShallowEntity&gt; selectFinal() {<a name="line.273"></a>
+<span class="sourceLineNo">274</span>                return modifierPredicate(ETokenType.FINAL);<a name="line.274"></a>
+<span class="sourceLineNo">275</span>        }<a name="line.275"></a>
+<span class="sourceLineNo">276</span><a name="line.276"></a>
+<span class="sourceLineNo">277</span>        /** Matches all static entities. */<a name="line.277"></a>
+<span class="sourceLineNo">278</span>        public static Predicate&lt;ShallowEntity&gt; selectStatic() {<a name="line.278"></a>
+<span class="sourceLineNo">279</span>                return modifierPredicate(ETokenType.STATIC);<a name="line.279"></a>
+<span class="sourceLineNo">280</span>        }<a name="line.280"></a>
+<span class="sourceLineNo">281</span><a name="line.281"></a>
+<span class="sourceLineNo">282</span>        /** Matches all export entities. */<a name="line.282"></a>
+<span class="sourceLineNo">283</span>        public static Predicate&lt;ShallowEntity&gt; export() {<a name="line.283"></a>
+<span class="sourceLineNo">284</span>                return modifierPredicate(ETokenType.EXPORT);<a name="line.284"></a>
+<span class="sourceLineNo">285</span>        }<a name="line.285"></a>
+<span class="sourceLineNo">286</span><a name="line.286"></a>
+<span class="sourceLineNo">287</span>        /** Returns a predicate that checks for existence of the given modifier. */<a name="line.287"></a>
+<span class="sourceLineNo">288</span>        private static Predicate&lt;ShallowEntity&gt; modifierPredicate(final ETokenType modifier) {<a name="line.288"></a>
+<span class="sourceLineNo">289</span>                return element -&gt; {<a name="line.289"></a>
+<span class="sourceLineNo">290</span>                        if (TokenStreamUtils.firstTokenOfType(element.ownStartTokens(), modifier) != TokenStreamUtils.NOT_FOUND) {<a name="line.290"></a>
+<span class="sourceLineNo">291</span>                                return true;<a name="line.291"></a>
+<span class="sourceLineNo">292</span>                        }<a name="line.292"></a>
+<span class="sourceLineNo">293</span><a name="line.293"></a>
+<span class="sourceLineNo">294</span>                        if (ELanguage.CPP == getLanguage(element) &amp;&amp; CPP_VISIBILITY_MODIFIERS.contains(modifier)) {<a name="line.294"></a>
+<span class="sourceLineNo">295</span>                                return hasCppVisibilityModifer(element, modifier);<a name="line.295"></a>
+<span class="sourceLineNo">296</span>                        }<a name="line.296"></a>
+<span class="sourceLineNo">297</span>                        return false;<a name="line.297"></a>
+<span class="sourceLineNo">298</span>                };<a name="line.298"></a>
+<span class="sourceLineNo">299</span>        }<a name="line.299"></a>
+<span class="sourceLineNo">300</span><a name="line.300"></a>
+<span class="sourceLineNo">301</span>        /**<a name="line.301"></a>
+<span class="sourceLineNo">302</span>         * Determines the language of the given entity or &lt;code&gt;null&lt;/code&gt; if it cannot<a name="line.302"></a>
+<span class="sourceLineNo">303</span>         * be determined<a name="line.303"></a>
 <span class="sourceLineNo">304</span>         */<a name="line.304"></a>
-<span class="sourceLineNo">305</span>        private static boolean hasCppVisibilityModifer(ShallowEntity entity, ETokenType modifier) {<a name="line.305"></a>
-<span class="sourceLineNo">306</span>                ShallowEntity parent = entity.getParent();<a name="line.306"></a>
-<span class="sourceLineNo">307</span>                if (parent == null) {<a name="line.307"></a>
-<span class="sourceLineNo">308</span>                        return false;<a name="line.308"></a>
-<span class="sourceLineNo">309</span>                }<a name="line.309"></a>
-<span class="sourceLineNo">310</span><a name="line.310"></a>
-<span class="sourceLineNo">311</span>                UnmodifiableList&lt;ShallowEntity&gt; siblings = parent.getChildren();<a name="line.311"></a>
-<span class="sourceLineNo">312</span>                for (int i = siblings.indexOf(entity) - 1; i &gt;= 0; i--) {<a name="line.312"></a>
-<span class="sourceLineNo">313</span>                        ShallowEntity sibling = siblings.get(i);<a name="line.313"></a>
-<span class="sourceLineNo">314</span><a name="line.314"></a>
-<span class="sourceLineNo">315</span>                        if (isCppVisibilityModifier(sibling)) {<a name="line.315"></a>
-<span class="sourceLineNo">316</span>                                return TokenStreamUtils.containsAny(sibling.ownStartTokens(), modifier);<a name="line.316"></a>
-<span class="sourceLineNo">317</span>                        }<a name="line.317"></a>
-<span class="sourceLineNo">318</span>                }<a name="line.318"></a>
-<span class="sourceLineNo">319</span><a name="line.319"></a>
-<span class="sourceLineNo">320</span>                // no explicit modifier found -&gt; assume default<a name="line.320"></a>
-<span class="sourceLineNo">321</span>                if (parent.getType() == EShallowEntityType.TYPE) {<a name="line.321"></a>
-<span class="sourceLineNo">322</span>                        if (SubTypeNames.STRUCT.equals(parent.getSubtype())) {<a name="line.322"></a>
-<span class="sourceLineNo">323</span>                                return ETokenType.PUBLIC.equals(modifier);<a name="line.323"></a>
-<span class="sourceLineNo">324</span>                        }<a name="line.324"></a>
-<span class="sourceLineNo">325</span>                        return PRIVATE.equals(modifier);<a name="line.325"></a>
-<span class="sourceLineNo">326</span>                }<a name="line.326"></a>
-<span class="sourceLineNo">327</span><a name="line.327"></a>
-<span class="sourceLineNo">328</span>                return false;<a name="line.328"></a>
-<span class="sourceLineNo">329</span>        }<a name="line.329"></a>
-<span class="sourceLineNo">330</span><a name="line.330"></a>
-<span class="sourceLineNo">331</span>        /** Returns whether the given entity is a C++ visibility modifier. */<a name="line.331"></a>
-<span class="sourceLineNo">332</span>        private static boolean isCppVisibilityModifier(ShallowEntity entity) {<a name="line.332"></a>
-<span class="sourceLineNo">333</span>                return entity.getType() == EShallowEntityType.META<a name="line.333"></a>
-<span class="sourceLineNo">334</span>                                &amp;&amp; TokenStreamUtils.containsAny(entity.ownStartTokens(), CPP_VISIBILITY_MODIFIERS);<a name="line.334"></a>
-<span class="sourceLineNo">335</span>        }<a name="line.335"></a>
-<span class="sourceLineNo">336</span><a name="line.336"></a>
-<span class="sourceLineNo">337</span>        /** Matches all primitive entities (i.e. those without children). */<a name="line.337"></a>
-<span class="sourceLineNo">338</span>        public static Predicate&lt;ShallowEntity&gt; primitive() {<a name="line.338"></a>
-<span class="sourceLineNo">339</span>                return entity -&gt; entity.getChildren().isEmpty();<a name="line.339"></a>
-<span class="sourceLineNo">340</span>        }<a name="line.340"></a>
-<span class="sourceLineNo">341</span><a name="line.341"></a>
-<span class="sourceLineNo">342</span>        /** Matches entities by their subtype. */<a name="line.342"></a>
-<span class="sourceLineNo">343</span>        public static Predicate&lt;ShallowEntity&gt; subtype(final String subtype) {<a name="line.343"></a>
-<span class="sourceLineNo">344</span>                return entity -&gt; subtype.equals(entity.getSubtype());<a name="line.344"></a>
-<span class="sourceLineNo">345</span>        }<a name="line.345"></a>
-<span class="sourceLineNo">346</span><a name="line.346"></a>
-<span class="sourceLineNo">347</span>        /**<a name="line.347"></a>
-<span class="sourceLineNo">348</span>         * Matches entities by their parent type's subtype (e.g. to select all<a name="line.348"></a>
-<span class="sourceLineNo">349</span>         * members of interfaces).<a name="line.349"></a>
-<span class="sourceLineNo">350</span>         */<a name="line.350"></a>
-<span class="sourceLineNo">351</span>        public static Predicate&lt;ShallowEntity&gt; typeSubtype(String subtype) {<a name="line.351"></a>
-<span class="sourceLineNo">352</span>                return entity -&gt; {<a name="line.352"></a>
-<span class="sourceLineNo">353</span>                        ShallowEntity parent = entity.getParent();<a name="line.353"></a>
-<span class="sourceLineNo">354</span>                        return parent != null &amp;&amp; type().test(parent) &amp;&amp; parent.getSubtype().equals(subtype);<a name="line.354"></a>
-<span class="sourceLineNo">355</span>                };<a name="line.355"></a>
+<span class="sourceLineNo">305</span>        private static ELanguage getLanguage(ShallowEntity entity) {<a name="line.305"></a>
+<span class="sourceLineNo">306</span>                return ShallowParsingUtils.getLanguage(entity);<a name="line.306"></a>
+<span class="sourceLineNo">307</span>        }<a name="line.307"></a>
+<span class="sourceLineNo">308</span><a name="line.308"></a>
+<span class="sourceLineNo">309</span>        /**<a name="line.309"></a>
+<span class="sourceLineNo">310</span>         * Determines the origin, i.e. the uniformPath, of the given entity or<a name="line.310"></a>
+<span class="sourceLineNo">311</span>         * &lt;code&gt;null&lt;/code&gt; if it cannot be determined.<a name="line.311"></a>
+<span class="sourceLineNo">312</span>         */<a name="line.312"></a>
+<span class="sourceLineNo">313</span>        private static String getUniformPath(ShallowEntity entity) {<a name="line.313"></a>
+<span class="sourceLineNo">314</span>                UnmodifiableList&lt;IToken&gt; tokens = entity.includedTokens();<a name="line.314"></a>
+<span class="sourceLineNo">315</span>                if (tokens.isEmpty()) {<a name="line.315"></a>
+<span class="sourceLineNo">316</span>                        return null;<a name="line.316"></a>
+<span class="sourceLineNo">317</span>                }<a name="line.317"></a>
+<span class="sourceLineNo">318</span>                return CollectionUtils.getAny(tokens).getOriginId();<a name="line.318"></a>
+<span class="sourceLineNo">319</span>        }<a name="line.319"></a>
+<span class="sourceLineNo">320</span><a name="line.320"></a>
+<span class="sourceLineNo">321</span>        /**<a name="line.321"></a>
+<span class="sourceLineNo">322</span>         * Checks whether the given shallow entity is affected by the specified C++<a name="line.322"></a>
+<span class="sourceLineNo">323</span>         * visibility modifier by backwards searching the sibling shallow entities. The<a name="line.323"></a>
+<span class="sourceLineNo">324</span>         * given modifier must be one of public, protected, or private.<a name="line.324"></a>
+<span class="sourceLineNo">325</span>         */<a name="line.325"></a>
+<span class="sourceLineNo">326</span>        private static boolean hasCppVisibilityModifer(ShallowEntity entity, ETokenType modifier) {<a name="line.326"></a>
+<span class="sourceLineNo">327</span>                ShallowEntity parent = entity.getParent();<a name="line.327"></a>
+<span class="sourceLineNo">328</span>                if (parent == null) {<a name="line.328"></a>
+<span class="sourceLineNo">329</span>                        return false;<a name="line.329"></a>
+<span class="sourceLineNo">330</span>                }<a name="line.330"></a>
+<span class="sourceLineNo">331</span><a name="line.331"></a>
+<span class="sourceLineNo">332</span>                UnmodifiableList&lt;ShallowEntity&gt; siblings = parent.getChildren();<a name="line.332"></a>
+<span class="sourceLineNo">333</span>                for (int i = siblings.indexOf(entity) - 1; i &gt;= 0; i--) {<a name="line.333"></a>
+<span class="sourceLineNo">334</span>                        ShallowEntity sibling = siblings.get(i);<a name="line.334"></a>
+<span class="sourceLineNo">335</span><a name="line.335"></a>
+<span class="sourceLineNo">336</span>                        if (isCppVisibilityModifier(sibling)) {<a name="line.336"></a>
+<span class="sourceLineNo">337</span>                                return TokenStreamUtils.containsAny(sibling.ownStartTokens(), modifier);<a name="line.337"></a>
+<span class="sourceLineNo">338</span>                        }<a name="line.338"></a>
+<span class="sourceLineNo">339</span>                }<a name="line.339"></a>
+<span class="sourceLineNo">340</span><a name="line.340"></a>
+<span class="sourceLineNo">341</span>                // no explicit modifier found -&gt; assume default<a name="line.341"></a>
+<span class="sourceLineNo">342</span>                if (parent.getType() == EShallowEntityType.TYPE) {<a name="line.342"></a>
+<span class="sourceLineNo">343</span>                        if (SubTypeNames.STRUCT.equals(parent.getSubtype())) {<a name="line.343"></a>
+<span class="sourceLineNo">344</span>                                return ETokenType.PUBLIC.equals(modifier);<a name="line.344"></a>
+<span class="sourceLineNo">345</span>                        }<a name="line.345"></a>
+<span class="sourceLineNo">346</span>                        return PRIVATE.equals(modifier);<a name="line.346"></a>
+<span class="sourceLineNo">347</span>                }<a name="line.347"></a>
+<span class="sourceLineNo">348</span><a name="line.348"></a>
+<span class="sourceLineNo">349</span>                return false;<a name="line.349"></a>
+<span class="sourceLineNo">350</span>        }<a name="line.350"></a>
+<span class="sourceLineNo">351</span><a name="line.351"></a>
+<span class="sourceLineNo">352</span>        /** Returns whether the given entity is a C++ visibility modifier. */<a name="line.352"></a>
+<span class="sourceLineNo">353</span>        private static boolean isCppVisibilityModifier(ShallowEntity entity) {<a name="line.353"></a>
+<span class="sourceLineNo">354</span>                return entity.getType() == EShallowEntityType.META<a name="line.354"></a>
+<span class="sourceLineNo">355</span>                                &amp;&amp; TokenStreamUtils.containsAny(entity.ownStartTokens(), CPP_VISIBILITY_MODIFIERS);<a name="line.355"></a>
 <span class="sourceLineNo">356</span>        }<a name="line.356"></a>
 <span class="sourceLineNo">357</span><a name="line.357"></a>
-<span class="sourceLineNo">358</span>        /**<a name="line.358"></a>
-<span class="sourceLineNo">359</span>         * Matches entities whose parent is an exported type.<a name="line.359"></a>
-<span class="sourceLineNo">360</span>         */<a name="line.360"></a>
-<span class="sourceLineNo">361</span>        public static Predicate&lt;ShallowEntity&gt; typeExported() {<a name="line.361"></a>
-<span class="sourceLineNo">362</span>                return entity -&gt; {<a name="line.362"></a>
-<span class="sourceLineNo">363</span>                        ShallowEntity parent = entity.getParent();<a name="line.363"></a>
-<span class="sourceLineNo">364</span>                        return parent != null &amp;&amp; type().test(parent) &amp;&amp; export().test(parent);<a name="line.364"></a>
-<span class="sourceLineNo">365</span>                };<a name="line.365"></a>
+<span class="sourceLineNo">358</span>        /** Matches all primitive entities (i.e. those without children). */<a name="line.358"></a>
+<span class="sourceLineNo">359</span>        public static Predicate&lt;ShallowEntity&gt; primitive() {<a name="line.359"></a>
+<span class="sourceLineNo">360</span>                return entity -&gt; entity.getChildren().isEmpty();<a name="line.360"></a>
+<span class="sourceLineNo">361</span>        }<a name="line.361"></a>
+<span class="sourceLineNo">362</span><a name="line.362"></a>
+<span class="sourceLineNo">363</span>        /** Matches entities by their subtype. */<a name="line.363"></a>
+<span class="sourceLineNo">364</span>        public static Predicate&lt;ShallowEntity&gt; subtype(final String subtype) {<a name="line.364"></a>
+<span class="sourceLineNo">365</span>                return entity -&gt; subtype.equals(entity.getSubtype());<a name="line.365"></a>
 <span class="sourceLineNo">366</span>        }<a name="line.366"></a>
 <span class="sourceLineNo">367</span><a name="line.367"></a>
-<span class="sourceLineNo">368</span>        /** Matches entities by their name. */<a name="line.368"></a>
-<span class="sourceLineNo">369</span>        public static Predicate&lt;ShallowEntity&gt; name(String name) {<a name="line.369"></a>
-<span class="sourceLineNo">370</span>                return entity -&gt; name.equals(entity.getName());<a name="line.370"></a>
-<span class="sourceLineNo">371</span>        }<a name="line.371"></a>
-<span class="sourceLineNo">372</span><a name="line.372"></a>
-<span class="sourceLineNo">373</span>        /** Matches entities by their name using regular expression. */<a name="line.373"></a>
-<span class="sourceLineNo">374</span>        public static Predicate&lt;ShallowEntity&gt; nameRegex(String regex) {<a name="line.374"></a>
-<span class="sourceLineNo">375</span>                Pattern pattern = Pattern.compile(regex);<a name="line.375"></a>
-<span class="sourceLineNo">376</span>                return entity -&gt; pattern.matcher(entity.getName()).matches();<a name="line.376"></a>
+<span class="sourceLineNo">368</span>        /**<a name="line.368"></a>
+<span class="sourceLineNo">369</span>         * Matches entities by their parent type's subtype (e.g. to select all members<a name="line.369"></a>
+<span class="sourceLineNo">370</span>         * of interfaces).<a name="line.370"></a>
+<span class="sourceLineNo">371</span>         */<a name="line.371"></a>
+<span class="sourceLineNo">372</span>        public static Predicate&lt;ShallowEntity&gt; typeSubtype(String subtype) {<a name="line.372"></a>
+<span class="sourceLineNo">373</span>                return entity -&gt; {<a name="line.373"></a>
+<span class="sourceLineNo">374</span>                        ShallowEntity parent = entity.getParent();<a name="line.374"></a>
+<span class="sourceLineNo">375</span>                        return parent != null &amp;&amp; type().test(parent) &amp;&amp; parent.getSubtype().equals(subtype);<a name="line.375"></a>
+<span class="sourceLineNo">376</span>                };<a name="line.376"></a>
 <span class="sourceLineNo">377</span>        }<a name="line.377"></a>
 <span class="sourceLineNo">378</span><a name="line.378"></a>
 <span class="sourceLineNo">379</span>        /**<a name="line.379"></a>
-<span class="sourceLineNo">380</span>         * Matches all entities that are annotated with an annotation of given name<a name="line.380"></a>
-<span class="sourceLineNo">381</span>         * (excluding the '@' sign).<a name="line.381"></a>
-<span class="sourceLineNo">382</span>         */<a name="line.382"></a>
-<span class="sourceLineNo">383</span>        public static Predicate&lt;ShallowEntity&gt; annotated(String annotationName) {<a name="line.383"></a>
-<span class="sourceLineNo">384</span>                final String normalizedAnnotationName = StringUtils.stripPrefix(annotationName, "@");<a name="line.384"></a>
-<span class="sourceLineNo">385</span>                return entity -&gt; {<a name="line.385"></a>
-<span class="sourceLineNo">386</span>                        // annotations must be part of same parent<a name="line.386"></a>
-<span class="sourceLineNo">387</span>                        ShallowEntity parent = entity.getParent();<a name="line.387"></a>
-<span class="sourceLineNo">388</span>                        if (parent == null) {<a name="line.388"></a>
-<span class="sourceLineNo">389</span>                                return false;<a name="line.389"></a>
-<span class="sourceLineNo">390</span>                        }<a name="line.390"></a>
-<span class="sourceLineNo">391</span><a name="line.391"></a>
-<span class="sourceLineNo">392</span>                        List&lt;ShallowEntity&gt; children = parent.getChildren();<a name="line.392"></a>
-<span class="sourceLineNo">393</span>                        int index = children.indexOf(entity);<a name="line.393"></a>
-<span class="sourceLineNo">394</span>                        index -= 1;<a name="line.394"></a>
-<span class="sourceLineNo">395</span>                        while (index &gt;= 0 &amp;&amp; children.get(index).getType() == EShallowEntityType.META) {<a name="line.395"></a>
-<span class="sourceLineNo">396</span>                                ShallowEntity metaEntity = children.get(index);<a name="line.396"></a>
-<span class="sourceLineNo">397</span>                                if ("annotation".equals(metaEntity.getSubtype())<a name="line.397"></a>
-<span class="sourceLineNo">398</span>                                                &amp;&amp; normalizedAnnotationName.equalsIgnoreCase(metaEntity.getName())) {<a name="line.398"></a>
-<span class="sourceLineNo">399</span>                                        return true;<a name="line.399"></a>
-<span class="sourceLineNo">400</span>                                }<a name="line.400"></a>
-<span class="sourceLineNo">401</span>                                index -= 1;<a name="line.401"></a>
-<span class="sourceLineNo">402</span>                        }<a name="line.402"></a>
-<span class="sourceLineNo">403</span>                        return false;<a name="line.403"></a>
-<span class="sourceLineNo">404</span>                };<a name="line.404"></a>
-<span class="sourceLineNo">405</span>        }<a name="line.405"></a>
-<span class="sourceLineNo">406</span><a name="line.406"></a>
-<span class="sourceLineNo">407</span>        /**<a name="line.407"></a>
-<span class="sourceLineNo">408</span>         * Matches simple getters, i.e. methods starting with "get" or "is" and with<a name="line.408"></a>
-<span class="sourceLineNo">409</span>         * at most one contained statement.<a name="line.409"></a>
-<span class="sourceLineNo">410</span>         */<a name="line.410"></a>
-<span class="sourceLineNo">411</span>        public static Predicate&lt;ShallowEntity&gt; simpleGetter() {<a name="line.411"></a>
-<span class="sourceLineNo">412</span>                return (simpleMethod("get").or(simpleMethod("is"))).and(modifierPredicate(ETokenType.ABSTRACT).negate());<a name="line.412"></a>
-<span class="sourceLineNo">413</span>        }<a name="line.413"></a>
-<span class="sourceLineNo">414</span><a name="line.414"></a>
-<span class="sourceLineNo">415</span>        /**<a name="line.415"></a>
-<span class="sourceLineNo">416</span>         * Matches simple setters, i.e. methods starting with "set" and with at most<a name="line.416"></a>
-<span class="sourceLineNo">417</span>         * one contained statement.<a name="line.417"></a>
-<span class="sourceLineNo">418</span>         */<a name="line.418"></a>
-<span class="sourceLineNo">419</span>        public static Predicate&lt;ShallowEntity&gt; simpleSetter() {<a name="line.419"></a>
-<span class="sourceLineNo">420</span>                return simpleMethod("set").and(modifierPredicate(ETokenType.ABSTRACT).negate());<a name="line.420"></a>
-<span class="sourceLineNo">421</span>        }<a name="line.421"></a>
-<span class="sourceLineNo">422</span><a name="line.422"></a>
-<span class="sourceLineNo">423</span>        /**<a name="line.423"></a>
-<span class="sourceLineNo">424</span>         * Matches simple methods with the given prefix. A method is simple, if it<a name="line.424"></a>
-<span class="sourceLineNo">425</span>         * contains as most one statement.<a name="line.425"></a>
-<span class="sourceLineNo">426</span>         */<a name="line.426"></a>
-<span class="sourceLineNo">427</span>        public static Predicate&lt;ShallowEntity&gt; simpleMethod(String namePrefix) {<a name="line.427"></a>
-<span class="sourceLineNo">428</span>                return entity -&gt; {<a name="line.428"></a>
-<span class="sourceLineNo">429</span>                        boolean isSimpleMethod = entity.getType() == EShallowEntityType.METHOD &amp;&amp; getStatementCount(entity) &lt;= 1;<a name="line.429"></a>
-<span class="sourceLineNo">430</span>                        if (!isSimpleMethod) {<a name="line.430"></a>
-<span class="sourceLineNo">431</span>                                return false;<a name="line.431"></a>
-<span class="sourceLineNo">432</span>                        }<a name="line.432"></a>
-<span class="sourceLineNo">433</span><a name="line.433"></a>
-<span class="sourceLineNo">434</span>                        if (entity.getName() == null) {<a name="line.434"></a>
-<span class="sourceLineNo">435</span>                                return StringUtils.isEmpty(namePrefix);<a name="line.435"></a>
-<span class="sourceLineNo">436</span>                        }<a name="line.436"></a>
-<span class="sourceLineNo">437</span>                        return entity.getName().startsWith(namePrefix);<a name="line.437"></a>
-<span class="sourceLineNo">438</span>                };<a name="line.438"></a>
-<span class="sourceLineNo">439</span>        }<a name="line.439"></a>
-<span class="sourceLineNo">440</span><a name="line.440"></a>
-<span class="sourceLineNo">441</span>        /**<a name="line.441"></a>
-<span class="sourceLineNo">442</span>         * Returns the number of statements contained as children of the entity.<a name="line.442"></a>
-<span class="sourceLineNo">443</span>         */<a name="line.443"></a>
-<span class="sourceLineNo">444</span>        private static int getStatementCount(ShallowEntity entity) {<a name="line.444"></a>
-<span class="sourceLineNo">445</span>                return ShallowEntityTraversalUtils.listEntitiesOfType(entity.getChildren(), EShallowEntityType.STATEMENT)<a name="line.445"></a>
-<span class="sourceLineNo">446</span>                                .size();<a name="line.446"></a>
-<span class="sourceLineNo">447</span>        }<a name="line.447"></a>
-<span class="sourceLineNo">448</span>}<a name="line.448"></a>
+<span class="sourceLineNo">380</span>         * Matches entities whose parent is an exported type.<a name="line.380"></a>
+<span class="sourceLineNo">381</span>         */<a name="line.381"></a>
+<span class="sourceLineNo">382</span>        public static Predicate&lt;ShallowEntity&gt; typeExported() {<a name="line.382"></a>
+<span class="sourceLineNo">383</span>                return entity -&gt; {<a name="line.383"></a>
+<span class="sourceLineNo">384</span>                        ShallowEntity parent = entity.getParent();<a name="line.384"></a>
+<span class="sourceLineNo">385</span>                        return parent != null &amp;&amp; type().test(parent) &amp;&amp; export().test(parent);<a name="line.385"></a>
+<span class="sourceLineNo">386</span>                };<a name="line.386"></a>
+<span class="sourceLineNo">387</span>        }<a name="line.387"></a>
+<span class="sourceLineNo">388</span><a name="line.388"></a>
+<span class="sourceLineNo">389</span>        /** Matches entities by their name. */<a name="line.389"></a>
+<span class="sourceLineNo">390</span>        public static Predicate&lt;ShallowEntity&gt; name(String name) {<a name="line.390"></a>
+<span class="sourceLineNo">391</span>                return entity -&gt; name.equals(entity.getName());<a name="line.391"></a>
+<span class="sourceLineNo">392</span>        }<a name="line.392"></a>
+<span class="sourceLineNo">393</span><a name="line.393"></a>
+<span class="sourceLineNo">394</span>        /** Matches entities by their name using regular expression. */<a name="line.394"></a>
+<span class="sourceLineNo">395</span>        public static Predicate&lt;ShallowEntity&gt; nameRegex(String regex) {<a name="line.395"></a>
+<span class="sourceLineNo">396</span>                Pattern pattern = Pattern.compile(regex);<a name="line.396"></a>
+<span class="sourceLineNo">397</span>                // name is null for e.g. lambdas and anonymous types<a name="line.397"></a>
+<span class="sourceLineNo">398</span>                return entity -&gt; entity.getName() != null &amp;&amp; pattern.matcher(entity.getName()).matches();<a name="line.398"></a>
+<span class="sourceLineNo">399</span>        }<a name="line.399"></a>
+<span class="sourceLineNo">400</span><a name="line.400"></a>
+<span class="sourceLineNo">401</span>        /** Matches entities by their file name */<a name="line.401"></a>
+<span class="sourceLineNo">402</span>        public static Predicate&lt;ShallowEntity&gt; fileRegex(String regex) {<a name="line.402"></a>
+<span class="sourceLineNo">403</span>                Pattern pattern = Pattern.compile(regex);<a name="line.403"></a>
+<span class="sourceLineNo">404</span>                return entity -&gt; {<a name="line.404"></a>
+<span class="sourceLineNo">405</span>                        String uniformPath = getUniformPath(entity);<a name="line.405"></a>
+<span class="sourceLineNo">406</span>                        if (uniformPath == null) {<a name="line.406"></a>
+<span class="sourceLineNo">407</span>                                return false;<a name="line.407"></a>
+<span class="sourceLineNo">408</span>                        }<a name="line.408"></a>
+<span class="sourceLineNo">409</span>                        return pattern.matcher(uniformPath).matches();<a name="line.409"></a>
+<span class="sourceLineNo">410</span>                };<a name="line.410"></a>
+<span class="sourceLineNo">411</span>        }<a name="line.411"></a>
+<span class="sourceLineNo">412</span><a name="line.412"></a>
+<span class="sourceLineNo">413</span>        /**<a name="line.413"></a>
+<span class="sourceLineNo">414</span>         * Matches all entities that are annotated with an annotation of given name<a name="line.414"></a>
+<span class="sourceLineNo">415</span>         * (excluding the '@' sign).<a name="line.415"></a>
+<span class="sourceLineNo">416</span>         */<a name="line.416"></a>
+<span class="sourceLineNo">417</span>        public static Predicate&lt;ShallowEntity&gt; annotated(String annotationName) {<a name="line.417"></a>
+<span class="sourceLineNo">418</span>                final String normalizedAnnotationName = StringUtils.stripPrefix(annotationName, "@");<a name="line.418"></a>
+<span class="sourceLineNo">419</span>                return entity -&gt; {<a name="line.419"></a>
+<span class="sourceLineNo">420</span>                        ShallowEntity parent = entity.getParent();<a name="line.420"></a>
+<span class="sourceLineNo">421</span>                        if (parent == null) {<a name="line.421"></a>
+<span class="sourceLineNo">422</span>                                return false;<a name="line.422"></a>
+<span class="sourceLineNo">423</span>                        }<a name="line.423"></a>
+<span class="sourceLineNo">424</span><a name="line.424"></a>
+<span class="sourceLineNo">425</span>                        // Special handling needed for JavaScript, since annotations are<a name="line.425"></a>
+<span class="sourceLineNo">426</span>                        // detected as decorators.<a name="line.426"></a>
+<span class="sourceLineNo">427</span>                        if (getLanguage(entity) == ELanguage.JAVASCRIPT) {<a name="line.427"></a>
+<span class="sourceLineNo">428</span>                                return hasAnnotation(annotationName, entity, parent.getChildren(), SubTypeNames.DECORATOR);<a name="line.428"></a>
+<span class="sourceLineNo">429</span>                        }<a name="line.429"></a>
+<span class="sourceLineNo">430</span><a name="line.430"></a>
+<span class="sourceLineNo">431</span>                        return hasAnnotation(normalizedAnnotationName, entity, parent.getChildren(), SubTypeNames.ANNOTATION);<a name="line.431"></a>
+<span class="sourceLineNo">432</span>                };<a name="line.432"></a>
+<span class="sourceLineNo">433</span>        }<a name="line.433"></a>
+<span class="sourceLineNo">434</span><a name="line.434"></a>
+<span class="sourceLineNo">435</span>        /**<a name="line.435"></a>
+<span class="sourceLineNo">436</span>         * Checks if the entity is annotated with the specified annotation. Traverses<a name="line.436"></a>
+<span class="sourceLineNo">437</span>         * the siblings before the entity in the children list, as more than one<a name="line.437"></a>
+<span class="sourceLineNo">438</span>         * annotation might exist.<a name="line.438"></a>
+<span class="sourceLineNo">439</span>         */<a name="line.439"></a>
+<span class="sourceLineNo">440</span>        private static boolean hasAnnotation(final String annotationName, ShallowEntity entity,<a name="line.440"></a>
+<span class="sourceLineNo">441</span>                        List&lt;ShallowEntity&gt; children, String subTypeNameToCheck) {<a name="line.441"></a>
+<span class="sourceLineNo">442</span><a name="line.442"></a>
+<span class="sourceLineNo">443</span>                int index = children.indexOf(entity);<a name="line.443"></a>
+<span class="sourceLineNo">444</span>                index -= 1;<a name="line.444"></a>
+<span class="sourceLineNo">445</span>                while (index &gt;= 0 &amp;&amp; children.get(index).getType() == EShallowEntityType.META) {<a name="line.445"></a>
+<span class="sourceLineNo">446</span>                        ShallowEntity metaEntity = children.get(index);<a name="line.446"></a>
+<span class="sourceLineNo">447</span>                        if (subTypeNameToCheck.equals(metaEntity.getSubtype())<a name="line.447"></a>
+<span class="sourceLineNo">448</span>                                        &amp;&amp; annotationName.equalsIgnoreCase(metaEntity.getName())) {<a name="line.448"></a>
+<span class="sourceLineNo">449</span>                                return true;<a name="line.449"></a>
+<span class="sourceLineNo">450</span>                        }<a name="line.450"></a>
+<span class="sourceLineNo">451</span>                        index -= 1;<a name="line.451"></a>
+<span class="sourceLineNo">452</span>                }<a name="line.452"></a>
+<span class="sourceLineNo">453</span>                return false;<a name="line.453"></a>
+<span class="sourceLineNo">454</span>        }<a name="line.454"></a>
+<span class="sourceLineNo">455</span><a name="line.455"></a>
+<span class="sourceLineNo">456</span>        /**<a name="line.456"></a>
+<span class="sourceLineNo">457</span>         * Matches simple getters, i.e. methods starting with "get" or "is" and with at<a name="line.457"></a>
+<span class="sourceLineNo">458</span>         * most one contained statement.<a name="line.458"></a>
+<span class="sourceLineNo">459</span>         */<a name="line.459"></a>
+<span class="sourceLineNo">460</span>        public static Predicate&lt;ShallowEntity&gt; simpleGetter() {<a name="line.460"></a>
+<span class="sourceLineNo">461</span>                return (simpleMethod("get").or(simpleMethod("is"))).and(modifierPredicate(ETokenType.ABSTRACT).negate());<a name="line.461"></a>
+<span class="sourceLineNo">462</span>        }<a name="line.462"></a>
+<span class="sourceLineNo">463</span><a name="line.463"></a>
+<span class="sourceLineNo">464</span>        /**<a name="line.464"></a>
+<span class="sourceLineNo">465</span>         * Matches simple setters, i.e. methods starting with "set" and with at most one<a name="line.465"></a>
+<span class="sourceLineNo">466</span>         * contained statement.<a name="line.466"></a>
+<span class="sourceLineNo">467</span>         */<a name="line.467"></a>
+<span class="sourceLineNo">468</span>        public static Predicate&lt;ShallowEntity&gt; simpleSetter() {<a name="line.468"></a>
+<span class="sourceLineNo">469</span>                return simpleMethod("set").and(modifierPredicate(ETokenType.ABSTRACT).negate());<a name="line.469"></a>
+<span class="sourceLineNo">470</span>        }<a name="line.470"></a>
+<span class="sourceLineNo">471</span><a name="line.471"></a>
+<span class="sourceLineNo">472</span>        /**<a name="line.472"></a>
+<span class="sourceLineNo">473</span>         * Matches simple setters, i.e. methods starting with "set" (case insensitive)<a name="line.473"></a>
+<span class="sourceLineNo">474</span>         * and with at most one contained statement.<a name="line.474"></a>
+<span class="sourceLineNo">475</span>         */<a name="line.475"></a>
+<span class="sourceLineNo">476</span>        public static Predicate&lt;ShallowEntity&gt; simpleSetterCaseInsensitive() {<a name="line.476"></a>
+<span class="sourceLineNo">477</span>                return simpleMethodCaseInsensitive("set").and(modifierPredicate(ETokenType.ABSTRACT).negate());<a name="line.477"></a>
+<span class="sourceLineNo">478</span>        }<a name="line.478"></a>
+<span class="sourceLineNo">479</span><a name="line.479"></a>
+<span class="sourceLineNo">480</span>        /**<a name="line.480"></a>
+<span class="sourceLineNo">481</span>         * Matches simple getters, i.e. methods starting with "get" or "is" (case<a name="line.481"></a>
+<span class="sourceLineNo">482</span>         * insensitive) and with at most one contained statement.<a name="line.482"></a>
+<span class="sourceLineNo">483</span>         */<a name="line.483"></a>
+<span class="sourceLineNo">484</span>        public static Predicate&lt;ShallowEntity&gt; simpleGetterCaseInsensitive() {<a name="line.484"></a>
+<span class="sourceLineNo">485</span>                return (simpleMethodCaseInsensitive("get").or(simpleMethodCaseInsensitive("is")))<a name="line.485"></a>
+<span class="sourceLineNo">486</span>                                .and(modifierPredicate(ETokenType.ABSTRACT).negate());<a name="line.486"></a>
+<span class="sourceLineNo">487</span>        }<a name="line.487"></a>
+<span class="sourceLineNo">488</span><a name="line.488"></a>
+<span class="sourceLineNo">489</span>        /**<a name="line.489"></a>
+<span class="sourceLineNo">490</span>         * Matches getter in CSharp generated by the automatic property generation<a name="line.490"></a>
+<span class="sourceLineNo">491</span>         * feature. These are recognized by the entity subtype '(empty) get'<a name="line.491"></a>
+<span class="sourceLineNo">492</span>         */<a name="line.492"></a>
+<span class="sourceLineNo">493</span>        public static Predicate&lt;ShallowEntity&gt; simpleCSharpGetter() {<a name="line.493"></a>
+<span class="sourceLineNo">494</span>                return entity -&gt; {<a name="line.494"></a>
+<span class="sourceLineNo">495</span>                        boolean isSimpleMethod = entity.getType() == EShallowEntityType.METHOD &amp;&amp; getStatementCount(entity) &lt;= 1;<a name="line.495"></a>
+<span class="sourceLineNo">496</span>                        return isSimpleMethod &amp;&amp; StringUtils.equalsOneOf(entity.getSubtype().toLowerCase(), SubTypeNames.GET,<a name="line.496"></a>
+<span class="sourceLineNo">497</span>                                        SubTypeNames.EMPTY_GET);<a name="line.497"></a>
+<span class="sourceLineNo">498</span>                };<a name="line.498"></a>
+<span class="sourceLineNo">499</span>        }<a name="line.499"></a>
+<span class="sourceLineNo">500</span><a name="line.500"></a>
+<span class="sourceLineNo">501</span>        /**<a name="line.501"></a>
+<span class="sourceLineNo">502</span>         * Matches setter in CSharp generated by the automatic property generation<a name="line.502"></a>
+<span class="sourceLineNo">503</span>         * feature. These are recognized by the entity subtype '(empty) set'<a name="line.503"></a>
+<span class="sourceLineNo">504</span>         */<a name="line.504"></a>
+<span class="sourceLineNo">505</span>        public static Predicate&lt;ShallowEntity&gt; simpleCSharpSetter() {<a name="line.505"></a>
+<span class="sourceLineNo">506</span>                return entity -&gt; {<a name="line.506"></a>
+<span class="sourceLineNo">507</span>                        boolean isSimpleMethod = entity.getType() == EShallowEntityType.METHOD &amp;&amp; getStatementCount(entity) &lt;= 1;<a name="line.507"></a>
+<span class="sourceLineNo">508</span>                        return isSimpleMethod &amp;&amp; StringUtils.equalsOneOf(entity.getSubtype().toLowerCase(), SubTypeNames.SET,<a name="line.508"></a>
+<span class="sourceLineNo">509</span>                                        SubTypeNames.EMPTY_SET);<a name="line.509"></a>
+<span class="sourceLineNo">510</span>                };<a name="line.510"></a>
+<span class="sourceLineNo">511</span>        }<a name="line.511"></a>
+<span class="sourceLineNo">512</span><a name="line.512"></a>
+<span class="sourceLineNo">513</span>        /**<a name="line.513"></a>
+<span class="sourceLineNo">514</span>         * Matches simple methods with the given prefix. A method is simple, if it<a name="line.514"></a>
+<span class="sourceLineNo">515</span>         * contains as most one statement.<a name="line.515"></a>
+<span class="sourceLineNo">516</span>         */<a name="line.516"></a>
+<span class="sourceLineNo">517</span>        public static Predicate&lt;ShallowEntity&gt; simpleMethod(String namePrefix) {<a name="line.517"></a>
+<span class="sourceLineNo">518</span>                return entity -&gt; {<a name="line.518"></a>
+<span class="sourceLineNo">519</span>                        boolean isSimpleMethod = entity.getType() == EShallowEntityType.METHOD &amp;&amp; getStatementCount(entity) &lt;= 1;<a name="line.519"></a>
+<span class="sourceLineNo">520</span>                        return isSimpleMethod &amp;&amp; (entity.getName() != null) &amp;&amp; entity.getName().startsWith(namePrefix);<a name="line.520"></a>
+<span class="sourceLineNo">521</span>                };<a name="line.521"></a>
+<span class="sourceLineNo">522</span>        }<a name="line.522"></a>
+<span class="sourceLineNo">523</span><a name="line.523"></a>
+<span class="sourceLineNo">524</span>        /**<a name="line.524"></a>
+<span class="sourceLineNo">525</span>         * Matches simple methods with the given prefix (case insensitive). A method is<a name="line.525"></a>
+<span class="sourceLineNo">526</span>         * simple, if it contains as most one statement.<a name="line.526"></a>
+<span class="sourceLineNo">527</span>         */<a name="line.527"></a>
+<span class="sourceLineNo">528</span>        public static Predicate&lt;ShallowEntity&gt; simpleMethodCaseInsensitive(String namePrefix) {<a name="line.528"></a>
+<span class="sourceLineNo">529</span>                return entity -&gt; {<a name="line.529"></a>
+<span class="sourceLineNo">530</span>                        boolean isSimpleMethod = entity.getType() == EShallowEntityType.METHOD &amp;&amp; getStatementCount(entity) &lt;= 1;<a name="line.530"></a>
+<span class="sourceLineNo">531</span>                        return isSimpleMethod &amp;&amp; (entity.getName() != null)<a name="line.531"></a>
+<span class="sourceLineNo">532</span>                                        &amp;&amp; entity.getName().toLowerCase().startsWith(namePrefix.toLowerCase());<a name="line.532"></a>
+<span class="sourceLineNo">533</span>                };<a name="line.533"></a>
+<span class="sourceLineNo">534</span>        }<a name="line.534"></a>
+<span class="sourceLineNo">535</span><a name="line.535"></a>
+<span class="sourceLineNo">536</span>        /**<a name="line.536"></a>
+<span class="sourceLineNo">537</span>         * Returns the number of statements contained as children of the entity.<a name="line.537"></a>
+<span class="sourceLineNo">538</span>         */<a name="line.538"></a>
+<span class="sourceLineNo">539</span>        private static int getStatementCount(ShallowEntity entity) {<a name="line.539"></a>
+<span class="sourceLineNo">540</span>                return ShallowEntityTraversalUtils.listEntitiesOfType(entity.getChildren(), EShallowEntityType.STATEMENT)<a name="line.540"></a>
+<span class="sourceLineNo">541</span>                                .size();<a name="line.541"></a>
+<span class="sourceLineNo">542</span>        }<a name="line.542"></a>
+<span class="sourceLineNo">543</span>}<a name="line.543"></a>
 
 
 

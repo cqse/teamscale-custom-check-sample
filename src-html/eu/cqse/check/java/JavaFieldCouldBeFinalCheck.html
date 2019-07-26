@@ -24,89 +24,126 @@
 <span class="sourceLineNo">016</span>+-------------------------------------------------------------------------*/<a name="line.16"></a>
 <span class="sourceLineNo">017</span>package eu.cqse.check.java;<a name="line.17"></a>
 <span class="sourceLineNo">018</span><a name="line.18"></a>
-<span class="sourceLineNo">019</span>import java.util.List;<a name="line.19"></a>
-<span class="sourceLineNo">020</span>import java.util.Set;<a name="line.20"></a>
-<span class="sourceLineNo">021</span><a name="line.21"></a>
-<span class="sourceLineNo">022</span>import org.conqat.lib.commons.collections.CollectionUtils;<a name="line.22"></a>
-<span class="sourceLineNo">023</span><a name="line.23"></a>
-<span class="sourceLineNo">024</span>import eu.cqse.check.clike.CLikeFieldUsageCheckBase;<a name="line.24"></a>
-<span class="sourceLineNo">025</span>import eu.cqse.check.framework.core.ACheck;<a name="line.25"></a>
-<span class="sourceLineNo">026</span>import eu.cqse.check.framework.core.CheckException;<a name="line.26"></a>
-<span class="sourceLineNo">027</span>import eu.cqse.check.framework.core.CheckGroupNames;<a name="line.27"></a>
-<span class="sourceLineNo">028</span>import eu.cqse.check.framework.core.ECheckParameter;<a name="line.28"></a>
-<span class="sourceLineNo">029</span>import eu.cqse.check.framework.core.EFindingEnablement;<a name="line.29"></a>
-<span class="sourceLineNo">030</span>import eu.cqse.check.framework.core.option.ACheckOption;<a name="line.30"></a>
-<span class="sourceLineNo">031</span>import eu.cqse.check.framework.scanner.ELanguage;<a name="line.31"></a>
-<span class="sourceLineNo">032</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.32"></a>
-<span class="sourceLineNo">033</span>import eu.cqse.check.framework.shallowparser.SubTypeNames;<a name="line.33"></a>
-<span class="sourceLineNo">034</span>import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;<a name="line.34"></a>
-<span class="sourceLineNo">035</span>import eu.cqse.check.framework.util.LanguageFeatureParser;<a name="line.35"></a>
-<span class="sourceLineNo">036</span>import eu.cqse.check.framework.util.filter.JavaAnnotatedEntityFilter;<a name="line.36"></a>
-<span class="sourceLineNo">037</span><a name="line.37"></a>
-<span class="sourceLineNo">038</span>/**<a name="line.38"></a>
-<span class="sourceLineNo">039</span> * {@ConQAT.Doc}<a name="line.39"></a>
-<span class="sourceLineNo">040</span> */<a name="line.40"></a>
-<span class="sourceLineNo">041</span>@ACheck(name = "Field could be final (Java)", description = "Fields that can be made final, should be marked as such to avoid accidental assignment to them.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.YELLOW, languages = {<a name="line.41"></a>
-<span class="sourceLineNo">042</span>                ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE, ECheckParameter.TYPE_RESOLUTION })<a name="line.42"></a>
-<span class="sourceLineNo">043</span>public class JavaFieldCouldBeFinalCheck extends CLikeFieldUsageCheckBase {<a name="line.43"></a>
-<span class="sourceLineNo">044</span><a name="line.44"></a>
-<span class="sourceLineNo">045</span>        /** Description for check option */<a name="line.45"></a>
-<span class="sourceLineNo">046</span>        private static final String CHECK_OPTION_DESCRIPTION = "List of Java annotations to exclude class fields from being reported as needing to be declared final";<a name="line.46"></a>
-<span class="sourceLineNo">047</span><a name="line.47"></a>
-<span class="sourceLineNo">048</span>        /**<a name="line.48"></a>
-<span class="sourceLineNo">049</span>         * Filter for fields with having an annotation contained in<a name="line.49"></a>
-<span class="sourceLineNo">050</span>         * {@link #annotations}.<a name="line.50"></a>
-<span class="sourceLineNo">051</span>         */<a name="line.51"></a>
-<span class="sourceLineNo">052</span>        private JavaAnnotatedEntityFilter annotatedFieldFilter;<a name="line.52"></a>
-<span class="sourceLineNo">053</span><a name="line.53"></a>
-<span class="sourceLineNo">054</span>        /** List of annotations to filter out fields. */<a name="line.54"></a>
-<span class="sourceLineNo">055</span>        @ACheckOption(name = "Java annotations for non-final fields", description = CHECK_OPTION_DESCRIPTION)<a name="line.55"></a>
-<span class="sourceLineNo">056</span>        private Set&lt;String&gt; annotations = CollectionUtils.asHashSet("Inject", "Autowired", "SpringBean", "EJB");<a name="line.56"></a>
+<span class="sourceLineNo">019</span>import java.util.HashSet;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import java.util.List;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import java.util.Set;<a name="line.21"></a>
+<span class="sourceLineNo">022</span><a name="line.22"></a>
+<span class="sourceLineNo">023</span>import org.conqat.lib.commons.collections.CollectionUtils;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import org.conqat.lib.commons.collections.Pair;<a name="line.24"></a>
+<span class="sourceLineNo">025</span><a name="line.25"></a>
+<span class="sourceLineNo">026</span>import eu.cqse.check.clike.CLikeFieldUsageCheckBase;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import eu.cqse.check.framework.core.ACheck;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import eu.cqse.check.framework.core.CheckException;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>import eu.cqse.check.framework.core.CheckGroupNames;<a name="line.29"></a>
+<span class="sourceLineNo">030</span>import eu.cqse.check.framework.core.ECheckParameter;<a name="line.30"></a>
+<span class="sourceLineNo">031</span>import eu.cqse.check.framework.core.EFindingEnablement;<a name="line.31"></a>
+<span class="sourceLineNo">032</span>import eu.cqse.check.framework.core.option.ACheckOption;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import eu.cqse.check.framework.scanner.ELanguage;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import eu.cqse.check.framework.scanner.ETokenType;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import eu.cqse.check.framework.shallowparser.SubTypeNames;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import eu.cqse.check.framework.shallowparser.TokenStreamUtils;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import eu.cqse.check.framework.util.LanguageFeatureParser;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import eu.cqse.check.framework.util.filter.JavaAnnotatedEntityFilter;<a name="line.40"></a>
+<span class="sourceLineNo">041</span><a name="line.41"></a>
+<span class="sourceLineNo">042</span>/**<a name="line.42"></a>
+<span class="sourceLineNo">043</span> * {@ConQAT.Doc}<a name="line.43"></a>
+<span class="sourceLineNo">044</span> */<a name="line.44"></a>
+<span class="sourceLineNo">045</span>@ACheck(name = "Field could be final (Java)", description = "Fields that can be made `final` should be marked as such to avoid accidental assignment to them.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.YELLOW, languages = {<a name="line.45"></a>
+<span class="sourceLineNo">046</span>                ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE, ECheckParameter.TYPE_RESOLUTION })<a name="line.46"></a>
+<span class="sourceLineNo">047</span>public class JavaFieldCouldBeFinalCheck extends CLikeFieldUsageCheckBase {<a name="line.47"></a>
+<span class="sourceLineNo">048</span><a name="line.48"></a>
+<span class="sourceLineNo">049</span>        /** Description for check option */<a name="line.49"></a>
+<span class="sourceLineNo">050</span>        private static final String CHECK_OPTION_DESCRIPTION = "List of Java annotations to exclude class fields from being reported as needing to be declared final";<a name="line.50"></a>
+<span class="sourceLineNo">051</span><a name="line.51"></a>
+<span class="sourceLineNo">052</span>        /**<a name="line.52"></a>
+<span class="sourceLineNo">053</span>         * Filter for fields with having an annotation contained in<a name="line.53"></a>
+<span class="sourceLineNo">054</span>         * {@link #annotations}.<a name="line.54"></a>
+<span class="sourceLineNo">055</span>         */<a name="line.55"></a>
+<span class="sourceLineNo">056</span>        private JavaAnnotatedEntityFilter annotatedFieldFilter;<a name="line.56"></a>
 <span class="sourceLineNo">057</span><a name="line.57"></a>
-<span class="sourceLineNo">058</span>        /** Constructor. */<a name="line.58"></a>
-<span class="sourceLineNo">059</span>        public JavaFieldCouldBeFinalCheck() {<a name="line.59"></a>
-<span class="sourceLineNo">060</span>                super(LanguageFeatureParser.JAVA);<a name="line.60"></a>
-<span class="sourceLineNo">061</span>        }<a name="line.61"></a>
-<span class="sourceLineNo">062</span><a name="line.62"></a>
-<span class="sourceLineNo">063</span>        /** {@inheritDoc} */<a name="line.63"></a>
-<span class="sourceLineNo">064</span>        @Override<a name="line.64"></a>
-<span class="sourceLineNo">065</span>        public void initialize() throws CheckException {<a name="line.65"></a>
-<span class="sourceLineNo">066</span>                super.initialize();<a name="line.66"></a>
-<span class="sourceLineNo">067</span>                annotatedFieldFilter = new JavaAnnotatedEntityFilter(annotations);<a name="line.67"></a>
-<span class="sourceLineNo">068</span>        }<a name="line.68"></a>
-<span class="sourceLineNo">069</span><a name="line.69"></a>
-<span class="sourceLineNo">070</span>        /** {@inheritDoc} */<a name="line.70"></a>
-<span class="sourceLineNo">071</span>        @Override<a name="line.71"></a>
-<span class="sourceLineNo">072</span>        protected boolean isFiltered(ShallowEntity field) {<a name="line.72"></a>
-<span class="sourceLineNo">073</span>                return annotatedFieldFilter.isFiltered(field);<a name="line.73"></a>
-<span class="sourceLineNo">074</span>        }<a name="line.74"></a>
-<span class="sourceLineNo">075</span><a name="line.75"></a>
-<span class="sourceLineNo">076</span>        /** {@inheritDoc} */<a name="line.76"></a>
-<span class="sourceLineNo">077</span>        @Override<a name="line.77"></a>
-<span class="sourceLineNo">078</span>        protected String getFieldSelectionXPath() {<a name="line.78"></a>
-<span class="sourceLineNo">079</span>                return "//TYPE[subtype('" + SubTypeNames.CLASS + "')]/ATTRIBUTE[subtype('" + SubTypeNames.ATTRIBUTE<a name="line.79"></a>
-<span class="sourceLineNo">080</span>                                + "') and anymodifier('private') and not(anymodifier('static', 'final'))]";<a name="line.80"></a>
-<span class="sourceLineNo">081</span>        }<a name="line.81"></a>
-<span class="sourceLineNo">082</span><a name="line.82"></a>
-<span class="sourceLineNo">083</span>        /** {@inheritDoc} */<a name="line.83"></a>
-<span class="sourceLineNo">084</span>        @Override<a name="line.84"></a>
-<span class="sourceLineNo">085</span>        protected String getFindingMessage(String fieldName) {<a name="line.85"></a>
-<span class="sourceLineNo">086</span>                return "Field '" + fieldName + "' could be made final.";<a name="line.86"></a>
-<span class="sourceLineNo">087</span>        }<a name="line.87"></a>
-<span class="sourceLineNo">088</span><a name="line.88"></a>
-<span class="sourceLineNo">089</span>        /** {@inheritDoc} */<a name="line.89"></a>
-<span class="sourceLineNo">090</span>        @Override<a name="line.90"></a>
-<span class="sourceLineNo">091</span>        protected String getProcessedEntitiesXPath() {<a name="line.91"></a>
-<span class="sourceLineNo">092</span>                return "descendant::METHOD[not(subtype('" + SubTypeNames.CONSTRUCTOR + "') or subtype('"<a name="line.92"></a>
-<span class="sourceLineNo">093</span>                                + SubTypeNames.STATIC_INITIALIZER + "'))] | descendant::STATEMENT";<a name="line.93"></a>
-<span class="sourceLineNo">094</span>        }<a name="line.94"></a>
-<span class="sourceLineNo">095</span><a name="line.95"></a>
-<span class="sourceLineNo">096</span>        /** {@inheritDoc} */<a name="line.96"></a>
-<span class="sourceLineNo">097</span>        @Override<a name="line.97"></a>
-<span class="sourceLineNo">098</span>        protected boolean analyzeTokens(List&lt;IToken&gt; tokens, String fieldName, boolean isShadowed) {<a name="line.98"></a>
-<span class="sourceLineNo">099</span>                return !languageFeatureParser.getVariableWritesFromTokens(tokens, fieldName, true, isShadowed).isEmpty();<a name="line.99"></a>
-<span class="sourceLineNo">100</span>        }<a name="line.100"></a>
-<span class="sourceLineNo">101</span>}<a name="line.101"></a>
+<span class="sourceLineNo">058</span>        /** List of annotations to filter out fields. */<a name="line.58"></a>
+<span class="sourceLineNo">059</span>        @ACheckOption(name = "Java annotations for non-final fields", description = CHECK_OPTION_DESCRIPTION)<a name="line.59"></a>
+<span class="sourceLineNo">060</span>        private Set&lt;String&gt; annotations = CollectionUtils.asHashSet("Inject", "Autowired", "SpringBean", "EJB");<a name="line.60"></a>
+<span class="sourceLineNo">061</span><a name="line.61"></a>
+<span class="sourceLineNo">062</span>        /** Constructor. */<a name="line.62"></a>
+<span class="sourceLineNo">063</span>        public JavaFieldCouldBeFinalCheck() {<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                super(LanguageFeatureParser.JAVA);<a name="line.64"></a>
+<span class="sourceLineNo">065</span>        }<a name="line.65"></a>
+<span class="sourceLineNo">066</span><a name="line.66"></a>
+<span class="sourceLineNo">067</span>        /** {@inheritDoc} */<a name="line.67"></a>
+<span class="sourceLineNo">068</span>        @Override<a name="line.68"></a>
+<span class="sourceLineNo">069</span>        public void initialize() throws CheckException {<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                super.initialize();<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                annotatedFieldFilter = new JavaAnnotatedEntityFilter();<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                annotatedFieldFilter.addAnnotations(annotations);<a name="line.72"></a>
+<span class="sourceLineNo">073</span>        }<a name="line.73"></a>
+<span class="sourceLineNo">074</span><a name="line.74"></a>
+<span class="sourceLineNo">075</span>        /**<a name="line.75"></a>
+<span class="sourceLineNo">076</span>         * Filter private fields that have been initialized at their points of<a name="line.76"></a>
+<span class="sourceLineNo">077</span>         * declaration. These fields were initially processed before and there were no<a name="line.77"></a>
+<span class="sourceLineNo">078</span>         * write occurrences into them.<a name="line.78"></a>
+<span class="sourceLineNo">079</span>         */<a name="line.79"></a>
+<span class="sourceLineNo">080</span>        private static Set&lt;Pair&lt;IToken, ShallowEntity&gt;&gt; filterFieldsWithAssignmentAtDeclaration(<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                        Set&lt;Pair&lt;IToken, ShallowEntity&gt;&gt; fields) {<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                Set&lt;Pair&lt;IToken, ShallowEntity&gt;&gt; result = new HashSet&lt;&gt;();<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                for (Pair&lt;IToken, ShallowEntity&gt; fieldTokenToParentEntity : fields) {<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                        ShallowEntity field = fieldTokenToParentEntity.getSecond();<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                        if (TokenStreamUtils.contains(field.ownEndTokens(), ETokenType.EQ)) {<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                                result.add(fieldTokenToParentEntity);<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                        }<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                }<a name="line.88"></a>
+<span class="sourceLineNo">089</span><a name="line.89"></a>
+<span class="sourceLineNo">090</span>                return result;<a name="line.90"></a>
+<span class="sourceLineNo">091</span>        }<a name="line.91"></a>
+<span class="sourceLineNo">092</span><a name="line.92"></a>
+<span class="sourceLineNo">093</span>        /** {@inheritDoc} */<a name="line.93"></a>
+<span class="sourceLineNo">094</span>        @Override<a name="line.94"></a>
+<span class="sourceLineNo">095</span>        protected boolean isFiltered(ShallowEntity field) {<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                return annotatedFieldFilter.isFiltered(field);<a name="line.96"></a>
+<span class="sourceLineNo">097</span>        }<a name="line.97"></a>
+<span class="sourceLineNo">098</span><a name="line.98"></a>
+<span class="sourceLineNo">099</span>        /** {@inheritDoc} */<a name="line.99"></a>
+<span class="sourceLineNo">100</span>        @Override<a name="line.100"></a>
+<span class="sourceLineNo">101</span>        protected String getFieldSelectionXPath() {<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                return "//TYPE[subtype('" + SubTypeNames.CLASS + "')]/ATTRIBUTE[subtype('" + SubTypeNames.ATTRIBUTE<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                                + "') and anymodifier('private') and not(anymodifier('static', 'final'))]";<a name="line.103"></a>
+<span class="sourceLineNo">104</span>        }<a name="line.104"></a>
+<span class="sourceLineNo">105</span><a name="line.105"></a>
+<span class="sourceLineNo">106</span>        /** {@inheritDoc} */<a name="line.106"></a>
+<span class="sourceLineNo">107</span>        @Override<a name="line.107"></a>
+<span class="sourceLineNo">108</span>        protected String getFindingMessage(String fieldName) {<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                return "Field `" + fieldName + "` could be made final";<a name="line.109"></a>
+<span class="sourceLineNo">110</span>        }<a name="line.110"></a>
+<span class="sourceLineNo">111</span><a name="line.111"></a>
+<span class="sourceLineNo">112</span>        /** {@inheritDoc} */<a name="line.112"></a>
+<span class="sourceLineNo">113</span>        @Override<a name="line.113"></a>
+<span class="sourceLineNo">114</span>        protected String getProcessedEntitiesXPath() {<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                return "descendant::METHOD[not(subtype('" + SubTypeNames.CONSTRUCTOR + "') or subtype('"<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                                + SubTypeNames.STATIC_INITIALIZER + "'))] | descendant::STATEMENT";<a name="line.116"></a>
+<span class="sourceLineNo">117</span>        }<a name="line.117"></a>
+<span class="sourceLineNo">118</span><a name="line.118"></a>
+<span class="sourceLineNo">119</span>        @Override<a name="line.119"></a>
+<span class="sourceLineNo">120</span>        protected Set&lt;Pair&lt;IToken, ShallowEntity&gt;&gt; filterFieldsWithFinding(<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                        Set&lt;Pair&lt;IToken, ShallowEntity&gt;&gt; unanalyzedFieldTokenToParentEntity,<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                        Set&lt;Pair&lt;IToken, ShallowEntity&gt;&gt; failedAnalyzedFieldTokenToParentEntity) {<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                Set&lt;Pair&lt;IToken, ShallowEntity&gt;&gt; filteredFailedFieldTokenToParentEntity = failedAnalyzedFieldTokenToParentEntity;<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                if (unanalyzedFieldTokenToParentEntity.equals(failedAnalyzedFieldTokenToParentEntity)) {<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                        filteredFailedFieldTokenToParentEntity = filterFieldsWithAssignmentAtDeclaration(<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                                        failedAnalyzedFieldTokenToParentEntity);<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                }<a name="line.127"></a>
+<span class="sourceLineNo">128</span><a name="line.128"></a>
+<span class="sourceLineNo">129</span>                return super.filterFieldsWithFinding(unanalyzedFieldTokenToParentEntity,<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                                filteredFailedFieldTokenToParentEntity);<a name="line.130"></a>
+<span class="sourceLineNo">131</span>        }<a name="line.131"></a>
+<span class="sourceLineNo">132</span><a name="line.132"></a>
+<span class="sourceLineNo">133</span>        /** {@inheritDoc} */<a name="line.133"></a>
+<span class="sourceLineNo">134</span>        @Override<a name="line.134"></a>
+<span class="sourceLineNo">135</span>        protected boolean analyzeTokens(List&lt;IToken&gt; tokens, String fieldName, boolean isShadowed) {<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                return !languageFeatureParser.getVariableWritesFromTokens(tokens, fieldName, true, isShadowed).isEmpty();<a name="line.136"></a>
+<span class="sourceLineNo">137</span>        }<a name="line.137"></a>
+<span class="sourceLineNo">138</span>}<a name="line.138"></a>
 
 
 

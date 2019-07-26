@@ -32,87 +32,111 @@
 <span class="sourceLineNo">024</span>import java.util.Arrays;<a name="line.24"></a>
 <span class="sourceLineNo">025</span>import java.util.List;<a name="line.25"></a>
 <span class="sourceLineNo">026</span><a name="line.26"></a>
-<span class="sourceLineNo">027</span>import eu.cqse.check.framework.preprocessor.IPreprocessor;<a name="line.27"></a>
-<span class="sourceLineNo">028</span>import eu.cqse.check.framework.scanner.ETokenType.ETokenClass;<a name="line.28"></a>
-<span class="sourceLineNo">029</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.29"></a>
-<span class="sourceLineNo">030</span>import eu.cqse.check.framework.shallowparser.NestingAwareTokenIterator;<a name="line.30"></a>
-<span class="sourceLineNo">031</span>import eu.cqse.check.framework.shallowparser.TokenStreamUtils;<a name="line.31"></a>
-<span class="sourceLineNo">032</span><a name="line.32"></a>
-<span class="sourceLineNo">033</span>/**<a name="line.33"></a>
-<span class="sourceLineNo">034</span> * Preprocessor for ABAP. It rolls out so-called "chain sentences" in order to<a name="line.34"></a>
-<span class="sourceLineNo">035</span> * make parsing easier.<a name="line.35"></a>
-<span class="sourceLineNo">036</span> *<a name="line.36"></a>
-<span class="sourceLineNo">037</span> * For example, the following two code snippets are equivalent:<a name="line.37"></a>
-<span class="sourceLineNo">038</span> * &lt;ul&gt;<a name="line.38"></a>
-<span class="sourceLineNo">039</span> * &lt;li&gt;&lt;code&gt;DATA: a TYPE i, b TYPE x.&lt;/code&gt;&lt;/li&gt;<a name="line.39"></a>
-<span class="sourceLineNo">040</span> * &lt;li&gt;&lt;code&gt;DATA a TYPE i. DATA b TYPE x.&lt;/code&gt;&lt;/li&gt;<a name="line.40"></a>
-<span class="sourceLineNo">041</span> * &lt;/ul&gt;<a name="line.41"></a>
-<span class="sourceLineNo">042</span> *<a name="line.42"></a>
-<span class="sourceLineNo">043</span> * Basically, whenever there is a colon, this means that every statement after a<a name="line.43"></a>
-<span class="sourceLineNo">044</span> * comma begins with whatever came before the colon.<a name="line.44"></a>
-<span class="sourceLineNo">045</span> */<a name="line.45"></a>
-<span class="sourceLineNo">046</span>public class AbapPreprocessor implements IPreprocessor {<a name="line.46"></a>
-<span class="sourceLineNo">047</span><a name="line.47"></a>
-<span class="sourceLineNo">048</span>        /**<a name="line.48"></a>
-<span class="sourceLineNo">049</span>         * Used to indicate that a certain token was not (yet) found.<a name="line.49"></a>
-<span class="sourceLineNo">050</span>         */<a name="line.50"></a>
-<span class="sourceLineNo">051</span>        private static final int NO_POSITION = -1;<a name="line.51"></a>
-<span class="sourceLineNo">052</span><a name="line.52"></a>
-<span class="sourceLineNo">053</span>        /** {@inheritDoc} */<a name="line.53"></a>
-<span class="sourceLineNo">054</span>        @Override<a name="line.54"></a>
-<span class="sourceLineNo">055</span>        public List&lt;IToken&gt; preprocess(String uniformPath, List&lt;IToken&gt; tokens) {<a name="line.55"></a>
-<span class="sourceLineNo">056</span>                List&lt;IToken&gt; result = new ArrayList&lt;&gt;();<a name="line.56"></a>
-<span class="sourceLineNo">057</span>                int lastDot = NO_POSITION;<a name="line.57"></a>
-<span class="sourceLineNo">058</span>                int lastColon = NO_POSITION;<a name="line.58"></a>
-<span class="sourceLineNo">059</span><a name="line.59"></a>
-<span class="sourceLineNo">060</span>                NestingAwareTokenIterator iterator = new NestingAwareTokenIterator(tokens, 0, Arrays.asList(LPAREN),<a name="line.60"></a>
-<span class="sourceLineNo">061</span>                                Arrays.asList(RPAREN));<a name="line.61"></a>
-<span class="sourceLineNo">062</span>                while (iterator.hasNext()) {<a name="line.62"></a>
-<span class="sourceLineNo">063</span>                        IToken token = iterator.next();<a name="line.63"></a>
-<span class="sourceLineNo">064</span>                        int currentIndex = iterator.getCurrentIndex();<a name="line.64"></a>
-<span class="sourceLineNo">065</span>                        switch (token.getType()) {<a name="line.65"></a>
-<span class="sourceLineNo">066</span>                        case COLON:<a name="line.66"></a>
-<span class="sourceLineNo">067</span>                                lastColon = currentIndex;<a name="line.67"></a>
-<span class="sourceLineNo">068</span>                                // Remove the colon by not inserting it into the result list.<a name="line.68"></a>
-<span class="sourceLineNo">069</span>                                break;<a name="line.69"></a>
-<span class="sourceLineNo">070</span>                        case COMMA:<a name="line.70"></a>
-<span class="sourceLineNo">071</span>                                if (!iterator.isTopLevel() || lastColon == NO_POSITION) {<a name="line.71"></a>
-<span class="sourceLineNo">072</span>                                        result.add(token);<a name="line.72"></a>
-<span class="sourceLineNo">073</span>                                        break;<a name="line.73"></a>
-<span class="sourceLineNo">074</span>                                }<a name="line.74"></a>
-<span class="sourceLineNo">075</span>                                result.add(TokenStreamUtils.createToken(token, ".", DOT));<a name="line.75"></a>
-<span class="sourceLineNo">076</span><a name="line.76"></a>
-<span class="sourceLineNo">077</span>                                IToken reference = getReferenceToken(tokens, currentIndex);<a name="line.77"></a>
-<span class="sourceLineNo">078</span>                                List&lt;IToken&gt; toRepeat = tokens.subList(lastDot + 1, lastColon);<a name="line.78"></a>
-<span class="sourceLineNo">079</span>                                result.addAll(TokenStreamUtils.copyTokens(reference, toRepeat));<a name="line.79"></a>
-<span class="sourceLineNo">080</span>                                break;<a name="line.80"></a>
-<span class="sourceLineNo">081</span>                        case DOT:<a name="line.81"></a>
-<span class="sourceLineNo">082</span>                                lastDot = currentIndex;<a name="line.82"></a>
-<span class="sourceLineNo">083</span>                                lastColon = NO_POSITION;<a name="line.83"></a>
-<span class="sourceLineNo">084</span>                                // fall-through intended<a name="line.84"></a>
-<span class="sourceLineNo">085</span>                        default:<a name="line.85"></a>
-<span class="sourceLineNo">086</span>                                result.add(token);<a name="line.86"></a>
-<span class="sourceLineNo">087</span>                        }<a name="line.87"></a>
-<span class="sourceLineNo">088</span>                }<a name="line.88"></a>
-<span class="sourceLineNo">089</span><a name="line.89"></a>
-<span class="sourceLineNo">090</span>                return result;<a name="line.90"></a>
-<span class="sourceLineNo">091</span>        }<a name="line.91"></a>
-<span class="sourceLineNo">092</span><a name="line.92"></a>
-<span class="sourceLineNo">093</span>        /**<a name="line.93"></a>
-<span class="sourceLineNo">094</span>         * Gets the best possible reference token for the tokens to be duplicated.<a name="line.94"></a>
-<span class="sourceLineNo">095</span>         * Usually the comma is at the end of the line, and the new statement starts<a name="line.95"></a>
-<span class="sourceLineNo">096</span>         * in the next line, so we return the token following the comma, if it<a name="line.96"></a>
-<span class="sourceLineNo">097</span>         * exists. We also take care to skip over any comment tokens.<a name="line.97"></a>
-<span class="sourceLineNo">098</span>         */<a name="line.98"></a>
-<span class="sourceLineNo">099</span>        private static IToken getReferenceToken(List&lt;IToken&gt; tokens, int commaIndex) {<a name="line.99"></a>
-<span class="sourceLineNo">100</span>                for (IToken token : tokens.subList(commaIndex + 1, tokens.size())) {<a name="line.100"></a>
-<span class="sourceLineNo">101</span>                        if (token.getType().getTokenClass() != ETokenClass.COMMENT) {<a name="line.101"></a>
-<span class="sourceLineNo">102</span>                                return token;<a name="line.102"></a>
-<span class="sourceLineNo">103</span>                        }<a name="line.103"></a>
-<span class="sourceLineNo">104</span>                }<a name="line.104"></a>
-<span class="sourceLineNo">105</span>                return tokens.get(commaIndex);<a name="line.105"></a>
-<span class="sourceLineNo">106</span>        }<a name="line.106"></a>
-<span class="sourceLineNo">107</span>}<a name="line.107"></a>
+<span class="sourceLineNo">027</span>import org.conqat.lib.commons.collections.UnmodifiableList;<a name="line.27"></a>
+<span class="sourceLineNo">028</span><a name="line.28"></a>
+<span class="sourceLineNo">029</span>import eu.cqse.check.framework.preprocessor.IPreprocessor;<a name="line.29"></a>
+<span class="sourceLineNo">030</span>import eu.cqse.check.framework.scanner.ETokenType.ETokenClass;<a name="line.30"></a>
+<span class="sourceLineNo">031</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.31"></a>
+<span class="sourceLineNo">032</span>import eu.cqse.check.framework.shallowparser.NestingAwareTokenIterator;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import eu.cqse.check.framework.shallowparser.TokenStreamUtils;<a name="line.33"></a>
+<span class="sourceLineNo">034</span><a name="line.34"></a>
+<span class="sourceLineNo">035</span>/**<a name="line.35"></a>
+<span class="sourceLineNo">036</span> * Preprocessor for ABAP. It rolls out so-called "chain sentences" in order to<a name="line.36"></a>
+<span class="sourceLineNo">037</span> * make parsing easier.<a name="line.37"></a>
+<span class="sourceLineNo">038</span> *<a name="line.38"></a>
+<span class="sourceLineNo">039</span> * For example, the following two code snippets are equivalent:<a name="line.39"></a>
+<span class="sourceLineNo">040</span> * &lt;ul&gt;<a name="line.40"></a>
+<span class="sourceLineNo">041</span> * &lt;li&gt;&lt;code&gt;DATA: a TYPE i, b TYPE x.&lt;/code&gt;&lt;/li&gt;<a name="line.41"></a>
+<span class="sourceLineNo">042</span> * &lt;li&gt;&lt;code&gt;DATA a TYPE i. DATA b TYPE x.&lt;/code&gt;&lt;/li&gt;<a name="line.42"></a>
+<span class="sourceLineNo">043</span> * &lt;/ul&gt;<a name="line.43"></a>
+<span class="sourceLineNo">044</span> *<a name="line.44"></a>
+<span class="sourceLineNo">045</span> * Basically, whenever there is a colon, this means that every statement after a<a name="line.45"></a>
+<span class="sourceLineNo">046</span> * comma begins with whatever came before the colon.<a name="line.46"></a>
+<span class="sourceLineNo">047</span> */<a name="line.47"></a>
+<span class="sourceLineNo">048</span>public class AbapPreprocessor implements IPreprocessor {<a name="line.48"></a>
+<span class="sourceLineNo">049</span><a name="line.49"></a>
+<span class="sourceLineNo">050</span>        /**<a name="line.50"></a>
+<span class="sourceLineNo">051</span>         * Used to indicate that a certain token was not (yet) found.<a name="line.51"></a>
+<span class="sourceLineNo">052</span>         */<a name="line.52"></a>
+<span class="sourceLineNo">053</span>        private static final int NO_POSITION = -1;<a name="line.53"></a>
+<span class="sourceLineNo">054</span><a name="line.54"></a>
+<span class="sourceLineNo">055</span>        /** {@inheritDoc} */<a name="line.55"></a>
+<span class="sourceLineNo">056</span>        @Override<a name="line.56"></a>
+<span class="sourceLineNo">057</span>        public List&lt;IToken&gt; preprocess(String uniformPath, List&lt;IToken&gt; tokens) {<a name="line.57"></a>
+<span class="sourceLineNo">058</span>                List&lt;IToken&gt; result = new ArrayList&lt;&gt;();<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                int lastDot = NO_POSITION;<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                int lastColon = NO_POSITION;<a name="line.60"></a>
+<span class="sourceLineNo">061</span><a name="line.61"></a>
+<span class="sourceLineNo">062</span>                NestingAwareTokenIterator iterator = new NestingAwareTokenIterator(tokens, 0, Arrays.asList(LPAREN),<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                                Arrays.asList(RPAREN));<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                while (iterator.hasNext()) {<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                        IToken token = iterator.next();<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                        int currentIndex = iterator.getCurrentIndex();<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                        switch (token.getType()) {<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                        case COLON:<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                                lastColon = currentIndex;<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                                // Remove the colon by not inserting it into the result list.<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                                break;<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                        case COMMA:<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                                if (!iterator.isTopLevel() || lastColon == NO_POSITION) {<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                                        result.add(token);<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                                        break;<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                                }<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                                result.add(TokenStreamUtils.createToken(token, ".", DOT));<a name="line.77"></a>
+<span class="sourceLineNo">078</span><a name="line.78"></a>
+<span class="sourceLineNo">079</span>                                IToken reference = getReferenceToken(tokens, currentIndex);<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                                List&lt;IToken&gt; toRepeat = tokens.subList(lastDot + 1, lastColon);<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                                result.addAll(TokenStreamUtils.copyTokens(reference, toRepeat));<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                                break;<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                        case DOT:<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                                lastDot = currentIndex;<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                                lastColon = NO_POSITION;<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                                // fall-through intended<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                        default:<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                                result.add(token);<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                        }<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                }<a name="line.90"></a>
+<span class="sourceLineNo">091</span><a name="line.91"></a>
+<span class="sourceLineNo">092</span>                return result;<a name="line.92"></a>
+<span class="sourceLineNo">093</span>        }<a name="line.93"></a>
+<span class="sourceLineNo">094</span><a name="line.94"></a>
+<span class="sourceLineNo">095</span>        /**<a name="line.95"></a>
+<span class="sourceLineNo">096</span>         * Gets the best possible reference token for the tokens to be duplicated.<a name="line.96"></a>
+<span class="sourceLineNo">097</span>         * Usually the comma is at the end of the line, and the new statement starts in<a name="line.97"></a>
+<span class="sourceLineNo">098</span>         * the next line, so we return the token following the comma, if it exists. We<a name="line.98"></a>
+<span class="sourceLineNo">099</span>         * also take care to skip over any comment tokens.<a name="line.99"></a>
+<span class="sourceLineNo">100</span>         */<a name="line.100"></a>
+<span class="sourceLineNo">101</span>        private static IToken getReferenceToken(List&lt;IToken&gt; tokens, int commaIndex) {<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                for (IToken token : tokens.subList(commaIndex + 1, tokens.size())) {<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                        if (token.getType().getTokenClass() != ETokenClass.COMMENT) {<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                                return token;<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                        }<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                }<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                return tokens.get(commaIndex);<a name="line.107"></a>
+<span class="sourceLineNo">108</span>        }<a name="line.108"></a>
+<span class="sourceLineNo">109</span><a name="line.109"></a>
+<span class="sourceLineNo">110</span>        /**<a name="line.110"></a>
+<span class="sourceLineNo">111</span>         * Returns whether these tokens have been generated by the ABAP Preprocessor<a name="line.111"></a>
+<span class="sourceLineNo">112</span>         * during a "Kettensatz" expansion.<a name="line.112"></a>
+<span class="sourceLineNo">113</span>         *<a name="line.113"></a>
+<span class="sourceLineNo">114</span>         * The expansion allows to write code like this: &lt;code&gt;<a name="line.114"></a>
+<span class="sourceLineNo">115</span>         *     one two three : four five, six seven.<a name="line.115"></a>
+<span class="sourceLineNo">116</span>         * &lt;/code&gt; which is expanded to &lt;code&gt;<a name="line.116"></a>
+<span class="sourceLineNo">117</span>         *        one two three four five. one two three six seven.<a name="line.117"></a>
+<span class="sourceLineNo">118</span>         * &lt;/code&gt; Of course, more segments are allowed and each segment can contain one<a name="line.118"></a>
+<span class="sourceLineNo">119</span>         * or more tokens. Imporant are the colon, commas, and dot.<a name="line.119"></a>
+<span class="sourceLineNo">120</span>         *<a name="line.120"></a>
+<span class="sourceLineNo">121</span>         * Common use case: &lt;code&gt;WRITE: x = 5, y = 1.&lt;/code&gt;<a name="line.121"></a>
+<span class="sourceLineNo">122</span>         */<a name="line.122"></a>
+<span class="sourceLineNo">123</span>        public static boolean isGeneratedFromAbapKettensatzStatement(UnmodifiableList&lt;IToken&gt; includedTokens) {<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                if (includedTokens.size() &lt; 2) {<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                        return false;<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                }<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                // we use the fact that the Abap preprocessor gives the same offset (the offset<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                // of the colon) to each generated token.<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                return includedTokens.get(0).getOffset() == includedTokens.get(1).getOffset();<a name="line.129"></a>
+<span class="sourceLineNo">130</span>        }<a name="line.130"></a>
+<span class="sourceLineNo">131</span>}<a name="line.131"></a>
 
 
 

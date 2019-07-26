@@ -40,19 +40,19 @@
 <span class="sourceLineNo">032</span>        public static final String UNKNOWN_ORIGIN = "Unknown origin";<a name="line.32"></a>
 <span class="sourceLineNo">033</span><a name="line.33"></a>
 <span class="sourceLineNo">034</span>        /**<a name="line.34"></a>
-<span class="sourceLineNo">035</span>         * Origin of the region. Can be used to store information about who created<a name="line.35"></a>
-<span class="sourceLineNo">036</span>         * the region.<a name="line.36"></a>
+<span class="sourceLineNo">035</span>         * Origin of the region. Can be used to store information about who created the<a name="line.35"></a>
+<span class="sourceLineNo">036</span>         * region.<a name="line.36"></a>
 <span class="sourceLineNo">037</span>         */<a name="line.37"></a>
 <span class="sourceLineNo">038</span>        private final String origin;<a name="line.38"></a>
 <span class="sourceLineNo">039</span><a name="line.39"></a>
 <span class="sourceLineNo">040</span>        /**<a name="line.40"></a>
-<span class="sourceLineNo">041</span>         * Creates a region with an origin. An empty region can be denoted with and<a name="line.41"></a>
-<span class="sourceLineNo">042</span>         * end position smaller than start.<a name="line.42"></a>
+<span class="sourceLineNo">041</span>         * Creates a region with an origin. An empty region can be denoted with and end<a name="line.41"></a>
+<span class="sourceLineNo">042</span>         * position smaller than start.<a name="line.42"></a>
 <span class="sourceLineNo">043</span>         * <a name="line.43"></a>
 <span class="sourceLineNo">044</span>         * @param start<a name="line.44"></a>
-<span class="sourceLineNo">045</span>         *            Start position of the region<a name="line.45"></a>
+<span class="sourceLineNo">045</span>         *            Inclusive start position of the region<a name="line.45"></a>
 <span class="sourceLineNo">046</span>         * @param end<a name="line.46"></a>
-<span class="sourceLineNo">047</span>         *            End position of the region<a name="line.47"></a>
+<span class="sourceLineNo">047</span>         *            Inclusive end position of the region<a name="line.47"></a>
 <span class="sourceLineNo">048</span>         * @param origin<a name="line.48"></a>
 <span class="sourceLineNo">049</span>         *            Region origin. (i.e. region producer)<a name="line.49"></a>
 <span class="sourceLineNo">050</span>         */<a name="line.50"></a>
@@ -65,9 +65,9 @@
 <span class="sourceLineNo">057</span>         * Creates a region with an unknown origin<a name="line.57"></a>
 <span class="sourceLineNo">058</span>         * <a name="line.58"></a>
 <span class="sourceLineNo">059</span>         * @param start<a name="line.59"></a>
-<span class="sourceLineNo">060</span>         *            Start position of the region<a name="line.60"></a>
+<span class="sourceLineNo">060</span>         *            Inclusive start position of the region<a name="line.60"></a>
 <span class="sourceLineNo">061</span>         * @param end<a name="line.61"></a>
-<span class="sourceLineNo">062</span>         *            End position of the region<a name="line.62"></a>
+<span class="sourceLineNo">062</span>         *            Inclusive end position of the region<a name="line.62"></a>
 <span class="sourceLineNo">063</span>         */<a name="line.63"></a>
 <span class="sourceLineNo">064</span>        public Region(int start, int end) {<a name="line.64"></a>
 <span class="sourceLineNo">065</span>                this(start, end, UNKNOWN_ORIGIN);<a name="line.65"></a>

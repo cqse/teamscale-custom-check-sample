@@ -42,7 +42,7 @@
 <span class="sourceLineNo">034</span><a name="line.34"></a>
 <span class="sourceLineNo">035</span>        /** {@inheritDoc} */<a name="line.35"></a>
 <span class="sourceLineNo">036</span>        @Override<a name="line.36"></a>
-<span class="sourceLineNo">037</span>        public TokenPatternMatch matchesLocally(TokenStream stream) {<a name="line.37"></a>
+<span class="sourceLineNo">037</span>        protected TokenPatternMatch matchesLocally(TokenStream stream) {<a name="line.37"></a>
 <span class="sourceLineNo">038</span>                while (!stream.isExhausted()) {<a name="line.38"></a>
 <span class="sourceLineNo">039</span>                        for (TokenPatternBase matcher : matchers) {<a name="line.39"></a>
 <span class="sourceLineNo">040</span>                                int beforeMatch = stream.getPosition();<a name="line.40"></a>

@@ -33,10 +33,10 @@
 <span class="sourceLineNo">025</span>public class TokenStreamSplitter {<a name="line.25"></a>
 <span class="sourceLineNo">026</span><a name="line.26"></a>
 <span class="sourceLineNo">027</span>        /** The sentinel token to use when splitting nested structures. */<a name="line.27"></a>
-<span class="sourceLineNo">028</span>        private static final IToken SENTINEL_TOKEN = new SentinelToken();<a name="line.28"></a>
+<span class="sourceLineNo">028</span>        public static final IToken SENTINEL_TOKEN = new SentinelToken();<a name="line.28"></a>
 <span class="sourceLineNo">029</span><a name="line.29"></a>
 <span class="sourceLineNo">030</span>        /** The split parts. */<a name="line.30"></a>
-<span class="sourceLineNo">031</span>        private List&lt;List&lt;IToken&gt;&gt; tokenStreams = new ArrayList&lt;List&lt;IToken&gt;&gt;();<a name="line.31"></a>
+<span class="sourceLineNo">031</span>        private List&lt;List&lt;IToken&gt;&gt; tokenStreams = new ArrayList&lt;&gt;();<a name="line.31"></a>
 <span class="sourceLineNo">032</span><a name="line.32"></a>
 <span class="sourceLineNo">033</span>        /** Constructor. */<a name="line.33"></a>
 <span class="sourceLineNo">034</span>        public TokenStreamSplitter(List&lt;IToken&gt; tokens) {<a name="line.34"></a>
@@ -49,10 +49,10 @@
 <span class="sourceLineNo">041</span>        }<a name="line.41"></a>
 <span class="sourceLineNo">042</span><a name="line.42"></a>
 <span class="sourceLineNo">043</span>        /**<a name="line.43"></a>
-<span class="sourceLineNo">044</span>         * Splits all streams at the given open and close tokens, e.g. parentheses.<a name="line.44"></a>
-<span class="sourceLineNo">045</span>         * The part inside the parentheses will become one new stream and the rest<a name="line.45"></a>
-<span class="sourceLineNo">046</span>         * of the original stream as well. In the outside part, the inside part is<a name="line.46"></a>
-<span class="sourceLineNo">047</span>         * replaced by the {@link #SENTINEL_TOKEN} token.<a name="line.47"></a>
+<span class="sourceLineNo">044</span>         * Splits all streams at the given open and close tokens, e.g. parentheses. The<a name="line.44"></a>
+<span class="sourceLineNo">045</span>         * part inside the parentheses will become one new stream and the rest of the<a name="line.45"></a>
+<span class="sourceLineNo">046</span>         * original stream as well. In the outside part, the inside part is replaced by<a name="line.46"></a>
+<span class="sourceLineNo">047</span>         * the {@link #SENTINEL_TOKEN} token.<a name="line.47"></a>
 <span class="sourceLineNo">048</span>         * <a name="line.48"></a>
 <span class="sourceLineNo">049</span>         * For example: &lt;code&gt;a ( b ) c&lt;/code&gt; would be split into<a name="line.49"></a>
 <span class="sourceLineNo">050</span>         * &lt;code&gt;a ( sentinel ) c&lt;/code&gt; and &lt;code&gt;b&lt;/code&gt;.<a name="line.50"></a>
@@ -61,7 +61,7 @@
 <span class="sourceLineNo">053</span>         * {@link #tokenStreams} list.<a name="line.53"></a>
 <span class="sourceLineNo">054</span>         */<a name="line.54"></a>
 <span class="sourceLineNo">055</span>        public void splitNested(ETokenType openToken, ETokenType closeToken) {<a name="line.55"></a>
-<span class="sourceLineNo">056</span>                List&lt;List&lt;IToken&gt;&gt; splitStreams = new ArrayList&lt;List&lt;IToken&gt;&gt;();<a name="line.56"></a>
+<span class="sourceLineNo">056</span>                List&lt;List&lt;IToken&gt;&gt; splitStreams = new ArrayList&lt;&gt;();<a name="line.56"></a>
 <span class="sourceLineNo">057</span>                for (List&lt;IToken&gt; tokens : tokenStreams) {<a name="line.57"></a>
 <span class="sourceLineNo">058</span>                        splitStreams.addAll(split(tokens, openToken, closeToken));<a name="line.58"></a>
 <span class="sourceLineNo">059</span>                }<a name="line.59"></a>
@@ -72,7 +72,7 @@
 <span class="sourceLineNo">064</span>         * Splits a single token list at the open/close tokens by performing a depth<a name="line.64"></a>
 <span class="sourceLineNo">065</span>         * first traversal of the nesting tree created by these tokens.<a name="line.65"></a>
 <span class="sourceLineNo">066</span>         */<a name="line.66"></a>
-<span class="sourceLineNo">067</span>        private List&lt;List&lt;IToken&gt;&gt; split(List&lt;IToken&gt; tokens, ETokenType openToken, ETokenType closeToken) {<a name="line.67"></a>
+<span class="sourceLineNo">067</span>        private static List&lt;List&lt;IToken&gt;&gt; split(List&lt;IToken&gt; tokens, ETokenType openToken, ETokenType closeToken) {<a name="line.67"></a>
 <span class="sourceLineNo">068</span>                List&lt;List&lt;IToken&gt;&gt; result = new ArrayList&lt;&gt;();<a name="line.68"></a>
 <span class="sourceLineNo">069</span>                Stack&lt;List&lt;IToken&gt;&gt; splits = new Stack&lt;&gt;();<a name="line.69"></a>
 <span class="sourceLineNo">070</span>                splits.push(new ArrayList&lt;IToken&gt;());<a name="line.70"></a>
@@ -102,28 +102,31 @@
 <span class="sourceLineNo">094</span>        /** The sentinel token. */<a name="line.94"></a>
 <span class="sourceLineNo">095</span>        private static class SentinelToken extends Token {<a name="line.95"></a>
 <span class="sourceLineNo">096</span><a name="line.96"></a>
-<span class="sourceLineNo">097</span>                /** Constructor. */<a name="line.97"></a>
-<span class="sourceLineNo">098</span>                public SentinelToken() {<a name="line.98"></a>
-<span class="sourceLineNo">099</span>                        super(ETokenType.SENTINEL, 0, 0, "sentinel", "sentinel");<a name="line.99"></a>
-<span class="sourceLineNo">100</span>                }<a name="line.100"></a>
-<span class="sourceLineNo">101</span><a name="line.101"></a>
-<span class="sourceLineNo">102</span>                /** {@inheritDoc} */<a name="line.102"></a>
-<span class="sourceLineNo">103</span>                @Override<a name="line.103"></a>
-<span class="sourceLineNo">104</span>                public ELanguage getLanguage() {<a name="line.104"></a>
-<span class="sourceLineNo">105</span>                        CCSMAssert.fail("Operation not supported for sentinel token");<a name="line.105"></a>
-<span class="sourceLineNo">106</span>                        return null;<a name="line.106"></a>
-<span class="sourceLineNo">107</span>                }<a name="line.107"></a>
-<span class="sourceLineNo">108</span><a name="line.108"></a>
-<span class="sourceLineNo">109</span>                /** {@inheritDoc} */<a name="line.109"></a>
-<span class="sourceLineNo">110</span>                @Override<a name="line.110"></a>
-<span class="sourceLineNo">111</span>                public IToken newToken(ETokenType type, int offset, int lineNumber, String text, String originId) {<a name="line.111"></a>
-<span class="sourceLineNo">112</span>                        CCSMAssert.fail("Operation not supported for sentinel token");<a name="line.112"></a>
-<span class="sourceLineNo">113</span>                        return null;<a name="line.113"></a>
-<span class="sourceLineNo">114</span>                }<a name="line.114"></a>
-<span class="sourceLineNo">115</span><a name="line.115"></a>
-<span class="sourceLineNo">116</span>        }<a name="line.116"></a>
-<span class="sourceLineNo">117</span><a name="line.117"></a>
-<span class="sourceLineNo">118</span>}<a name="line.118"></a>
+<span class="sourceLineNo">097</span>                /** default */<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                private static final long serialVersionUID = 1L;<a name="line.98"></a>
+<span class="sourceLineNo">099</span><a name="line.99"></a>
+<span class="sourceLineNo">100</span>                /** Constructor. */<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                public SentinelToken() {<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                        super(ETokenType.SENTINEL, 0, 0, "sentinel", "sentinel");<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                }<a name="line.103"></a>
+<span class="sourceLineNo">104</span><a name="line.104"></a>
+<span class="sourceLineNo">105</span>                /** {@inheritDoc} */<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                @Override<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                public ELanguage getLanguage() {<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                        CCSMAssert.fail("Operation not supported for sentinel token");<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                        return null;<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                }<a name="line.110"></a>
+<span class="sourceLineNo">111</span><a name="line.111"></a>
+<span class="sourceLineNo">112</span>                /** {@inheritDoc} */<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                @Override<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                public IToken newToken(ETokenType type, int offset, int lineNumber, String text, String originId) {<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                        CCSMAssert.fail("Operation not supported for sentinel token");<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                        return null;<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                }<a name="line.117"></a>
+<span class="sourceLineNo">118</span><a name="line.118"></a>
+<span class="sourceLineNo">119</span>        }<a name="line.119"></a>
+<span class="sourceLineNo">120</span><a name="line.120"></a>
+<span class="sourceLineNo">121</span>}<a name="line.121"></a>
 
 
 

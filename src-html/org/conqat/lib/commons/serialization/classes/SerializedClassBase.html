@@ -45,8 +45,8 @@
 <span class="sourceLineNo">037</span>        protected int superClassHandle = SerializedEntityPool.NULL_HANDLE;<a name="line.37"></a>
 <span class="sourceLineNo">038</span><a name="line.38"></a>
 <span class="sourceLineNo">039</span>        /**<a name="line.39"></a>
-<span class="sourceLineNo">040</span>         * Class annotations. These are either byte arrays for block data, or<a name="line.40"></a>
-<span class="sourceLineNo">041</span>         * integer values representing handles.<a name="line.41"></a>
+<span class="sourceLineNo">040</span>         * Class annotations. These are either byte arrays for block data, or integer<a name="line.40"></a>
+<span class="sourceLineNo">041</span>         * values representing handles.<a name="line.41"></a>
 <span class="sourceLineNo">042</span>         */<a name="line.42"></a>
 <span class="sourceLineNo">043</span>        private final List&lt;Object&gt; classAnnotations = new ArrayList&lt;&gt;();<a name="line.43"></a>
 <span class="sourceLineNo">044</span><a name="line.44"></a>
@@ -67,8 +67,8 @@
 <span class="sourceLineNo">059</span>        }<a name="line.59"></a>
 <span class="sourceLineNo">060</span><a name="line.60"></a>
 <span class="sourceLineNo">061</span>        /**<a name="line.61"></a>
-<span class="sourceLineNo">062</span>         * Parses the class content. This is called from the constructor, so fields<a name="line.62"></a>
-<span class="sourceLineNo">063</span>         * of sub classes might not be initialized.<a name="line.63"></a>
+<span class="sourceLineNo">062</span>         * Parses the class content. This is called from the constructor, so fields of<a name="line.62"></a>
+<span class="sourceLineNo">063</span>         * sub classes might not be initialized.<a name="line.63"></a>
 <span class="sourceLineNo">064</span>         */<a name="line.64"></a>
 <span class="sourceLineNo">065</span>        protected abstract void parseClass(DataInputStream din, SerializedEntityPool pool, SerializedEntityParser parser)<a name="line.65"></a>
 <span class="sourceLineNo">066</span>                        throws IOException;<a name="line.66"></a>
@@ -102,7 +102,7 @@
 <span class="sourceLineNo">094</span>        }<a name="line.94"></a>
 <span class="sourceLineNo">095</span><a name="line.95"></a>
 <span class="sourceLineNo">096</span>        /** Reads block data. */<a name="line.96"></a>
-<span class="sourceLineNo">097</span>        private byte[] readBlockData(DataInputStream din, int length) throws IOException {<a name="line.97"></a>
+<span class="sourceLineNo">097</span>        private static byte[] readBlockData(DataInputStream din, int length) throws IOException {<a name="line.97"></a>
 <span class="sourceLineNo">098</span>                byte[] result = new byte[length];<a name="line.98"></a>
 <span class="sourceLineNo">099</span>                din.readFully(result);<a name="line.99"></a>
 <span class="sourceLineNo">100</span>                return result;<a name="line.100"></a>

@@ -30,152 +30,156 @@
 <span class="sourceLineNo">022</span>import org.conqat.lib.commons.clone.DeepCloneException;<a name="line.22"></a>
 <span class="sourceLineNo">023</span>import org.conqat.lib.commons.clone.IDeepCloneable;<a name="line.23"></a>
 <span class="sourceLineNo">024</span><a name="line.24"></a>
-<span class="sourceLineNo">025</span>/**<a name="line.25"></a>
-<span class="sourceLineNo">026</span> * Simple readonly pair class.<a name="line.26"></a>
-<span class="sourceLineNo">027</span> */<a name="line.27"></a>
-<span class="sourceLineNo">028</span>public class ImmutablePair&lt;S, T&gt; implements Cloneable, IDeepCloneable, Comparable&lt;ImmutablePair&lt;S, T&gt;&gt;, Serializable {<a name="line.28"></a>
-<span class="sourceLineNo">029</span><a name="line.29"></a>
-<span class="sourceLineNo">030</span>        /** Version used for serialization. */<a name="line.30"></a>
-<span class="sourceLineNo">031</span>        private static final long serialVersionUID = 1;<a name="line.31"></a>
-<span class="sourceLineNo">032</span><a name="line.32"></a>
-<span class="sourceLineNo">033</span>        /** The first element. */<a name="line.33"></a>
-<span class="sourceLineNo">034</span>        protected S first;<a name="line.34"></a>
-<span class="sourceLineNo">035</span><a name="line.35"></a>
-<span class="sourceLineNo">036</span>        /** The second element. */<a name="line.36"></a>
-<span class="sourceLineNo">037</span>        protected T second;<a name="line.37"></a>
+<span class="sourceLineNo">025</span>import com.fasterxml.jackson.annotation.JsonProperty;<a name="line.25"></a>
+<span class="sourceLineNo">026</span><a name="line.26"></a>
+<span class="sourceLineNo">027</span>/**<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * Simple readonly pair class.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> */<a name="line.29"></a>
+<span class="sourceLineNo">030</span>public class ImmutablePair&lt;S, T&gt; implements Cloneable, IDeepCloneable, Comparable&lt;ImmutablePair&lt;S, T&gt;&gt;, Serializable {<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>        /** Version used for serialization. */<a name="line.32"></a>
+<span class="sourceLineNo">033</span>        private static final long serialVersionUID = 1;<a name="line.33"></a>
+<span class="sourceLineNo">034</span><a name="line.34"></a>
+<span class="sourceLineNo">035</span>        /** The first element. */<a name="line.35"></a>
+<span class="sourceLineNo">036</span>        @JsonProperty("first")<a name="line.36"></a>
+<span class="sourceLineNo">037</span>        protected S first;<a name="line.37"></a>
 <span class="sourceLineNo">038</span><a name="line.38"></a>
-<span class="sourceLineNo">039</span>        /** Constructor. */<a name="line.39"></a>
-<span class="sourceLineNo">040</span>        public ImmutablePair(S first, T second) {<a name="line.40"></a>
-<span class="sourceLineNo">041</span>                this.first = first;<a name="line.41"></a>
-<span class="sourceLineNo">042</span>                this.second = second;<a name="line.42"></a>
-<span class="sourceLineNo">043</span>        }<a name="line.43"></a>
-<span class="sourceLineNo">044</span><a name="line.44"></a>
-<span class="sourceLineNo">045</span>        /** Copy constructor. */<a name="line.45"></a>
-<span class="sourceLineNo">046</span>        public ImmutablePair(ImmutablePair&lt;S, T&gt; p) {<a name="line.46"></a>
-<span class="sourceLineNo">047</span>                this.first = p.first;<a name="line.47"></a>
-<span class="sourceLineNo">048</span>                this.second = p.second;<a name="line.48"></a>
-<span class="sourceLineNo">049</span>        }<a name="line.49"></a>
-<span class="sourceLineNo">050</span><a name="line.50"></a>
-<span class="sourceLineNo">051</span>        /** Returns the first element of the pair. */<a name="line.51"></a>
-<span class="sourceLineNo">052</span>        public S getFirst() {<a name="line.52"></a>
-<span class="sourceLineNo">053</span>                return first;<a name="line.53"></a>
-<span class="sourceLineNo">054</span>        }<a name="line.54"></a>
-<span class="sourceLineNo">055</span><a name="line.55"></a>
-<span class="sourceLineNo">056</span>        /** Returns the second element of the pair. */<a name="line.56"></a>
-<span class="sourceLineNo">057</span>        public T getSecond() {<a name="line.57"></a>
-<span class="sourceLineNo">058</span>                return second;<a name="line.58"></a>
-<span class="sourceLineNo">059</span>        }<a name="line.59"></a>
-<span class="sourceLineNo">060</span><a name="line.60"></a>
-<span class="sourceLineNo">061</span>        /** {@inheritDoc} */<a name="line.61"></a>
-<span class="sourceLineNo">062</span>        @Override<a name="line.62"></a>
-<span class="sourceLineNo">063</span>        public boolean equals(Object obj) {<a name="line.63"></a>
-<span class="sourceLineNo">064</span>                if (!(obj instanceof ImmutablePair&lt;?, ?&gt;)) {<a name="line.64"></a>
-<span class="sourceLineNo">065</span>                        return false;<a name="line.65"></a>
-<span class="sourceLineNo">066</span>                }<a name="line.66"></a>
-<span class="sourceLineNo">067</span>                ImmutablePair&lt;?, ?&gt; p = (ImmutablePair&lt;?, ?&gt;) obj;<a name="line.67"></a>
-<span class="sourceLineNo">068</span>                return areEqual(first, p.first) &amp;&amp; areEqual(second, p.second);<a name="line.68"></a>
-<span class="sourceLineNo">069</span>        }<a name="line.69"></a>
-<span class="sourceLineNo">070</span><a name="line.70"></a>
-<span class="sourceLineNo">071</span>        /** Returns true if either both are &lt;code&gt;null&lt;/code&gt; or they are equal. */<a name="line.71"></a>
-<span class="sourceLineNo">072</span>        private static boolean areEqual(Object o1, Object o2) {<a name="line.72"></a>
-<span class="sourceLineNo">073</span>                if (o1 == null) {<a name="line.73"></a>
-<span class="sourceLineNo">074</span>                        return o2 == null;<a name="line.74"></a>
-<span class="sourceLineNo">075</span>                }<a name="line.75"></a>
-<span class="sourceLineNo">076</span>                return o1.equals(o2);<a name="line.76"></a>
-<span class="sourceLineNo">077</span>        }<a name="line.77"></a>
-<span class="sourceLineNo">078</span><a name="line.78"></a>
-<span class="sourceLineNo">079</span>        /**<a name="line.79"></a>
-<span class="sourceLineNo">080</span>         * {@inheritDoc}<a name="line.80"></a>
-<span class="sourceLineNo">081</span>         * &lt;p&gt;<a name="line.81"></a>
-<span class="sourceLineNo">082</span>         * The hash code is based on the hash code of the first and second members.<a name="line.82"></a>
-<span class="sourceLineNo">083</span>         */<a name="line.83"></a>
-<span class="sourceLineNo">084</span>        @Override<a name="line.84"></a>
-<span class="sourceLineNo">085</span>        public int hashCode() {<a name="line.85"></a>
-<span class="sourceLineNo">086</span>                int firstCode = 1;<a name="line.86"></a>
-<span class="sourceLineNo">087</span>                if (first != null) {<a name="line.87"></a>
-<span class="sourceLineNo">088</span>                        firstCode = first.hashCode();<a name="line.88"></a>
-<span class="sourceLineNo">089</span>                }<a name="line.89"></a>
-<span class="sourceLineNo">090</span><a name="line.90"></a>
-<span class="sourceLineNo">091</span>                int secondCode = 1;<a name="line.91"></a>
-<span class="sourceLineNo">092</span>                if (second != null) {<a name="line.92"></a>
-<span class="sourceLineNo">093</span>                        secondCode = second.hashCode();<a name="line.93"></a>
-<span class="sourceLineNo">094</span>                }<a name="line.94"></a>
-<span class="sourceLineNo">095</span><a name="line.95"></a>
-<span class="sourceLineNo">096</span>                return firstCode + 1013 * secondCode;<a name="line.96"></a>
-<span class="sourceLineNo">097</span>        }<a name="line.97"></a>
-<span class="sourceLineNo">098</span><a name="line.98"></a>
-<span class="sourceLineNo">099</span>        /** {@inheritDoc} */<a name="line.99"></a>
-<span class="sourceLineNo">100</span>        @Override<a name="line.100"></a>
-<span class="sourceLineNo">101</span>        public String toString() {<a name="line.101"></a>
-<span class="sourceLineNo">102</span>                return "(" + first + "," + second + ")";<a name="line.102"></a>
-<span class="sourceLineNo">103</span>        }<a name="line.103"></a>
-<span class="sourceLineNo">104</span><a name="line.104"></a>
-<span class="sourceLineNo">105</span>        /** {@inheritDoc} */<a name="line.105"></a>
-<span class="sourceLineNo">106</span>        @Override<a name="line.106"></a>
-<span class="sourceLineNo">107</span>        protected ImmutablePair&lt;S, T&gt; clone() {<a name="line.107"></a>
-<span class="sourceLineNo">108</span>                return new ImmutablePair&lt;S, T&gt;(this);<a name="line.108"></a>
-<span class="sourceLineNo">109</span>        }<a name="line.109"></a>
-<span class="sourceLineNo">110</span><a name="line.110"></a>
-<span class="sourceLineNo">111</span>        /** {@inheritDoc} */<a name="line.111"></a>
-<span class="sourceLineNo">112</span>        @Override<a name="line.112"></a>
-<span class="sourceLineNo">113</span>        @SuppressWarnings("unchecked")<a name="line.113"></a>
-<span class="sourceLineNo">114</span>        public ImmutablePair&lt;S, T&gt; deepClone() throws DeepCloneException {<a name="line.114"></a>
-<span class="sourceLineNo">115</span>                S newFirst = (S) CloneUtils.cloneAsDeepAsPossible(first);<a name="line.115"></a>
-<span class="sourceLineNo">116</span>                T newSecond = (T) CloneUtils.cloneAsDeepAsPossible(second);<a name="line.116"></a>
-<span class="sourceLineNo">117</span>                return new ImmutablePair&lt;S, T&gt;(newFirst, newSecond);<a name="line.117"></a>
-<span class="sourceLineNo">118</span>        }<a name="line.118"></a>
-<span class="sourceLineNo">119</span><a name="line.119"></a>
-<span class="sourceLineNo">120</span>        /**<a name="line.120"></a>
-<span class="sourceLineNo">121</span>         * {@inheritDoc}<a name="line.121"></a>
-<span class="sourceLineNo">122</span>         * &lt;p&gt;<a name="line.122"></a>
-<span class="sourceLineNo">123</span>         * Compare based on first element. Use second element only if first elements<a name="line.123"></a>
-<span class="sourceLineNo">124</span>         * are equal. Null entries are sorted to the top.<a name="line.124"></a>
-<span class="sourceLineNo">125</span>         */<a name="line.125"></a>
-<span class="sourceLineNo">126</span>        @Override<a name="line.126"></a>
-<span class="sourceLineNo">127</span>        public int compareTo(ImmutablePair&lt;S, T&gt; pair) {<a name="line.127"></a>
-<span class="sourceLineNo">128</span>                int cmp = objCompare(first, pair.first);<a name="line.128"></a>
-<span class="sourceLineNo">129</span>                if (cmp != 0) {<a name="line.129"></a>
-<span class="sourceLineNo">130</span>                        return cmp;<a name="line.130"></a>
-<span class="sourceLineNo">131</span>                }<a name="line.131"></a>
-<span class="sourceLineNo">132</span>                return objCompare(second, pair.second);<a name="line.132"></a>
-<span class="sourceLineNo">133</span>        }<a name="line.133"></a>
-<span class="sourceLineNo">134</span><a name="line.134"></a>
-<span class="sourceLineNo">135</span>        /**<a name="line.135"></a>
-<span class="sourceLineNo">136</span>         * Performs comparison on two arbitrary objects of the same type.<a name="line.136"></a>
-<span class="sourceLineNo">137</span>         */<a name="line.137"></a>
-<span class="sourceLineNo">138</span>        @SuppressWarnings("unchecked")<a name="line.138"></a>
-<span class="sourceLineNo">139</span>        private static &lt;O&gt; int objCompare(O o1, O o2) {<a name="line.139"></a>
-<span class="sourceLineNo">140</span>                if (o1 == null) {<a name="line.140"></a>
-<span class="sourceLineNo">141</span>                        if (o2 == null) {<a name="line.141"></a>
-<span class="sourceLineNo">142</span>                                return 0;<a name="line.142"></a>
-<span class="sourceLineNo">143</span>                        }<a name="line.143"></a>
-<span class="sourceLineNo">144</span>                        return -1;<a name="line.144"></a>
-<span class="sourceLineNo">145</span>                } else if (o2 == null) {<a name="line.145"></a>
-<span class="sourceLineNo">146</span>                        return 1;<a name="line.146"></a>
-<span class="sourceLineNo">147</span>                }<a name="line.147"></a>
-<span class="sourceLineNo">148</span><a name="line.148"></a>
-<span class="sourceLineNo">149</span>                if ((o1 instanceof Comparable) &amp;&amp; (o2 instanceof Comparable)) {<a name="line.149"></a>
-<span class="sourceLineNo">150</span>                        try {<a name="line.150"></a>
-<span class="sourceLineNo">151</span>                                return ((Comparable&lt;Object&gt;) o1).compareTo(o2);<a name="line.151"></a>
-<span class="sourceLineNo">152</span>                        } catch (ClassCastException e) {<a name="line.152"></a>
-<span class="sourceLineNo">153</span>                                // somehow failed, so continue and treat as if not comparable<a name="line.153"></a>
-<span class="sourceLineNo">154</span>                        }<a name="line.154"></a>
-<span class="sourceLineNo">155</span>                }<a name="line.155"></a>
-<span class="sourceLineNo">156</span><a name="line.156"></a>
-<span class="sourceLineNo">157</span>                // compare using hash code, so we get at least an approximation of an<a name="line.157"></a>
-<span class="sourceLineNo">158</span>                // ordering<a name="line.158"></a>
-<span class="sourceLineNo">159</span>                int h1 = o1.hashCode();<a name="line.159"></a>
-<span class="sourceLineNo">160</span>                int h2 = o2.hashCode();<a name="line.160"></a>
-<span class="sourceLineNo">161</span><a name="line.161"></a>
-<span class="sourceLineNo">162</span>                if (h1 == h2) {<a name="line.162"></a>
-<span class="sourceLineNo">163</span>                        return 0;<a name="line.163"></a>
-<span class="sourceLineNo">164</span>                }<a name="line.164"></a>
-<span class="sourceLineNo">165</span>                if (h1 &lt; h2) {<a name="line.165"></a>
-<span class="sourceLineNo">166</span>                        return -1;<a name="line.166"></a>
-<span class="sourceLineNo">167</span>                }<a name="line.167"></a>
-<span class="sourceLineNo">168</span>                return 1;<a name="line.168"></a>
-<span class="sourceLineNo">169</span>        }<a name="line.169"></a>
-<span class="sourceLineNo">170</span>}<a name="line.170"></a>
+<span class="sourceLineNo">039</span>        /** The second element. */<a name="line.39"></a>
+<span class="sourceLineNo">040</span>        @JsonProperty("second")<a name="line.40"></a>
+<span class="sourceLineNo">041</span>        protected T second;<a name="line.41"></a>
+<span class="sourceLineNo">042</span><a name="line.42"></a>
+<span class="sourceLineNo">043</span>        /** Constructor. */<a name="line.43"></a>
+<span class="sourceLineNo">044</span>        public ImmutablePair(S first, T second) {<a name="line.44"></a>
+<span class="sourceLineNo">045</span>                this.first = first;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>                this.second = second;<a name="line.46"></a>
+<span class="sourceLineNo">047</span>        }<a name="line.47"></a>
+<span class="sourceLineNo">048</span><a name="line.48"></a>
+<span class="sourceLineNo">049</span>        /** Copy constructor. */<a name="line.49"></a>
+<span class="sourceLineNo">050</span>        public ImmutablePair(ImmutablePair&lt;S, T&gt; p) {<a name="line.50"></a>
+<span class="sourceLineNo">051</span>                this.first = p.first;<a name="line.51"></a>
+<span class="sourceLineNo">052</span>                this.second = p.second;<a name="line.52"></a>
+<span class="sourceLineNo">053</span>        }<a name="line.53"></a>
+<span class="sourceLineNo">054</span><a name="line.54"></a>
+<span class="sourceLineNo">055</span>        /** Returns the first element of the pair. */<a name="line.55"></a>
+<span class="sourceLineNo">056</span>        public S getFirst() {<a name="line.56"></a>
+<span class="sourceLineNo">057</span>                return first;<a name="line.57"></a>
+<span class="sourceLineNo">058</span>        }<a name="line.58"></a>
+<span class="sourceLineNo">059</span><a name="line.59"></a>
+<span class="sourceLineNo">060</span>        /** Returns the second element of the pair. */<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        public T getSecond() {<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                return second;<a name="line.62"></a>
+<span class="sourceLineNo">063</span>        }<a name="line.63"></a>
+<span class="sourceLineNo">064</span><a name="line.64"></a>
+<span class="sourceLineNo">065</span>        /** {@inheritDoc} */<a name="line.65"></a>
+<span class="sourceLineNo">066</span>        @Override<a name="line.66"></a>
+<span class="sourceLineNo">067</span>        public boolean equals(Object obj) {<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                if (!(obj instanceof ImmutablePair&lt;?, ?&gt;)) {<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                        return false;<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                }<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                ImmutablePair&lt;?, ?&gt; p = (ImmutablePair&lt;?, ?&gt;) obj;<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                return areEqual(first, p.first) &amp;&amp; areEqual(second, p.second);<a name="line.72"></a>
+<span class="sourceLineNo">073</span>        }<a name="line.73"></a>
+<span class="sourceLineNo">074</span><a name="line.74"></a>
+<span class="sourceLineNo">075</span>        /** Returns true if either both are &lt;code&gt;null&lt;/code&gt; or they are equal. */<a name="line.75"></a>
+<span class="sourceLineNo">076</span>        private static boolean areEqual(Object o1, Object o2) {<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                if (o1 == null) {<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                        return o2 == null;<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                }<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                return o1.equals(o2);<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        }<a name="line.81"></a>
+<span class="sourceLineNo">082</span><a name="line.82"></a>
+<span class="sourceLineNo">083</span>        /**<a name="line.83"></a>
+<span class="sourceLineNo">084</span>         * {@inheritDoc}<a name="line.84"></a>
+<span class="sourceLineNo">085</span>         * &lt;p&gt;<a name="line.85"></a>
+<span class="sourceLineNo">086</span>         * The hash code is based on the hash code of the first and second members.<a name="line.86"></a>
+<span class="sourceLineNo">087</span>         */<a name="line.87"></a>
+<span class="sourceLineNo">088</span>        @Override<a name="line.88"></a>
+<span class="sourceLineNo">089</span>        public int hashCode() {<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                int firstCode = 1;<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                if (first != null) {<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                        firstCode = first.hashCode();<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                }<a name="line.93"></a>
+<span class="sourceLineNo">094</span><a name="line.94"></a>
+<span class="sourceLineNo">095</span>                int secondCode = 1;<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                if (second != null) {<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                        secondCode = second.hashCode();<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                }<a name="line.98"></a>
+<span class="sourceLineNo">099</span><a name="line.99"></a>
+<span class="sourceLineNo">100</span>                return firstCode + 1013 * secondCode;<a name="line.100"></a>
+<span class="sourceLineNo">101</span>        }<a name="line.101"></a>
+<span class="sourceLineNo">102</span><a name="line.102"></a>
+<span class="sourceLineNo">103</span>        /** {@inheritDoc} */<a name="line.103"></a>
+<span class="sourceLineNo">104</span>        @Override<a name="line.104"></a>
+<span class="sourceLineNo">105</span>        public String toString() {<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                return "(" + first + "," + second + ")";<a name="line.106"></a>
+<span class="sourceLineNo">107</span>        }<a name="line.107"></a>
+<span class="sourceLineNo">108</span><a name="line.108"></a>
+<span class="sourceLineNo">109</span>        /** {@inheritDoc} */<a name="line.109"></a>
+<span class="sourceLineNo">110</span>        @Override<a name="line.110"></a>
+<span class="sourceLineNo">111</span>        protected ImmutablePair&lt;S, T&gt; clone() {<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                return new ImmutablePair&lt;S, T&gt;(this);<a name="line.112"></a>
+<span class="sourceLineNo">113</span>        }<a name="line.113"></a>
+<span class="sourceLineNo">114</span><a name="line.114"></a>
+<span class="sourceLineNo">115</span>        /** {@inheritDoc} */<a name="line.115"></a>
+<span class="sourceLineNo">116</span>        @Override<a name="line.116"></a>
+<span class="sourceLineNo">117</span>        @SuppressWarnings("unchecked")<a name="line.117"></a>
+<span class="sourceLineNo">118</span>        public ImmutablePair&lt;S, T&gt; deepClone() throws DeepCloneException {<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                S newFirst = (S) CloneUtils.cloneAsDeepAsPossible(first);<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                T newSecond = (T) CloneUtils.cloneAsDeepAsPossible(second);<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                return new ImmutablePair&lt;S, T&gt;(newFirst, newSecond);<a name="line.121"></a>
+<span class="sourceLineNo">122</span>        }<a name="line.122"></a>
+<span class="sourceLineNo">123</span><a name="line.123"></a>
+<span class="sourceLineNo">124</span>        /**<a name="line.124"></a>
+<span class="sourceLineNo">125</span>         * {@inheritDoc}<a name="line.125"></a>
+<span class="sourceLineNo">126</span>         * &lt;p&gt;<a name="line.126"></a>
+<span class="sourceLineNo">127</span>         * Compare based on first element. Use second element only if first elements are<a name="line.127"></a>
+<span class="sourceLineNo">128</span>         * equal. Null entries are sorted to the top.<a name="line.128"></a>
+<span class="sourceLineNo">129</span>         */<a name="line.129"></a>
+<span class="sourceLineNo">130</span>        @Override<a name="line.130"></a>
+<span class="sourceLineNo">131</span>        public int compareTo(ImmutablePair&lt;S, T&gt; pair) {<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                int cmp = objCompare(first, pair.first);<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                if (cmp != 0) {<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                        return cmp;<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                }<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                return objCompare(second, pair.second);<a name="line.136"></a>
+<span class="sourceLineNo">137</span>        }<a name="line.137"></a>
+<span class="sourceLineNo">138</span><a name="line.138"></a>
+<span class="sourceLineNo">139</span>        /**<a name="line.139"></a>
+<span class="sourceLineNo">140</span>         * Performs comparison on two arbitrary objects of the same type.<a name="line.140"></a>
+<span class="sourceLineNo">141</span>         */<a name="line.141"></a>
+<span class="sourceLineNo">142</span>        @SuppressWarnings("unchecked")<a name="line.142"></a>
+<span class="sourceLineNo">143</span>        private static &lt;O&gt; int objCompare(O o1, O o2) {<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                if (o1 == null) {<a name="line.144"></a>
+<span class="sourceLineNo">145</span>                        if (o2 == null) {<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                                return 0;<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                        }<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                        return -1;<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                } else if (o2 == null) {<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                        return 1;<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                }<a name="line.151"></a>
+<span class="sourceLineNo">152</span><a name="line.152"></a>
+<span class="sourceLineNo">153</span>                if ((o1 instanceof Comparable) &amp;&amp; (o2 instanceof Comparable)) {<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                        try {<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                                return ((Comparable&lt;Object&gt;) o1).compareTo(o2);<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                        } catch (ClassCastException e) {<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                                // somehow failed, so continue and treat as if not comparable<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                        }<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                }<a name="line.159"></a>
+<span class="sourceLineNo">160</span><a name="line.160"></a>
+<span class="sourceLineNo">161</span>                // compare using hash code, so we get at least an approximation of an<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                // ordering<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                int h1 = o1.hashCode();<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                int h2 = o2.hashCode();<a name="line.164"></a>
+<span class="sourceLineNo">165</span><a name="line.165"></a>
+<span class="sourceLineNo">166</span>                if (h1 == h2) {<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                        return 0;<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                }<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                if (h1 &lt; h2) {<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                        return -1;<a name="line.170"></a>
+<span class="sourceLineNo">171</span>                }<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                return 1;<a name="line.172"></a>
+<span class="sourceLineNo">173</span>        }<a name="line.173"></a>
+<span class="sourceLineNo">174</span>}<a name="line.174"></a>
 
 
 

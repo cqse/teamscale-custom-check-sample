@@ -88,7 +88,7 @@
 <span class="sourceLineNo">080</span>         * Calculates the average aspect ratio of the given list of nodes if the<a name="line.80"></a>
 <span class="sourceLineNo">081</span>         * provided height may be used.<a name="line.81"></a>
 <span class="sourceLineNo">082</span>         */<a name="line.82"></a>
-<span class="sourceLineNo">083</span>        private &lt;T&gt; double calcAvgAspect(List&lt;ITreeMapNode&lt;T&gt;&gt; l, double layoutHeight, double areaScale) {<a name="line.83"></a>
+<span class="sourceLineNo">083</span>        private static &lt;T&gt; double calcAvgAspect(List&lt;ITreeMapNode&lt;T&gt;&gt; l, double layoutHeight, double areaScale) {<a name="line.83"></a>
 <span class="sourceLineNo">084</span>                if (l.isEmpty()) {<a name="line.84"></a>
 <span class="sourceLineNo">085</span>                        return 1e8;<a name="line.85"></a>
 <span class="sourceLineNo">086</span>                }<a name="line.86"></a>
@@ -118,26 +118,25 @@
 <span class="sourceLineNo">110</span>         * @param layoutY<a name="line.110"></a>
 <span class="sourceLineNo">111</span>         *            the y start value.<a name="line.111"></a>
 <span class="sourceLineNo">112</span>         * @param areaScale<a name="line.112"></a>
-<span class="sourceLineNo">113</span>         *            the scale factor used to convert from node area to layout<a name="line.113"></a>
-<span class="sourceLineNo">114</span>         *            area.<a name="line.114"></a>
-<span class="sourceLineNo">115</span>         * @return the layout width of the column.<a name="line.115"></a>
-<span class="sourceLineNo">116</span>         */<a name="line.116"></a>
-<span class="sourceLineNo">117</span>        private &lt;T&gt; double layoutList(List&lt;ITreeMapNode&lt;T&gt;&gt; l, double layoutHeight, double layoutX, double layoutY,<a name="line.117"></a>
-<span class="sourceLineNo">118</span>                        double areaScale) {<a name="line.118"></a>
-<span class="sourceLineNo">119</span>                double nodeArea = 0;<a name="line.119"></a>
-<span class="sourceLineNo">120</span>                for (ITreeMapNode&lt;T&gt; node : l) {<a name="line.120"></a>
-<span class="sourceLineNo">121</span>                        nodeArea += node.getArea();<a name="line.121"></a>
-<span class="sourceLineNo">122</span>                }<a name="line.122"></a>
-<span class="sourceLineNo">123</span>                double layoutWidth = nodeArea * areaScale / layoutHeight;<a name="line.123"></a>
-<span class="sourceLineNo">124</span>                for (ITreeMapNode&lt;T&gt; node : l) {<a name="line.124"></a>
-<span class="sourceLineNo">125</span>                        double nodeHeight = node.getArea() * areaScale / layoutWidth;<a name="line.125"></a>
-<span class="sourceLineNo">126</span>                        node.setLayoutRectangle(new Rectangle2D.Double(layoutX, layoutY, layoutWidth, nodeHeight));<a name="line.126"></a>
-<span class="sourceLineNo">127</span>                        layoutY += nodeHeight;<a name="line.127"></a>
-<span class="sourceLineNo">128</span>                        layoutChildren(node);<a name="line.128"></a>
-<span class="sourceLineNo">129</span>                }<a name="line.129"></a>
-<span class="sourceLineNo">130</span>                return layoutWidth;<a name="line.130"></a>
-<span class="sourceLineNo">131</span>        }<a name="line.131"></a>
-<span class="sourceLineNo">132</span>}<a name="line.132"></a>
+<span class="sourceLineNo">113</span>         *            the scale factor used to convert from node area to layout area.<a name="line.113"></a>
+<span class="sourceLineNo">114</span>         * @return the layout width of the column.<a name="line.114"></a>
+<span class="sourceLineNo">115</span>         */<a name="line.115"></a>
+<span class="sourceLineNo">116</span>        private &lt;T&gt; double layoutList(List&lt;ITreeMapNode&lt;T&gt;&gt; l, double layoutHeight, double layoutX, double layoutY,<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                        double areaScale) {<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                double nodeArea = 0;<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                for (ITreeMapNode&lt;T&gt; node : l) {<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                        nodeArea += node.getArea();<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                }<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                double layoutWidth = nodeArea * areaScale / layoutHeight;<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                for (ITreeMapNode&lt;T&gt; node : l) {<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                        double nodeHeight = node.getArea() * areaScale / layoutWidth;<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                        node.setLayoutRectangle(new Rectangle2D.Double(layoutX, layoutY, layoutWidth, nodeHeight));<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                        layoutY += nodeHeight;<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                        layoutChildren(node);<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                }<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                return layoutWidth;<a name="line.129"></a>
+<span class="sourceLineNo">130</span>        }<a name="line.130"></a>
+<span class="sourceLineNo">131</span>}<a name="line.131"></a>
 
 
 

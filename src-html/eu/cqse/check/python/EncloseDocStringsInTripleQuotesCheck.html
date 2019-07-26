@@ -27,104 +27,109 @@
 <span class="sourceLineNo">019</span>import eu.cqse.check.framework.core.CheckImplementationBase;<a name="line.19"></a>
 <span class="sourceLineNo">020</span>import eu.cqse.check.framework.core.ECheckParameter;<a name="line.20"></a>
 <span class="sourceLineNo">021</span>import eu.cqse.check.framework.core.EFindingEnablement;<a name="line.21"></a>
-<span class="sourceLineNo">022</span>import eu.cqse.check.framework.scanner.ELanguage;<a name="line.22"></a>
-<span class="sourceLineNo">023</span>import eu.cqse.check.framework.scanner.ETokenType;<a name="line.23"></a>
-<span class="sourceLineNo">024</span>import eu.cqse.check.framework.scanner.ETokenType.ETokenClass;<a name="line.24"></a>
-<span class="sourceLineNo">025</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.25"></a>
-<span class="sourceLineNo">026</span>import eu.cqse.check.framework.shallowparser.TokenStreamUtils;<a name="line.26"></a>
-<span class="sourceLineNo">027</span>import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;<a name="line.27"></a>
-<span class="sourceLineNo">028</span><a name="line.28"></a>
-<span class="sourceLineNo">029</span>/**<a name="line.29"></a>
-<span class="sourceLineNo">030</span> * {@AConQAT.Doc}<a name="line.30"></a>
-<span class="sourceLineNo">031</span> */<a name="line.31"></a>
-<span class="sourceLineNo">032</span>@ACheck(name = "Enclose doc-strings in triple quotes", description = "Documentation strings should be enclosed in triple "<a name="line.32"></a>
-<span class="sourceLineNo">033</span>                + "quotes.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.YELLOW, languages = {<a name="line.33"></a>
-<span class="sourceLineNo">034</span>                                ELanguage.PYTHON }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })<a name="line.34"></a>
-<span class="sourceLineNo">035</span>public class EncloseDocStringsInTripleQuotesCheck extends CheckImplementationBase {<a name="line.35"></a>
-<span class="sourceLineNo">036</span><a name="line.36"></a>
-<span class="sourceLineNo">037</span>        /** {@inheritDoc} */<a name="line.37"></a>
-<span class="sourceLineNo">038</span>        @Override<a name="line.38"></a>
-<span class="sourceLineNo">039</span>        public void execute() throws CheckException {<a name="line.39"></a>
-<span class="sourceLineNo">040</span>                List&lt;IToken&gt; comments = getPossibleDocStringsWithoutTripleQuote();<a name="line.40"></a>
-<span class="sourceLineNo">041</span><a name="line.41"></a>
-<span class="sourceLineNo">042</span>                for (ShallowEntity entity : CollectionUtils.filter(select("//METHOD | // TYPE"), ShallowEntity::hasChildren)) {<a name="line.42"></a>
+<span class="sourceLineNo">022</span>import eu.cqse.check.framework.core.phase.ECodeViewOption;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import eu.cqse.check.framework.scanner.ELanguage;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import eu.cqse.check.framework.scanner.ETokenType;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import eu.cqse.check.framework.scanner.ETokenType.ETokenClass;<a name="line.25"></a>
+<span class="sourceLineNo">026</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import eu.cqse.check.framework.shallowparser.SubTypeNames;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import eu.cqse.check.framework.shallowparser.TokenStreamUtils;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;<a name="line.29"></a>
+<span class="sourceLineNo">030</span><a name="line.30"></a>
+<span class="sourceLineNo">031</span>/**<a name="line.31"></a>
+<span class="sourceLineNo">032</span> * {@AConQAT.Doc}<a name="line.32"></a>
+<span class="sourceLineNo">033</span> */<a name="line.33"></a>
+<span class="sourceLineNo">034</span>@ACheck(name = "Enclose doc-strings in triple quotes", description = "Documentation strings should be enclosed in triple "<a name="line.34"></a>
+<span class="sourceLineNo">035</span>                + "quotes.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.YELLOW, languages = {<a name="line.35"></a>
+<span class="sourceLineNo">036</span>                                ELanguage.PYTHON }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })<a name="line.36"></a>
+<span class="sourceLineNo">037</span>public class EncloseDocStringsInTripleQuotesCheck extends CheckImplementationBase {<a name="line.37"></a>
+<span class="sourceLineNo">038</span><a name="line.38"></a>
+<span class="sourceLineNo">039</span>        /** {@inheritDoc} */<a name="line.39"></a>
+<span class="sourceLineNo">040</span>        @Override<a name="line.40"></a>
+<span class="sourceLineNo">041</span>        public void execute() throws CheckException {<a name="line.41"></a>
+<span class="sourceLineNo">042</span>                List&lt;IToken&gt; comments = getPossibleDocStringsWithoutTripleQuote();<a name="line.42"></a>
 <span class="sourceLineNo">043</span><a name="line.43"></a>
-<span class="sourceLineNo">044</span>                        Optional&lt;IToken&gt; comment = findInvalidDocumentationComment(entity, comments);<a name="line.44"></a>
-<span class="sourceLineNo">045</span>                        if (comment.isPresent()) {<a name="line.45"></a>
-<span class="sourceLineNo">046</span>                                createFinding("Documentation strings have to be enclosed in triple quotes", comment.get());<a name="line.46"></a>
+<span class="sourceLineNo">044</span>                for (ShallowEntity entity : CollectionUtils.filter(select("//METHOD | // TYPE"), ShallowEntity::hasChildren)) {<a name="line.44"></a>
+<span class="sourceLineNo">045</span>                        if (SubTypeNames.LAMBDA.equals(entity.getSubtype())) {<a name="line.45"></a>
+<span class="sourceLineNo">046</span>                                continue;<a name="line.46"></a>
 <span class="sourceLineNo">047</span>                        }<a name="line.47"></a>
-<span class="sourceLineNo">048</span>                }<a name="line.48"></a>
-<span class="sourceLineNo">049</span>        }<a name="line.49"></a>
-<span class="sourceLineNo">050</span><a name="line.50"></a>
-<span class="sourceLineNo">051</span>        /**<a name="line.51"></a>
-<span class="sourceLineNo">052</span>         * Finds the first invalid documentation comment for the given entity or<a name="line.52"></a>
-<span class="sourceLineNo">053</span>         * empty if there is none.<a name="line.53"></a>
-<span class="sourceLineNo">054</span>         */<a name="line.54"></a>
-<span class="sourceLineNo">055</span>        private static Optional&lt;IToken&gt; findInvalidDocumentationComment(ShallowEntity entity, List&lt;IToken&gt; comments) {<a name="line.55"></a>
-<span class="sourceLineNo">056</span>                Optional&lt;IToken&gt; lastColonToken = getFinalColonToken(entity);<a name="line.56"></a>
-<span class="sourceLineNo">057</span>                if (!lastColonToken.isPresent()) {<a name="line.57"></a>
-<span class="sourceLineNo">058</span>                        return Optional.empty();<a name="line.58"></a>
-<span class="sourceLineNo">059</span>                }<a name="line.59"></a>
-<span class="sourceLineNo">060</span><a name="line.60"></a>
-<span class="sourceLineNo">061</span>                List&lt;ShallowEntity&gt; childEntities = entity.getChildren();<a name="line.61"></a>
-<span class="sourceLineNo">062</span>                if(childEntities.isEmpty()){<a name="line.62"></a>
+<span class="sourceLineNo">048</span><a name="line.48"></a>
+<span class="sourceLineNo">049</span>                        Optional&lt;IToken&gt; comment = findInvalidDocumentationComment(entity, comments);<a name="line.49"></a>
+<span class="sourceLineNo">050</span>                        if (comment.isPresent()) {<a name="line.50"></a>
+<span class="sourceLineNo">051</span>                                createFinding("Documentation strings should be enclosed in triple quotes", comment.get());<a name="line.51"></a>
+<span class="sourceLineNo">052</span>                        }<a name="line.52"></a>
+<span class="sourceLineNo">053</span>                }<a name="line.53"></a>
+<span class="sourceLineNo">054</span>        }<a name="line.54"></a>
+<span class="sourceLineNo">055</span><a name="line.55"></a>
+<span class="sourceLineNo">056</span>        /**<a name="line.56"></a>
+<span class="sourceLineNo">057</span>         * Finds the first invalid documentation comment for the given entity or empty<a name="line.57"></a>
+<span class="sourceLineNo">058</span>         * if there is none.<a name="line.58"></a>
+<span class="sourceLineNo">059</span>         */<a name="line.59"></a>
+<span class="sourceLineNo">060</span>        private static Optional&lt;IToken&gt; findInvalidDocumentationComment(ShallowEntity entity, List&lt;IToken&gt; comments) {<a name="line.60"></a>
+<span class="sourceLineNo">061</span>                Optional&lt;IToken&gt; lastColonToken = getFinalColonToken(entity);<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                if (!lastColonToken.isPresent()) {<a name="line.62"></a>
 <span class="sourceLineNo">063</span>                        return Optional.empty();<a name="line.63"></a>
 <span class="sourceLineNo">064</span>                }<a name="line.64"></a>
-<span class="sourceLineNo">065</span>                <a name="line.65"></a>
-<span class="sourceLineNo">066</span>                ShallowEntity firstChildEntity = childEntities.get(0);<a name="line.66"></a>
-<span class="sourceLineNo">067</span>                List&lt;IToken&gt; startOwnTokens = firstChildEntity.ownStartTokens();<a name="line.67"></a>
-<span class="sourceLineNo">068</span>                if (startOwnTokens.isEmpty()) {<a name="line.68"></a>
-<span class="sourceLineNo">069</span>                        // Occurs when dealing with lambda expressions with<a name="line.69"></a>
-<span class="sourceLineNo">070</span>                        // single and simple statement.<a name="line.70"></a>
-<span class="sourceLineNo">071</span>                        return Optional.empty();<a name="line.71"></a>
-<span class="sourceLineNo">072</span>                }<a name="line.72"></a>
-<span class="sourceLineNo">073</span><a name="line.73"></a>
-<span class="sourceLineNo">074</span>                IToken firstChildToken = startOwnTokens.get(0);<a name="line.74"></a>
-<span class="sourceLineNo">075</span>                return comments.stream()<a name="line.75"></a>
-<span class="sourceLineNo">076</span>                                .filter(comment -&gt; isDocumentationComment(comment, lastColonToken.get(), firstChildToken)).findFirst()<a name="line.76"></a>
-<span class="sourceLineNo">077</span>                                .filter(comment -&gt; comment.getType() == STRING_LITERAL);<a name="line.77"></a>
-<span class="sourceLineNo">078</span>        }<a name="line.78"></a>
-<span class="sourceLineNo">079</span><a name="line.79"></a>
-<span class="sourceLineNo">080</span>        /**<a name="line.80"></a>
-<span class="sourceLineNo">081</span>         * Returns whether the given comment token is documenting the entity that<a name="line.81"></a>
-<span class="sourceLineNo">082</span>         * contains the given colon token in its declaration. A documentation<a name="line.82"></a>
-<span class="sourceLineNo">083</span>         * comment must be in front of or the same token as the first child token.<a name="line.83"></a>
-<span class="sourceLineNo">084</span>         */<a name="line.84"></a>
-<span class="sourceLineNo">085</span>        private static boolean isDocumentationComment(IToken comment, IToken lastColonToken, IToken firstChildToken) {<a name="line.85"></a>
-<span class="sourceLineNo">086</span>                return lastColonToken.getLineNumber() == comment.getLineNumber() - 1<a name="line.86"></a>
-<span class="sourceLineNo">087</span>                                &amp;&amp; comment.getEndOffset() &lt;= firstChildToken.getEndOffset();<a name="line.87"></a>
-<span class="sourceLineNo">088</span>        }<a name="line.88"></a>
-<span class="sourceLineNo">089</span><a name="line.89"></a>
-<span class="sourceLineNo">090</span>        /**<a name="line.90"></a>
-<span class="sourceLineNo">091</span>         * Returns the colon token that finishes the given entity.<a name="line.91"></a>
-<span class="sourceLineNo">092</span>         */<a name="line.92"></a>
-<span class="sourceLineNo">093</span>        private static Optional&lt;IToken&gt; getFinalColonToken(ShallowEntity entity) {<a name="line.93"></a>
-<span class="sourceLineNo">094</span>                List&lt;IToken&gt; tokens = entity.ownStartTokens();<a name="line.94"></a>
-<span class="sourceLineNo">095</span>                int colonIndex = TokenStreamUtils.lastTokenOfType(tokens, COLON);<a name="line.95"></a>
-<span class="sourceLineNo">096</span>                if (colonIndex == TokenStreamUtils.NOT_FOUND) {<a name="line.96"></a>
-<span class="sourceLineNo">097</span>                        return Optional.empty();<a name="line.97"></a>
-<span class="sourceLineNo">098</span>                }<a name="line.98"></a>
-<span class="sourceLineNo">099</span>                return Optional.of(tokens.get(colonIndex));<a name="line.99"></a>
-<span class="sourceLineNo">100</span>        }<a name="line.100"></a>
-<span class="sourceLineNo">101</span><a name="line.101"></a>
-<span class="sourceLineNo">102</span>        /**<a name="line.102"></a>
-<span class="sourceLineNo">103</span>         * Returns all tokens that may be used as documentation string without<a name="line.103"></a>
-<span class="sourceLineNo">104</span>         * triple quotes.<a name="line.104"></a>
-<span class="sourceLineNo">105</span>         */<a name="line.105"></a>
-<span class="sourceLineNo">106</span>        private List&lt;IToken&gt; getPossibleDocStringsWithoutTripleQuote() {<a name="line.106"></a>
-<span class="sourceLineNo">107</span>                return CollectionUtils.filter(context.getUnfilteredTokens(),<a name="line.107"></a>
-<span class="sourceLineNo">108</span>                                EncloseDocStringsInTripleQuotesCheck::mayBeDocStringWithoutTripleQuotes);<a name="line.108"></a>
-<span class="sourceLineNo">109</span>        }<a name="line.109"></a>
-<span class="sourceLineNo">110</span><a name="line.110"></a>
-<span class="sourceLineNo">111</span>        /**<a name="line.111"></a>
-<span class="sourceLineNo">112</span>         * Returns whether the given token may be used as documentation string<a name="line.112"></a>
-<span class="sourceLineNo">113</span>         * without triple quotes.<a name="line.113"></a>
-<span class="sourceLineNo">114</span>         */<a name="line.114"></a>
-<span class="sourceLineNo">115</span>        private static boolean mayBeDocStringWithoutTripleQuotes(IToken token) {<a name="line.115"></a>
-<span class="sourceLineNo">116</span>                ETokenType type = token.getType();<a name="line.116"></a>
-<span class="sourceLineNo">117</span>                return type == STRING_LITERAL || type.getTokenClass() == ETokenClass.COMMENT;<a name="line.117"></a>
-<span class="sourceLineNo">118</span>        }<a name="line.118"></a>
-<span class="sourceLineNo">119</span>}<a name="line.119"></a>
+<span class="sourceLineNo">065</span><a name="line.65"></a>
+<span class="sourceLineNo">066</span>                List&lt;ShallowEntity&gt; childEntities = entity.getChildren();<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                if (childEntities.isEmpty()) {<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                        return Optional.empty();<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                }<a name="line.69"></a>
+<span class="sourceLineNo">070</span><a name="line.70"></a>
+<span class="sourceLineNo">071</span>                ShallowEntity firstChildEntity = childEntities.get(0);<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                List&lt;IToken&gt; startOwnTokens = firstChildEntity.ownStartTokens();<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                if (startOwnTokens.isEmpty()) {<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                        // Occurs when dealing with lambda expressions with<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                        // single and simple statement.<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                        return Optional.empty();<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                }<a name="line.77"></a>
+<span class="sourceLineNo">078</span><a name="line.78"></a>
+<span class="sourceLineNo">079</span>                IToken firstChildToken = startOwnTokens.get(0);<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                return comments.stream()<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                                .filter(comment -&gt; isDocumentationComment(comment, lastColonToken.get(), firstChildToken)).findFirst()<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                                .filter(comment -&gt; comment.getType() == STRING_LITERAL);<a name="line.82"></a>
+<span class="sourceLineNo">083</span>        }<a name="line.83"></a>
+<span class="sourceLineNo">084</span><a name="line.84"></a>
+<span class="sourceLineNo">085</span>        /**<a name="line.85"></a>
+<span class="sourceLineNo">086</span>         * Returns whether the given comment token is documenting the entity that<a name="line.86"></a>
+<span class="sourceLineNo">087</span>         * contains the given colon token in its declaration. A documentation comment<a name="line.87"></a>
+<span class="sourceLineNo">088</span>         * must be in front of or the same token as the first child token.<a name="line.88"></a>
+<span class="sourceLineNo">089</span>         */<a name="line.89"></a>
+<span class="sourceLineNo">090</span>        private static boolean isDocumentationComment(IToken comment, IToken lastColonToken, IToken firstChildToken) {<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                return lastColonToken.getLineNumber() == comment.getLineNumber() - 1<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                                &amp;&amp; comment.getEndOffset() &lt;= firstChildToken.getEndOffset();<a name="line.92"></a>
+<span class="sourceLineNo">093</span>        }<a name="line.93"></a>
+<span class="sourceLineNo">094</span><a name="line.94"></a>
+<span class="sourceLineNo">095</span>        /**<a name="line.95"></a>
+<span class="sourceLineNo">096</span>         * Returns the colon token that finishes the given entity.<a name="line.96"></a>
+<span class="sourceLineNo">097</span>         */<a name="line.97"></a>
+<span class="sourceLineNo">098</span>        private static Optional&lt;IToken&gt; getFinalColonToken(ShallowEntity entity) {<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                List&lt;IToken&gt; tokens = entity.ownStartTokens();<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                int colonIndex = TokenStreamUtils.lastTokenOfType(tokens, COLON);<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                if (colonIndex == TokenStreamUtils.NOT_FOUND) {<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                        return Optional.empty();<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                }<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                return Optional.of(tokens.get(colonIndex));<a name="line.104"></a>
+<span class="sourceLineNo">105</span>        }<a name="line.105"></a>
+<span class="sourceLineNo">106</span><a name="line.106"></a>
+<span class="sourceLineNo">107</span>        /**<a name="line.107"></a>
+<span class="sourceLineNo">108</span>         * Returns all tokens that may be used as documentation string without triple<a name="line.108"></a>
+<span class="sourceLineNo">109</span>         * quotes.<a name="line.109"></a>
+<span class="sourceLineNo">110</span>         */<a name="line.110"></a>
+<span class="sourceLineNo">111</span>        private List&lt;IToken&gt; getPossibleDocStringsWithoutTripleQuote() throws CheckException {<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                return CollectionUtils.filter(context.getTokens(ECodeViewOption.UNFILTERED),<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                                EncloseDocStringsInTripleQuotesCheck::mayBeDocStringWithoutTripleQuotes);<a name="line.113"></a>
+<span class="sourceLineNo">114</span>        }<a name="line.114"></a>
+<span class="sourceLineNo">115</span><a name="line.115"></a>
+<span class="sourceLineNo">116</span>        /**<a name="line.116"></a>
+<span class="sourceLineNo">117</span>         * Returns whether the given token may be used as documentation string without<a name="line.117"></a>
+<span class="sourceLineNo">118</span>         * triple quotes.<a name="line.118"></a>
+<span class="sourceLineNo">119</span>         */<a name="line.119"></a>
+<span class="sourceLineNo">120</span>        private static boolean mayBeDocStringWithoutTripleQuotes(IToken token) {<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                ETokenType type = token.getType();<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                return type == STRING_LITERAL || type.getTokenClass() == ETokenClass.COMMENT;<a name="line.122"></a>
+<span class="sourceLineNo">123</span>        }<a name="line.123"></a>
+<span class="sourceLineNo">124</span>}<a name="line.124"></a>
 
 
 

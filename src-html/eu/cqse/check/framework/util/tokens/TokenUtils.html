@@ -1,0 +1,224 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*-------------------------------------------------------------------------+<a name="line.1"></a>
+<span class="sourceLineNo">002</span>|                                                                          |<a name="line.2"></a>
+<span class="sourceLineNo">003</span>| Copyright 2005-2011 the ConQAT Project                                   |<a name="line.3"></a>
+<span class="sourceLineNo">004</span>|                                                                          |<a name="line.4"></a>
+<span class="sourceLineNo">005</span>| Licensed under the Apache License, Version 2.0 (the "License");          |<a name="line.5"></a>
+<span class="sourceLineNo">006</span>| you may not use this file except in compliance with the License.         |<a name="line.6"></a>
+<span class="sourceLineNo">007</span>| You may obtain a copy of the License at                                  |<a name="line.7"></a>
+<span class="sourceLineNo">008</span>|                                                                          |<a name="line.8"></a>
+<span class="sourceLineNo">009</span>|    http://www.apache.org/licenses/LICENSE-2.0                            |<a name="line.9"></a>
+<span class="sourceLineNo">010</span>|                                                                          |<a name="line.10"></a>
+<span class="sourceLineNo">011</span>| Unless required by applicable law or agreed to in writing, software      |<a name="line.11"></a>
+<span class="sourceLineNo">012</span>| distributed under the License is distributed on an "AS IS" BASIS,        |<a name="line.12"></a>
+<span class="sourceLineNo">013</span>| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. |<a name="line.13"></a>
+<span class="sourceLineNo">014</span>| See the License for the specific language governing permissions and      |<a name="line.14"></a>
+<span class="sourceLineNo">015</span>| limitations under the License.                                           |<a name="line.15"></a>
+<span class="sourceLineNo">016</span>+-------------------------------------------------------------------------*/<a name="line.16"></a>
+<span class="sourceLineNo">017</span>package eu.cqse.check.framework.util.tokens;<a name="line.17"></a>
+<span class="sourceLineNo">018</span><a name="line.18"></a>
+<span class="sourceLineNo">019</span>import java.util.Collection;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import java.util.EnumSet;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import java.util.List;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import java.util.Objects;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import java.util.Set;<a name="line.23"></a>
+<span class="sourceLineNo">024</span><a name="line.24"></a>
+<span class="sourceLineNo">025</span>import org.conqat.lib.commons.collections.Pair;<a name="line.25"></a>
+<span class="sourceLineNo">026</span>import org.conqat.lib.commons.string.StringUtils;<a name="line.26"></a>
+<span class="sourceLineNo">027</span><a name="line.27"></a>
+<span class="sourceLineNo">028</span>import eu.cqse.check.framework.scanner.ETokenType;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>import eu.cqse.check.framework.scanner.ETokenType.ETokenClass;<a name="line.29"></a>
+<span class="sourceLineNo">030</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>/**<a name="line.32"></a>
+<span class="sourceLineNo">033</span> * Utility methods for {@link IToken}s.<a name="line.33"></a>
+<span class="sourceLineNo">034</span> */<a name="line.34"></a>
+<span class="sourceLineNo">035</span>public class TokenUtils {<a name="line.35"></a>
+<span class="sourceLineNo">036</span><a name="line.36"></a>
+<span class="sourceLineNo">037</span>        /**<a name="line.37"></a>
+<span class="sourceLineNo">038</span>         * Set of token types that always have to be treated case-sensitive, e.g. String<a name="line.38"></a>
+<span class="sourceLineNo">039</span>         * literals.<a name="line.39"></a>
+<span class="sourceLineNo">040</span>         */<a name="line.40"></a>
+<span class="sourceLineNo">041</span>        public static final EnumSet&lt;ETokenType&gt; ALWAYS_CASE_SENSITIVE_TOKEN_TYPES = EnumSet.of(ETokenType.STRING_LITERAL,<a name="line.41"></a>
+<span class="sourceLineNo">042</span>                        ETokenType.CHARACTER_LITERAL, ETokenType.UNTERMINATED_STRING_LITERAL,<a name="line.42"></a>
+<span class="sourceLineNo">043</span>                        ETokenType.UNTERMINATED_CHARACTER_LITERAL);<a name="line.43"></a>
+<span class="sourceLineNo">044</span><a name="line.44"></a>
+<span class="sourceLineNo">045</span>        /**<a name="line.45"></a>
+<span class="sourceLineNo">046</span>         * Estimates the zero-based end line of the specified token by looking where the<a name="line.46"></a>
+<span class="sourceLineNo">047</span>         * provided next token begins. Note that this cannot check, if the provided next<a name="line.47"></a>
+<span class="sourceLineNo">048</span>         * token is really the next token, nor if there are blank lines between the two<a name="line.48"></a>
+<span class="sourceLineNo">049</span>         * tokens.<a name="line.49"></a>
+<span class="sourceLineNo">050</span>         * &lt;p&gt;<a name="line.50"></a>
+<span class="sourceLineNo">051</span>         * This method is more efficient than<a name="line.51"></a>
+<span class="sourceLineNo">052</span>         * {@link #calculateEndLineByCountingLines(IToken)}, but not as precise.<a name="line.52"></a>
+<span class="sourceLineNo">053</span>         * <a name="line.53"></a>
+<span class="sourceLineNo">054</span>         * @param token<a name="line.54"></a>
+<span class="sourceLineNo">055</span>         *            the token whose end line should be calculated.<a name="line.55"></a>
+<span class="sourceLineNo">056</span>         * @param nextToken<a name="line.56"></a>
+<span class="sourceLineNo">057</span>         *            the lookahead token.<a name="line.57"></a>
+<span class="sourceLineNo">058</span>         * @return the end line of the specified first token.<a name="line.58"></a>
+<span class="sourceLineNo">059</span>         */<a name="line.59"></a>
+<span class="sourceLineNo">060</span>        public static int estimateEndLineByLookahead(IToken token, IToken nextToken) {<a name="line.60"></a>
+<span class="sourceLineNo">061</span>                int tokenEndLine = nextToken.getLineNumber() - 1;<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                return Math.max(tokenEndLine, token.getLineNumber());<a name="line.62"></a>
+<span class="sourceLineNo">063</span>        }<a name="line.63"></a>
+<span class="sourceLineNo">064</span><a name="line.64"></a>
+<span class="sourceLineNo">065</span>        /**<a name="line.65"></a>
+<span class="sourceLineNo">066</span>         * Calculates the zero-based end line of the specified token by counting the<a name="line.66"></a>
+<span class="sourceLineNo">067</span>         * lines of the text contained within.<a name="line.67"></a>
+<span class="sourceLineNo">068</span>         * &lt;p&gt;<a name="line.68"></a>
+<span class="sourceLineNo">069</span>         * This method is less efficient than<a name="line.69"></a>
+<span class="sourceLineNo">070</span>         * {@link #estimateEndLineByLookahead(IToken, IToken)}, but always yields the<a name="line.70"></a>
+<span class="sourceLineNo">071</span>         * correct result.<a name="line.71"></a>
+<span class="sourceLineNo">072</span>         * <a name="line.72"></a>
+<span class="sourceLineNo">073</span>         * @param token<a name="line.73"></a>
+<span class="sourceLineNo">074</span>         *            the token whose end line should be calculated.<a name="line.74"></a>
+<span class="sourceLineNo">075</span>         * @return the end line of the specified token.<a name="line.75"></a>
+<span class="sourceLineNo">076</span>         */<a name="line.76"></a>
+<span class="sourceLineNo">077</span>        public static int calculateEndLineByCountingLines(IToken token) {<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                int tokenEndLine = token.getLineNumber() + StringUtils.countLines(token.getText()) - 1;<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                return Math.max(tokenEndLine, token.getLineNumber());<a name="line.79"></a>
+<span class="sourceLineNo">080</span>        }<a name="line.80"></a>
+<span class="sourceLineNo">081</span><a name="line.81"></a>
+<span class="sourceLineNo">082</span>        /**<a name="line.82"></a>
+<span class="sourceLineNo">083</span>         * Checks if the given tokens are of equal type and have the equal text. The<a name="line.83"></a>
+<span class="sourceLineNo">084</span>         * method is &lt;code&gt;null&lt;/code&gt;-safe.<a name="line.84"></a>
+<span class="sourceLineNo">085</span>         * <a name="line.85"></a>
+<span class="sourceLineNo">086</span>         * @return &lt;code&gt;true&lt;/code&gt; if both tokens are &lt;code&gt;null&lt;/code&gt; or if both<a name="line.86"></a>
+<span class="sourceLineNo">087</span>         *         tokens are of the same {@link ETokenType} and have the same text,<a name="line.87"></a>
+<span class="sourceLineNo">088</span>         *         &lt;code&gt;false&lt;/code&gt; otherwise.<a name="line.88"></a>
+<span class="sourceLineNo">089</span>         */<a name="line.89"></a>
+<span class="sourceLineNo">090</span>        public static boolean isEqualTypeAndText(IToken t1, IToken t2) {<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                if (t1 == t2) {<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                        return true;<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                }<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                if (t1 == null || t2 == null) {<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                        return false;<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                }<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                return t1.getType() == t2.getType() &amp;&amp; Objects.equals(t1.getText(), t2.getText());<a name="line.97"></a>
+<span class="sourceLineNo">098</span>        }<a name="line.98"></a>
+<span class="sourceLineNo">099</span><a name="line.99"></a>
+<span class="sourceLineNo">100</span>        /**<a name="line.100"></a>
+<span class="sourceLineNo">101</span>         * Returns the first matching pattern and the match or null if no pattern<a name="line.101"></a>
+<span class="sourceLineNo">102</span>         * matches.<a name="line.102"></a>
+<span class="sourceLineNo">103</span>         */<a name="line.103"></a>
+<span class="sourceLineNo">104</span>        public static Pair&lt;TokenPattern, TokenPatternMatch&gt; getMatchingPattern(Collection&lt;TokenPattern&gt; patterns,<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                        List&lt;IToken&gt; tokens) {<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                for (TokenPattern pattern : patterns) {<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                        TokenPatternMatch match = pattern.findFirstMatch(tokens);<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                        if (match != null) {<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                                return new Pair&lt;&gt;(pattern, match);<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                        }<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                }<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                return null;<a name="line.112"></a>
+<span class="sourceLineNo">113</span>        }<a name="line.113"></a>
+<span class="sourceLineNo">114</span><a name="line.114"></a>
+<span class="sourceLineNo">115</span>        /**<a name="line.115"></a>
+<span class="sourceLineNo">116</span>         * Returns true if a given token is a comment token.<a name="line.116"></a>
+<span class="sourceLineNo">117</span>         */<a name="line.117"></a>
+<span class="sourceLineNo">118</span>        public static boolean isCommentToken(IToken token) {<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                return token.getType().getTokenClass() == ETokenClass.COMMENT;<a name="line.119"></a>
+<span class="sourceLineNo">120</span>        }<a name="line.120"></a>
+<span class="sourceLineNo">121</span><a name="line.121"></a>
+<span class="sourceLineNo">122</span>        /**<a name="line.122"></a>
+<span class="sourceLineNo">123</span>         * Creates a representation of the tokens that contains only the tokens<a name="line.123"></a>
+<span class="sourceLineNo">124</span>         * specified in the parameter. This method keeps the original line breaks.<a name="line.124"></a>
+<span class="sourceLineNo">125</span>         * <a name="line.125"></a>
+<span class="sourceLineNo">126</span>         * @param coveredLines<a name="line.126"></a>
+<span class="sourceLineNo">127</span>         *            the method will only count lines that are not already in the given<a name="line.127"></a>
+<span class="sourceLineNo">128</span>         *            set. The set will afterwards contain all lines covered by the<a name="line.128"></a>
+<span class="sourceLineNo">129</span>         *            remaining tokens.<a name="line.129"></a>
+<span class="sourceLineNo">130</span>         */<a name="line.130"></a>
+<span class="sourceLineNo">131</span>        public static int getTokenLineCount(EnumSet&lt;ETokenClass&gt; tokenClassesToPreserve, List&lt;IToken&gt; tokens,<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                        Set&lt;Integer&gt; coveredLines) {<a name="line.132"></a>
+<span class="sourceLineNo">133</span><a name="line.133"></a>
+<span class="sourceLineNo">134</span>                int count = 0;<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                for (IToken token : tokens) {<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                        if (!tokenClassesToPreserve.contains(token.getType().getTokenClass())) {<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                                continue;<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                        }<a name="line.138"></a>
+<span class="sourceLineNo">139</span><a name="line.139"></a>
+<span class="sourceLineNo">140</span>                        int startLine = token.getLineNumber();<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                        int endLine = token.getLineNumber() + StringUtils.countLines(token.getText());<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                        for (int line = startLine; line &lt; endLine; line++) {<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                                if (coveredLines.add(line)) {<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                                        count += 1;<a name="line.144"></a>
+<span class="sourceLineNo">145</span>                                }<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                        }<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                }<a name="line.147"></a>
+<span class="sourceLineNo">148</span><a name="line.148"></a>
+<span class="sourceLineNo">149</span>                return count;<a name="line.149"></a>
+<span class="sourceLineNo">150</span>        }<a name="line.150"></a>
+<span class="sourceLineNo">151</span><a name="line.151"></a>
+<span class="sourceLineNo">152</span>}<a name="line.152"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

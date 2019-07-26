@@ -15,101 +15,191 @@
 <span class="sourceLineNo">007</span> +-----------------------------------------------------------------------*/<a name="line.7"></a>
 <span class="sourceLineNo">008</span>package org.conqat.lib.commons.graph;<a name="line.8"></a>
 <span class="sourceLineNo">009</span><a name="line.9"></a>
-<span class="sourceLineNo">010</span>import java.util.ArrayList;<a name="line.10"></a>
-<span class="sourceLineNo">011</span>import java.util.List;<a name="line.11"></a>
-<span class="sourceLineNo">012</span>import java.util.Optional;<a name="line.12"></a>
-<span class="sourceLineNo">013</span><a name="line.13"></a>
-<span class="sourceLineNo">014</span>import org.conqat.lib.commons.collections.IIdProvider;<a name="line.14"></a>
-<span class="sourceLineNo">015</span>import org.conqat.lib.commons.collections.IdManager;<a name="line.15"></a>
-<span class="sourceLineNo">016</span>import org.conqat.lib.commons.string.StringUtils;<a name="line.16"></a>
-<span class="sourceLineNo">017</span>import org.conqat.lib.commons.visitor.IMeshWalker;<a name="line.17"></a>
-<span class="sourceLineNo">018</span>import org.conqat.lib.commons.visitor.VisitorUtils;<a name="line.18"></a>
-<span class="sourceLineNo">019</span><a name="line.19"></a>
-<span class="sourceLineNo">020</span>/**<a name="line.20"></a>
-<span class="sourceLineNo">021</span> * Useful methods for debugging arbitrary graphs.<a name="line.21"></a>
-<span class="sourceLineNo">022</span> */<a name="line.22"></a>
-<span class="sourceLineNo">023</span>public class GraphDebuggingUtils {<a name="line.23"></a>
+<span class="sourceLineNo">010</span>import static org.conqat.lib.commons.collections.CollectionUtils.map;<a name="line.10"></a>
+<span class="sourceLineNo">011</span>import static org.conqat.lib.commons.string.StringUtils.concat;<a name="line.11"></a>
+<span class="sourceLineNo">012</span><a name="line.12"></a>
+<span class="sourceLineNo">013</span>import java.util.ArrayDeque;<a name="line.13"></a>
+<span class="sourceLineNo">014</span>import java.util.Collection;<a name="line.14"></a>
+<span class="sourceLineNo">015</span>import java.util.Collections;<a name="line.15"></a>
+<span class="sourceLineNo">016</span>import java.util.Deque;<a name="line.16"></a>
+<span class="sourceLineNo">017</span>import java.util.HashSet;<a name="line.17"></a>
+<span class="sourceLineNo">018</span>import java.util.Optional;<a name="line.18"></a>
+<span class="sourceLineNo">019</span>import java.util.Set;<a name="line.19"></a>
+<span class="sourceLineNo">020</span><a name="line.20"></a>
+<span class="sourceLineNo">021</span>import org.conqat.lib.commons.collections.IIdProvider;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import org.conqat.lib.commons.collections.IdManager;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import org.conqat.lib.commons.visitor.IMeshWalker;<a name="line.23"></a>
 <span class="sourceLineNo">024</span><a name="line.24"></a>
-<span class="sourceLineNo">025</span>        /**<a name="line.25"></a>
-<span class="sourceLineNo">026</span>         * Returns a string representation of the graph. The individual nodes are<a name="line.26"></a>
-<span class="sourceLineNo">027</span>         * represented using their toString() method. This is useful for debugging.<a name="line.27"></a>
-<span class="sourceLineNo">028</span>         * <a name="line.28"></a>
-<span class="sourceLineNo">029</span>         * @param root<a name="line.29"></a>
-<span class="sourceLineNo">030</span>         *            the root node of the graph to visualize.<a name="line.30"></a>
-<span class="sourceLineNo">031</span>         * @param walker<a name="line.31"></a>
-<span class="sourceLineNo">032</span>         *            the mesh walker used to traverse the graph.<a name="line.32"></a>
-<span class="sourceLineNo">033</span>         * @param optionalIdProvider<a name="line.33"></a>
-<span class="sourceLineNo">034</span>         *            an optional IdProvider that provides integer IDs for all<a name="line.34"></a>
-<span class="sourceLineNo">035</span>         *            Nodes. If it is empty, we will use an IdManager. The Ids are<a name="line.35"></a>
-<span class="sourceLineNo">036</span>         *            assumed to be stable (the same on each query of the same<a name="line.36"></a>
-<span class="sourceLineNo">037</span>         *            node).<a name="line.37"></a>
-<span class="sourceLineNo">038</span>         */<a name="line.38"></a>
-<span class="sourceLineNo">039</span>        public static &lt;NodeT, X extends Exception&gt; String toString(NodeT root, IMeshWalker&lt;NodeT, X&gt; walker,<a name="line.39"></a>
-<span class="sourceLineNo">040</span>                        Optional&lt;IIdProvider&lt;Integer, NodeT&gt;&gt; optionalIdProvider) throws X {<a name="line.40"></a>
-<span class="sourceLineNo">041</span>                return toString(root, walker, true, optionalIdProvider);<a name="line.41"></a>
-<span class="sourceLineNo">042</span>        }<a name="line.42"></a>
-<span class="sourceLineNo">043</span><a name="line.43"></a>
-<span class="sourceLineNo">044</span>        /**<a name="line.44"></a>
-<span class="sourceLineNo">045</span>         * Returns a human-readable string representation of the graph. The<a name="line.45"></a>
-<span class="sourceLineNo">046</span>         * individual nodes are only represented as integers. This is useful for<a name="line.46"></a>
-<span class="sourceLineNo">047</span>         * debugging.<a name="line.47"></a>
-<span class="sourceLineNo">048</span>         * <a name="line.48"></a>
-<span class="sourceLineNo">049</span>         * @param root<a name="line.49"></a>
-<span class="sourceLineNo">050</span>         *            the root node of the graph to visualize.<a name="line.50"></a>
-<span class="sourceLineNo">051</span>         * @param walker<a name="line.51"></a>
-<span class="sourceLineNo">052</span>         *            the mesh walker used to traverse the graph.<a name="line.52"></a>
-<span class="sourceLineNo">053</span>         * @param optionalIdProvider<a name="line.53"></a>
-<span class="sourceLineNo">054</span>         *            an optional IdProvider that provides integer IDs for all<a name="line.54"></a>
-<span class="sourceLineNo">055</span>         *            Nodes. If it is empty, we will use an IdManager. The Ids are<a name="line.55"></a>
-<span class="sourceLineNo">056</span>         *            assumed to be stable (the same on each query of the same<a name="line.56"></a>
-<span class="sourceLineNo">057</span>         *            node).<a name="line.57"></a>
-<span class="sourceLineNo">058</span>         */<a name="line.58"></a>
-<span class="sourceLineNo">059</span>        public static &lt;NodeT, X extends Exception&gt; String toShortString(NodeT root, IMeshWalker&lt;NodeT, X&gt; walker,<a name="line.59"></a>
-<span class="sourceLineNo">060</span>                        Optional&lt;IIdProvider&lt;Integer, NodeT&gt;&gt; optionalIdProvider) throws X {<a name="line.60"></a>
-<span class="sourceLineNo">061</span>                return toString(root, walker, false, optionalIdProvider);<a name="line.61"></a>
-<span class="sourceLineNo">062</span>        }<a name="line.62"></a>
-<span class="sourceLineNo">063</span><a name="line.63"></a>
-<span class="sourceLineNo">064</span>        /**<a name="line.64"></a>
-<span class="sourceLineNo">065</span>         * Returns a string representation of the graph.<a name="line.65"></a>
-<span class="sourceLineNo">066</span>         *<a name="line.66"></a>
-<span class="sourceLineNo">067</span>         * @param root<a name="line.67"></a>
-<span class="sourceLineNo">068</span>         *            the root node of the graph to visualize.<a name="line.68"></a>
-<span class="sourceLineNo">069</span>         * @param walker<a name="line.69"></a>
-<span class="sourceLineNo">070</span>         *            the mesh walker used to traverse the graph.<a name="line.70"></a>
-<span class="sourceLineNo">071</span>         * @param detailled<a name="line.71"></a>
-<span class="sourceLineNo">072</span>         *            if &lt;code&gt;true&lt;/code&gt;, each node's toString() representation is<a name="line.72"></a>
-<span class="sourceLineNo">073</span>         *            included in the output.<a name="line.73"></a>
-<span class="sourceLineNo">074</span>         * @param optionalIdProvider<a name="line.74"></a>
-<span class="sourceLineNo">075</span>         *            an optional IdProvider that provides integer IDs for all<a name="line.75"></a>
-<span class="sourceLineNo">076</span>         *            Nodes. If it is empty, we will use an IdManager. The Ids are<a name="line.76"></a>
-<span class="sourceLineNo">077</span>         *            assumed to be stable (the same on each query of the same<a name="line.77"></a>
-<span class="sourceLineNo">078</span>         *            node).<a name="line.78"></a>
-<span class="sourceLineNo">079</span>         */<a name="line.79"></a>
-<span class="sourceLineNo">080</span>        private static &lt;NodeT, X extends Exception&gt; String toString(NodeT root, IMeshWalker&lt;NodeT, X&gt; walker,<a name="line.80"></a>
-<span class="sourceLineNo">081</span>                        boolean detailled, Optional&lt;IIdProvider&lt;Integer, NodeT&gt;&gt; optionalIdProvider) throws X {<a name="line.81"></a>
-<span class="sourceLineNo">082</span>                StringBuilder sb = new StringBuilder();<a name="line.82"></a>
-<span class="sourceLineNo">083</span>                IIdProvider&lt;Integer, NodeT&gt; idManager = optionalIdProvider.orElse(new IdManager&lt;NodeT&gt;());<a name="line.83"></a>
-<span class="sourceLineNo">084</span>                for (NodeT node : VisitorUtils.listAllDepthFirst(root, walker)) {<a name="line.84"></a>
-<span class="sourceLineNo">085</span>                        sb.append(idManager.obtainId(node));<a name="line.85"></a>
-<span class="sourceLineNo">086</span><a name="line.86"></a>
-<span class="sourceLineNo">087</span>                        if (detailled) {<a name="line.87"></a>
-<span class="sourceLineNo">088</span>                                sb.append(": { ");<a name="line.88"></a>
-<span class="sourceLineNo">089</span>                                sb.append(node.toString());<a name="line.89"></a>
-<span class="sourceLineNo">090</span>                                sb.append(" }");<a name="line.90"></a>
-<span class="sourceLineNo">091</span>                        }<a name="line.91"></a>
-<span class="sourceLineNo">092</span><a name="line.92"></a>
-<span class="sourceLineNo">093</span>                        sb.append(" --&gt; ");<a name="line.93"></a>
-<span class="sourceLineNo">094</span>                        List&lt;Integer&gt; childIds = new ArrayList&lt;Integer&gt;();<a name="line.94"></a>
-<span class="sourceLineNo">095</span>                        for (NodeT child : walker.getAdjacentElements(node)) {<a name="line.95"></a>
-<span class="sourceLineNo">096</span>                                childIds.add(idManager.obtainId(child));<a name="line.96"></a>
+<span class="sourceLineNo">025</span>/**<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * Useful methods for debugging arbitrary graphs.<a name="line.26"></a>
+<span class="sourceLineNo">027</span> */<a name="line.27"></a>
+<span class="sourceLineNo">028</span>public class GraphDebuggingUtils {<a name="line.28"></a>
+<span class="sourceLineNo">029</span><a name="line.29"></a>
+<span class="sourceLineNo">030</span>        /**<a name="line.30"></a>
+<span class="sourceLineNo">031</span>         * Returns a string representation of the graph. The individual nodes are<a name="line.31"></a>
+<span class="sourceLineNo">032</span>         * represented using their toString() method. This is useful for debugging.<a name="line.32"></a>
+<span class="sourceLineNo">033</span>         * <a name="line.33"></a>
+<span class="sourceLineNo">034</span>         * @param root<a name="line.34"></a>
+<span class="sourceLineNo">035</span>         *            the root node of the graph to visualize.<a name="line.35"></a>
+<span class="sourceLineNo">036</span>         * @param optionalIdProvider<a name="line.36"></a>
+<span class="sourceLineNo">037</span>         *            an optional IdProvider that provides integer IDs for all Nodes. If<a name="line.37"></a>
+<span class="sourceLineNo">038</span>         *            {@code null}, we will use an IdManager. The IDs are assumed to be<a name="line.38"></a>
+<span class="sourceLineNo">039</span>         *            stable (the same on each query of the same node).<a name="line.39"></a>
+<span class="sourceLineNo">040</span>         * @param walkers<a name="line.40"></a>
+<span class="sourceLineNo">041</span>         *            the mesh walkers used to traverse the graph.<a name="line.41"></a>
+<span class="sourceLineNo">042</span>         */<a name="line.42"></a>
+<span class="sourceLineNo">043</span>        @SafeVarargs<a name="line.43"></a>
+<span class="sourceLineNo">044</span>        public static &lt;NodeT, X extends Exception&gt; String getString(NodeT root,<a name="line.44"></a>
+<span class="sourceLineNo">045</span>                        IIdProvider&lt;Integer, NodeT&gt; optionalIdProvider, IMeshWalker&lt;NodeT, X&gt;... walkers) throws X {<a name="line.45"></a>
+<span class="sourceLineNo">046</span>                return getString(root, optionalIdProvider, true, walkers);<a name="line.46"></a>
+<span class="sourceLineNo">047</span>        }<a name="line.47"></a>
+<span class="sourceLineNo">048</span><a name="line.48"></a>
+<span class="sourceLineNo">049</span>        /**<a name="line.49"></a>
+<span class="sourceLineNo">050</span>         * Returns a human-readable string representation of the graph. The individual<a name="line.50"></a>
+<span class="sourceLineNo">051</span>         * nodes are only represented as integers. This is useful for debugging.<a name="line.51"></a>
+<span class="sourceLineNo">052</span>         * <a name="line.52"></a>
+<span class="sourceLineNo">053</span>         * @param root<a name="line.53"></a>
+<span class="sourceLineNo">054</span>         *            the root node of the graph to visualize.<a name="line.54"></a>
+<span class="sourceLineNo">055</span>         * @param optionalIdProvider<a name="line.55"></a>
+<span class="sourceLineNo">056</span>         *            an optional IdProvider that provides integer IDs for all Nodes. If<a name="line.56"></a>
+<span class="sourceLineNo">057</span>         *            {@code null}, we will use an IdManager. The IDs are assumed to be<a name="line.57"></a>
+<span class="sourceLineNo">058</span>         *            stable (the same on each query of the same node).<a name="line.58"></a>
+<span class="sourceLineNo">059</span>         * @param walkers<a name="line.59"></a>
+<span class="sourceLineNo">060</span>         *            the mesh walkers used to traverse the graph.<a name="line.60"></a>
+<span class="sourceLineNo">061</span>         */<a name="line.61"></a>
+<span class="sourceLineNo">062</span>        @SafeVarargs<a name="line.62"></a>
+<span class="sourceLineNo">063</span>        public static &lt;NodeT, X extends Exception&gt; String getShortString(NodeT root,<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                        IIdProvider&lt;Integer, NodeT&gt; optionalIdProvider, IMeshWalker&lt;NodeT, X&gt;... walkers) throws X {<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                return getString(root, optionalIdProvider, false, walkers);<a name="line.65"></a>
+<span class="sourceLineNo">066</span>        }<a name="line.66"></a>
+<span class="sourceLineNo">067</span><a name="line.67"></a>
+<span class="sourceLineNo">068</span>        /**<a name="line.68"></a>
+<span class="sourceLineNo">069</span>         * Returns a string representation of the graph.<a name="line.69"></a>
+<span class="sourceLineNo">070</span>         * <a name="line.70"></a>
+<span class="sourceLineNo">071</span>         * @param root<a name="line.71"></a>
+<span class="sourceLineNo">072</span>         *            the root node of the graph to visualize.<a name="line.72"></a>
+<span class="sourceLineNo">073</span>         * @param optionalIdProvider<a name="line.73"></a>
+<span class="sourceLineNo">074</span>         *            an optional IdProvider that provides integer IDs for all Nodes. If<a name="line.74"></a>
+<span class="sourceLineNo">075</span>         *            {@code null}, we will use an IdManager. The IDs are assumed to be<a name="line.75"></a>
+<span class="sourceLineNo">076</span>         *            stable (the same on each query of the same node).<a name="line.76"></a>
+<span class="sourceLineNo">077</span>         * @param detailed<a name="line.77"></a>
+<span class="sourceLineNo">078</span>         *            if &lt;code&gt;true&lt;/code&gt;, each node's toString() representation is<a name="line.78"></a>
+<span class="sourceLineNo">079</span>         *            included in the output.<a name="line.79"></a>
+<span class="sourceLineNo">080</span>         * @param walkers<a name="line.80"></a>
+<span class="sourceLineNo">081</span>         *            the mesh walkers used to traverse different classes of edges found<a name="line.81"></a>
+<span class="sourceLineNo">082</span>         *            in the graph.<a name="line.82"></a>
+<span class="sourceLineNo">083</span>         */<a name="line.83"></a>
+<span class="sourceLineNo">084</span>        @SafeVarargs<a name="line.84"></a>
+<span class="sourceLineNo">085</span>        private static &lt;NodeT, X extends Exception&gt; String getString(NodeT root,<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                        IIdProvider&lt;Integer, NodeT&gt; optionalIdProvider, boolean detailed, IMeshWalker&lt;NodeT, X&gt;... walkers)<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                        throws X {<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                IIdProvider&lt;Integer, NodeT&gt; idProvider = getIdProvider(optionalIdProvider);<a name="line.88"></a>
+<span class="sourceLineNo">089</span><a name="line.89"></a>
+<span class="sourceLineNo">090</span>                INodeRenderer&lt;NodeT&gt; nodeRenderer = (node) -&gt; {<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                        StringBuilder rendering = new StringBuilder();<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                        rendering.append(idProvider.obtainId(node));<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                        if (detailed) {<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                                rendering.append(": { ");<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                                rendering.append(node);<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                                rendering.append(" }");<a name="line.96"></a>
 <span class="sourceLineNo">097</span>                        }<a name="line.97"></a>
-<span class="sourceLineNo">098</span>                        sb.append(StringUtils.concat(childIds, ", "));<a name="line.98"></a>
-<span class="sourceLineNo">099</span>                        sb.append(StringUtils.CR);<a name="line.99"></a>
-<span class="sourceLineNo">100</span>                }<a name="line.100"></a>
-<span class="sourceLineNo">101</span>                return sb.toString();<a name="line.101"></a>
-<span class="sourceLineNo">102</span>        }<a name="line.102"></a>
-<span class="sourceLineNo">103</span><a name="line.103"></a>
-<span class="sourceLineNo">104</span>}<a name="line.104"></a>
+<span class="sourceLineNo">098</span>                        return rendering.toString();<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                };<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                IEdgeRenderer&lt;NodeT&gt; edgeRenderer = (node, edgeClass, adjacentNodes) -&gt; " --&gt; "<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                                + concat(map(adjacentNodes, idProvider::obtainId), ", ") + "\n";<a name="line.101"></a>
+<span class="sourceLineNo">102</span><a name="line.102"></a>
+<span class="sourceLineNo">103</span>                return renderGraph(root, nodeRenderer, edgeRenderer, walkers);<a name="line.103"></a>
+<span class="sourceLineNo">104</span>        }<a name="line.104"></a>
+<span class="sourceLineNo">105</span><a name="line.105"></a>
+<span class="sourceLineNo">106</span>        /**<a name="line.106"></a>
+<span class="sourceLineNo">107</span>         * Returns a string representation of the graph in Dot format suitable for<a name="line.107"></a>
+<span class="sourceLineNo">108</span>         * rendering with Graphviz.<a name="line.108"></a>
+<span class="sourceLineNo">109</span>         *<a name="line.109"></a>
+<span class="sourceLineNo">110</span>         * @param root<a name="line.110"></a>
+<span class="sourceLineNo">111</span>         *            the root node of the graph to visualize.<a name="line.111"></a>
+<span class="sourceLineNo">112</span>         * @param optionalIdProvider<a name="line.112"></a>
+<span class="sourceLineNo">113</span>         *            an optional IdProvider that provides integer IDs for all Nodes. If<a name="line.113"></a>
+<span class="sourceLineNo">114</span>         *            {@code null}, we will use an IdManager. The IDs are assumed to be<a name="line.114"></a>
+<span class="sourceLineNo">115</span>         *            stable (the same on each query of the same node).<a name="line.115"></a>
+<span class="sourceLineNo">116</span>         * @param walkers<a name="line.116"></a>
+<span class="sourceLineNo">117</span>         *            the mesh walkers used to traverse different classes of edges found<a name="line.117"></a>
+<span class="sourceLineNo">118</span>         *            in the graph.<a name="line.118"></a>
+<span class="sourceLineNo">119</span>         * <a name="line.119"></a>
+<span class="sourceLineNo">120</span>         * @see &lt;a href="https://graphviz.gitlab.io/_pages/doc/info/lang.html"&gt;The DOT<a name="line.120"></a>
+<span class="sourceLineNo">121</span>         *      Language&lt;/a&gt;<a name="line.121"></a>
+<span class="sourceLineNo">122</span>         */<a name="line.122"></a>
+<span class="sourceLineNo">123</span>        @SafeVarargs<a name="line.123"></a>
+<span class="sourceLineNo">124</span>        public static &lt;NodeT, X extends Exception&gt; String getDotString(NodeT root,<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                        IIdProvider&lt;Integer, NodeT&gt; optionalIdProvider, IMeshWalker&lt;NodeT, X&gt;... walkers) throws X {<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                IIdProvider&lt;Integer, NodeT&gt; idProvider = getIdProvider(optionalIdProvider);<a name="line.126"></a>
+<span class="sourceLineNo">127</span><a name="line.127"></a>
+<span class="sourceLineNo">128</span>                INodeRenderer&lt;NodeT&gt; nodeRenderer = (node) -&gt; idProvider.obtainId(node) + //<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                                " [label = " + toQuotedString(node.toString()) + "];\n";<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                IEdgeRenderer&lt;NodeT&gt; edgeRenderer = (node, edgeClass, adjacentNodes) -&gt; idProvider.obtainId(node) + " -&gt; " + //<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                                "{ " + concat(map(adjacentNodes, idProvider::obtainId), " ") + " }" + " [color=\""<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                                + EDGE_COLORS[edgeClass] + "\"];\n";<a name="line.132"></a>
+<span class="sourceLineNo">133</span><a name="line.133"></a>
+<span class="sourceLineNo">134</span>                return "digraph {\n" + renderGraph(root, nodeRenderer, edgeRenderer, walkers) + "}\n";<a name="line.134"></a>
+<span class="sourceLineNo">135</span>        }<a name="line.135"></a>
+<span class="sourceLineNo">136</span><a name="line.136"></a>
+<span class="sourceLineNo">137</span>        /** Colors for different classes of edges */<a name="line.137"></a>
+<span class="sourceLineNo">138</span>        private static final String[] EDGE_COLORS = { "black", "blue", "red", "green" };<a name="line.138"></a>
+<span class="sourceLineNo">139</span><a name="line.139"></a>
+<span class="sourceLineNo">140</span>        private static &lt;NodeT&gt; IIdProvider&lt;Integer, NodeT&gt; getIdProvider(IIdProvider&lt;Integer, NodeT&gt; optionalIdProvider) {<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                return Optional.ofNullable(optionalIdProvider).orElseGet(IdManager::new);<a name="line.141"></a>
+<span class="sourceLineNo">142</span>        }<a name="line.142"></a>
+<span class="sourceLineNo">143</span><a name="line.143"></a>
+<span class="sourceLineNo">144</span>        @SafeVarargs<a name="line.144"></a>
+<span class="sourceLineNo">145</span>        private static &lt;NodeT, X extends Exception&gt; String renderGraph(NodeT root, INodeRenderer&lt;NodeT&gt; nodeRenderer,<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                        IEdgeRenderer&lt;NodeT&gt; edgeRenderer, IMeshWalker&lt;NodeT, X&gt;... walkers) throws X {<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                StringBuilder graph = new StringBuilder();<a name="line.147"></a>
+<span class="sourceLineNo">148</span><a name="line.148"></a>
+<span class="sourceLineNo">149</span>                Deque&lt;NodeT&gt; todo = new ArrayDeque&lt;&gt;(Collections.singleton(root));<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                Set&lt;NodeT&gt; addedNodes = new HashSet&lt;&gt;();<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                while (!todo.isEmpty()) {<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                        NodeT nodeToAdd = todo.poll();<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                        if (!addedNodes.contains(nodeToAdd)) {<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                                graph.append(nodeRenderer.render(nodeToAdd));<a name="line.154"></a>
+<span class="sourceLineNo">155</span><a name="line.155"></a>
+<span class="sourceLineNo">156</span>                                for (int walkerIndex = 0; walkerIndex &lt; walkers.length; walkerIndex++) {<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                                        IMeshWalker&lt;NodeT, X&gt; walker = walkers[walkerIndex];<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                                        Collection&lt;NodeT&gt; adjacentElements = walker.getAdjacentElements(nodeToAdd);<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                                        graph.append(edgeRenderer.render(nodeToAdd, walkerIndex, adjacentElements));<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                                        todo.addAll(adjacentElements);<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                                }<a name="line.161"></a>
+<span class="sourceLineNo">162</span><a name="line.162"></a>
+<span class="sourceLineNo">163</span>                                addedNodes.add(nodeToAdd);<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                        }<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                }<a name="line.165"></a>
+<span class="sourceLineNo">166</span><a name="line.166"></a>
+<span class="sourceLineNo">167</span>                return graph.toString();<a name="line.167"></a>
+<span class="sourceLineNo">168</span>        }<a name="line.168"></a>
+<span class="sourceLineNo">169</span><a name="line.169"></a>
+<span class="sourceLineNo">170</span>        /**<a name="line.170"></a>
+<span class="sourceLineNo">171</span>         * Produces a double-quoted string as defined by the<a name="line.171"></a>
+<span class="sourceLineNo">172</span>         * &lt;a href="https://graphviz.gitlab.io/_pages/doc/info/lang.html"&gt;DOT<a name="line.172"></a>
+<span class="sourceLineNo">173</span>         * language&lt;/a&gt;.<a name="line.173"></a>
+<span class="sourceLineNo">174</span>         */<a name="line.174"></a>
+<span class="sourceLineNo">175</span>        private static String toQuotedString(String string) {<a name="line.175"></a>
+<span class="sourceLineNo">176</span>                return '"' + string.replace("\"", "\\\"") + '"';<a name="line.176"></a>
+<span class="sourceLineNo">177</span>        }<a name="line.177"></a>
+<span class="sourceLineNo">178</span><a name="line.178"></a>
+<span class="sourceLineNo">179</span>        @FunctionalInterface<a name="line.179"></a>
+<span class="sourceLineNo">180</span>        private interface INodeRenderer&lt;NodeT&gt; {<a name="line.180"></a>
+<span class="sourceLineNo">181</span><a name="line.181"></a>
+<span class="sourceLineNo">182</span>                /** Renders the given node. */<a name="line.182"></a>
+<span class="sourceLineNo">183</span>                String render(NodeT node);<a name="line.183"></a>
+<span class="sourceLineNo">184</span>        }<a name="line.184"></a>
+<span class="sourceLineNo">185</span><a name="line.185"></a>
+<span class="sourceLineNo">186</span>        @FunctionalInterface<a name="line.186"></a>
+<span class="sourceLineNo">187</span>        private interface IEdgeRenderer&lt;NodeT&gt; {<a name="line.187"></a>
+<span class="sourceLineNo">188</span><a name="line.188"></a>
+<span class="sourceLineNo">189</span>                /**<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                 * Renders the edges (of the given class) from the node to any adjacent nodes.<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                 */<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                String render(NodeT node, int edgeClass, Collection&lt;NodeT&gt; adjacentNodes);<a name="line.192"></a>
+<span class="sourceLineNo">193</span>        }<a name="line.193"></a>
+<span class="sourceLineNo">194</span>}<a name="line.194"></a>
 
 
 

@@ -1,0 +1,212 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*-------------------------------------------------------------------------+<a name="line.1"></a>
+<span class="sourceLineNo">002</span>|                                                                          |<a name="line.2"></a>
+<span class="sourceLineNo">003</span>| Copyright (c) 2009-2017 CQSE GmbH                                        |<a name="line.3"></a>
+<span class="sourceLineNo">004</span>|                                                                          |<a name="line.4"></a>
+<span class="sourceLineNo">005</span>+-------------------------------------------------------------------------*/<a name="line.5"></a>
+<span class="sourceLineNo">006</span>package eu.cqse.check.cpp.misra.arrays;<a name="line.6"></a>
+<span class="sourceLineNo">007</span><a name="line.7"></a>
+<span class="sourceLineNo">008</span>import static eu.cqse.check.framework.core.CheckGroupNames.BAD_PRACTICE;<a name="line.8"></a>
+<span class="sourceLineNo">009</span>import static eu.cqse.check.framework.core.ECheckParameter.ABSTRACT_SYNTAX_TREE;<a name="line.9"></a>
+<span class="sourceLineNo">010</span>import static eu.cqse.check.framework.core.EFindingEnablement.RED;<a name="line.10"></a>
+<span class="sourceLineNo">011</span>import static eu.cqse.check.framework.core.ruleset.ERuleset.MISRA;<a name="line.11"></a>
+<span class="sourceLineNo">012</span>import static eu.cqse.check.framework.scanner.ELanguage.CPP;<a name="line.12"></a>
+<span class="sourceLineNo">013</span>import static eu.cqse.check.framework.shallowparser.SubTypeNames.GLOBAL_VARIABLE;<a name="line.13"></a>
+<span class="sourceLineNo">014</span>import static eu.cqse.check.framework.shallowparser.SubTypeNames.LOCAL_VARIABLE;<a name="line.14"></a>
+<span class="sourceLineNo">015</span><a name="line.15"></a>
+<span class="sourceLineNo">016</span>import java.util.Arrays;<a name="line.16"></a>
+<span class="sourceLineNo">017</span>import java.util.List;<a name="line.17"></a>
+<span class="sourceLineNo">018</span>import java.util.Optional;<a name="line.18"></a>
+<span class="sourceLineNo">019</span>import java.util.stream.Collectors;<a name="line.19"></a>
+<span class="sourceLineNo">020</span><a name="line.20"></a>
+<span class="sourceLineNo">021</span>import eu.cqse.check.base.EntityCheckBase;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import eu.cqse.check.framework.core.ACheck;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import eu.cqse.check.framework.core.CheckException;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import eu.cqse.check.framework.core.phase.ECodeViewOption;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import eu.cqse.check.framework.core.ruleset.ACheckRuleset;<a name="line.25"></a>
+<span class="sourceLineNo">026</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import eu.cqse.check.framework.shallowparser.TokenStreamTextUtils;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;<a name="line.28"></a>
+<span class="sourceLineNo">029</span><a name="line.29"></a>
+<span class="sourceLineNo">030</span>/**<a name="line.30"></a>
+<span class="sourceLineNo">031</span> * Due to its expense this check combines three MISRA rules. First it parses the<a name="line.31"></a>
+<span class="sourceLineNo">032</span> * array declaration and initialization. Then it checks whether : - the array is<a name="line.32"></a>
+<span class="sourceLineNo">033</span> * partial initialized - any element is initialized several times - every sub<a name="line.33"></a>
+<span class="sourceLineNo">034</span> * object is enclosed by braces<a name="line.34"></a>
+<span class="sourceLineNo">035</span> */<a name="line.35"></a>
+<span class="sourceLineNo">036</span>@ACheck(name = "Use of enclosing braces, partial array initialization, multiple initialization of array elements", description = ArrayInitializationCheck.DESCRIPTION, groupName = BAD_PRACTICE, defaultEnablement = RED, languages = {<a name="line.36"></a>
+<span class="sourceLineNo">037</span>                CPP }, parameters = { ABSTRACT_SYNTAX_TREE })<a name="line.37"></a>
+<span class="sourceLineNo">038</span>@ACheckRuleset(ruleId = "9.2", ruleset = MISRA)<a name="line.38"></a>
+<span class="sourceLineNo">039</span>@ACheckRuleset(ruleId = "9.3", ruleset = MISRA)<a name="line.39"></a>
+<span class="sourceLineNo">040</span>@ACheckRuleset(ruleId = "9.4", ruleset = MISRA)<a name="line.40"></a>
+<span class="sourceLineNo">041</span>public class ArrayInitializationCheck extends EntityCheckBase {<a name="line.41"></a>
+<span class="sourceLineNo">042</span><a name="line.42"></a>
+<span class="sourceLineNo">043</span>        protected static final String DESCRIPTION = "1.\n\t"<a name="line.43"></a>
+<span class="sourceLineNo">044</span>                        + "The use of enclosing braces is expected for every subobject.\n" + "2.\n\t"<a name="line.44"></a>
+<span class="sourceLineNo">045</span>                        + "     Partial initialization of arrays is not allowed.\n" + "3.\n\t"<a name="line.45"></a>
+<span class="sourceLineNo">046</span>                        + "     Any element of arrays should only be initialized once.\n" + "\n" + "Example 1:\n" + "``` cpp\n"<a name="line.46"></a>
+<span class="sourceLineNo">047</span>                        + "uint16_t arr1[2][2]={{0},[1][0]=0,1}; //not acceptable\n" + "\n"<a name="line.47"></a>
+<span class="sourceLineNo">048</span>                        + "uint16_t arr2[2][2]={{0,1},{2,3}}; //acceptable\n"<a name="line.48"></a>
+<span class="sourceLineNo">049</span>                        + "uint16_t arr3[2][2]={{0},[1][1]=1,[1][0]=0}; //acceptable\n" + "```\n" + "\n" + "Example 2: \n"<a name="line.49"></a>
+<span class="sourceLineNo">050</span>                        + "``` cpp\n" + "uint16_t arr1[2][2]={{0,1}}; //not acceptable\n"<a name="line.50"></a>
+<span class="sourceLineNo">051</span>                        + "uint16_t arr1[2][2]={{0,1},[1][0]=2}; //not acceptable\n" + "\n"<a name="line.51"></a>
+<span class="sourceLineNo">052</span>                        + "uint16_t arr3[2][2]={{0,1},{0}}; //acceptable\n"<a name="line.52"></a>
+<span class="sourceLineNo">053</span>                        + "uint16_t arr4[2][2]={[1][1]=1,[1][0]=0}; //acceptable\n" + "```\n" + "\n" + "Example 3: \n" + "``` cpp\n"<a name="line.53"></a>
+<span class="sourceLineNo">054</span>                        + "uint16_t arr4[2][2]={[0][0]=1,[0][0]=2}; //not acceptable\n" + "\n"<a name="line.54"></a>
+<span class="sourceLineNo">055</span>                        + "uint16_t arr4[2][2]={[0][0]=1,[1][1]=2}; //acceptable\n" + "```";<a name="line.55"></a>
+<span class="sourceLineNo">056</span><a name="line.56"></a>
+<span class="sourceLineNo">057</span>        /** {@inheritDoc} */<a name="line.57"></a>
+<span class="sourceLineNo">058</span>        @Override<a name="line.58"></a>
+<span class="sourceLineNo">059</span>        protected String getXPathSelectionString() {<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                return "//*[subtype('" + LOCAL_VARIABLE + "') | subtype('" + GLOBAL_VARIABLE + "')]";<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        }<a name="line.61"></a>
+<span class="sourceLineNo">062</span><a name="line.62"></a>
+<span class="sourceLineNo">063</span>        @Override<a name="line.63"></a>
+<span class="sourceLineNo">064</span>        protected ECodeViewOption getCodeViewOption() {<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                return ECodeViewOption.FILTERED_PREPROCESSED;<a name="line.65"></a>
+<span class="sourceLineNo">066</span>        }<a name="line.66"></a>
+<span class="sourceLineNo">067</span><a name="line.67"></a>
+<span class="sourceLineNo">068</span>        /** {@inheritDoc} */<a name="line.68"></a>
+<span class="sourceLineNo">069</span>        @Override<a name="line.69"></a>
+<span class="sourceLineNo">070</span>        protected void processEntity(ShallowEntity entity) throws CheckException {<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                Optional&lt;ArrayContext&gt; arrayContext = ArrayContext.createArrayContext(entity);<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                if (arrayContext.isPresent()) {<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                        checkArray(arrayContext.get(), entity);<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                }<a name="line.74"></a>
+<span class="sourceLineNo">075</span>        }<a name="line.75"></a>
+<span class="sourceLineNo">076</span><a name="line.76"></a>
+<span class="sourceLineNo">077</span>        /** Parses the array and creates findings if necessary. */<a name="line.77"></a>
+<span class="sourceLineNo">078</span>        private void checkArray(ArrayContext arrayContext, ShallowEntity entity) throws CheckException {<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                Optional&lt;ArrayAutomaton&gt; parsedAutomation = ArrayAutomaton.parse(arrayContext);<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                if (parsedAutomation.isPresent()) {<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                        ArrayAutomaton automaton = parsedAutomation.get();<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                        checkPartialInitialization(automaton, entity);<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                        checkMultipleInitialization(automaton, entity);<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                        checkEnclosingBraces(automaton, arrayContext);<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                } else {<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                        createFinding("Array definition `" + entity.getName() + "` is not valid", entity.getStartLine(),<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                                        entity.getEndLine());<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                }<a name="line.88"></a>
+<span class="sourceLineNo">089</span>        }<a name="line.89"></a>
+<span class="sourceLineNo">090</span><a name="line.90"></a>
+<span class="sourceLineNo">091</span>        /**<a name="line.91"></a>
+<span class="sourceLineNo">092</span>         * Creates finding if Rule 9.3 is violated: array is partial initialized<a name="line.92"></a>
+<span class="sourceLineNo">093</span>         */<a name="line.93"></a>
+<span class="sourceLineNo">094</span>        private void checkPartialInitialization(ArrayAutomaton automaton, ShallowEntity entity) throws CheckException {<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                if (automaton.isFullyInitialized()) {<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                        return;<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                }<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                createFinding("Array `" + entity.getName() + "` should not be partially initialized", entity.getStartLine(),<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                                entity.getEndLine());<a name="line.99"></a>
+<span class="sourceLineNo">100</span>        }<a name="line.100"></a>
+<span class="sourceLineNo">101</span><a name="line.101"></a>
+<span class="sourceLineNo">102</span>        /**<a name="line.102"></a>
+<span class="sourceLineNo">103</span>         * Creates finding if Rule 9.4 is violated: any element is initialized multiple<a name="line.103"></a>
+<span class="sourceLineNo">104</span>         * times<a name="line.104"></a>
+<span class="sourceLineNo">105</span>         */<a name="line.105"></a>
+<span class="sourceLineNo">106</span>        private void checkMultipleInitialization(ArrayAutomaton automaton, ShallowEntity entity) throws CheckException {<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                if (!automaton.anyMultipleInitialization()) {<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                        return;<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                }<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                List&lt;int[]&gt; indexes = automaton.getMultipleInitializations();<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                List&lt;String&gt; indexTexts = indexes.stream().map(index -&gt; "`" + Arrays.toString(index).replace(", ", "][") + "`")<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                                .collect(Collectors.toList());<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                String inferredMessageInfo = "Element";<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                if (indexes.size() &gt; 1) {<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                        inferredMessageInfo += "s";<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                }<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                inferredMessageInfo += " " + String.join(", ", indexTexts);<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                createFinding(inferredMessageInfo + " should only be initialized once", entity.getStartLine(),<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                                entity.getEndLine());<a name="line.119"></a>
+<span class="sourceLineNo">120</span><a name="line.120"></a>
+<span class="sourceLineNo">121</span>        }<a name="line.121"></a>
+<span class="sourceLineNo">122</span><a name="line.122"></a>
+<span class="sourceLineNo">123</span>        /**<a name="line.123"></a>
+<span class="sourceLineNo">124</span>         * Creates finding if Rule 9.2 is violated: subobject is not enclosed by braces<a name="line.124"></a>
+<span class="sourceLineNo">125</span>         */<a name="line.125"></a>
+<span class="sourceLineNo">126</span>        private void checkEnclosingBraces(ArrayAutomaton automaton, ArrayContext arrayContext) throws CheckException {<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                for (IToken token : automaton.getCompoundFindings()) {<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                        createCompoundFinding(arrayContext, token);<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                }<a name="line.129"></a>
+<span class="sourceLineNo">130</span>        }<a name="line.130"></a>
+<span class="sourceLineNo">131</span><a name="line.131"></a>
+<span class="sourceLineNo">132</span>        /** Create finding for compound without enclosing braces */<a name="line.132"></a>
+<span class="sourceLineNo">133</span>        private void createCompoundFinding(ArrayContext arrayContext, IToken startToken) throws CheckException {<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                List&lt;IToken&gt; compoundTokens = arrayContext.getCompoundTokens(startToken);<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                String inferredMessage = "`{" + TokenStreamTextUtils.concatTokenTexts(compoundTokens) + "}`";<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                createFinding("The use of enclosing braces is expected for " + inferredMessage, startToken,<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                                compoundTokens.get(compoundTokens.size() - 1));<a name="line.137"></a>
+<span class="sourceLineNo">138</span>        }<a name="line.138"></a>
+<span class="sourceLineNo">139</span><a name="line.139"></a>
+<span class="sourceLineNo">140</span>}<a name="line.140"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

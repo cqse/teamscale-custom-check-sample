@@ -32,9 +32,9 @@
 <span class="sourceLineNo">024</span>import eu.cqse.check.framework.core.CheckException;<a name="line.24"></a>
 <span class="sourceLineNo">025</span>import eu.cqse.check.framework.core.CheckGroupNames;<a name="line.25"></a>
 <span class="sourceLineNo">026</span>import eu.cqse.check.framework.core.ECheckParameter;<a name="line.26"></a>
-<span class="sourceLineNo">027</span>import eu.cqse.check.framework.scanner.ELanguage;<a name="line.27"></a>
-<span class="sourceLineNo">028</span>import eu.cqse.check.framework.scanner.ETokenType;<a name="line.28"></a>
-<span class="sourceLineNo">029</span>import eu.cqse.check.framework.util.abap.AbapCheckUtils;<a name="line.29"></a>
+<span class="sourceLineNo">027</span>import eu.cqse.check.framework.core.util.CheckUtils;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import eu.cqse.check.framework.scanner.ELanguage;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>import eu.cqse.check.framework.scanner.ETokenType;<a name="line.29"></a>
 <span class="sourceLineNo">030</span><a name="line.30"></a>
 <span class="sourceLineNo">031</span>/**<a name="line.31"></a>
 <span class="sourceLineNo">032</span> * Checks for calls of function modules RFC_REMOTE_EXEC and RFC_REMOTE_PIPE.<a name="line.32"></a>
@@ -66,7 +66,7 @@
 <span class="sourceLineNo">058</span>                        return;<a name="line.58"></a>
 <span class="sourceLineNo">059</span>                }<a name="line.59"></a>
 <span class="sourceLineNo">060</span><a name="line.60"></a>
-<span class="sourceLineNo">061</span>                String function = AbapCheckUtils.getUnquotedTextForCharcterLiteral(getCallStatmentTokens().get(2));<a name="line.61"></a>
+<span class="sourceLineNo">061</span>                String function = CheckUtils.getUnquotedTextForCharacterLiteral(getCallStatmentTokens().get(2));<a name="line.61"></a>
 <span class="sourceLineNo">062</span><a name="line.62"></a>
 <span class="sourceLineNo">063</span>                if (SUSPICIOUS_FUNCTIONS.contains(function)) {<a name="line.63"></a>
 <span class="sourceLineNo">064</span>                        createFinding("Call of function " + function, getCallStatement());<a name="line.64"></a>

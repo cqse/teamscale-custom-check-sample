@@ -1,0 +1,548 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*-------------------------------------------------------------------------+<a name="line.1"></a>
+<span class="sourceLineNo">002</span>|                                                                          |<a name="line.2"></a>
+<span class="sourceLineNo">003</span>| Copyright (c) 2009-2017 CQSE GmbH                                        |<a name="line.3"></a>
+<span class="sourceLineNo">004</span>|                                                                          |<a name="line.4"></a>
+<span class="sourceLineNo">005</span>+-------------------------------------------------------------------------*/<a name="line.5"></a>
+<span class="sourceLineNo">006</span>package eu.cqse.check.framework.shallowparser.languages.kotlin;<a name="line.6"></a>
+<span class="sourceLineNo">007</span><a name="line.7"></a>
+<span class="sourceLineNo">008</span>import static eu.cqse.check.framework.scanner.ETokenType.ABSTRACT;<a name="line.8"></a>
+<span class="sourceLineNo">009</span>import static eu.cqse.check.framework.scanner.ETokenType.ACTUAL;<a name="line.9"></a>
+<span class="sourceLineNo">010</span>import static eu.cqse.check.framework.scanner.ETokenType.ANNOTATION;<a name="line.10"></a>
+<span class="sourceLineNo">011</span>import static eu.cqse.check.framework.scanner.ETokenType.ARROW;<a name="line.11"></a>
+<span class="sourceLineNo">012</span>import static eu.cqse.check.framework.scanner.ETokenType.AT;<a name="line.12"></a>
+<span class="sourceLineNo">013</span>import static eu.cqse.check.framework.scanner.ETokenType.BOOLEAN_LITERAL;<a name="line.13"></a>
+<span class="sourceLineNo">014</span>import static eu.cqse.check.framework.scanner.ETokenType.BREAK;<a name="line.14"></a>
+<span class="sourceLineNo">015</span>import static eu.cqse.check.framework.scanner.ETokenType.BY;<a name="line.15"></a>
+<span class="sourceLineNo">016</span>import static eu.cqse.check.framework.scanner.ETokenType.CATCH;<a name="line.16"></a>
+<span class="sourceLineNo">017</span>import static eu.cqse.check.framework.scanner.ETokenType.CLASS;<a name="line.17"></a>
+<span class="sourceLineNo">018</span>import static eu.cqse.check.framework.scanner.ETokenType.COLON;<a name="line.18"></a>
+<span class="sourceLineNo">019</span>import static eu.cqse.check.framework.scanner.ETokenType.COMMA;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import static eu.cqse.check.framework.scanner.ETokenType.COMPANION;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import static eu.cqse.check.framework.scanner.ETokenType.CONST;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import static eu.cqse.check.framework.scanner.ETokenType.CONSTRUCTOR;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import static eu.cqse.check.framework.scanner.ETokenType.CONTINUE;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import static eu.cqse.check.framework.scanner.ETokenType.CROSSINLINE;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import static eu.cqse.check.framework.scanner.ETokenType.DATA;<a name="line.25"></a>
+<span class="sourceLineNo">026</span>import static eu.cqse.check.framework.scanner.ETokenType.DELEGATE;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import static eu.cqse.check.framework.scanner.ETokenType.DO;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import static eu.cqse.check.framework.scanner.ETokenType.DOT;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>import static eu.cqse.check.framework.scanner.ETokenType.DYNAMIC;<a name="line.29"></a>
+<span class="sourceLineNo">030</span>import static eu.cqse.check.framework.scanner.ETokenType.ELSE;<a name="line.30"></a>
+<span class="sourceLineNo">031</span>import static eu.cqse.check.framework.scanner.ETokenType.ENUM;<a name="line.31"></a>
+<span class="sourceLineNo">032</span>import static eu.cqse.check.framework.scanner.ETokenType.EOL;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import static eu.cqse.check.framework.scanner.ETokenType.EQ;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import static eu.cqse.check.framework.scanner.ETokenType.EXPECT;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import static eu.cqse.check.framework.scanner.ETokenType.EXTERNAL;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import static eu.cqse.check.framework.scanner.ETokenType.FIELD;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import static eu.cqse.check.framework.scanner.ETokenType.FILE;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import static eu.cqse.check.framework.scanner.ETokenType.FINAL;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import static eu.cqse.check.framework.scanner.ETokenType.FINALLY;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import static eu.cqse.check.framework.scanner.ETokenType.FLOATING_POINT_LITERAL;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>import static eu.cqse.check.framework.scanner.ETokenType.FOR;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>import static eu.cqse.check.framework.scanner.ETokenType.FUN;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>import static eu.cqse.check.framework.scanner.ETokenType.GET;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>import static eu.cqse.check.framework.scanner.ETokenType.GT;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>import static eu.cqse.check.framework.scanner.ETokenType.IDENTIFIER;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>import static eu.cqse.check.framework.scanner.ETokenType.IF;<a name="line.46"></a>
+<span class="sourceLineNo">047</span>import static eu.cqse.check.framework.scanner.ETokenType.IMPORT;<a name="line.47"></a>
+<span class="sourceLineNo">048</span>import static eu.cqse.check.framework.scanner.ETokenType.IN;<a name="line.48"></a>
+<span class="sourceLineNo">049</span>import static eu.cqse.check.framework.scanner.ETokenType.INFIX;<a name="line.49"></a>
+<span class="sourceLineNo">050</span>import static eu.cqse.check.framework.scanner.ETokenType.INIT;<a name="line.50"></a>
+<span class="sourceLineNo">051</span>import static eu.cqse.check.framework.scanner.ETokenType.INLINE;<a name="line.51"></a>
+<span class="sourceLineNo">052</span>import static eu.cqse.check.framework.scanner.ETokenType.INNER;<a name="line.52"></a>
+<span class="sourceLineNo">053</span>import static eu.cqse.check.framework.scanner.ETokenType.INTEGER_LITERAL;<a name="line.53"></a>
+<span class="sourceLineNo">054</span>import static eu.cqse.check.framework.scanner.ETokenType.INTERFACE;<a name="line.54"></a>
+<span class="sourceLineNo">055</span>import static eu.cqse.check.framework.scanner.ETokenType.INTERNAL;<a name="line.55"></a>
+<span class="sourceLineNo">056</span>import static eu.cqse.check.framework.scanner.ETokenType.IT;<a name="line.56"></a>
+<span class="sourceLineNo">057</span>import static eu.cqse.check.framework.scanner.ETokenType.LATEINIT;<a name="line.57"></a>
+<span class="sourceLineNo">058</span>import static eu.cqse.check.framework.scanner.ETokenType.LBRACE;<a name="line.58"></a>
+<span class="sourceLineNo">059</span>import static eu.cqse.check.framework.scanner.ETokenType.LBRACK;<a name="line.59"></a>
+<span class="sourceLineNo">060</span>import static eu.cqse.check.framework.scanner.ETokenType.LPAREN;<a name="line.60"></a>
+<span class="sourceLineNo">061</span>import static eu.cqse.check.framework.scanner.ETokenType.LT;<a name="line.61"></a>
+<span class="sourceLineNo">062</span>import static eu.cqse.check.framework.scanner.ETokenType.MINUS;<a name="line.62"></a>
+<span class="sourceLineNo">063</span>import static eu.cqse.check.framework.scanner.ETokenType.NOINLINE;<a name="line.63"></a>
+<span class="sourceLineNo">064</span>import static eu.cqse.check.framework.scanner.ETokenType.NULL_LITERAL;<a name="line.64"></a>
+<span class="sourceLineNo">065</span>import static eu.cqse.check.framework.scanner.ETokenType.OBJECT;<a name="line.65"></a>
+<span class="sourceLineNo">066</span>import static eu.cqse.check.framework.scanner.ETokenType.OPEN;<a name="line.66"></a>
+<span class="sourceLineNo">067</span>import static eu.cqse.check.framework.scanner.ETokenType.OPERATOR;<a name="line.67"></a>
+<span class="sourceLineNo">068</span>import static eu.cqse.check.framework.scanner.ETokenType.OUT;<a name="line.68"></a>
+<span class="sourceLineNo">069</span>import static eu.cqse.check.framework.scanner.ETokenType.OVERRIDE;<a name="line.69"></a>
+<span class="sourceLineNo">070</span>import static eu.cqse.check.framework.scanner.ETokenType.PACKAGE;<a name="line.70"></a>
+<span class="sourceLineNo">071</span>import static eu.cqse.check.framework.scanner.ETokenType.PARAM;<a name="line.71"></a>
+<span class="sourceLineNo">072</span>import static eu.cqse.check.framework.scanner.ETokenType.PRIVATE;<a name="line.72"></a>
+<span class="sourceLineNo">073</span>import static eu.cqse.check.framework.scanner.ETokenType.PROPERTY;<a name="line.73"></a>
+<span class="sourceLineNo">074</span>import static eu.cqse.check.framework.scanner.ETokenType.PROTECTED;<a name="line.74"></a>
+<span class="sourceLineNo">075</span>import static eu.cqse.check.framework.scanner.ETokenType.PUBLIC;<a name="line.75"></a>
+<span class="sourceLineNo">076</span>import static eu.cqse.check.framework.scanner.ETokenType.QUESTION;<a name="line.76"></a>
+<span class="sourceLineNo">077</span>import static eu.cqse.check.framework.scanner.ETokenType.RBRACE;<a name="line.77"></a>
+<span class="sourceLineNo">078</span>import static eu.cqse.check.framework.scanner.ETokenType.RBRACK;<a name="line.78"></a>
+<span class="sourceLineNo">079</span>import static eu.cqse.check.framework.scanner.ETokenType.RECEIVER;<a name="line.79"></a>
+<span class="sourceLineNo">080</span>import static eu.cqse.check.framework.scanner.ETokenType.REIFIED;<a name="line.80"></a>
+<span class="sourceLineNo">081</span>import static eu.cqse.check.framework.scanner.ETokenType.RETURN;<a name="line.81"></a>
+<span class="sourceLineNo">082</span>import static eu.cqse.check.framework.scanner.ETokenType.RPAREN;<a name="line.82"></a>
+<span class="sourceLineNo">083</span>import static eu.cqse.check.framework.scanner.ETokenType.SEALED;<a name="line.83"></a>
+<span class="sourceLineNo">084</span>import static eu.cqse.check.framework.scanner.ETokenType.SEMICOLON;<a name="line.84"></a>
+<span class="sourceLineNo">085</span>import static eu.cqse.check.framework.scanner.ETokenType.SET;<a name="line.85"></a>
+<span class="sourceLineNo">086</span>import static eu.cqse.check.framework.scanner.ETokenType.SETPARAM;<a name="line.86"></a>
+<span class="sourceLineNo">087</span>import static eu.cqse.check.framework.scanner.ETokenType.STRING_LITERAL;<a name="line.87"></a>
+<span class="sourceLineNo">088</span>import static eu.cqse.check.framework.scanner.ETokenType.SUPER;<a name="line.88"></a>
+<span class="sourceLineNo">089</span>import static eu.cqse.check.framework.scanner.ETokenType.SUSPEND;<a name="line.89"></a>
+<span class="sourceLineNo">090</span>import static eu.cqse.check.framework.scanner.ETokenType.TAILREC;<a name="line.90"></a>
+<span class="sourceLineNo">091</span>import static eu.cqse.check.framework.scanner.ETokenType.THIS;<a name="line.91"></a>
+<span class="sourceLineNo">092</span>import static eu.cqse.check.framework.scanner.ETokenType.THROW;<a name="line.92"></a>
+<span class="sourceLineNo">093</span>import static eu.cqse.check.framework.scanner.ETokenType.VAL;<a name="line.93"></a>
+<span class="sourceLineNo">094</span>import static eu.cqse.check.framework.scanner.ETokenType.VAR;<a name="line.94"></a>
+<span class="sourceLineNo">095</span>import static eu.cqse.check.framework.scanner.ETokenType.VARARG;<a name="line.95"></a>
+<span class="sourceLineNo">096</span>import static eu.cqse.check.framework.scanner.ETokenType.WHEN;<a name="line.96"></a>
+<span class="sourceLineNo">097</span>import static eu.cqse.check.framework.scanner.ETokenType.WHERE;<a name="line.97"></a>
+<span class="sourceLineNo">098</span>import static eu.cqse.check.framework.scanner.ETokenType.WHILE;<a name="line.98"></a>
+<span class="sourceLineNo">099</span>import static eu.cqse.check.framework.shallowparser.framework.EShallowEntityType.METHOD;<a name="line.99"></a>
+<span class="sourceLineNo">100</span>import static eu.cqse.check.framework.shallowparser.framework.EShallowEntityType.STATEMENT;<a name="line.100"></a>
+<span class="sourceLineNo">101</span>import static eu.cqse.check.framework.shallowparser.framework.EShallowEntityType.TYPE;<a name="line.101"></a>
+<span class="sourceLineNo">102</span>import static eu.cqse.check.framework.shallowparser.languages.kotlin.EKotlinParserStates.IN_ENUM;<a name="line.102"></a>
+<span class="sourceLineNo">103</span>import static eu.cqse.check.framework.shallowparser.languages.kotlin.EKotlinParserStates.IN_LAMBDA;<a name="line.103"></a>
+<span class="sourceLineNo">104</span>import static eu.cqse.check.framework.shallowparser.languages.kotlin.EKotlinParserStates.IN_METHOD;<a name="line.104"></a>
+<span class="sourceLineNo">105</span>import static eu.cqse.check.framework.shallowparser.languages.kotlin.EKotlinParserStates.IN_PROPERTY;<a name="line.105"></a>
+<span class="sourceLineNo">106</span>import static eu.cqse.check.framework.shallowparser.languages.kotlin.EKotlinParserStates.IN_STATEMENT;<a name="line.106"></a>
+<span class="sourceLineNo">107</span>import static eu.cqse.check.framework.shallowparser.languages.kotlin.EKotlinParserStates.IN_TYPE;<a name="line.107"></a>
+<span class="sourceLineNo">108</span>import static eu.cqse.check.framework.shallowparser.languages.kotlin.EKotlinParserStates.IN_WHEN;<a name="line.108"></a>
+<span class="sourceLineNo">109</span>import static eu.cqse.check.framework.shallowparser.languages.kotlin.EKotlinParserStates.TOP_LEVEL;<a name="line.109"></a>
+<span class="sourceLineNo">110</span>import static org.conqat.lib.commons.enums.EnumUtils.mergeSets;<a name="line.110"></a>
+<span class="sourceLineNo">111</span><a name="line.111"></a>
+<span class="sourceLineNo">112</span>import java.util.Arrays;<a name="line.112"></a>
+<span class="sourceLineNo">113</span>import java.util.EnumSet;<a name="line.113"></a>
+<span class="sourceLineNo">114</span>import java.util.List;<a name="line.114"></a>
+<span class="sourceLineNo">115</span><a name="line.115"></a>
+<span class="sourceLineNo">116</span>import org.conqat.lib.commons.region.Region;<a name="line.116"></a>
+<span class="sourceLineNo">117</span><a name="line.117"></a>
+<span class="sourceLineNo">118</span>import eu.cqse.check.framework.scanner.ETokenType;<a name="line.118"></a>
+<span class="sourceLineNo">119</span>import eu.cqse.check.framework.shallowparser.SubTypeNames;<a name="line.119"></a>
+<span class="sourceLineNo">120</span>import eu.cqse.check.framework.shallowparser.framework.EShallowEntityType;<a name="line.120"></a>
+<span class="sourceLineNo">121</span>import eu.cqse.check.framework.shallowparser.framework.RecognizerBase;<a name="line.121"></a>
+<span class="sourceLineNo">122</span>import eu.cqse.check.framework.shallowparser.framework.ShallowParserBase;<a name="line.122"></a>
+<span class="sourceLineNo">123</span><a name="line.123"></a>
+<span class="sourceLineNo">124</span>/**<a name="line.124"></a>
+<span class="sourceLineNo">125</span> * A shallow parser for the Kotlin programming language.<a name="line.125"></a>
+<span class="sourceLineNo">126</span> */<a name="line.126"></a>
+<span class="sourceLineNo">127</span>public class KotlinShallowParser extends ShallowParserBase&lt;EKotlinParserStates&gt; {<a name="line.127"></a>
+<span class="sourceLineNo">128</span><a name="line.128"></a>
+<span class="sourceLineNo">129</span>        /** Kotlin visibility modifiers. */<a name="line.129"></a>
+<span class="sourceLineNo">130</span>        private static final EnumSet&lt;ETokenType&gt; MODIFIERS = EnumSet.of(ABSTRACT, FINAL, OPEN, ANNOTATION, SEALED, DATA,<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                        OVERRIDE, FINAL, LATEINIT, PRIVATE, PROTECTED, PUBLIC, INTERNAL, IN, OUT, NOINLINE, INNER, EXPECT, ACTUAL,<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                        CROSSINLINE, VARARG, REIFIED, TAILREC, OPERATOR, INFIX, INLINE, EXTERNAL, CONST, SUSPEND, COMPANION);<a name="line.132"></a>
+<span class="sourceLineNo">133</span><a name="line.133"></a>
+<span class="sourceLineNo">134</span>        /**<a name="line.134"></a>
+<span class="sourceLineNo">135</span>         * Soft keywords, which can also be used as identifiers, and identifiers itself.<a name="line.135"></a>
+<span class="sourceLineNo">136</span>         */<a name="line.136"></a>
+<span class="sourceLineNo">137</span>        private static final EnumSet&lt;ETokenType&gt; KEYWORD_OR_IDENTIFIER = mergeSets(MODIFIERS, IDENTIFIER, VARARG, FIELD, IT,<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                        BY, CATCH, CONSTRUCTOR, DELEGATE, DYNAMIC, ENUM, FIELD, FILE, FINALLY, GET, IMPORT, INIT, PARAM, PROPERTY,<a name="line.138"></a>
+<span class="sourceLineNo">139</span>                        RECEIVER, SET, SETPARAM, WHERE);<a name="line.139"></a>
+<span class="sourceLineNo">140</span><a name="line.140"></a>
+<span class="sourceLineNo">141</span>        /** All token types that may stand at the beginning of new statement. */<a name="line.141"></a>
+<span class="sourceLineNo">142</span>        private static final EnumSet&lt;ETokenType&gt; STATEMENT_START_TOKENS = mergeSets(KEYWORD_OR_IDENTIFIER, RETURN, BREAK,<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                        CONTINUE, THROW, SUPER, LPAREN, INTEGER_LITERAL, BOOLEAN_LITERAL, STRING_LITERAL, NULL_LITERAL,<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                        FLOATING_POINT_LITERAL, IT, FIELD, MINUS, THIS);<a name="line.144"></a>
+<span class="sourceLineNo">145</span><a name="line.145"></a>
+<span class="sourceLineNo">146</span>        /** Token types, which are allowed inside a generic &lt;...&gt; expression. */<a name="line.146"></a>
+<span class="sourceLineNo">147</span>        /* package */ static final EnumSet&lt;ETokenType&gt; VALID_INSIDE_GENERIC_TOKEN_TYPES = EnumSet.of(IDENTIFIER, QUESTION,<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                        DOT, LPAREN, RPAREN, ARROW, COMMA);<a name="line.148"></a>
+<span class="sourceLineNo">149</span><a name="line.149"></a>
+<span class="sourceLineNo">150</span>        /** Token types with are allowed for type definitions. */<a name="line.150"></a>
+<span class="sourceLineNo">151</span>        private static final EnumSet&lt;ETokenType&gt; VALID_TYPE_TOKEN_TYPES = mergeSets(VALID_INSIDE_GENERIC_TOKEN_TYPES, LT,<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                        GT);<a name="line.152"></a>
+<span class="sourceLineNo">153</span><a name="line.153"></a>
+<span class="sourceLineNo">154</span>        /** List of opening brackets. */<a name="line.154"></a>
+<span class="sourceLineNo">155</span>        private static final List&lt;ETokenType&gt; OPENING_BRACKETS = Arrays.asList(LPAREN, LBRACK, LBRACE);<a name="line.155"></a>
+<span class="sourceLineNo">156</span><a name="line.156"></a>
+<span class="sourceLineNo">157</span>        /** List of closing brackets. */<a name="line.157"></a>
+<span class="sourceLineNo">158</span>        private static final List&lt;ETokenType&gt; CLOSING_BRACKETS = Arrays.asList(RPAREN, RBRACK, RBRACE);<a name="line.158"></a>
+<span class="sourceLineNo">159</span><a name="line.159"></a>
+<span class="sourceLineNo">160</span>        /** Constructor. */<a name="line.160"></a>
+<span class="sourceLineNo">161</span>        public KotlinShallowParser() {<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                super(EKotlinParserStates.class, TOP_LEVEL);<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                createMetaRules();<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                createTypeRules();<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                createMethodRules();<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                createStatementRules();<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                createSubExpressionRules();<a name="line.167"></a>
+<span class="sourceLineNo">168</span><a name="line.168"></a>
+<span class="sourceLineNo">169</span>                // remove any isolated EOLs<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                inAnyState().sequence(EOL);<a name="line.170"></a>
+<span class="sourceLineNo">171</span>        }<a name="line.171"></a>
+<span class="sourceLineNo">172</span><a name="line.172"></a>
+<span class="sourceLineNo">173</span>        /** Creates rules for meta elements. */<a name="line.173"></a>
+<span class="sourceLineNo">174</span>        private void createMetaRules() {<a name="line.174"></a>
+<span class="sourceLineNo">175</span>                inState(TOP_LEVEL).sequence(IMPORT).markStart().skipBefore(EOL)<a name="line.175"></a>
+<span class="sourceLineNo">176</span>                                .createNode(EShallowEntityType.META, SubTypeNames.IMPORT, new Region(0, -1)).endNode();<a name="line.176"></a>
+<span class="sourceLineNo">177</span>                inState(TOP_LEVEL).sequence(PACKAGE).markStart().skipBefore(EOL)<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                                .createNode(EShallowEntityType.META, SubTypeNames.PACKAGE, new Region(0, -1)).endNode();<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                inAnyState().sequence(AT, KEYWORD_OR_IDENTIFIER).repeated(DOT, KEYWORD_OR_IDENTIFIER).skipNested(LPAREN, RPAREN)<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                                .createNode(EShallowEntityType.META, SubTypeNames.ANNOTATION, 1).endNode();<a name="line.180"></a>
+<span class="sourceLineNo">181</span>        }<a name="line.181"></a>
+<span class="sourceLineNo">182</span><a name="line.182"></a>
+<span class="sourceLineNo">183</span>        /** Creates the statement rules. */<a name="line.183"></a>
+<span class="sourceLineNo">184</span>        private void createStatementRules() {<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                createLoopRules();<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                createConditionalRules();<a name="line.186"></a>
+<span class="sourceLineNo">187</span>                createSimpleStatementRule();<a name="line.187"></a>
+<span class="sourceLineNo">188</span>                createWhenStatementRule();<a name="line.188"></a>
+<span class="sourceLineNo">189</span>                createLocalVariableRule(VAR);<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                createLocalVariableRule(VAL);<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                createLocalVariableRule(CONST);<a name="line.191"></a>
+<span class="sourceLineNo">192</span>        }<a name="line.192"></a>
+<span class="sourceLineNo">193</span><a name="line.193"></a>
+<span class="sourceLineNo">194</span>        /** Creates rules for loops */<a name="line.194"></a>
+<span class="sourceLineNo">195</span>        private void createLoopRules() {<a name="line.195"></a>
+<span class="sourceLineNo">196</span>                endWithBlock(inState(TOP_LEVEL, IN_METHOD).sequence(WHILE)<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.WHILE).sequence(LPAREN)<a name="line.197"></a>
+<span class="sourceLineNo">198</span>                                .skipToWithNesting(RPAREN, LPAREN, RPAREN));<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                endWithBlock(<a name="line.199"></a>
+<span class="sourceLineNo">200</span>                                inState(TOP_LEVEL, IN_METHOD).sequence(FOR).createNode(EShallowEntityType.STATEMENT, SubTypeNames.FOR)<a name="line.200"></a>
+<span class="sourceLineNo">201</span>                                                .sequence(LPAREN).skipToWithNesting(RPAREN, LPAREN, RPAREN));<a name="line.201"></a>
+<span class="sourceLineNo">202</span>                RecognizerBase&lt;EKotlinParserStates&gt; doWhileRule = inState(TOP_LEVEL, IN_METHOD).sequence(DO)<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.DO_WHILE);<a name="line.203"></a>
+<span class="sourceLineNo">204</span>                doWhileRule.sequence(LBRACE).parseUntil(IN_METHOD).sequence(RBRACE, WHILE).skipTo(EOL).endNode();<a name="line.204"></a>
+<span class="sourceLineNo">205</span>                doWhileRule.repeated(EOL).parseOnce(IN_METHOD).sequence(WHILE).skipTo(EOL).endNode();<a name="line.205"></a>
+<span class="sourceLineNo">206</span>        }<a name="line.206"></a>
+<span class="sourceLineNo">207</span><a name="line.207"></a>
+<span class="sourceLineNo">208</span>        /** Creates rules for conditional statements. */<a name="line.208"></a>
+<span class="sourceLineNo">209</span>        private void createConditionalRules() {<a name="line.209"></a>
+<span class="sourceLineNo">210</span>                createConditionalRule(SubTypeNames.IF, IF);<a name="line.210"></a>
+<span class="sourceLineNo">211</span>                createConditionalRule(SubTypeNames.ELSE_IF, ELSE, IF);<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                createElseConditionalRule();<a name="line.212"></a>
+<span class="sourceLineNo">213</span>        }<a name="line.213"></a>
+<span class="sourceLineNo">214</span><a name="line.214"></a>
+<span class="sourceLineNo">215</span>        /** Creates a rule for a conditional. */<a name="line.215"></a>
+<span class="sourceLineNo">216</span>        private void createConditionalRule(String subtype, Object... matchTerms) {<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                endWithBlockAndContinuation(inState(TOP_LEVEL, IN_METHOD, IN_STATEMENT).sequence(matchTerms).sequence(LPAREN)<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                                .skipToWithNesting(RPAREN, LPAREN, RPAREN).createNode(STATEMENT, subtype), EnumSet.of(ELSE));<a name="line.218"></a>
+<span class="sourceLineNo">219</span>        }<a name="line.219"></a>
+<span class="sourceLineNo">220</span><a name="line.220"></a>
+<span class="sourceLineNo">221</span>        /** Creates a rule for a conditional. */<a name="line.221"></a>
+<span class="sourceLineNo">222</span>        private void createElseConditionalRule() {<a name="line.222"></a>
+<span class="sourceLineNo">223</span>                endWithBlock(<a name="line.223"></a>
+<span class="sourceLineNo">224</span>                                inState(TOP_LEVEL, IN_METHOD, IN_STATEMENT).sequence(ELSE).createNode(STATEMENT, SubTypeNames.ELSE));<a name="line.224"></a>
+<span class="sourceLineNo">225</span>        }<a name="line.225"></a>
+<span class="sourceLineNo">226</span><a name="line.226"></a>
+<span class="sourceLineNo">227</span>        /** Creates a simple statement rule. */<a name="line.227"></a>
+<span class="sourceLineNo">228</span>        private void createSimpleStatementRule() {<a name="line.228"></a>
+<span class="sourceLineNo">229</span>                inState(TOP_LEVEL, IN_METHOD).sequence(SEMICOLON)<a name="line.229"></a>
+<span class="sourceLineNo">230</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.EMPTY_STATEMENT).endNode();<a name="line.230"></a>
+<span class="sourceLineNo">231</span><a name="line.231"></a>
+<span class="sourceLineNo">232</span>                finishStatementRule(inState(TOP_LEVEL, IN_METHOD).sequenceBefore(STATEMENT_START_TOKENS)<a name="line.232"></a>
+<span class="sourceLineNo">233</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.SIMPLE_STATEMENT, 0));<a name="line.233"></a>
+<span class="sourceLineNo">234</span>        }<a name="line.234"></a>
+<span class="sourceLineNo">235</span><a name="line.235"></a>
+<span class="sourceLineNo">236</span>        /** Creates a rule for a when statement (similar to switch/case in Java). */<a name="line.236"></a>
+<span class="sourceLineNo">237</span>        private void createWhenStatementRule() {<a name="line.237"></a>
+<span class="sourceLineNo">238</span>                inState(TOP_LEVEL, IN_METHOD, IN_STATEMENT).sequence(WHEN)<a name="line.238"></a>
+<span class="sourceLineNo">239</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.WHEN)<a name="line.239"></a>
+<span class="sourceLineNo">240</span>                                .skipNested(LPAREN, RPAREN, createSubExpressionRecognizer()).skipTo(LBRACE).parseUntil(IN_WHEN)<a name="line.240"></a>
+<span class="sourceLineNo">241</span>                                .sequence(RBRACE).endNode();<a name="line.241"></a>
+<span class="sourceLineNo">242</span>        }<a name="line.242"></a>
+<span class="sourceLineNo">243</span><a name="line.243"></a>
+<span class="sourceLineNo">244</span>        /** Creates a rule for a local variable declaration */<a name="line.244"></a>
+<span class="sourceLineNo">245</span>        private void createLocalVariableRule(ETokenType keyword) {<a name="line.245"></a>
+<span class="sourceLineNo">246</span>                RecognizerBase&lt;EKotlinParserStates&gt; localVariableRule = inState(TOP_LEVEL, IN_METHOD).optional(MODIFIERS)<a name="line.246"></a>
+<span class="sourceLineNo">247</span>                                .sequence(keyword).createNode(EShallowEntityType.STATEMENT, SubTypeNames.LOCAL_VARIABLE, 1);<a name="line.247"></a>
+<span class="sourceLineNo">248</span><a name="line.248"></a>
+<span class="sourceLineNo">249</span>                // Variable with optional type and initialization<a name="line.249"></a>
+<span class="sourceLineNo">250</span>                finishStatementRule(localVariableRule.sequence(KEYWORD_OR_IDENTIFIER)<a name="line.250"></a>
+<span class="sourceLineNo">251</span>                                .optionalSubRecognizer(createReturnTypeRecognizer()).sequence(EQ));<a name="line.251"></a>
+<span class="sourceLineNo">252</span><a name="line.252"></a>
+<span class="sourceLineNo">253</span>                // Destructuring variable declaration<a name="line.253"></a>
+<span class="sourceLineNo">254</span>                finishStatementRule(localVariableRule.skipNested(LPAREN, RPAREN)<a name="line.254"></a>
+<span class="sourceLineNo">255</span>                                .optionalSubRecognizer(createReturnTypeRecognizer()).sequence(EQ));<a name="line.255"></a>
+<span class="sourceLineNo">256</span><a name="line.256"></a>
+<span class="sourceLineNo">257</span>                // Variable definition without initialization<a name="line.257"></a>
+<span class="sourceLineNo">258</span>                localVariableRule.sequence(KEYWORD_OR_IDENTIFIER).optionalSubRecognizer(createReturnTypeRecognizer()).endNode();<a name="line.258"></a>
+<span class="sourceLineNo">259</span>        }<a name="line.259"></a>
+<span class="sourceLineNo">260</span><a name="line.260"></a>
+<span class="sourceLineNo">261</span>        /** Finishes a statement rule. */<a name="line.261"></a>
+<span class="sourceLineNo">262</span>        private void finishStatementRule(RecognizerBase&lt;EKotlinParserStates&gt; statementRule) {<a name="line.262"></a>
+<span class="sourceLineNo">263</span>                completeStatementRule(statementRule).endNode();<a name="line.263"></a>
+<span class="sourceLineNo">264</span>        }<a name="line.264"></a>
+<span class="sourceLineNo">265</span><a name="line.265"></a>
+<span class="sourceLineNo">266</span>        /**<a name="line.266"></a>
+<span class="sourceLineNo">267</span>         * Completes the given rule to match everything that belongs to the current<a name="line.267"></a>
+<span class="sourceLineNo">268</span>         * statement. The statement may also be distributed over multiple lines.<a name="line.268"></a>
+<span class="sourceLineNo">269</span>         */<a name="line.269"></a>
+<span class="sourceLineNo">270</span>        private RecognizerBase&lt;EKotlinParserStates&gt; completeStatementRule(<a name="line.270"></a>
+<span class="sourceLineNo">271</span>                        RecognizerBase&lt;EKotlinParserStates&gt; statementRule) {<a name="line.271"></a>
+<span class="sourceLineNo">272</span>                return statementRule.subRecognizer(<a name="line.272"></a>
+<span class="sourceLineNo">273</span>                                new KotlinStatementSubRecognizer(createSubExpressionRecognizer(), OPENING_BRACKETS, CLOSING_BRACKETS));<a name="line.273"></a>
+<span class="sourceLineNo">274</span>        }<a name="line.274"></a>
+<span class="sourceLineNo">275</span><a name="line.275"></a>
+<span class="sourceLineNo">276</span>        /**<a name="line.276"></a>
+<span class="sourceLineNo">277</span>         * Creates a rule to finish a node with either a simple statement or a block of<a name="line.277"></a>
+<span class="sourceLineNo">278</span>         * statements.<a name="line.278"></a>
+<span class="sourceLineNo">279</span>         */<a name="line.279"></a>
+<span class="sourceLineNo">280</span>        private void endWithBlock(RecognizerBase&lt;EKotlinParserStates&gt; recognizer) {<a name="line.280"></a>
+<span class="sourceLineNo">281</span>                endWithBlockAndContinuation(recognizer, null);<a name="line.281"></a>
+<span class="sourceLineNo">282</span>        }<a name="line.282"></a>
+<span class="sourceLineNo">283</span><a name="line.283"></a>
+<span class="sourceLineNo">284</span>        /**<a name="line.284"></a>
+<span class="sourceLineNo">285</span>         * Creates a rule to finish a node with either a simple statement or a block of<a name="line.285"></a>
+<span class="sourceLineNo">286</span>         * statements and a continuation.<a name="line.286"></a>
+<span class="sourceLineNo">287</span>         */<a name="line.287"></a>
+<span class="sourceLineNo">288</span>        private void endWithBlockAndContinuation(RecognizerBase&lt;EKotlinParserStates&gt; recognizer,<a name="line.288"></a>
+<span class="sourceLineNo">289</span>                        EnumSet&lt;ETokenType&gt; continuationTokens) {<a name="line.289"></a>
+<span class="sourceLineNo">290</span>                endWithPossibleContinuation(recognizer.sequence(LBRACE).parseUntil(IN_METHOD).sequence(RBRACE),<a name="line.290"></a>
+<span class="sourceLineNo">291</span>                                continuationTokens);<a name="line.291"></a>
+<span class="sourceLineNo">292</span>                endWithPossibleContinuation(recognizer.repeated(EOL).parseOnce(IN_METHOD), continuationTokens);<a name="line.292"></a>
+<span class="sourceLineNo">293</span>        }<a name="line.293"></a>
+<span class="sourceLineNo">294</span><a name="line.294"></a>
+<span class="sourceLineNo">295</span>        /** Creates rules for types */<a name="line.295"></a>
+<span class="sourceLineNo">296</span>        public void createTypeRules() {<a name="line.296"></a>
+<span class="sourceLineNo">297</span>                createEnumTypeRule();<a name="line.297"></a>
+<span class="sourceLineNo">298</span>                createTypeRule(CLASS, SubTypeNames.CLASS);<a name="line.298"></a>
+<span class="sourceLineNo">299</span>                createTypeRule(INTERFACE, SubTypeNames.INTERFACE);<a name="line.299"></a>
+<span class="sourceLineNo">300</span>                createTypeRule(OBJECT, SubTypeNames.OBJECT);<a name="line.300"></a>
+<span class="sourceLineNo">301</span><a name="line.301"></a>
+<span class="sourceLineNo">302</span>                createPropertyRule(VAR, SubTypeNames.PROPERTY);<a name="line.302"></a>
+<span class="sourceLineNo">303</span>                createPropertyRule(VAL, SubTypeNames.PROPERTY);<a name="line.303"></a>
+<span class="sourceLineNo">304</span><a name="line.304"></a>
+<span class="sourceLineNo">305</span>                createPropertyGetterRule(GET);<a name="line.305"></a>
+<span class="sourceLineNo">306</span>                createPropertyGetterRule(SET);<a name="line.306"></a>
+<span class="sourceLineNo">307</span>        }<a name="line.307"></a>
+<span class="sourceLineNo">308</span><a name="line.308"></a>
+<span class="sourceLineNo">309</span>        /** Creates a type rule for the given keyword */<a name="line.309"></a>
+<span class="sourceLineNo">310</span>        private void createEnumTypeRule() {<a name="line.310"></a>
+<span class="sourceLineNo">311</span>                RecognizerBase&lt;EKotlinParserStates&gt; typeNode = inState(TOP_LEVEL, IN_TYPE).optional(MODIFIERS)<a name="line.311"></a>
+<span class="sourceLineNo">312</span>                                .sequence(ENUM, CLASS, KEYWORD_OR_IDENTIFIER).createNode(TYPE, SubTypeNames.ENUM_CLASS, -1)<a name="line.312"></a>
+<span class="sourceLineNo">313</span>                                .optionalSubRecognizer(createPrimaryConstructorRecognizer()).skipNested(LPAREN, RPAREN);<a name="line.313"></a>
+<span class="sourceLineNo">314</span>                RecognizerBase&lt;EKotlinParserStates&gt; inEnumRule = typeNode.skipTo(LBRACE).parseUntil(IN_ENUM);<a name="line.314"></a>
+<span class="sourceLineNo">315</span>                inEnumRule.sequence(SEMICOLON).parseUntil(IN_TYPE).sequence(RBRACE).endNode();<a name="line.315"></a>
+<span class="sourceLineNo">316</span>                inEnumRule.sequence(RBRACE).endNode();<a name="line.316"></a>
+<span class="sourceLineNo">317</span>                typeNode.endNode();<a name="line.317"></a>
+<span class="sourceLineNo">318</span><a name="line.318"></a>
+<span class="sourceLineNo">319</span>                // Enum literal with or without anonymous class<a name="line.319"></a>
+<span class="sourceLineNo">320</span>                RecognizerBase&lt;EKotlinParserStates&gt; enumLiteral = inState(IN_ENUM).sequence(KEYWORD_OR_IDENTIFIER)<a name="line.320"></a>
+<span class="sourceLineNo">321</span>                                .createNode(EShallowEntityType.ATTRIBUTE, SubTypeNames.ENUM_LITERAL, -1).skipNested(LPAREN, RPAREN);<a name="line.321"></a>
+<span class="sourceLineNo">322</span>                enumLiteral.sequence(LBRACE).parseUntil(IN_TYPE).sequence(RBRACE).endNode();<a name="line.322"></a>
+<span class="sourceLineNo">323</span>                enumLiteral.endNode();<a name="line.323"></a>
+<span class="sourceLineNo">324</span>                inState(IN_ENUM).sequence(COMMA);<a name="line.324"></a>
+<span class="sourceLineNo">325</span>        }<a name="line.325"></a>
+<span class="sourceLineNo">326</span><a name="line.326"></a>
+<span class="sourceLineNo">327</span>        /** Creates a type rule for the given keyword */<a name="line.327"></a>
+<span class="sourceLineNo">328</span>        private void createTypeRule(ETokenType typeTokenType, String subTypeName) {<a name="line.328"></a>
+<span class="sourceLineNo">329</span>                RecognizerBase&lt;EKotlinParserStates&gt; typeNode = inState(TOP_LEVEL, IN_TYPE).optional(MODIFIERS)<a name="line.329"></a>
+<span class="sourceLineNo">330</span>                                .sequence(typeTokenType, KEYWORD_OR_IDENTIFIER).createNode(TYPE, subTypeName, -1)<a name="line.330"></a>
+<span class="sourceLineNo">331</span>                                .optionalSubRecognizer(createPrimaryConstructorRecognizer()).skipNested(LPAREN, RPAREN);<a name="line.331"></a>
+<span class="sourceLineNo">332</span>                typeNode.skipTo(LBRACE).parseUntil(IN_TYPE).sequence(RBRACE).endNode();<a name="line.332"></a>
+<span class="sourceLineNo">333</span>                typeNode.endNode();<a name="line.333"></a>
+<span class="sourceLineNo">334</span>        }<a name="line.334"></a>
+<span class="sourceLineNo">335</span><a name="line.335"></a>
+<span class="sourceLineNo">336</span>        /** Creates a property rule */<a name="line.336"></a>
+<span class="sourceLineNo">337</span>        private void createPropertyRule(ETokenType propertyKeyword, String subtype) {<a name="line.337"></a>
+<span class="sourceLineNo">338</span>                RecognizerBase&lt;EKotlinParserStates&gt; typeFollowRecognizer = emptyRecognizer();<a name="line.338"></a>
+<span class="sourceLineNo">339</span>                typeFollowRecognizer.sequence(IDENTIFIER).skipNested(LT, GT).sequence(DOT);<a name="line.339"></a>
+<span class="sourceLineNo">340</span>                RecognizerBase&lt;EKotlinParserStates&gt; attributeRule = inState(TOP_LEVEL, IN_TYPE).optional(MODIFIERS)<a name="line.340"></a>
+<span class="sourceLineNo">341</span>                                .sequence(propertyKeyword).skipNested(LT, GT).markStart().repeatedSubRecognizer(typeFollowRecognizer)<a name="line.341"></a>
+<span class="sourceLineNo">342</span>                                .sequence(KEYWORD_OR_IDENTIFIER).createNode(EShallowEntityType.ATTRIBUTE, subtype, new Region(0, -1))<a name="line.342"></a>
+<span class="sourceLineNo">343</span>                                .optionalSubRecognizer(createReturnTypeRecognizer());<a name="line.343"></a>
+<span class="sourceLineNo">344</span><a name="line.344"></a>
+<span class="sourceLineNo">345</span>                endWithPossibleGetterOrSetter(completeStatementRule(attributeRule.sequence(EQ)));<a name="line.345"></a>
+<span class="sourceLineNo">346</span>                endWithPossibleGetterOrSetter(attributeRule);<a name="line.346"></a>
+<span class="sourceLineNo">347</span>        }<a name="line.347"></a>
+<span class="sourceLineNo">348</span><a name="line.348"></a>
+<span class="sourceLineNo">349</span>        /**<a name="line.349"></a>
+<span class="sourceLineNo">350</span>         * Creates rules to allow getters and setters as follow-up to the given rule.<a name="line.350"></a>
+<span class="sourceLineNo">351</span>         */<a name="line.351"></a>
+<span class="sourceLineNo">352</span>        private void endWithPossibleGetterOrSetter(RecognizerBase&lt;EKotlinParserStates&gt; attributeRule) {<a name="line.352"></a>
+<span class="sourceLineNo">353</span>                attributeRule.preCondition(createPreGetterAndSetterPrecondition()).skipAny(EnumSet.of(EOL))<a name="line.353"></a>
+<span class="sourceLineNo">354</span>                                .parseOnce(IN_PROPERTY).skipAny(EnumSet.of(EOL)).parseOnce(IN_PROPERTY).endNode();<a name="line.354"></a>
+<span class="sourceLineNo">355</span>                attributeRule.skipAny(EnumSet.of(EOL)).parseOnce(IN_PROPERTY).endNode();<a name="line.355"></a>
+<span class="sourceLineNo">356</span>                attributeRule.endNode();<a name="line.356"></a>
+<span class="sourceLineNo">357</span>        }<a name="line.357"></a>
+<span class="sourceLineNo">358</span><a name="line.358"></a>
+<span class="sourceLineNo">359</span>        /**<a name="line.359"></a>
+<span class="sourceLineNo">360</span>         * Creates a recognizer, which is used to differentiate between the case that a<a name="line.360"></a>
+<span class="sourceLineNo">361</span>         * property is followed by none, one or two GET/SET definitions. This<a name="line.361"></a>
+<span class="sourceLineNo">362</span>         * recognizers matches if we have GET and SET.<a name="line.362"></a>
+<span class="sourceLineNo">363</span>         */<a name="line.363"></a>
+<span class="sourceLineNo">364</span>        private RecognizerBase&lt;EKotlinParserStates&gt; createPreGetterAndSetterPrecondition() {<a name="line.364"></a>
+<span class="sourceLineNo">365</span>                RecognizerBase&lt;EKotlinParserStates&gt; preGetterAndSetter = emptyRecognizer();<a name="line.365"></a>
+<span class="sourceLineNo">366</span><a name="line.366"></a>
+<span class="sourceLineNo">367</span>                // Matches the beginning of a get/set definition<a name="line.367"></a>
+<span class="sourceLineNo">368</span>                RecognizerBase&lt;EKotlinParserStates&gt; firstGetterSetter = preGetterAndSetter.skipAny(EnumSet.of(EOL))<a name="line.368"></a>
+<span class="sourceLineNo">369</span>                                .optional(MODIFIERS).sequence(EnumSet.of(GET, SET));<a name="line.369"></a>
+<span class="sourceLineNo">370</span><a name="line.370"></a>
+<span class="sourceLineNo">371</span>                // Directly followed by a second get/set<a name="line.371"></a>
+<span class="sourceLineNo">372</span>                firstGetterSetter.skipAny(EnumSet.of(EOL)).optional(MODIFIERS).sequence(EnumSet.of(GET, SET));<a name="line.372"></a>
+<span class="sourceLineNo">373</span><a name="line.373"></a>
+<span class="sourceLineNo">374</span>                // Matches the parenthesis after the get/set<a name="line.374"></a>
+<span class="sourceLineNo">375</span>                RecognizerBase&lt;EKotlinParserStates&gt; getterSetterWithBodyRule = firstGetterSetter.sequenceBefore(LPAREN)<a name="line.375"></a>
+<span class="sourceLineNo">376</span>                                .skipNested(LPAREN, RPAREN);<a name="line.376"></a>
+<span class="sourceLineNo">377</span><a name="line.377"></a>
+<span class="sourceLineNo">378</span>                // Followed by EQ and an expression and the beginning of a second get/set<a name="line.378"></a>
+<span class="sourceLineNo">379</span>                completeStatementRule(getterSetterWithBodyRule.sequence(EQ)).skipAny(EnumSet.of(EOL)).optional(MODIFIERS)<a name="line.379"></a>
+<span class="sourceLineNo">380</span>                                .sequence(EnumSet.of(GET, SET));<a name="line.380"></a>
+<span class="sourceLineNo">381</span><a name="line.381"></a>
+<span class="sourceLineNo">382</span>                // Followed by curly braces and the beginning of a second get/set<a name="line.382"></a>
+<span class="sourceLineNo">383</span>                getterSetterWithBodyRule.sequenceBefore(LBRACE).skipNested(LBRACE, RBRACE).skipAny(EnumSet.of(EOL))<a name="line.383"></a>
+<span class="sourceLineNo">384</span>                                .optional(MODIFIERS).sequence(EnumSet.of(GET, SET));<a name="line.384"></a>
+<span class="sourceLineNo">385</span>                return preGetterAndSetter;<a name="line.385"></a>
+<span class="sourceLineNo">386</span>        }<a name="line.386"></a>
+<span class="sourceLineNo">387</span><a name="line.387"></a>
+<span class="sourceLineNo">388</span>        /** Create a rule to match custom property getters and setters. */<a name="line.388"></a>
+<span class="sourceLineNo">389</span>        private void createPropertyGetterRule(ETokenType tokenType) {<a name="line.389"></a>
+<span class="sourceLineNo">390</span>                RecognizerBase&lt;EKotlinParserStates&gt; plainGetterSetterRule = inState(IN_PROPERTY).optional(MODIFIERS).markStart()<a name="line.390"></a>
+<span class="sourceLineNo">391</span>                                .sequence(tokenType).createNode(METHOD, SubTypeNames.METHOD, 0);<a name="line.391"></a>
+<span class="sourceLineNo">392</span><a name="line.392"></a>
+<span class="sourceLineNo">393</span>                RecognizerBase&lt;EKotlinParserStates&gt; methodRule = plainGetterSetterRule.sequenceBefore(LPAREN).skipNested(LPAREN,<a name="line.393"></a>
+<span class="sourceLineNo">394</span>                                RPAREN);<a name="line.394"></a>
+<span class="sourceLineNo">395</span>                methodRule.sequence(EQ).repeated(EOL).parseOnce(IN_METHOD).endNode();<a name="line.395"></a>
+<span class="sourceLineNo">396</span>                methodRule.sequence(LBRACE).parseUntil(IN_METHOD).sequence(RBRACE).endNode();<a name="line.396"></a>
+<span class="sourceLineNo">397</span><a name="line.397"></a>
+<span class="sourceLineNo">398</span>                plainGetterSetterRule.endNode();<a name="line.398"></a>
+<span class="sourceLineNo">399</span>        }<a name="line.399"></a>
+<span class="sourceLineNo">400</span><a name="line.400"></a>
+<span class="sourceLineNo">401</span>        /** Recognizes a primary constructor */<a name="line.401"></a>
+<span class="sourceLineNo">402</span>        private RecognizerBase&lt;EKotlinParserStates&gt; createPrimaryConstructorRecognizer() {<a name="line.402"></a>
+<span class="sourceLineNo">403</span>                RecognizerBase&lt;EKotlinParserStates&gt; subExpressionRule = emptyRecognizer();<a name="line.403"></a>
+<span class="sourceLineNo">404</span>                subExpressionRule.optional(MODIFIERS).markStart().optional(CONSTRUCTOR).sequence(LPAREN).skipTo(RPAREN)<a name="line.404"></a>
+<span class="sourceLineNo">405</span>                                .optionalSubRecognizer(createReturnTypeRecognizer());<a name="line.405"></a>
+<span class="sourceLineNo">406</span>                return subExpressionRule;<a name="line.406"></a>
+<span class="sourceLineNo">407</span>        }<a name="line.407"></a>
+<span class="sourceLineNo">408</span><a name="line.408"></a>
+<span class="sourceLineNo">409</span>        /** Creates the method rules */<a name="line.409"></a>
+<span class="sourceLineNo">410</span>        private void createMethodRules() {<a name="line.410"></a>
+<span class="sourceLineNo">411</span>                finishMethodRule(inState(TOP_LEVEL, IN_TYPE, IN_METHOD).optional(MODIFIERS).sequence(FUN).skipNested(LT, GT)<a name="line.411"></a>
+<span class="sourceLineNo">412</span>                                .markStart().skipBefore(LPAREN), SubTypeNames.METHOD);<a name="line.412"></a>
+<span class="sourceLineNo">413</span><a name="line.413"></a>
+<span class="sourceLineNo">414</span>                // Create constructor rules<a name="line.414"></a>
+<span class="sourceLineNo">415</span>                inState(IN_TYPE).optional(MODIFIERS).markStart().sequence(INIT).createNode(METHOD, SubTypeNames.CONSTRUCTOR, 0)<a name="line.415"></a>
+<span class="sourceLineNo">416</span>                                .sequence(LBRACE).parseUntil(IN_METHOD).sequence(RBRACE).endNode();<a name="line.416"></a>
+<span class="sourceLineNo">417</span>                finishMethodRule(inState(IN_TYPE).optional(MODIFIERS).markStart().sequence(CONSTRUCTOR),<a name="line.417"></a>
+<span class="sourceLineNo">418</span>                                SubTypeNames.CONSTRUCTOR);<a name="line.418"></a>
+<span class="sourceLineNo">419</span>        }<a name="line.419"></a>
+<span class="sourceLineNo">420</span><a name="line.420"></a>
+<span class="sourceLineNo">421</span>        /** Finishes the given method rule for the specified subtype */<a name="line.421"></a>
+<span class="sourceLineNo">422</span>        private void finishMethodRule(RecognizerBase&lt;EKotlinParserStates&gt; rule, String subtype) {<a name="line.422"></a>
+<span class="sourceLineNo">423</span>                RecognizerBase&lt;EKotlinParserStates&gt; methodRule = rule.createNode(METHOD, subtype, new Region(0, -1))<a name="line.423"></a>
+<span class="sourceLineNo">424</span>                                .skipNested(LPAREN, RPAREN).optionalSubRecognizer(createReturnTypeRecognizer());<a name="line.424"></a>
+<span class="sourceLineNo">425</span>                methodRule.sequence(EQ).repeated(EOL).parseOnce(IN_METHOD).endNode();<a name="line.425"></a>
+<span class="sourceLineNo">426</span>                methodRule.sequence(LBRACE).parseUntil(IN_METHOD).sequence(RBRACE).endNode();<a name="line.426"></a>
+<span class="sourceLineNo">427</span>                methodRule.endNode();<a name="line.427"></a>
+<span class="sourceLineNo">428</span>        }<a name="line.428"></a>
+<span class="sourceLineNo">429</span><a name="line.429"></a>
+<span class="sourceLineNo">430</span>        /**<a name="line.430"></a>
+<span class="sourceLineNo">431</span>         * Matches a return type definition like : SomeType or : super(...) on<a name="line.431"></a>
+<span class="sourceLineNo">432</span>         * constructors<a name="line.432"></a>
+<span class="sourceLineNo">433</span>         */<a name="line.433"></a>
+<span class="sourceLineNo">434</span>        private RecognizerBase&lt;EKotlinParserStates&gt; createReturnTypeRecognizer() {<a name="line.434"></a>
+<span class="sourceLineNo">435</span>                RecognizerBase&lt;EKotlinParserStates&gt; subExpressionRule = emptyRecognizer();<a name="line.435"></a>
+<span class="sourceLineNo">436</span>                // Super constructor call<a name="line.436"></a>
+<span class="sourceLineNo">437</span>                subExpressionRule.sequence(COLON).sequence(EnumSet.of(SUPER, THIS)).skipNested(LPAREN, RPAREN);<a name="line.437"></a>
+<span class="sourceLineNo">438</span>                // Type definition<a name="line.438"></a>
+<span class="sourceLineNo">439</span>                subExpressionRule.sequence(COLON).repeated(VALID_TYPE_TOKEN_TYPES);<a name="line.439"></a>
+<span class="sourceLineNo">440</span>                return subExpressionRule;<a name="line.440"></a>
+<span class="sourceLineNo">441</span>        }<a name="line.441"></a>
+<span class="sourceLineNo">442</span><a name="line.442"></a>
+<span class="sourceLineNo">443</span>        /** Creates a recognizer that matches lambdas within expressions. */<a name="line.443"></a>
+<span class="sourceLineNo">444</span>        private RecognizerBase&lt;EKotlinParserStates&gt; createSubExpressionRecognizer() {<a name="line.444"></a>
+<span class="sourceLineNo">445</span>                RecognizerBase&lt;EKotlinParserStates&gt; subExpressionRule = emptyRecognizer();<a name="line.445"></a>
+<span class="sourceLineNo">446</span>                subExpressionRule.sequenceBefore(LBRACE).parseOnce(IN_LAMBDA);<a name="line.446"></a>
+<span class="sourceLineNo">447</span>                subExpressionRule.sequenceBefore(IF).parseOnce(IN_STATEMENT);<a name="line.447"></a>
+<span class="sourceLineNo">448</span>                subExpressionRule.sequenceBefore(WHEN).parseOnce(IN_STATEMENT);<a name="line.448"></a>
+<span class="sourceLineNo">449</span>                return subExpressionRule;<a name="line.449"></a>
+<span class="sourceLineNo">450</span>        }<a name="line.450"></a>
+<span class="sourceLineNo">451</span><a name="line.451"></a>
+<span class="sourceLineNo">452</span>        /**<a name="line.452"></a>
+<span class="sourceLineNo">453</span>         * Creates sub expression rules.<a name="line.453"></a>
+<span class="sourceLineNo">454</span>         * <a name="line.454"></a>
+<span class="sourceLineNo">455</span>         * IN_LAMBDA indicates we are at the beginning of a lambda {<a name="line.455"></a>
+<span class="sourceLineNo">456</span>         * <a name="line.456"></a>
+<span class="sourceLineNo">457</span>         * IN_WHEN indicates we are inside a WHEN statement and expect to find "case"<a name="line.457"></a>
+<span class="sourceLineNo">458</span>         * statements there (there is no keyword in Kotlin for that).<a name="line.458"></a>
+<span class="sourceLineNo">459</span>         */<a name="line.459"></a>
+<span class="sourceLineNo">460</span>        private void createSubExpressionRules() {<a name="line.460"></a>
+<span class="sourceLineNo">461</span>                finishLambdaRule(inState(IN_LAMBDA).sequence(LBRACE)<a name="line.461"></a>
+<span class="sourceLineNo">462</span>                                .skipBeforeWithNesting(EnumSet.of(ARROW, RBRACE), OPENING_BRACKETS, CLOSING_BRACKETS).sequence(ARROW));<a name="line.462"></a>
+<span class="sourceLineNo">463</span>                finishLambdaRule(inState(IN_LAMBDA).sequence(LBRACE));<a name="line.463"></a>
+<span class="sourceLineNo">464</span><a name="line.464"></a>
+<span class="sourceLineNo">465</span>                inState(IN_WHEN).sequence(EOL);<a name="line.465"></a>
+<span class="sourceLineNo">466</span>                endWithBlock(inState(IN_WHEN).sequence(ELSE, ARROW).createNode(EShallowEntityType.META, SubTypeNames.ELSE));<a name="line.466"></a>
+<span class="sourceLineNo">467</span>                endWithBlock(inState(IN_WHEN).skipToWithNesting(ARROW, OPENING_BRACKETS, CLOSING_BRACKETS)<a name="line.467"></a>
+<span class="sourceLineNo">468</span>                                .createNode(EShallowEntityType.META, SubTypeNames.CASE, 0));<a name="line.468"></a>
+<span class="sourceLineNo">469</span>        }<a name="line.469"></a>
+<span class="sourceLineNo">470</span><a name="line.470"></a>
+<span class="sourceLineNo">471</span>        /** Finishes the given lambda rule. */<a name="line.471"></a>
+<span class="sourceLineNo">472</span>        private static void finishLambdaRule(RecognizerBase&lt;EKotlinParserStates&gt; lambdaRule) {<a name="line.472"></a>
+<span class="sourceLineNo">473</span>                lambdaRule.createNode(EShallowEntityType.METHOD, SubTypeNames.LAMBDA).parseUntil(IN_METHOD).sequence(RBRACE)<a name="line.473"></a>
+<span class="sourceLineNo">474</span>                                .endNode();<a name="line.474"></a>
+<span class="sourceLineNo">475</span>        }<a name="line.475"></a>
+<span class="sourceLineNo">476</span>}<a name="line.476"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

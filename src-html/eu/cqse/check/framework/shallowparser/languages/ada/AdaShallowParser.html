@@ -310,7 +310,7 @@
 <span class="sourceLineNo">302</span>        }<a name="line.302"></a>
 <span class="sourceLineNo">303</span><a name="line.303"></a>
 <span class="sourceLineNo">304</span>        /** Completes the rule describing blocks. */<a name="line.304"></a>
-<span class="sourceLineNo">305</span>        private void completeBlock(RecognizerBase&lt;EAdaParserStates&gt; initialSequence) {<a name="line.305"></a>
+<span class="sourceLineNo">305</span>        private static void completeBlock(RecognizerBase&lt;EAdaParserStates&gt; initialSequence) {<a name="line.305"></a>
 <span class="sourceLineNo">306</span>                RecognizerBase&lt;EAdaParserStates&gt; alt = initialSequence.parseUntil(STATEMENTS);<a name="line.306"></a>
 <span class="sourceLineNo">307</span>                alt.sequence(EXCEPTION).parseUntil(STATEMENTS).sequence(END).skipTo(SEMICOLON).endNode();<a name="line.307"></a>
 <span class="sourceLineNo">308</span>                alt.sequence(END).skipTo(SEMICOLON).endNode();<a name="line.308"></a>

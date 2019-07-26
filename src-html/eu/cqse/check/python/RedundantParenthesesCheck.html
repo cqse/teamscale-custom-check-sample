@@ -63,102 +63,103 @@
 <span class="sourceLineNo">055</span><a name="line.55"></a>
 <span class="sourceLineNo">056</span>        /**<a name="line.56"></a>
 <span class="sourceLineNo">057</span>         * Maps token types to a set of closing token types. The key token types<a name="line.57"></a>
-<span class="sourceLineNo">058</span>         * indicate a part of a statement where redundant parentheses should be<a name="line.58"></a>
-<span class="sourceLineNo">059</span>         * avoid. The expression that may be surrounded with parentheses ends at the<a name="line.59"></a>
-<span class="sourceLineNo">060</span>         * first token type of the mapped set (if it is not nested within brackets<a name="line.60"></a>
-<span class="sourceLineNo">061</span>         * or braces).<a name="line.61"></a>
-<span class="sourceLineNo">062</span>         */<a name="line.62"></a>
-<span class="sourceLineNo">063</span>        private static final EnumMap&lt;ETokenType, EnumSet&lt;ETokenType&gt;&gt; CLOSING_TYPES = new EnumMap&lt;ETokenType, EnumSet&lt;ETokenType&gt;&gt;(<a name="line.63"></a>
-<span class="sourceLineNo">064</span>                        ETokenType.class);<a name="line.64"></a>
-<span class="sourceLineNo">065</span><a name="line.65"></a>
-<span class="sourceLineNo">066</span>        static {<a name="line.66"></a>
-<span class="sourceLineNo">067</span>                EnumSet&lt;ETokenType&gt; colonClosingType = EnumSet.of(COLON);<a name="line.67"></a>
-<span class="sourceLineNo">068</span>                CLOSING_TYPES.put(IF, EnumSet.of(COLON, ELSE, RBRACK, RBRACE));<a name="line.68"></a>
-<span class="sourceLineNo">069</span>                CLOSING_TYPES.put(ELIF, colonClosingType);<a name="line.69"></a>
-<span class="sourceLineNo">070</span>                CLOSING_TYPES.put(WHILE, colonClosingType);<a name="line.70"></a>
-<span class="sourceLineNo">071</span>                CLOSING_TYPES.put(FOR, EnumSet.of(IN));<a name="line.71"></a>
-<span class="sourceLineNo">072</span>        }<a name="line.72"></a>
-<span class="sourceLineNo">073</span><a name="line.73"></a>
-<span class="sourceLineNo">074</span>        /** {@inheritDoc} */<a name="line.74"></a>
-<span class="sourceLineNo">075</span>        @Override<a name="line.75"></a>
-<span class="sourceLineNo">076</span>        protected String getXPathSelectionString() {<a name="line.76"></a>
-<span class="sourceLineNo">077</span>                return "//STATEMENT | //ATTRIBUTE";<a name="line.77"></a>
-<span class="sourceLineNo">078</span>        }<a name="line.78"></a>
-<span class="sourceLineNo">079</span><a name="line.79"></a>
-<span class="sourceLineNo">080</span>        /** {@inheritDoc} */<a name="line.80"></a>
-<span class="sourceLineNo">081</span>        @Override<a name="line.81"></a>
-<span class="sourceLineNo">082</span>        protected void processTokens(List&lt;IToken&gt; tokens) throws CheckException {<a name="line.82"></a>
-<span class="sourceLineNo">083</span>                for (int index : TokenStreamUtils.findAll(tokens, EnumSet.of(IF, ELIF, WHILE, FOR))) {<a name="line.83"></a>
-<span class="sourceLineNo">084</span>                        ETokenType type = tokens.get(index).getType();<a name="line.84"></a>
-<span class="sourceLineNo">085</span>                        analyzeTokens(tokens, index, CLOSING_TYPES.get(type));<a name="line.85"></a>
-<span class="sourceLineNo">086</span>                }<a name="line.86"></a>
-<span class="sourceLineNo">087</span><a name="line.87"></a>
-<span class="sourceLineNo">088</span>                if (tokens.isEmpty()) {<a name="line.88"></a>
-<span class="sourceLineNo">089</span>                        // May happen when there is a return statement containing<a name="line.89"></a>
-<span class="sourceLineNo">090</span>                        // a lamba expression returning a simple expression.<a name="line.90"></a>
-<span class="sourceLineNo">091</span>                        return;<a name="line.91"></a>
-<span class="sourceLineNo">092</span>                }<a name="line.92"></a>
-<span class="sourceLineNo">093</span><a name="line.93"></a>
-<span class="sourceLineNo">094</span>                // the value after return statements must never be surrounded<a name="line.94"></a>
-<span class="sourceLineNo">095</span>                if (tokens.get(0).getType() == RETURN) {<a name="line.95"></a>
-<span class="sourceLineNo">096</span>                        analyzeTokensForPossibleRedundantParenthesis(tokens.subList(1, tokens.size()));<a name="line.96"></a>
-<span class="sourceLineNo">097</span>                }<a name="line.97"></a>
-<span class="sourceLineNo">098</span><a name="line.98"></a>
-<span class="sourceLineNo">099</span>                checkForTopLevelRedundantParentheses(tokens);<a name="line.99"></a>
-<span class="sourceLineNo">100</span>        }<a name="line.100"></a>
-<span class="sourceLineNo">101</span><a name="line.101"></a>
-<span class="sourceLineNo">102</span>        /**<a name="line.102"></a>
-<span class="sourceLineNo">103</span>         * Checks whether there are top-level redundant parentheses like in tuple<a name="line.103"></a>
-<span class="sourceLineNo">104</span>         * assignments of the form (x,y) = foo().<a name="line.104"></a>
-<span class="sourceLineNo">105</span>         */<a name="line.105"></a>
-<span class="sourceLineNo">106</span>        private void checkForTopLevelRedundantParentheses(List&lt;IToken&gt; tokens) throws CheckException {<a name="line.106"></a>
-<span class="sourceLineNo">107</span>                if (tokens.get(0).getType() == LPAREN) {<a name="line.107"></a>
-<span class="sourceLineNo">108</span>                        int closingIndex = TokenStreamUtils.findMatchingClosingToken(tokens, 1, LPAREN, RPAREN);<a name="line.108"></a>
-<span class="sourceLineNo">109</span>                        if (closingIndex != TokenStreamUtils.NOT_FOUND) {<a name="line.109"></a>
-<span class="sourceLineNo">110</span>                                createFinding(FINDING_MESSAGE, tokens.get(0), tokens.get(closingIndex));<a name="line.110"></a>
-<span class="sourceLineNo">111</span>                        }<a name="line.111"></a>
-<span class="sourceLineNo">112</span>                }<a name="line.112"></a>
-<span class="sourceLineNo">113</span>        }<a name="line.113"></a>
-<span class="sourceLineNo">114</span><a name="line.114"></a>
-<span class="sourceLineNo">115</span>        /**<a name="line.115"></a>
-<span class="sourceLineNo">116</span>         * Analyzes the tokens tokens from the given typeTokenOffset until the first<a name="line.116"></a>
-<span class="sourceLineNo">117</span>         * occurrence of a non-nested given closing token for possible redundant<a name="line.117"></a>
-<span class="sourceLineNo">118</span>         * braces.<a name="line.118"></a>
-<span class="sourceLineNo">119</span>         */<a name="line.119"></a>
-<span class="sourceLineNo">120</span>        private void analyzeTokens(List&lt;IToken&gt; tokens, int typeTokenOffset, EnumSet&lt;ETokenType&gt; closingTypes)<a name="line.120"></a>
-<span class="sourceLineNo">121</span>                        throws CheckException {<a name="line.121"></a>
-<span class="sourceLineNo">122</span>                int endIndex = TokenStreamUtils.findFirstTopLevel(tokens, typeTokenOffset + 1, closingTypes,<a name="line.122"></a>
-<span class="sourceLineNo">123</span>                                Arrays.asList(LPAREN, LBRACK, LBRACE), Arrays.asList(RPAREN, RBRACK, RBRACE));<a name="line.123"></a>
-<span class="sourceLineNo">124</span>                if (endIndex != -1) {<a name="line.124"></a>
-<span class="sourceLineNo">125</span>                        // Avoids shortened versions of if and other statements e.g. in list comprehension<a name="line.125"></a>
-<span class="sourceLineNo">126</span>                        analyzeTokensForPossibleRedundantParenthesis(tokens.subList(typeTokenOffset + 1, endIndex));<a name="line.126"></a>
-<span class="sourceLineNo">127</span>                }<a name="line.127"></a>
-<span class="sourceLineNo">128</span>        }<a name="line.128"></a>
-<span class="sourceLineNo">129</span><a name="line.129"></a>
-<span class="sourceLineNo">130</span>        /**<a name="line.130"></a>
-<span class="sourceLineNo">131</span>         * Analyzes the given tokens for possible redundant parenthesis. There are<a name="line.131"></a>
-<span class="sourceLineNo">132</span>         * redundant parenthesis if no token exists, that is not nested within<a name="line.132"></a>
-<span class="sourceLineNo">133</span>         * parenthesis.<a name="line.133"></a>
-<span class="sourceLineNo">134</span>         */<a name="line.134"></a>
-<span class="sourceLineNo">135</span>        private void analyzeTokensForPossibleRedundantParenthesis(List&lt;IToken&gt; tokens) throws CheckException {<a name="line.135"></a>
-<span class="sourceLineNo">136</span>                if (tokens.isEmpty()) {<a name="line.136"></a>
-<span class="sourceLineNo">137</span>                        return;<a name="line.137"></a>
-<span class="sourceLineNo">138</span>                }<a name="line.138"></a>
-<span class="sourceLineNo">139</span><a name="line.139"></a>
-<span class="sourceLineNo">140</span>                NestingAwareTokenIterator iterator = new NestingAwareTokenIterator(tokens, 0, Arrays.asList(LPAREN),<a name="line.140"></a>
-<span class="sourceLineNo">141</span>                                Arrays.asList(RPAREN));<a name="line.141"></a>
-<span class="sourceLineNo">142</span>                boolean foundTopLevelToken = false;<a name="line.142"></a>
-<span class="sourceLineNo">143</span>                while (iterator.hasNext()) {<a name="line.143"></a>
-<span class="sourceLineNo">144</span>                        ETokenType type = iterator.next().getType();<a name="line.144"></a>
-<span class="sourceLineNo">145</span>                        if (iterator.isTopLevel() &amp;&amp; !PARENTHESES.contains(type)) {<a name="line.145"></a>
-<span class="sourceLineNo">146</span>                                foundTopLevelToken = true;<a name="line.146"></a>
-<span class="sourceLineNo">147</span>                        }<a name="line.147"></a>
-<span class="sourceLineNo">148</span>                }<a name="line.148"></a>
-<span class="sourceLineNo">149</span>                if (!foundTopLevelToken) {<a name="line.149"></a>
-<span class="sourceLineNo">150</span>                        createFinding(FINDING_MESSAGE, tokens.get(0), CollectionUtils.getLast(tokens));<a name="line.150"></a>
-<span class="sourceLineNo">151</span>                }<a name="line.151"></a>
-<span class="sourceLineNo">152</span>        }<a name="line.152"></a>
-<span class="sourceLineNo">153</span>}<a name="line.153"></a>
+<span class="sourceLineNo">058</span>         * indicate a part of a statement where redundant parentheses should be avoid.<a name="line.58"></a>
+<span class="sourceLineNo">059</span>         * The expression that may be surrounded with parentheses ends at the first<a name="line.59"></a>
+<span class="sourceLineNo">060</span>         * token type of the mapped set (if it is not nested within brackets or braces).<a name="line.60"></a>
+<span class="sourceLineNo">061</span>         */<a name="line.61"></a>
+<span class="sourceLineNo">062</span>        private static final EnumMap&lt;ETokenType, EnumSet&lt;ETokenType&gt;&gt; CLOSING_TYPES = new EnumMap&lt;ETokenType, EnumSet&lt;ETokenType&gt;&gt;(<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                        ETokenType.class);<a name="line.63"></a>
+<span class="sourceLineNo">064</span><a name="line.64"></a>
+<span class="sourceLineNo">065</span>        static {<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                EnumSet&lt;ETokenType&gt; colonClosingType = EnumSet.of(COLON);<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                CLOSING_TYPES.put(IF, EnumSet.of(COLON, ELSE, RBRACK, RBRACE));<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                CLOSING_TYPES.put(ELIF, colonClosingType);<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                CLOSING_TYPES.put(WHILE, colonClosingType);<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                CLOSING_TYPES.put(FOR, EnumSet.of(IN));<a name="line.70"></a>
+<span class="sourceLineNo">071</span>        }<a name="line.71"></a>
+<span class="sourceLineNo">072</span><a name="line.72"></a>
+<span class="sourceLineNo">073</span>        /** {@inheritDoc} */<a name="line.73"></a>
+<span class="sourceLineNo">074</span>        @Override<a name="line.74"></a>
+<span class="sourceLineNo">075</span>        protected String getXPathSelectionString() {<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                return "//STATEMENT | //ATTRIBUTE";<a name="line.76"></a>
+<span class="sourceLineNo">077</span>        }<a name="line.77"></a>
+<span class="sourceLineNo">078</span><a name="line.78"></a>
+<span class="sourceLineNo">079</span>        /** {@inheritDoc} */<a name="line.79"></a>
+<span class="sourceLineNo">080</span>        @Override<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        protected void processTokens(List&lt;IToken&gt; tokens) throws CheckException {<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                for (int index : TokenStreamUtils.findAll(tokens, EnumSet.of(IF, ELIF, WHILE, FOR))) {<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                        ETokenType type = tokens.get(index).getType();<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                        analyzeTokens(tokens, index, CLOSING_TYPES.get(type));<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                }<a name="line.85"></a>
+<span class="sourceLineNo">086</span><a name="line.86"></a>
+<span class="sourceLineNo">087</span>                if (tokens.isEmpty()) {<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                        // May happen when there is a return statement containing<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                        // a lamba expression returning a simple expression.<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                        return;<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                }<a name="line.91"></a>
+<span class="sourceLineNo">092</span><a name="line.92"></a>
+<span class="sourceLineNo">093</span>                // the value after return statements must never be surrounded<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                if (tokens.get(0).getType() == RETURN) {<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                        analyzeTokensForPossibleRedundantParenthesis(tokens.subList(1, tokens.size()));<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                }<a name="line.96"></a>
+<span class="sourceLineNo">097</span><a name="line.97"></a>
+<span class="sourceLineNo">098</span>                checkForTopLevelRedundantParentheses(tokens);<a name="line.98"></a>
+<span class="sourceLineNo">099</span>        }<a name="line.99"></a>
+<span class="sourceLineNo">100</span><a name="line.100"></a>
+<span class="sourceLineNo">101</span>        /**<a name="line.101"></a>
+<span class="sourceLineNo">102</span>         * Checks whether there are top-level redundant parentheses like in tuple<a name="line.102"></a>
+<span class="sourceLineNo">103</span>         * assignments of the form (x,y) = foo().<a name="line.103"></a>
+<span class="sourceLineNo">104</span>         */<a name="line.104"></a>
+<span class="sourceLineNo">105</span>        private void checkForTopLevelRedundantParentheses(List&lt;IToken&gt; tokens) throws CheckException {<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                if (tokens.get(0).getType() == LPAREN) {<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                        int closingIndex = TokenStreamUtils.findMatchingClosingToken(tokens, 1, LPAREN, RPAREN);<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                        if (closingIndex != TokenStreamUtils.NOT_FOUND) {<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                                createFinding(FINDING_MESSAGE, tokens.get(0), tokens.get(closingIndex));<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                        }<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                }<a name="line.111"></a>
+<span class="sourceLineNo">112</span>        }<a name="line.112"></a>
+<span class="sourceLineNo">113</span><a name="line.113"></a>
+<span class="sourceLineNo">114</span>        /**<a name="line.114"></a>
+<span class="sourceLineNo">115</span>         * Analyzes the tokens tokens from the given typeTokenOffset until the first<a name="line.115"></a>
+<span class="sourceLineNo">116</span>         * occurrence of a non-nested given closing token for possible redundant braces.<a name="line.116"></a>
+<span class="sourceLineNo">117</span>         */<a name="line.117"></a>
+<span class="sourceLineNo">118</span>        private void analyzeTokens(List&lt;IToken&gt; tokens, int typeTokenOffset, EnumSet&lt;ETokenType&gt; closingTypes)<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                        throws CheckException {<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                int endIndex = TokenStreamUtils.findFirstTopLevel(tokens, typeTokenOffset + 1, closingTypes,<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                                Arrays.asList(LPAREN, LBRACK, LBRACE), Arrays.asList(RPAREN, RBRACK, RBRACE));<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                if (endIndex != -1) {<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                        // Avoids shortened versions of if and other statements e.g. in list<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                        // comprehension<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                        analyzeTokensForPossibleRedundantParenthesis(tokens.subList(typeTokenOffset + 1, endIndex));<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                }<a name="line.126"></a>
+<span class="sourceLineNo">127</span>        }<a name="line.127"></a>
+<span class="sourceLineNo">128</span><a name="line.128"></a>
+<span class="sourceLineNo">129</span>        /**<a name="line.129"></a>
+<span class="sourceLineNo">130</span>         * Analyzes the given tokens for possible redundant parenthesis. There are<a name="line.130"></a>
+<span class="sourceLineNo">131</span>         * redundant parenthesis if no token exists, that is not nested within<a name="line.131"></a>
+<span class="sourceLineNo">132</span>         * parenthesis.<a name="line.132"></a>
+<span class="sourceLineNo">133</span>         */<a name="line.133"></a>
+<span class="sourceLineNo">134</span>        private void analyzeTokensForPossibleRedundantParenthesis(List&lt;IToken&gt; tokens) throws CheckException {<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                if (tokens.isEmpty()) {<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                        return;<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                }<a name="line.137"></a>
+<span class="sourceLineNo">138</span><a name="line.138"></a>
+<span class="sourceLineNo">139</span>                NestingAwareTokenIterator iterator = new NestingAwareTokenIterator(tokens, 0, Arrays.asList(LPAREN),<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                                Arrays.asList(RPAREN));<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                boolean foundTopLevelToken = false;<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                while (iterator.hasNext()) {<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                        ETokenType type = iterator.next().getType();<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                        if (iterator.isTopLevel() &amp;&amp; !PARENTHESES.contains(type)) {<a name="line.144"></a>
+<span class="sourceLineNo">145</span>                                foundTopLevelToken = true;<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                        }<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                }<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                IToken startToken = tokens.get(0);<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                IToken endToken = CollectionUtils.getLast(tokens);<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                if (!foundTopLevelToken &amp;&amp; (startToken.getLineNumber() == endToken.getLineNumber())) {<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                        createFinding(FINDING_MESSAGE, startToken, endToken);<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                }<a name="line.152"></a>
+<span class="sourceLineNo">153</span>        }<a name="line.153"></a>
+<span class="sourceLineNo">154</span>}<a name="line.154"></a>
 
 
 

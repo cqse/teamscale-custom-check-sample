@@ -48,12 +48,12 @@
 <span class="sourceLineNo">040</span>         * Constructor.<a name="line.40"></a>
 <span class="sourceLineNo">041</span>         * <a name="line.41"></a>
 <span class="sourceLineNo">042</span>         * @param h<a name="line.42"></a>
-<span class="sourceLineNo">043</span>         *            the height parameter giving the heigt of the cushions relative<a name="line.43"></a>
-<span class="sourceLineNo">044</span>         *            to their size. 0.5 seems to be a reasonable value.<a name="line.44"></a>
+<span class="sourceLineNo">043</span>         *            the height parameter giving the heigt of the cushions relative to<a name="line.43"></a>
+<span class="sourceLineNo">044</span>         *            their size. 0.5 seems to be a reasonable value.<a name="line.44"></a>
 <span class="sourceLineNo">045</span>         * @param f<a name="line.45"></a>
-<span class="sourceLineNo">046</span>         *            the scale factor used to reduce the heights of nested<a name="line.46"></a>
-<span class="sourceLineNo">047</span>         *            cushions. The value should be between 0 and 1, where smaller<a name="line.47"></a>
-<span class="sourceLineNo">048</span>         *            values will reduce the cushion effect.<a name="line.48"></a>
+<span class="sourceLineNo">046</span>         *            the scale factor used to reduce the heights of nested cushions.<a name="line.46"></a>
+<span class="sourceLineNo">047</span>         *            The value should be between 0 and 1, where smaller values will<a name="line.47"></a>
+<span class="sourceLineNo">048</span>         *            reduce the cushion effect.<a name="line.48"></a>
 <span class="sourceLineNo">049</span>         */<a name="line.49"></a>
 <span class="sourceLineNo">050</span>        public CushionTreeMapRenderer(double h, double f) {<a name="line.50"></a>
 <span class="sourceLineNo">051</span>                this.h = h;<a name="line.51"></a>
@@ -79,9 +79,9 @@
 <span class="sourceLineNo">071</span>         * @param height<a name="line.71"></a>
 <span class="sourceLineNo">072</span>         *            the current height (already scaled for this level).<a name="line.72"></a>
 <span class="sourceLineNo">073</span>         * @param coefs<a name="line.73"></a>
-<span class="sourceLineNo">074</span>         *            the coefficients of the local parabola. The indices 0 and 1<a name="line.74"></a>
-<span class="sourceLineNo">075</span>         *            give the coefficients for x^2 and x, while 2 and 3 are for y^2<a name="line.75"></a>
-<span class="sourceLineNo">076</span>         *            and y. The constant part is not needed.<a name="line.76"></a>
+<span class="sourceLineNo">074</span>         *            the coefficients of the local parabola. The indices 0 and 1 give<a name="line.74"></a>
+<span class="sourceLineNo">075</span>         *            the coefficients for x^2 and x, while 2 and 3 are for y^2 and y.<a name="line.75"></a>
+<span class="sourceLineNo">076</span>         *            The constant part is not needed.<a name="line.76"></a>
 <span class="sourceLineNo">077</span>         */<a name="line.77"></a>
 <span class="sourceLineNo">078</span>        private &lt;T&gt; void render(ITreeMapNode&lt;T&gt; node, Graphics2D g, double height, double[] coefs) {<a name="line.78"></a>
 <span class="sourceLineNo">079</span>                Rectangle2D rect = node.getLayoutRectangle();<a name="line.79"></a>
@@ -103,7 +103,7 @@
 <span class="sourceLineNo">095</span>        }<a name="line.95"></a>
 <span class="sourceLineNo">096</span><a name="line.96"></a>
 <span class="sourceLineNo">097</span>        /** Adds the local parabola to the given coefs and returns the result. */<a name="line.97"></a>
-<span class="sourceLineNo">098</span>        private double[] addLocalParabola(double height, double[] coefs, Rectangle2D rect) {<a name="line.98"></a>
+<span class="sourceLineNo">098</span>        private static double[] addLocalParabola(double height, double[] coefs, Rectangle2D rect) {<a name="line.98"></a>
 <span class="sourceLineNo">099</span>                double[] myCoefs = new double[4];<a name="line.99"></a>
 <span class="sourceLineNo">100</span>                double x1 = rect.getMinX();<a name="line.100"></a>
 <span class="sourceLineNo">101</span>                double x2 = rect.getMaxX();<a name="line.101"></a>
@@ -117,8 +117,8 @@
 <span class="sourceLineNo">109</span>        }<a name="line.109"></a>
 <span class="sourceLineNo">110</span><a name="line.110"></a>
 <span class="sourceLineNo">111</span>        /** Renders the given cushion. */<a name="line.111"></a>
-<span class="sourceLineNo">112</span>        private void renderCushion(Rectangle2D rect, double[] coefs, Graphics2D g, Color baseColor, Color patternColor,<a name="line.112"></a>
-<span class="sourceLineNo">113</span>                        IDrawingPattern drawingPattern) {<a name="line.113"></a>
+<span class="sourceLineNo">112</span>        private static void renderCushion(Rectangle2D rect, double[] coefs, Graphics2D g, Color baseColor,<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                        Color patternColor, IDrawingPattern drawingPattern) {<a name="line.113"></a>
 <span class="sourceLineNo">114</span><a name="line.114"></a>
 <span class="sourceLineNo">115</span>                // light normal taken from the cited paper.<a name="line.115"></a>
 <span class="sourceLineNo">116</span>                final double lx = 0.09759;<a name="line.116"></a>
@@ -146,8 +146,8 @@
 <span class="sourceLineNo">138</span>        }<a name="line.138"></a>
 <span class="sourceLineNo">139</span><a name="line.139"></a>
 <span class="sourceLineNo">140</span>        /** Determines the base color to be used for a given pixel. */<a name="line.140"></a>
-<span class="sourceLineNo">141</span>        private Color determineBaseColor(int x, int y, Color baseColor, Color patternColor, IDrawingPattern drawingPattern,<a name="line.141"></a>
-<span class="sourceLineNo">142</span>                        Rectangle2D rect) {<a name="line.142"></a>
+<span class="sourceLineNo">141</span>        private static Color determineBaseColor(int x, int y, Color baseColor, Color patternColor,<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                        IDrawingPattern drawingPattern, Rectangle2D rect) {<a name="line.142"></a>
 <span class="sourceLineNo">143</span>                if (drawingPattern != null &amp;&amp; drawingPattern.isForeground(x, y)) {<a name="line.143"></a>
 <span class="sourceLineNo">144</span>                        return resolveMultiColor(x, y, rect, patternColor);<a name="line.144"></a>
 <span class="sourceLineNo">145</span>                }<a name="line.145"></a>
@@ -155,11 +155,11 @@
 <span class="sourceLineNo">147</span>        }<a name="line.147"></a>
 <span class="sourceLineNo">148</span><a name="line.148"></a>
 <span class="sourceLineNo">149</span>        /**<a name="line.149"></a>
-<span class="sourceLineNo">150</span>         * Resolves the pixel color with special handling for multi color. The<a name="line.150"></a>
-<span class="sourceLineNo">151</span>         * colors are arranged in a striped pattern, which is arranged horizontally<a name="line.151"></a>
-<span class="sourceLineNo">152</span>         * or vertically depending on the aspect ratio of the rectangle.<a name="line.152"></a>
+<span class="sourceLineNo">150</span>         * Resolves the pixel color with special handling for multi color. The colors<a name="line.150"></a>
+<span class="sourceLineNo">151</span>         * are arranged in a striped pattern, which is arranged horizontally or<a name="line.151"></a>
+<span class="sourceLineNo">152</span>         * vertically depending on the aspect ratio of the rectangle.<a name="line.152"></a>
 <span class="sourceLineNo">153</span>         */<a name="line.153"></a>
-<span class="sourceLineNo">154</span>        private Color resolveMultiColor(int x, int y, Rectangle2D rect, Color color) {<a name="line.154"></a>
+<span class="sourceLineNo">154</span>        private static Color resolveMultiColor(int x, int y, Rectangle2D rect, Color color) {<a name="line.154"></a>
 <span class="sourceLineNo">155</span>                if (!(color instanceof MultiColor)) {<a name="line.155"></a>
 <span class="sourceLineNo">156</span>                        return color;<a name="line.156"></a>
 <span class="sourceLineNo">157</span>                }<a name="line.157"></a>
@@ -190,10 +190,10 @@
 <span class="sourceLineNo">182</span>         * @param color<a name="line.182"></a>
 <span class="sourceLineNo">183</span>         *            the base color.<a name="line.183"></a>
 <span class="sourceLineNo">184</span>         * @param luminance<a name="line.184"></a>
-<span class="sourceLineNo">185</span>         *            a parameter between 0 and 1, where 0 corresponds to black and<a name="line.185"></a>
-<span class="sourceLineNo">186</span>         *            1 to white.<a name="line.186"></a>
+<span class="sourceLineNo">185</span>         *            a parameter between 0 and 1, where 0 corresponds to black and 1 to<a name="line.185"></a>
+<span class="sourceLineNo">186</span>         *            white.<a name="line.186"></a>
 <span class="sourceLineNo">187</span>         */<a name="line.187"></a>
-<span class="sourceLineNo">188</span>        private Color shadeColor(Color color, double luminance) {<a name="line.188"></a>
+<span class="sourceLineNo">188</span>        private static Color shadeColor(Color color, double luminance) {<a name="line.188"></a>
 <span class="sourceLineNo">189</span>                int base = 0;<a name="line.189"></a>
 <span class="sourceLineNo">190</span>                luminance *= 2;<a name="line.190"></a>
 <span class="sourceLineNo">191</span>                if (luminance &gt; 1) {<a name="line.191"></a>

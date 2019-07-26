@@ -441,7 +441,7 @@
 <span class="sourceLineNo">433</span>         * Finishes the given recognizer with 'end' and the optional given token<a name="line.433"></a>
 <span class="sourceLineNo">434</span>         * type. An optional identifier can follow for named constructs.<a name="line.434"></a>
 <span class="sourceLineNo">435</span>         */<a name="line.435"></a>
-<span class="sourceLineNo">436</span>        private void finishConstructWithOptionalName(RecognizerBase&lt;EFortranParserStates&gt; recognizer,<a name="line.436"></a>
+<span class="sourceLineNo">436</span>        private static void finishConstructWithOptionalName(RecognizerBase&lt;EFortranParserStates&gt; recognizer,<a name="line.436"></a>
 <span class="sourceLineNo">437</span>                        ETokenType constructType) {<a name="line.437"></a>
 <span class="sourceLineNo">438</span>                recognizer.sequence(END).optional(constructType).optional(IDENTIFIER).sequence(EOL).endNode();<a name="line.438"></a>
 <span class="sourceLineNo">439</span>        }<a name="line.439"></a>

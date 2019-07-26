@@ -38,7 +38,7 @@
 <span class="sourceLineNo">030</span>import eu.cqse.check.framework.scanner.ETokenType;<a name="line.30"></a>
 <span class="sourceLineNo">031</span>import eu.cqse.check.framework.shallowparser.SubTypeNames;<a name="line.31"></a>
 <span class="sourceLineNo">032</span>import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;<a name="line.32"></a>
-<span class="sourceLineNo">033</span>import eu.cqse.check.framework.util.LanguageFeatureParser;<a name="line.33"></a>
+<span class="sourceLineNo">033</span>import eu.cqse.check.framework.util.CppLanguageFeatureParser;<a name="line.33"></a>
 <span class="sourceLineNo">034</span><a name="line.34"></a>
 <span class="sourceLineNo">035</span>/**<a name="line.35"></a>
 <span class="sourceLineNo">036</span> * {@ConQAT.Doc}<a name="line.36"></a>
@@ -66,8 +66,8 @@
 <span class="sourceLineNo">058</span>                                currentVisibility = updateVisibility(child, currentVisibility);<a name="line.58"></a>
 <span class="sourceLineNo">059</span>                                break;<a name="line.59"></a>
 <span class="sourceLineNo">060</span>                        case ATTRIBUTE:<a name="line.60"></a>
-<span class="sourceLineNo">061</span>                                if (currentVisibility == PUBLIC &amp;&amp; !LanguageFeatureParser.CPP.isStaticConst(child)) {<a name="line.61"></a>
-<span class="sourceLineNo">062</span>                                        createFindingOnFirstLine("Attribute declared public", child);<a name="line.62"></a>
+<span class="sourceLineNo">061</span>                                if (currentVisibility == PUBLIC &amp;&amp; !CppLanguageFeatureParser.isConstant(child)) {<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                                        createFindingOnFirstLine("Attribute `" + child.getName() + "` should not be public", child);<a name="line.62"></a>
 <span class="sourceLineNo">063</span>                                }<a name="line.63"></a>
 <span class="sourceLineNo">064</span>                                break;<a name="line.64"></a>
 <span class="sourceLineNo">065</span>                        default:<a name="line.65"></a>
@@ -78,8 +78,8 @@
 <span class="sourceLineNo">070</span>        }<a name="line.70"></a>
 <span class="sourceLineNo">071</span><a name="line.71"></a>
 <span class="sourceLineNo">072</span>        /**<a name="line.72"></a>
-<span class="sourceLineNo">073</span>         * Returns the new member visibility within a C++ class depending on the<a name="line.73"></a>
-<span class="sourceLineNo">074</span>         * given meta entity and the old visibility.<a name="line.74"></a>
+<span class="sourceLineNo">073</span>         * Returns the new member visibility within a C++ class depending on the given<a name="line.73"></a>
+<span class="sourceLineNo">074</span>         * meta entity and the old visibility.<a name="line.74"></a>
 <span class="sourceLineNo">075</span>         */<a name="line.75"></a>
 <span class="sourceLineNo">076</span>        private static ETokenType updateVisibility(ShallowEntity metaEntity, ETokenType oldVisibility) {<a name="line.76"></a>
 <span class="sourceLineNo">077</span>                switch (metaEntity.getSubtype()) {<a name="line.77"></a>

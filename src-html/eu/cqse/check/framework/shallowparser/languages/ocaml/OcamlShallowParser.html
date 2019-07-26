@@ -24,236 +24,221 @@
 <span class="sourceLineNo">016</span>+-------------------------------------------------------------------------*/<a name="line.16"></a>
 <span class="sourceLineNo">017</span>package eu.cqse.check.framework.shallowparser.languages.ocaml;<a name="line.17"></a>
 <span class="sourceLineNo">018</span><a name="line.18"></a>
-<span class="sourceLineNo">019</span>import static eu.cqse.check.framework.scanner.ETokenType.AND;<a name="line.19"></a>
-<span class="sourceLineNo">020</span>import static eu.cqse.check.framework.scanner.ETokenType.BEGIN;<a name="line.20"></a>
-<span class="sourceLineNo">021</span>import static eu.cqse.check.framework.scanner.ETokenType.CLASS;<a name="line.21"></a>
-<span class="sourceLineNo">022</span>import static eu.cqse.check.framework.scanner.ETokenType.COLONGREATER;<a name="line.22"></a>
-<span class="sourceLineNo">023</span>import static eu.cqse.check.framework.scanner.ETokenType.DO;<a name="line.23"></a>
-<span class="sourceLineNo">024</span>import static eu.cqse.check.framework.scanner.ETokenType.DONE;<a name="line.24"></a>
-<span class="sourceLineNo">025</span>import static eu.cqse.check.framework.scanner.ETokenType.DOT;<a name="line.25"></a>
-<span class="sourceLineNo">026</span>import static eu.cqse.check.framework.scanner.ETokenType.ELSE;<a name="line.26"></a>
-<span class="sourceLineNo">027</span>import static eu.cqse.check.framework.scanner.ETokenType.END;<a name="line.27"></a>
-<span class="sourceLineNo">028</span>import static eu.cqse.check.framework.scanner.ETokenType.EOF;<a name="line.28"></a>
-<span class="sourceLineNo">029</span>import static eu.cqse.check.framework.scanner.ETokenType.EQ;<a name="line.29"></a>
-<span class="sourceLineNo">030</span>import static eu.cqse.check.framework.scanner.ETokenType.EXCEPTION;<a name="line.30"></a>
-<span class="sourceLineNo">031</span>import static eu.cqse.check.framework.scanner.ETokenType.EXCLAMATION;<a name="line.31"></a>
-<span class="sourceLineNo">032</span>import static eu.cqse.check.framework.scanner.ETokenType.EXTERNAL;<a name="line.32"></a>
-<span class="sourceLineNo">033</span>import static eu.cqse.check.framework.scanner.ETokenType.FALSE;<a name="line.33"></a>
-<span class="sourceLineNo">034</span>import static eu.cqse.check.framework.scanner.ETokenType.FLOATING_POINT_LITERAL;<a name="line.34"></a>
-<span class="sourceLineNo">035</span>import static eu.cqse.check.framework.scanner.ETokenType.FOR;<a name="line.35"></a>
-<span class="sourceLineNo">036</span>import static eu.cqse.check.framework.scanner.ETokenType.FUN;<a name="line.36"></a>
-<span class="sourceLineNo">037</span>import static eu.cqse.check.framework.scanner.ETokenType.FUNCTION;<a name="line.37"></a>
-<span class="sourceLineNo">038</span>import static eu.cqse.check.framework.scanner.ETokenType.IDENTIFIER;<a name="line.38"></a>
-<span class="sourceLineNo">039</span>import static eu.cqse.check.framework.scanner.ETokenType.IF;<a name="line.39"></a>
-<span class="sourceLineNo">040</span>import static eu.cqse.check.framework.scanner.ETokenType.IN;<a name="line.40"></a>
-<span class="sourceLineNo">041</span>import static eu.cqse.check.framework.scanner.ETokenType.INCLUDE;<a name="line.41"></a>
-<span class="sourceLineNo">042</span>import static eu.cqse.check.framework.scanner.ETokenType.INHERIT;<a name="line.42"></a>
-<span class="sourceLineNo">043</span>import static eu.cqse.check.framework.scanner.ETokenType.INTEGER_LITERAL;<a name="line.43"></a>
-<span class="sourceLineNo">044</span>import static eu.cqse.check.framework.scanner.ETokenType.LBRACK;<a name="line.44"></a>
-<span class="sourceLineNo">045</span>import static eu.cqse.check.framework.scanner.ETokenType.LET;<a name="line.45"></a>
-<span class="sourceLineNo">046</span>import static eu.cqse.check.framework.scanner.ETokenType.LPAREN;<a name="line.46"></a>
-<span class="sourceLineNo">047</span>import static eu.cqse.check.framework.scanner.ETokenType.MATCH;<a name="line.47"></a>
-<span class="sourceLineNo">048</span>import static eu.cqse.check.framework.scanner.ETokenType.METHOD;<a name="line.48"></a>
-<span class="sourceLineNo">049</span>import static eu.cqse.check.framework.scanner.ETokenType.MINUS;<a name="line.49"></a>
-<span class="sourceLineNo">050</span>import static eu.cqse.check.framework.scanner.ETokenType.MINUSGREATER;<a name="line.50"></a>
-<span class="sourceLineNo">051</span>import static eu.cqse.check.framework.scanner.ETokenType.MODULE;<a name="line.51"></a>
-<span class="sourceLineNo">052</span>import static eu.cqse.check.framework.scanner.ETokenType.NEW;<a name="line.52"></a>
-<span class="sourceLineNo">053</span>import static eu.cqse.check.framework.scanner.ETokenType.OBJECT;<a name="line.53"></a>
-<span class="sourceLineNo">054</span>import static eu.cqse.check.framework.scanner.ETokenType.OPEN;<a name="line.54"></a>
-<span class="sourceLineNo">055</span>import static eu.cqse.check.framework.scanner.ETokenType.OR;<a name="line.55"></a>
-<span class="sourceLineNo">056</span>import static eu.cqse.check.framework.scanner.ETokenType.PRIVATE;<a name="line.56"></a>
-<span class="sourceLineNo">057</span>import static eu.cqse.check.framework.scanner.ETokenType.RBRACK;<a name="line.57"></a>
-<span class="sourceLineNo">058</span>import static eu.cqse.check.framework.scanner.ETokenType.REC;<a name="line.58"></a>
-<span class="sourceLineNo">059</span>import static eu.cqse.check.framework.scanner.ETokenType.REF;<a name="line.59"></a>
-<span class="sourceLineNo">060</span>import static eu.cqse.check.framework.scanner.ETokenType.RPAREN;<a name="line.60"></a>
-<span class="sourceLineNo">061</span>import static eu.cqse.check.framework.scanner.ETokenType.SHARP;<a name="line.61"></a>
-<span class="sourceLineNo">062</span>import static eu.cqse.check.framework.scanner.ETokenType.STRUCT;<a name="line.62"></a>
-<span class="sourceLineNo">063</span>import static eu.cqse.check.framework.scanner.ETokenType.THEN;<a name="line.63"></a>
-<span class="sourceLineNo">064</span>import static eu.cqse.check.framework.scanner.ETokenType.TO;<a name="line.64"></a>
-<span class="sourceLineNo">065</span>import static eu.cqse.check.framework.scanner.ETokenType.TRUE;<a name="line.65"></a>
-<span class="sourceLineNo">066</span>import static eu.cqse.check.framework.scanner.ETokenType.TRY;<a name="line.66"></a>
-<span class="sourceLineNo">067</span>import static eu.cqse.check.framework.scanner.ETokenType.TYPE;<a name="line.67"></a>
-<span class="sourceLineNo">068</span>import static eu.cqse.check.framework.scanner.ETokenType.UNDERSCORE;<a name="line.68"></a>
-<span class="sourceLineNo">069</span>import static eu.cqse.check.framework.scanner.ETokenType.WHILE;<a name="line.69"></a>
-<span class="sourceLineNo">070</span>import static eu.cqse.check.framework.scanner.ETokenType.WITH;<a name="line.70"></a>
-<span class="sourceLineNo">071</span>import static eu.cqse.check.framework.shallowparser.languages.base.EGenericParserStates.IN_EXPRESSION;<a name="line.71"></a>
-<span class="sourceLineNo">072</span>import static eu.cqse.check.framework.shallowparser.languages.base.EGenericParserStates.IN_TYPE;<a name="line.72"></a>
-<span class="sourceLineNo">073</span>import static eu.cqse.check.framework.shallowparser.languages.base.EGenericParserStates.TOP_LEVEL;<a name="line.73"></a>
-<span class="sourceLineNo">074</span><a name="line.74"></a>
-<span class="sourceLineNo">075</span>import java.util.EnumSet;<a name="line.75"></a>
-<span class="sourceLineNo">076</span><a name="line.76"></a>
-<span class="sourceLineNo">077</span>import org.conqat.lib.commons.region.Region;<a name="line.77"></a>
+<span class="sourceLineNo">019</span>import static eu.cqse.check.framework.scanner.ETokenType.BEGIN;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import static eu.cqse.check.framework.scanner.ETokenType.CLASS;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import static eu.cqse.check.framework.scanner.ETokenType.COLONGREATER;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import static eu.cqse.check.framework.scanner.ETokenType.DO;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import static eu.cqse.check.framework.scanner.ETokenType.DONE;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import static eu.cqse.check.framework.scanner.ETokenType.DOT;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import static eu.cqse.check.framework.scanner.ETokenType.ELSE;<a name="line.25"></a>
+<span class="sourceLineNo">026</span>import static eu.cqse.check.framework.scanner.ETokenType.END;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import static eu.cqse.check.framework.scanner.ETokenType.EQ;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import static eu.cqse.check.framework.scanner.ETokenType.EXCEPTION;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>import static eu.cqse.check.framework.scanner.ETokenType.EXCLAMATION;<a name="line.29"></a>
+<span class="sourceLineNo">030</span>import static eu.cqse.check.framework.scanner.ETokenType.FALSE;<a name="line.30"></a>
+<span class="sourceLineNo">031</span>import static eu.cqse.check.framework.scanner.ETokenType.FLOATING_POINT_LITERAL;<a name="line.31"></a>
+<span class="sourceLineNo">032</span>import static eu.cqse.check.framework.scanner.ETokenType.FOR;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import static eu.cqse.check.framework.scanner.ETokenType.FUN;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import static eu.cqse.check.framework.scanner.ETokenType.FUNCTION;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import static eu.cqse.check.framework.scanner.ETokenType.IDENTIFIER;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import static eu.cqse.check.framework.scanner.ETokenType.IF;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import static eu.cqse.check.framework.scanner.ETokenType.IN;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import static eu.cqse.check.framework.scanner.ETokenType.INHERIT;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import static eu.cqse.check.framework.scanner.ETokenType.INTEGER_LITERAL;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import static eu.cqse.check.framework.scanner.ETokenType.LBRACK;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>import static eu.cqse.check.framework.scanner.ETokenType.LET;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>import static eu.cqse.check.framework.scanner.ETokenType.LPAREN;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>import static eu.cqse.check.framework.scanner.ETokenType.MATCH;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>import static eu.cqse.check.framework.scanner.ETokenType.METHOD;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>import static eu.cqse.check.framework.scanner.ETokenType.MINUS;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>import static eu.cqse.check.framework.scanner.ETokenType.MINUSGREATER;<a name="line.46"></a>
+<span class="sourceLineNo">047</span>import static eu.cqse.check.framework.scanner.ETokenType.MODULE;<a name="line.47"></a>
+<span class="sourceLineNo">048</span>import static eu.cqse.check.framework.scanner.ETokenType.NEW;<a name="line.48"></a>
+<span class="sourceLineNo">049</span>import static eu.cqse.check.framework.scanner.ETokenType.OBJECT;<a name="line.49"></a>
+<span class="sourceLineNo">050</span>import static eu.cqse.check.framework.scanner.ETokenType.OPEN;<a name="line.50"></a>
+<span class="sourceLineNo">051</span>import static eu.cqse.check.framework.scanner.ETokenType.PRIVATE;<a name="line.51"></a>
+<span class="sourceLineNo">052</span>import static eu.cqse.check.framework.scanner.ETokenType.RBRACK;<a name="line.52"></a>
+<span class="sourceLineNo">053</span>import static eu.cqse.check.framework.scanner.ETokenType.REC;<a name="line.53"></a>
+<span class="sourceLineNo">054</span>import static eu.cqse.check.framework.scanner.ETokenType.REF;<a name="line.54"></a>
+<span class="sourceLineNo">055</span>import static eu.cqse.check.framework.scanner.ETokenType.RPAREN;<a name="line.55"></a>
+<span class="sourceLineNo">056</span>import static eu.cqse.check.framework.scanner.ETokenType.SHARP;<a name="line.56"></a>
+<span class="sourceLineNo">057</span>import static eu.cqse.check.framework.scanner.ETokenType.STRUCT;<a name="line.57"></a>
+<span class="sourceLineNo">058</span>import static eu.cqse.check.framework.scanner.ETokenType.THEN;<a name="line.58"></a>
+<span class="sourceLineNo">059</span>import static eu.cqse.check.framework.scanner.ETokenType.TO;<a name="line.59"></a>
+<span class="sourceLineNo">060</span>import static eu.cqse.check.framework.scanner.ETokenType.TRUE;<a name="line.60"></a>
+<span class="sourceLineNo">061</span>import static eu.cqse.check.framework.scanner.ETokenType.TRY;<a name="line.61"></a>
+<span class="sourceLineNo">062</span>import static eu.cqse.check.framework.scanner.ETokenType.WHILE;<a name="line.62"></a>
+<span class="sourceLineNo">063</span>import static eu.cqse.check.framework.scanner.ETokenType.WITH;<a name="line.63"></a>
+<span class="sourceLineNo">064</span>import static eu.cqse.check.framework.shallowparser.languages.base.EGenericParserStates.IN_EXPRESSION;<a name="line.64"></a>
+<span class="sourceLineNo">065</span>import static eu.cqse.check.framework.shallowparser.languages.base.EGenericParserStates.IN_TYPE;<a name="line.65"></a>
+<span class="sourceLineNo">066</span>import static eu.cqse.check.framework.shallowparser.languages.base.EGenericParserStates.TOP_LEVEL;<a name="line.66"></a>
+<span class="sourceLineNo">067</span><a name="line.67"></a>
+<span class="sourceLineNo">068</span>import java.util.EnumSet;<a name="line.68"></a>
+<span class="sourceLineNo">069</span><a name="line.69"></a>
+<span class="sourceLineNo">070</span>import org.conqat.lib.commons.region.Region;<a name="line.70"></a>
+<span class="sourceLineNo">071</span><a name="line.71"></a>
+<span class="sourceLineNo">072</span>import eu.cqse.check.framework.scanner.ETokenType;<a name="line.72"></a>
+<span class="sourceLineNo">073</span>import eu.cqse.check.framework.shallowparser.SubTypeNames;<a name="line.73"></a>
+<span class="sourceLineNo">074</span>import eu.cqse.check.framework.shallowparser.framework.EShallowEntityType;<a name="line.74"></a>
+<span class="sourceLineNo">075</span>import eu.cqse.check.framework.shallowparser.framework.RecognizerBase;<a name="line.75"></a>
+<span class="sourceLineNo">076</span>import eu.cqse.check.framework.shallowparser.framework.ShallowParserBase;<a name="line.76"></a>
+<span class="sourceLineNo">077</span>import eu.cqse.check.framework.shallowparser.languages.base.EGenericParserStates;<a name="line.77"></a>
 <span class="sourceLineNo">078</span><a name="line.78"></a>
-<span class="sourceLineNo">079</span>import eu.cqse.check.framework.scanner.ETokenType;<a name="line.79"></a>
-<span class="sourceLineNo">080</span>import eu.cqse.check.framework.shallowparser.SubTypeNames;<a name="line.80"></a>
-<span class="sourceLineNo">081</span>import eu.cqse.check.framework.shallowparser.framework.EShallowEntityType;<a name="line.81"></a>
-<span class="sourceLineNo">082</span>import eu.cqse.check.framework.shallowparser.framework.RecognizerBase;<a name="line.82"></a>
-<span class="sourceLineNo">083</span>import eu.cqse.check.framework.shallowparser.framework.ShallowParserBase;<a name="line.83"></a>
-<span class="sourceLineNo">084</span>import eu.cqse.check.framework.shallowparser.languages.base.EGenericParserStates;<a name="line.84"></a>
-<span class="sourceLineNo">085</span><a name="line.85"></a>
-<span class="sourceLineNo">086</span>/**<a name="line.86"></a>
-<span class="sourceLineNo">087</span> */<a name="line.87"></a>
-<span class="sourceLineNo">088</span><a name="line.88"></a>
-<span class="sourceLineNo">089</span>/** A shallow parser for OCaml. */<a name="line.89"></a>
-<span class="sourceLineNo">090</span>public class OcamlShallowParser extends ShallowParserBase&lt;EGenericParserStates&gt; {<a name="line.90"></a>
-<span class="sourceLineNo">091</span><a name="line.91"></a>
-<span class="sourceLineNo">092</span>        /** Constructor. */<a name="line.92"></a>
-<span class="sourceLineNo">093</span>        public OcamlShallowParser() {<a name="line.93"></a>
-<span class="sourceLineNo">094</span>                super(EGenericParserStates.class, TOP_LEVEL);<a name="line.94"></a>
-<span class="sourceLineNo">095</span>                createDefinitionRules();<a name="line.95"></a>
-<span class="sourceLineNo">096</span>                createTypeRules();<a name="line.96"></a>
-<span class="sourceLineNo">097</span>                createClassElementsRules();<a name="line.97"></a>
-<span class="sourceLineNo">098</span>                createNestingExpressionRules();<a name="line.98"></a>
-<span class="sourceLineNo">099</span>                createNonNestingExpressionRules();<a name="line.99"></a>
-<span class="sourceLineNo">100</span>                createSimplifiedRecExpressionRules();<a name="line.100"></a>
-<span class="sourceLineNo">101</span>                // Create an incomplete node if something is still unrecognized.<a name="line.101"></a>
-<span class="sourceLineNo">102</span>                inAnyState().markStart().sequence(EnumSet.allOf(ETokenType.class)).createNode(EShallowEntityType.META, 0, null);<a name="line.102"></a>
-<span class="sourceLineNo">103</span>        }<a name="line.103"></a>
-<span class="sourceLineNo">104</span><a name="line.104"></a>
-<span class="sourceLineNo">105</span>        /** Definition rules. */<a name="line.105"></a>
-<span class="sourceLineNo">106</span>        private void createDefinitionRules() {<a name="line.106"></a>
-<span class="sourceLineNo">107</span>                inState(TOP_LEVEL).sequence(OPEN).createNode(EShallowEntityType.META, "open", null).sequence(IDENTIFIER)<a name="line.107"></a>
-<span class="sourceLineNo">108</span>                                .repeated(DOT, IDENTIFIER).endNode();<a name="line.108"></a>
-<span class="sourceLineNo">109</span>                inState(TOP_LEVEL).sequence(MODULE).markStart().sequence(IDENTIFIER).skipTo(EQ).sequence(STRUCT)<a name="line.109"></a>
-<span class="sourceLineNo">110</span>                                .createNode(EShallowEntityType.META, "module-def", 0).skipTo(END).endNode();<a name="line.110"></a>
-<span class="sourceLineNo">111</span>                inState(TOP_LEVEL).sequence(MODULE).markStart().sequence(IDENTIFIER).skipTo(EQ).sequence(IDENTIFIER)<a name="line.111"></a>
-<span class="sourceLineNo">112</span>                                .createNode(EShallowEntityType.META, "module-def", 0).repeated(DOT, IDENTIFIER).endNode();<a name="line.112"></a>
-<span class="sourceLineNo">113</span>                inState(TOP_LEVEL).sequence(EXCEPTION, IDENTIFIER);<a name="line.113"></a>
-<span class="sourceLineNo">114</span>                inState(TOP_LEVEL).sequence(LET).optional(REC).markStart().sequence(IDENTIFIER)<a name="line.114"></a>
-<span class="sourceLineNo">115</span>                                .createNode(EShallowEntityType.METHOD, "let-decl", 0).skipTo(EQ).parseOnce(IN_EXPRESSION).endNode();<a name="line.115"></a>
+<span class="sourceLineNo">079</span>/**<a name="line.79"></a>
+<span class="sourceLineNo">080</span> */<a name="line.80"></a>
+<span class="sourceLineNo">081</span><a name="line.81"></a>
+<span class="sourceLineNo">082</span>/** A shallow parser for OCaml. */<a name="line.82"></a>
+<span class="sourceLineNo">083</span>public class OcamlShallowParser extends ShallowParserBase&lt;EGenericParserStates&gt; {<a name="line.83"></a>
+<span class="sourceLineNo">084</span><a name="line.84"></a>
+<span class="sourceLineNo">085</span>        /** Constructor. */<a name="line.85"></a>
+<span class="sourceLineNo">086</span>        public OcamlShallowParser() {<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                super(EGenericParserStates.class, TOP_LEVEL);<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                createDefinitionRules();<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                createTypeRules();<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                createClassElementsRules();<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                createNestingExpressionRules();<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                createNonNestingExpressionRules();<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                createSimplifiedRecExpressionRules();<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                // Create an incomplete node if something is still unrecognized.<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                inAnyState().markStart().sequence(EnumSet.allOf(ETokenType.class)).createNode(EShallowEntityType.META, 0, null);<a name="line.95"></a>
+<span class="sourceLineNo">096</span>        }<a name="line.96"></a>
+<span class="sourceLineNo">097</span><a name="line.97"></a>
+<span class="sourceLineNo">098</span>        /** Definition rules. */<a name="line.98"></a>
+<span class="sourceLineNo">099</span>        private void createDefinitionRules() {<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                inState(TOP_LEVEL).sequence(OPEN).createNode(EShallowEntityType.META, "open", null).sequence(IDENTIFIER)<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                                .repeated(DOT, IDENTIFIER).endNode();<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                inState(TOP_LEVEL).sequence(MODULE).markStart().sequence(IDENTIFIER).skipTo(EQ).sequence(STRUCT)<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                                .createNode(EShallowEntityType.META, "module-def", 0).skipTo(END).endNode();<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                inState(TOP_LEVEL).sequence(MODULE).markStart().sequence(IDENTIFIER).skipTo(EQ).sequence(IDENTIFIER)<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                                .createNode(EShallowEntityType.META, "module-def", 0).repeated(DOT, IDENTIFIER).endNode();<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                inState(TOP_LEVEL).sequence(EXCEPTION, IDENTIFIER);<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                inState(TOP_LEVEL).sequence(LET).optional(REC).markStart().sequence(IDENTIFIER)<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                                .createNode(EShallowEntityType.METHOD, "let-decl", 0).skipTo(EQ).parseOnce(IN_EXPRESSION).endNode();<a name="line.108"></a>
+<span class="sourceLineNo">109</span>        }<a name="line.109"></a>
+<span class="sourceLineNo">110</span><a name="line.110"></a>
+<span class="sourceLineNo">111</span>        /** Class definition rule */<a name="line.111"></a>
+<span class="sourceLineNo">112</span>        private void createTypeRules() {<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                inState(TOP_LEVEL).sequence(CLASS).markStart().createNode(EShallowEntityType.TYPE, SubTypeNames.CLASS, 0)<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                                .sequence(IDENTIFIER).skipTo(EQ).sequence(OBJECT).optional(LPAREN, IDENTIFIER, RPAREN)<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                                .parseUntil(IN_TYPE).sequence(END).endNode();<a name="line.115"></a>
 <span class="sourceLineNo">116</span>        }<a name="line.116"></a>
 <span class="sourceLineNo">117</span><a name="line.117"></a>
-<span class="sourceLineNo">118</span>        /** Class definition rule */<a name="line.118"></a>
-<span class="sourceLineNo">119</span>        private void createTypeRules() {<a name="line.119"></a>
-<span class="sourceLineNo">120</span>                inState(TOP_LEVEL).sequence(CLASS).markStart().createNode(EShallowEntityType.TYPE, SubTypeNames.CLASS, 0)<a name="line.120"></a>
-<span class="sourceLineNo">121</span>                                .sequence(IDENTIFIER).skipTo(EQ).sequence(OBJECT).optional(LPAREN, IDENTIFIER, RPAREN)<a name="line.121"></a>
-<span class="sourceLineNo">122</span>                                .parseUntil(IN_TYPE).sequence(END).endNode();<a name="line.122"></a>
-<span class="sourceLineNo">123</span>        }<a name="line.123"></a>
-<span class="sourceLineNo">124</span><a name="line.124"></a>
-<span class="sourceLineNo">125</span>        /** Create rules for class elements, i.e., methods. */<a name="line.125"></a>
-<span class="sourceLineNo">126</span>        private void createClassElementsRules() {<a name="line.126"></a>
-<span class="sourceLineNo">127</span>                inState(IN_TYPE).sequence(METHOD).optional(PRIVATE).markStart().sequence(IDENTIFIER) // method<a name="line.127"></a>
-<span class="sourceLineNo">128</span>                                                                                                                                                                                                // name<a name="line.128"></a>
-<span class="sourceLineNo">129</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.METHOD, 0).skipTo(EQ).parseOnce(IN_EXPRESSION) // method<a name="line.129"></a>
-<span class="sourceLineNo">130</span>                                                                                                                                                                                                                                        // body<a name="line.130"></a>
-<span class="sourceLineNo">131</span>                                .endNode();<a name="line.131"></a>
-<span class="sourceLineNo">132</span>                inState(IN_TYPE).sequence(INHERIT, IDENTIFIER).repeated(DOT, IDENTIFIER);<a name="line.132"></a>
-<span class="sourceLineNo">133</span>        }<a name="line.133"></a>
+<span class="sourceLineNo">118</span>        /** Create rules for class elements, i.e., methods. */<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        private void createClassElementsRules() {<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                inState(IN_TYPE).sequence(METHOD).optional(PRIVATE).markStart().sequence(IDENTIFIER) // method<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                                                                                                                                                                                                // name<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.METHOD, 0).skipTo(EQ).parseOnce(IN_EXPRESSION) // method<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                                                                                                                                                                                                                                        // body<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                                .endNode();<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                inState(IN_TYPE).sequence(INHERIT, IDENTIFIER).repeated(DOT, IDENTIFIER);<a name="line.125"></a>
+<span class="sourceLineNo">126</span>        }<a name="line.126"></a>
+<span class="sourceLineNo">127</span><a name="line.127"></a>
+<span class="sourceLineNo">128</span>        /** Rules to handle nesting expressions, i.e., if, while, for, match, .. */<a name="line.128"></a>
+<span class="sourceLineNo">129</span>        private void createNestingExpressionRules() {<a name="line.129"></a>
+<span class="sourceLineNo">130</span><a name="line.130"></a>
+<span class="sourceLineNo">131</span>                inState(IN_EXPRESSION).sequence(IF) // 4a: if with else branch<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.IF).parseOnce(IN_EXPRESSION).sequence(THEN)<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                                .parseOnce(IN_EXPRESSION).sequence(ELSE).parseOnce(IN_EXPRESSION).endNode();<a name="line.133"></a>
 <span class="sourceLineNo">134</span><a name="line.134"></a>
-<span class="sourceLineNo">135</span>        /** Rules to handle nesting expressions, i.e., if, while, for, match, .. */<a name="line.135"></a>
-<span class="sourceLineNo">136</span>        private void createNestingExpressionRules() {<a name="line.136"></a>
-<span class="sourceLineNo">137</span><a name="line.137"></a>
-<span class="sourceLineNo">138</span>                inState(IN_EXPRESSION).sequence(IF) // 4a: if with else branch<a name="line.138"></a>
-<span class="sourceLineNo">139</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.IF).parseOnce(IN_EXPRESSION).sequence(THEN)<a name="line.139"></a>
-<span class="sourceLineNo">140</span>                                .parseOnce(IN_EXPRESSION).sequence(ELSE).parseOnce(IN_EXPRESSION).endNode();<a name="line.140"></a>
-<span class="sourceLineNo">141</span><a name="line.141"></a>
-<span class="sourceLineNo">142</span>                inState(IN_EXPRESSION).sequence(IF) // 4b: if without else branch<a name="line.142"></a>
-<span class="sourceLineNo">143</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.IF).parseOnce(IN_EXPRESSION).sequence(THEN)<a name="line.143"></a>
-<span class="sourceLineNo">144</span>                                .parseOnce(IN_EXPRESSION).endNode();<a name="line.144"></a>
-<span class="sourceLineNo">145</span><a name="line.145"></a>
-<span class="sourceLineNo">146</span>                inState(IN_EXPRESSION).sequence(WHILE) // 4c<a name="line.146"></a>
-<span class="sourceLineNo">147</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.WHILE).parseOnce(IN_EXPRESSION).sequence(DO)<a name="line.147"></a>
-<span class="sourceLineNo">148</span>                                .parseOnce(IN_EXPRESSION).sequence(DONE).endNode();<a name="line.148"></a>
-<span class="sourceLineNo">149</span><a name="line.149"></a>
-<span class="sourceLineNo">150</span>                inState(IN_EXPRESSION).sequence(FOR, IDENTIFIER, EQ) // 4d<a name="line.150"></a>
-<span class="sourceLineNo">151</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.FOR).parseOnce(IN_EXPRESSION).sequence(TO)<a name="line.151"></a>
-<span class="sourceLineNo">152</span>                                .parseOnce(IN_EXPRESSION).sequence(DO).parseOnce(IN_EXPRESSION).sequence(DONE).endNode();<a name="line.152"></a>
-<span class="sourceLineNo">153</span><a name="line.153"></a>
-<span class="sourceLineNo">154</span>                // rule 4e: match expression<a name="line.154"></a>
-<span class="sourceLineNo">155</span>                RecognizerBase&lt;EGenericParserStates&gt; recognizedMatch = inState(IN_EXPRESSION).sequence(MATCH)<a name="line.155"></a>
-<span class="sourceLineNo">156</span>                                .createNode(EShallowEntityType.STATEMENT, "match-expr").parseOnce(IN_EXPRESSION).sequence(WITH);<a name="line.156"></a>
-<span class="sourceLineNo">157</span>                patternMatchingRecognizer(recognizedMatch).endNode();<a name="line.157"></a>
-<span class="sourceLineNo">158</span><a name="line.158"></a>
-<span class="sourceLineNo">159</span>                RecognizerBase&lt;EGenericParserStates&gt; recognizedFunction = // 4f<a name="line.159"></a>
-<span class="sourceLineNo">160</span>                                inState(IN_EXPRESSION).sequence(FUNCTION).createNode(EShallowEntityType.STATEMENT, "function-expr");<a name="line.160"></a>
-<span class="sourceLineNo">161</span>                patternMatchingRecognizer(recognizedFunction).endNode();<a name="line.161"></a>
+<span class="sourceLineNo">135</span>                inState(IN_EXPRESSION).sequence(IF) // 4b: if without else branch<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.IF).parseOnce(IN_EXPRESSION).sequence(THEN)<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                                .parseOnce(IN_EXPRESSION).endNode();<a name="line.137"></a>
+<span class="sourceLineNo">138</span><a name="line.138"></a>
+<span class="sourceLineNo">139</span>                inState(IN_EXPRESSION).sequence(WHILE) // 4c<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.WHILE).parseOnce(IN_EXPRESSION).sequence(DO)<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                                .parseOnce(IN_EXPRESSION).sequence(DONE).endNode();<a name="line.141"></a>
+<span class="sourceLineNo">142</span><a name="line.142"></a>
+<span class="sourceLineNo">143</span>                inState(IN_EXPRESSION).sequence(FOR, IDENTIFIER, EQ) // 4d<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.FOR).parseOnce(IN_EXPRESSION).sequence(TO)<a name="line.144"></a>
+<span class="sourceLineNo">145</span>                                .parseOnce(IN_EXPRESSION).sequence(DO).parseOnce(IN_EXPRESSION).sequence(DONE).endNode();<a name="line.145"></a>
+<span class="sourceLineNo">146</span><a name="line.146"></a>
+<span class="sourceLineNo">147</span>                // rule 4e: match expression<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                RecognizerBase&lt;EGenericParserStates&gt; recognizedMatch = inState(IN_EXPRESSION).sequence(MATCH)<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                                .createNode(EShallowEntityType.STATEMENT, "match-expr").parseOnce(IN_EXPRESSION).sequence(WITH);<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                patternMatchingRecognizer(recognizedMatch).endNode();<a name="line.150"></a>
+<span class="sourceLineNo">151</span><a name="line.151"></a>
+<span class="sourceLineNo">152</span>                RecognizerBase&lt;EGenericParserStates&gt; recognizedFunction = // 4f<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                                inState(IN_EXPRESSION).sequence(FUNCTION).createNode(EShallowEntityType.STATEMENT, "function-expr");<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                patternMatchingRecognizer(recognizedFunction).endNode();<a name="line.154"></a>
+<span class="sourceLineNo">155</span><a name="line.155"></a>
+<span class="sourceLineNo">156</span>                inState(IN_EXPRESSION).sequence(FUN) // 4g<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                                .createNode(EShallowEntityType.STATEMENT, "fun-expr").skipTo(MINUSGREATER).parseOnce(IN_EXPRESSION)<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                                .endNode();<a name="line.158"></a>
+<span class="sourceLineNo">159</span><a name="line.159"></a>
+<span class="sourceLineNo">160</span>                patternMatchingRecognizer(inState(IN_EXPRESSION).sequence(TRY) // 4h<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                                .parseOnce(IN_EXPRESSION).sequence(WITH)).endNode();<a name="line.161"></a>
 <span class="sourceLineNo">162</span><a name="line.162"></a>
-<span class="sourceLineNo">163</span>                inState(IN_EXPRESSION).sequence(FUN) // 4g<a name="line.163"></a>
-<span class="sourceLineNo">164</span>                                .createNode(EShallowEntityType.STATEMENT, "fun-expr").skipTo(MINUSGREATER).parseOnce(IN_EXPRESSION)<a name="line.164"></a>
-<span class="sourceLineNo">165</span>                                .endNode();<a name="line.165"></a>
+<span class="sourceLineNo">163</span>                inState(IN_EXPRESSION).sequence(OBJECT) // rule 4i<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                                .createNode(EShallowEntityType.STATEMENT, "object-expr").parseUntil(IN_TYPE).sequence(END).endNode();<a name="line.164"></a>
+<span class="sourceLineNo">165</span>        }<a name="line.165"></a>
 <span class="sourceLineNo">166</span><a name="line.166"></a>
-<span class="sourceLineNo">167</span>                patternMatchingRecognizer(inState(IN_EXPRESSION).sequence(TRY) // 4h<a name="line.167"></a>
-<span class="sourceLineNo">168</span>                                .parseOnce(IN_EXPRESSION).sequence(WITH)).endNode();<a name="line.168"></a>
+<span class="sourceLineNo">167</span>        /** Rules to handle non-nesting expressions */<a name="line.167"></a>
+<span class="sourceLineNo">168</span>        private void createNonNestingExpressionRules() {<a name="line.168"></a>
 <span class="sourceLineNo">169</span><a name="line.169"></a>
-<span class="sourceLineNo">170</span>                inState(IN_EXPRESSION).sequence(OBJECT) // rule 4i<a name="line.170"></a>
-<span class="sourceLineNo">171</span>                                .createNode(EShallowEntityType.STATEMENT, "object-expr").parseUntil(IN_TYPE).sequence(END).endNode();<a name="line.171"></a>
-<span class="sourceLineNo">172</span>        }<a name="line.172"></a>
-<span class="sourceLineNo">173</span><a name="line.173"></a>
-<span class="sourceLineNo">174</span>        /** Rules to handle non-nesting expressions */<a name="line.174"></a>
-<span class="sourceLineNo">175</span>        private void createNonNestingExpressionRules() {<a name="line.175"></a>
+<span class="sourceLineNo">170</span>                inState(IN_EXPRESSION).sequence(BEGIN).parseOnce(IN_EXPRESSION) // 4v<a name="line.170"></a>
+<span class="sourceLineNo">171</span>                                .sequence(END);<a name="line.171"></a>
+<span class="sourceLineNo">172</span><a name="line.172"></a>
+<span class="sourceLineNo">173</span>                inState(IN_EXPRESSION).sequence(LBRACK) // rule 4n: list expressions<a name="line.173"></a>
+<span class="sourceLineNo">174</span>                                .createNode(EShallowEntityType.STATEMENT, "list-expr").skipToWithNesting(RBRACK, LBRACK, RBRACK)<a name="line.174"></a>
+<span class="sourceLineNo">175</span>                                .endNode();<a name="line.175"></a>
 <span class="sourceLineNo">176</span><a name="line.176"></a>
-<span class="sourceLineNo">177</span>                inState(IN_EXPRESSION).sequence(BEGIN).parseOnce(IN_EXPRESSION) // 4v<a name="line.177"></a>
-<span class="sourceLineNo">178</span>                                .sequence(END);<a name="line.178"></a>
-<span class="sourceLineNo">179</span><a name="line.179"></a>
-<span class="sourceLineNo">180</span>                inState(IN_EXPRESSION).sequence(LBRACK) // rule 4n: list expressions<a name="line.180"></a>
-<span class="sourceLineNo">181</span>                                .createNode(EShallowEntityType.STATEMENT, "list-expr").skipToWithNesting(RBRACK, LBRACK, RBRACK)<a name="line.181"></a>
-<span class="sourceLineNo">182</span>                                .endNode();<a name="line.182"></a>
+<span class="sourceLineNo">177</span>                inState(IN_EXPRESSION).sequence(LET).optional(REC).markStart() // 4q<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                                .sequence(IDENTIFIER).createNode(EShallowEntityType.STATEMENT, "let-expr", 0).skipTo(EQ)<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                                .parseOnce(IN_EXPRESSION).sequence(IN).parseOnce(IN_EXPRESSION).endNode();<a name="line.179"></a>
+<span class="sourceLineNo">180</span><a name="line.180"></a>
+<span class="sourceLineNo">181</span>                inState(IN_EXPRESSION).sequence(NEW).markStart().sequence(IDENTIFIER).repeated(DOT, IDENTIFIER)<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                                .createNode(EShallowEntityType.STATEMENT, "new-expr", 0).endNode();<a name="line.182"></a>
 <span class="sourceLineNo">183</span><a name="line.183"></a>
-<span class="sourceLineNo">184</span>                inState(IN_EXPRESSION).sequence(LET).optional(REC).markStart() // 4q<a name="line.184"></a>
-<span class="sourceLineNo">185</span>                                .sequence(IDENTIFIER).createNode(EShallowEntityType.STATEMENT, "let-expr", 0).skipTo(EQ)<a name="line.185"></a>
-<span class="sourceLineNo">186</span>                                .parseOnce(IN_EXPRESSION).sequence(IN).parseOnce(IN_EXPRESSION).endNode();<a name="line.186"></a>
-<span class="sourceLineNo">187</span><a name="line.187"></a>
-<span class="sourceLineNo">188</span>                inState(IN_EXPRESSION).sequence(NEW).markStart().sequence(IDENTIFIER).repeated(DOT, IDENTIFIER)<a name="line.188"></a>
-<span class="sourceLineNo">189</span>                                .createNode(EShallowEntityType.STATEMENT, "new-expr", 0).endNode();<a name="line.189"></a>
+<span class="sourceLineNo">184</span>        }<a name="line.184"></a>
+<span class="sourceLineNo">185</span><a name="line.185"></a>
+<span class="sourceLineNo">186</span>        /**<a name="line.186"></a>
+<span class="sourceLineNo">187</span>         * Simplified expression rules. (TODO: general rules would be left-recursive.)<a name="line.187"></a>
+<span class="sourceLineNo">188</span>         */<a name="line.188"></a>
+<span class="sourceLineNo">189</span>        private void createSimplifiedRecExpressionRules() {<a name="line.189"></a>
 <span class="sourceLineNo">190</span><a name="line.190"></a>
-<span class="sourceLineNo">191</span>        }<a name="line.191"></a>
-<span class="sourceLineNo">192</span><a name="line.192"></a>
-<span class="sourceLineNo">193</span>        /**<a name="line.193"></a>
-<span class="sourceLineNo">194</span>         * Simplified expression rules. (TODO: general rules would be<a name="line.194"></a>
-<span class="sourceLineNo">195</span>         * left-recursive.)<a name="line.195"></a>
-<span class="sourceLineNo">196</span>         */<a name="line.196"></a>
-<span class="sourceLineNo">197</span>        private void createSimplifiedRecExpressionRules() {<a name="line.197"></a>
-<span class="sourceLineNo">198</span><a name="line.198"></a>
-<span class="sourceLineNo">199</span>                inState(IN_EXPRESSION).sequence(IDENTIFIER) // 4s<a name="line.199"></a>
-<span class="sourceLineNo">200</span>                                .sequence(SHARP, IDENTIFIER).createNode(EShallowEntityType.STATEMENT, "method-call-expr", 0)<a name="line.200"></a>
-<span class="sourceLineNo">201</span>                                .sequence(IDENTIFIER).endNode();<a name="line.201"></a>
-<span class="sourceLineNo">202</span><a name="line.202"></a>
-<span class="sourceLineNo">203</span>                inState(IN_EXPRESSION).sequence(getUnaryConstructors()) // rule 4u<a name="line.203"></a>
-<span class="sourceLineNo">204</span>                                .parseOnce(IN_EXPRESSION);<a name="line.204"></a>
-<span class="sourceLineNo">205</span><a name="line.205"></a>
-<span class="sourceLineNo">206</span>                inState(IN_EXPRESSION).sequence(IDENTIFIER) // rule 4j<a name="line.206"></a>
-<span class="sourceLineNo">207</span>                                .repeated(DOT, IDENTIFIER).createNode(EShallowEntityType.STATEMENT, "id-expr", new Region(0, -1))<a name="line.207"></a>
-<span class="sourceLineNo">208</span>                                .endNode();<a name="line.208"></a>
-<span class="sourceLineNo">209</span><a name="line.209"></a>
-<span class="sourceLineNo">210</span>                inState(IN_EXPRESSION).sequence(getConstantTokens()) // rule 4k<a name="line.210"></a>
-<span class="sourceLineNo">211</span>                                .createNode(EShallowEntityType.STATEMENT, "const-expr", 0).endNode();<a name="line.211"></a>
-<span class="sourceLineNo">212</span><a name="line.212"></a>
-<span class="sourceLineNo">213</span>                inState(IN_EXPRESSION).markStart().sequence(LPAREN, RPAREN) // rule 4k<a name="line.213"></a>
-<span class="sourceLineNo">214</span>                                .createNode(EShallowEntityType.STATEMENT, "const-expr", new Region(0, -1)).endNode();<a name="line.214"></a>
+<span class="sourceLineNo">191</span>                inState(IN_EXPRESSION).sequence(IDENTIFIER) // 4s<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                                .sequence(SHARP, IDENTIFIER).createNode(EShallowEntityType.STATEMENT, "method-call-expr", 0)<a name="line.192"></a>
+<span class="sourceLineNo">193</span>                                .sequence(IDENTIFIER).endNode();<a name="line.193"></a>
+<span class="sourceLineNo">194</span><a name="line.194"></a>
+<span class="sourceLineNo">195</span>                inState(IN_EXPRESSION).sequence(getUnaryConstructors()) // rule 4u<a name="line.195"></a>
+<span class="sourceLineNo">196</span>                                .parseOnce(IN_EXPRESSION);<a name="line.196"></a>
+<span class="sourceLineNo">197</span><a name="line.197"></a>
+<span class="sourceLineNo">198</span>                inState(IN_EXPRESSION).sequence(IDENTIFIER) // rule 4j<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                                .repeated(DOT, IDENTIFIER).createNode(EShallowEntityType.STATEMENT, "id-expr", new Region(0, -1))<a name="line.199"></a>
+<span class="sourceLineNo">200</span>                                .endNode();<a name="line.200"></a>
+<span class="sourceLineNo">201</span><a name="line.201"></a>
+<span class="sourceLineNo">202</span>                inState(IN_EXPRESSION).sequence(getConstantTokens()) // rule 4k<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                                .createNode(EShallowEntityType.STATEMENT, "const-expr", 0).endNode();<a name="line.203"></a>
+<span class="sourceLineNo">204</span><a name="line.204"></a>
+<span class="sourceLineNo">205</span>                inState(IN_EXPRESSION).markStart().sequence(LPAREN, RPAREN) // rule 4k<a name="line.205"></a>
+<span class="sourceLineNo">206</span>                                .createNode(EShallowEntityType.STATEMENT, "const-expr", new Region(0, -1)).endNode();<a name="line.206"></a>
+<span class="sourceLineNo">207</span><a name="line.207"></a>
+<span class="sourceLineNo">208</span>                inState(IN_EXPRESSION).sequence(LPAREN).parseOnce(IN_EXPRESSION) // 4l<a name="line.208"></a>
+<span class="sourceLineNo">209</span>                                .sequence(RPAREN);<a name="line.209"></a>
+<span class="sourceLineNo">210</span><a name="line.210"></a>
+<span class="sourceLineNo">211</span>                inState(IN_EXPRESSION).sequence(LPAREN).parseOnce(IN_EXPRESSION) // 4t<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                                .sequence(COLONGREATER, IDENTIFIER).repeated(DOT, IDENTIFIER).sequence(RPAREN);<a name="line.212"></a>
+<span class="sourceLineNo">213</span><a name="line.213"></a>
+<span class="sourceLineNo">214</span>        }<a name="line.214"></a>
 <span class="sourceLineNo">215</span><a name="line.215"></a>
-<span class="sourceLineNo">216</span>                inState(IN_EXPRESSION).sequence(LPAREN).parseOnce(IN_EXPRESSION) // 4l<a name="line.216"></a>
-<span class="sourceLineNo">217</span>                                .sequence(RPAREN);<a name="line.217"></a>
-<span class="sourceLineNo">218</span><a name="line.218"></a>
-<span class="sourceLineNo">219</span>                inState(IN_EXPRESSION).sequence(LPAREN).parseOnce(IN_EXPRESSION) // 4t<a name="line.219"></a>
-<span class="sourceLineNo">220</span>                                .sequence(COLONGREATER, IDENTIFIER).repeated(DOT, IDENTIFIER).sequence(RPAREN);<a name="line.220"></a>
+<span class="sourceLineNo">216</span>        /** Recognizes a pattern-matching construct */<a name="line.216"></a>
+<span class="sourceLineNo">217</span>        private static RecognizerBase&lt;EGenericParserStates&gt; patternMatchingRecognizer(<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                        RecognizerBase&lt;EGenericParserStates&gt; currentState) {<a name="line.218"></a>
+<span class="sourceLineNo">219</span>                return currentState.skipTo(MINUSGREATER).parseOnce(IN_EXPRESSION);<a name="line.219"></a>
+<span class="sourceLineNo">220</span>        }<a name="line.220"></a>
 <span class="sourceLineNo">221</span><a name="line.221"></a>
-<span class="sourceLineNo">222</span>        }<a name="line.222"></a>
-<span class="sourceLineNo">223</span><a name="line.223"></a>
-<span class="sourceLineNo">224</span>        /** Recognizes a pattern-matching construct */<a name="line.224"></a>
-<span class="sourceLineNo">225</span>        private static RecognizerBase&lt;EGenericParserStates&gt; patternMatchingRecognizer(<a name="line.225"></a>
-<span class="sourceLineNo">226</span>                        RecognizerBase&lt;EGenericParserStates&gt; currentState) {<a name="line.226"></a>
-<span class="sourceLineNo">227</span>                return currentState.skipTo(MINUSGREATER).parseOnce(IN_EXPRESSION);<a name="line.227"></a>
-<span class="sourceLineNo">228</span>        }<a name="line.228"></a>
-<span class="sourceLineNo">229</span><a name="line.229"></a>
-<span class="sourceLineNo">230</span>        /**<a name="line.230"></a>
-<span class="sourceLineNo">231</span>         * Returns a set of tokens representing constant values, except () and [].<a name="line.231"></a>
-<span class="sourceLineNo">232</span>         */<a name="line.232"></a>
-<span class="sourceLineNo">233</span>        private static EnumSet&lt;ETokenType&gt; getConstantTokens() {<a name="line.233"></a>
-<span class="sourceLineNo">234</span>                return EnumSet.of(INTEGER_LITERAL, FLOATING_POINT_LITERAL, IDENTIFIER, FALSE, TRUE);<a name="line.234"></a>
-<span class="sourceLineNo">235</span>        }<a name="line.235"></a>
-<span class="sourceLineNo">236</span><a name="line.236"></a>
-<span class="sourceLineNo">237</span>        /** Returns a set of unary constructors */<a name="line.237"></a>
-<span class="sourceLineNo">238</span>        private static EnumSet&lt;ETokenType&gt; getUnaryConstructors() {<a name="line.238"></a>
-<span class="sourceLineNo">239</span>                return EnumSet.of(REF, EXCLAMATION, MINUS);<a name="line.239"></a>
-<span class="sourceLineNo">240</span>        }<a name="line.240"></a>
-<span class="sourceLineNo">241</span><a name="line.241"></a>
-<span class="sourceLineNo">242</span>        /** Redundant method, collecting all token names. Remove it. */<a name="line.242"></a>
-<span class="sourceLineNo">243</span>        private void bull() {<a name="line.243"></a>
-<span class="sourceLineNo">244</span>                inAnyState().skipBefore(AND, CLASS, COLONGREATER, DO, DONE, END, EXCEPTION, ELSE, EOF, EXCLAMATION, EXTERNAL,<a name="line.244"></a>
-<span class="sourceLineNo">245</span>                                FOR, FUN, FUNCTION, IN, INCLUDE, INHERIT, LBRACK, LPAREN, LET, MATCH, MINUS, MINUSGREATER, MODULE, NEW,<a name="line.245"></a>
-<span class="sourceLineNo">246</span>                                OBJECT, OPEN, OR, PRIVATE, RBRACK, REC, REF, RPAREN, STRUCT, TO, TYPE, UNDERSCORE, WITH, WHILE);<a name="line.246"></a>
-<span class="sourceLineNo">247</span>        }<a name="line.247"></a>
-<span class="sourceLineNo">248</span>}<a name="line.248"></a>
+<span class="sourceLineNo">222</span>        /**<a name="line.222"></a>
+<span class="sourceLineNo">223</span>         * Returns a set of tokens representing constant values, except () and [].<a name="line.223"></a>
+<span class="sourceLineNo">224</span>         */<a name="line.224"></a>
+<span class="sourceLineNo">225</span>        private static EnumSet&lt;ETokenType&gt; getConstantTokens() {<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                return EnumSet.of(INTEGER_LITERAL, FLOATING_POINT_LITERAL, IDENTIFIER, FALSE, TRUE);<a name="line.226"></a>
+<span class="sourceLineNo">227</span>        }<a name="line.227"></a>
+<span class="sourceLineNo">228</span><a name="line.228"></a>
+<span class="sourceLineNo">229</span>        /** Returns a set of unary constructors */<a name="line.229"></a>
+<span class="sourceLineNo">230</span>        private static EnumSet&lt;ETokenType&gt; getUnaryConstructors() {<a name="line.230"></a>
+<span class="sourceLineNo">231</span>                return EnumSet.of(REF, EXCLAMATION, MINUS);<a name="line.231"></a>
+<span class="sourceLineNo">232</span>        }<a name="line.232"></a>
+<span class="sourceLineNo">233</span>}<a name="line.233"></a>
 
 
 

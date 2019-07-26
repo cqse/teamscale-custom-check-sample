@@ -59,7 +59,7 @@
 <span class="sourceLineNo">051</span>        @Override<a name="line.51"></a>
 <span class="sourceLineNo">052</span>        protected String getProcessedEntitiesXPath() {<a name="line.52"></a>
 <span class="sourceLineNo">053</span>                return "descendant::METHOD | descendant::ATTRIBUTE | descendant::STATEMENT | descendant::META[subtype('"<a name="line.53"></a>
-<span class="sourceLineNo">054</span>                                + SubTypeNames.CASE + "')]";<a name="line.54"></a>
+<span class="sourceLineNo">054</span>                                + SubTypeNames.CASE + "')] | descendant::META[subtype('" + SubTypeNames.ANNOTATION + "')]";<a name="line.54"></a>
 <span class="sourceLineNo">055</span>        }<a name="line.55"></a>
 <span class="sourceLineNo">056</span>}<a name="line.56"></a>
 

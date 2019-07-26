@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*-------------------------------------------------------------------------+<a name="line.1"></a>
+<span class="sourceLineNo">002</span>|                                                                          |<a name="line.2"></a>
+<span class="sourceLineNo">003</span>| Copyright (c) 2009-2017 CQSE GmbH                                        |<a name="line.3"></a>
+<span class="sourceLineNo">004</span>|                                                                          |<a name="line.4"></a>
+<span class="sourceLineNo">005</span>+-------------------------------------------------------------------------*/<a name="line.5"></a>
+<span class="sourceLineNo">006</span>package eu.cqse.check.clike;<a name="line.6"></a>
+<span class="sourceLineNo">007</span><a name="line.7"></a>
+<span class="sourceLineNo">008</span>import java.util.ArrayList;<a name="line.8"></a>
+<span class="sourceLineNo">009</span>import java.util.List;<a name="line.9"></a>
+<span class="sourceLineNo">010</span>import java.util.Set;<a name="line.10"></a>
+<span class="sourceLineNo">011</span><a name="line.11"></a>
+<span class="sourceLineNo">012</span>import org.conqat.lib.commons.collections.CollectionUtils;<a name="line.12"></a>
+<span class="sourceLineNo">013</span>import org.conqat.lib.commons.collections.UnmodifiableList;<a name="line.13"></a>
+<span class="sourceLineNo">014</span><a name="line.14"></a>
+<span class="sourceLineNo">015</span>import eu.cqse.check.base.EntityCheckBase;<a name="line.15"></a>
+<span class="sourceLineNo">016</span>import eu.cqse.check.framework.core.ACheck;<a name="line.16"></a>
+<span class="sourceLineNo">017</span>import eu.cqse.check.framework.core.CheckException;<a name="line.17"></a>
+<span class="sourceLineNo">018</span>import eu.cqse.check.framework.core.CheckGroupNames;<a name="line.18"></a>
+<span class="sourceLineNo">019</span>import eu.cqse.check.framework.core.ECheckParameter;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import eu.cqse.check.framework.core.EFindingEnablement;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import eu.cqse.check.framework.core.phase.ECodeViewOption;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import eu.cqse.check.framework.scanner.ELanguage;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import eu.cqse.check.framework.scanner.ETokenType;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import eu.cqse.check.framework.shallowparser.TokenStreamUtils;<a name="line.25"></a>
+<span class="sourceLineNo">026</span>import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import eu.cqse.check.framework.typetracker.ITypeResolution;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import eu.cqse.check.framework.typetracker.ScopedTypeLookup;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>import eu.cqse.check.framework.typetracker.TypedVariable;<a name="line.29"></a>
+<span class="sourceLineNo">030</span><a name="line.30"></a>
+<span class="sourceLineNo">031</span>/**<a name="line.31"></a>
+<span class="sourceLineNo">032</span> * {@ConQAT.Doc}<a name="line.32"></a>
+<span class="sourceLineNo">033</span> */<a name="line.33"></a>
+<span class="sourceLineNo">034</span>@ACheck(name = "Equality check with boolean literal", description = "Checking equality with boolean literals is unnecessarily verbose. For instance, conditions like `if (value == true)` can be simplified to `if (value)`.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.YELLOW, languages = {<a name="line.34"></a>
+<span class="sourceLineNo">035</span>                ELanguage.CPP, ELanguage.CS,<a name="line.35"></a>
+<span class="sourceLineNo">036</span>                ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE, ECheckParameter.TYPE_RESOLUTION })<a name="line.36"></a>
+<span class="sourceLineNo">037</span>public class EqualityTestWithBooleanLiteralCheck extends EntityCheckBase {<a name="line.37"></a>
+<span class="sourceLineNo">038</span><a name="line.38"></a>
+<span class="sourceLineNo">039</span>        /** {@inheritDoc} */<a name="line.39"></a>
+<span class="sourceLineNo">040</span>        @Override<a name="line.40"></a>
+<span class="sourceLineNo">041</span>        protected String getXPathSelectionString() {<a name="line.41"></a>
+<span class="sourceLineNo">042</span>                return "//STATEMENT";<a name="line.42"></a>
+<span class="sourceLineNo">043</span>        }<a name="line.43"></a>
+<span class="sourceLineNo">044</span><a name="line.44"></a>
+<span class="sourceLineNo">045</span>        /** {@inheritDoc} */<a name="line.45"></a>
+<span class="sourceLineNo">046</span>        @Override<a name="line.46"></a>
+<span class="sourceLineNo">047</span>        protected void processEntity(ShallowEntity entity) throws CheckException {<a name="line.47"></a>
+<span class="sourceLineNo">048</span>                UnmodifiableList&lt;IToken&gt; tokens = entity.ownStartTokens();<a name="line.48"></a>
+<span class="sourceLineNo">049</span>                List&lt;List&lt;IToken&gt;&gt; literals = TokenStreamUtils.split(tokens, ETokenType.ANDAND, ETokenType.OROR);<a name="line.49"></a>
+<span class="sourceLineNo">050</span><a name="line.50"></a>
+<span class="sourceLineNo">051</span>                ITypeResolution typeResolution = context.getTypeResolution(ECodeViewOption.FILTERED);<a name="line.51"></a>
+<span class="sourceLineNo">052</span>                ScopedTypeLookup scopedTypeLookup = typeResolution.getTypeLookup(entity);<a name="line.52"></a>
+<span class="sourceLineNo">053</span>                Set&lt;String&gt; variableNames = scopedTypeLookup.getAllVariables();<a name="line.53"></a>
+<span class="sourceLineNo">054</span><a name="line.54"></a>
+<span class="sourceLineNo">055</span>                for (List&lt;IToken&gt; literalTokens : literals) {<a name="line.55"></a>
+<span class="sourceLineNo">056</span>                        List&lt;Integer&gt; literalIndexes = new ArrayList&lt;&gt;();<a name="line.56"></a>
+<span class="sourceLineNo">057</span>                        if (containsEqualityCheckAgainstBooleanLiteral(literalTokens)) {<a name="line.57"></a>
+<span class="sourceLineNo">058</span>                                // don't create a finding if the '?' operator in C# is used. If so,<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                                // explicit casting from bool? to bool is needed, e.g. via "== true"<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                                if (context.getLanguage() == ELanguage.CS<a name="line.60"></a>
+<span class="sourceLineNo">061</span>                                                &amp;&amp; containsNullConditionalOperatorCSharp(literalTokens, variableNames, scopedTypeLookup)) {<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                                        continue;<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                                }<a name="line.63"></a>
+<span class="sourceLineNo">064</span><a name="line.64"></a>
+<span class="sourceLineNo">065</span>                                addIndexOfTokenSequences(literalIndexes, literalTokens, ETokenType.EQEQ, ETokenType.BOOLEAN_LITERAL);<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                                addIndexOfTokenSequences(literalIndexes, literalTokens, ETokenType.NOTEQ, ETokenType.BOOLEAN_LITERAL);<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                                addIndexOfTokenSequences(literalIndexes, literalTokens, ETokenType.BOOLEAN_LITERAL, ETokenType.EQEQ);<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                                addIndexOfTokenSequences(literalIndexes, literalTokens, ETokenType.BOOLEAN_LITERAL, ETokenType.NOTEQ);<a name="line.68"></a>
+<span class="sourceLineNo">069</span><a name="line.69"></a>
+<span class="sourceLineNo">070</span>                                for (Integer literalIndex : literalIndexes) {<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                                        createFinding("Avoid comparisons to boolean literals", literalTokens.get(literalIndex));<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                                }<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                        }<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                }<a name="line.74"></a>
+<span class="sourceLineNo">075</span>        }<a name="line.75"></a>
+<span class="sourceLineNo">076</span><a name="line.76"></a>
+<span class="sourceLineNo">077</span>        /**<a name="line.77"></a>
+<span class="sourceLineNo">078</span>         * Checks if the null conditional operator '?' in C# is used. Either it is used<a name="line.78"></a>
+<span class="sourceLineNo">079</span>         * directly in the condition or the variable used in the condition was declared<a name="line.79"></a>
+<span class="sourceLineNo">080</span>         * by using the '?' operator. If so, return true. Otherwise, return false.<a name="line.80"></a>
+<span class="sourceLineNo">081</span>         */<a name="line.81"></a>
+<span class="sourceLineNo">082</span>        private static boolean containsNullConditionalOperatorCSharp(List&lt;IToken&gt; tokens, Set&lt;String&gt; variableNames,<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                        ScopedTypeLookup scopedTypeLookup) {<a name="line.83"></a>
+<span class="sourceLineNo">084</span><a name="line.84"></a>
+<span class="sourceLineNo">085</span>                // check if the operator '?' is used in the condition statement<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                if (TokenStreamUtils.contains(tokens, ETokenType.QUESTION)) {<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                        return true;<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                }<a name="line.88"></a>
+<span class="sourceLineNo">089</span><a name="line.89"></a>
+<span class="sourceLineNo">090</span>                // also check if the variable in the condition was declared using the '?'<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                // operator. If so, return true<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                for (String variableName : variableNames) {<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                        if (variableIsUsedInLiteral(tokens, variableName)) {<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                                TypedVariable typedVariable = scopedTypeLookup.getTypeInfo(variableName);<a name="line.94"></a>
+<span class="sourceLineNo">095</span><a name="line.95"></a>
+<span class="sourceLineNo">096</span>                                // Check if unknown nullable type like CustomClass? or Nullable&lt;X&gt;<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                                UnmodifiableList&lt;IToken&gt; declaringEntityOfVariableTokens = typedVariable.getDeclaringEntity()<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                                                .ownStartTokens();<a name="line.98"></a>
+<span class="sourceLineNo">099</span><a name="line.99"></a>
+<span class="sourceLineNo">100</span>                                if (typedVariable.getTypeName().equals("Nullable")) {<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                                        return true;<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                                }<a name="line.102"></a>
+<span class="sourceLineNo">103</span><a name="line.103"></a>
+<span class="sourceLineNo">104</span>                                if (typedVariable.getTypeName().equals(TypedVariable.UNKNOWN_TYPE_NAME)<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                                                &amp;&amp; TokenStreamUtils.contains(declaringEntityOfVariableTokens, ETokenType.QUESTION)) {<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                                        return true;<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                                }<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                        }<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                }<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                return false;<a name="line.110"></a>
+<span class="sourceLineNo">111</span>        }<a name="line.111"></a>
+<span class="sourceLineNo">112</span><a name="line.112"></a>
+<span class="sourceLineNo">113</span>        /**<a name="line.113"></a>
+<span class="sourceLineNo">114</span>         * Checks if the passed variable is contained in the list of tokens.<a name="line.114"></a>
+<span class="sourceLineNo">115</span>         */<a name="line.115"></a>
+<span class="sourceLineNo">116</span>        private static boolean variableIsUsedInLiteral(List&lt;IToken&gt; literalTokens, String variableName) {<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                return TokenStreamUtils.getTokenByTypeAndText(literalTokens, variableName,<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                                CollectionUtils.asHashSet(ETokenType.IDENTIFIER)) != null;<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        }<a name="line.119"></a>
+<span class="sourceLineNo">120</span><a name="line.120"></a>
+<span class="sourceLineNo">121</span>        private static boolean containsEqualityCheckAgainstBooleanLiteral(List&lt;IToken&gt; tokens) {<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                return TokenStreamUtils.containsSequence(tokens, ETokenType.EQEQ, ETokenType.BOOLEAN_LITERAL)<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                                || TokenStreamUtils.containsSequence(tokens, ETokenType.NOTEQ, ETokenType.BOOLEAN_LITERAL)<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                                || TokenStreamUtils.containsSequence(tokens, ETokenType.BOOLEAN_LITERAL, ETokenType.EQEQ)<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                                || TokenStreamUtils.containsSequence(tokens, ETokenType.BOOLEAN_LITERAL, ETokenType.NOTEQ);<a name="line.125"></a>
+<span class="sourceLineNo">126</span>        }<a name="line.126"></a>
+<span class="sourceLineNo">127</span><a name="line.127"></a>
+<span class="sourceLineNo">128</span>        /** Adds the index of token sequences as specified */<a name="line.128"></a>
+<span class="sourceLineNo">129</span>        private static void addIndexOfTokenSequences(List&lt;Integer&gt; indexes, List&lt;IToken&gt; tokens, ETokenType... tokenTypes) {<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                indexes.addAll(TokenStreamUtils.firstTokenOfTypeSequences(tokens, 0, tokenTypes));<a name="line.130"></a>
+<span class="sourceLineNo">131</span>        }<a name="line.131"></a>
+<span class="sourceLineNo">132</span><a name="line.132"></a>
+<span class="sourceLineNo">133</span>}<a name="line.133"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

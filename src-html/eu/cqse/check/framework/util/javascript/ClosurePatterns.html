@@ -1,0 +1,169 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>package eu.cqse.check.framework.util.javascript;<a name="line.1"></a>
+<span class="sourceLineNo">002</span><a name="line.2"></a>
+<span class="sourceLineNo">003</span>import static eu.cqse.check.framework.scanner.ETokenType.CLASS;<a name="line.3"></a>
+<span class="sourceLineNo">004</span>import static eu.cqse.check.framework.scanner.ETokenType.COMMA;<a name="line.4"></a>
+<span class="sourceLineNo">005</span>import static eu.cqse.check.framework.scanner.ETokenType.DOCUMENTATION_COMMENT;<a name="line.5"></a>
+<span class="sourceLineNo">006</span>import static eu.cqse.check.framework.scanner.ETokenType.DOT;<a name="line.6"></a>
+<span class="sourceLineNo">007</span>import static eu.cqse.check.framework.scanner.ETokenType.EQ;<a name="line.7"></a>
+<span class="sourceLineNo">008</span>import static eu.cqse.check.framework.scanner.ETokenType.FUNCTION;<a name="line.8"></a>
+<span class="sourceLineNo">009</span>import static eu.cqse.check.framework.scanner.ETokenType.IDENTIFIER;<a name="line.9"></a>
+<span class="sourceLineNo">010</span>import static eu.cqse.check.framework.scanner.ETokenType.LPAREN;<a name="line.10"></a>
+<span class="sourceLineNo">011</span>import static eu.cqse.check.framework.scanner.ETokenType.NEW;<a name="line.11"></a>
+<span class="sourceLineNo">012</span>import static eu.cqse.check.framework.scanner.ETokenType.RPAREN;<a name="line.12"></a>
+<span class="sourceLineNo">013</span>import static eu.cqse.check.framework.scanner.ETokenType.THIS;<a name="line.13"></a>
+<span class="sourceLineNo">014</span>import static org.conqat.lib.commons.collections.CollectionUtils.emptyList;<a name="line.14"></a>
+<span class="sourceLineNo">015</span><a name="line.15"></a>
+<span class="sourceLineNo">016</span>import java.util.ArrayList;<a name="line.16"></a>
+<span class="sourceLineNo">017</span>import java.util.EnumSet;<a name="line.17"></a>
+<span class="sourceLineNo">018</span>import java.util.List;<a name="line.18"></a>
+<span class="sourceLineNo">019</span>import java.util.Set;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import java.util.regex.Matcher;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import java.util.regex.Pattern;<a name="line.21"></a>
+<span class="sourceLineNo">022</span><a name="line.22"></a>
+<span class="sourceLineNo">023</span>import org.conqat.lib.commons.collections.CollectionUtils;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import org.conqat.lib.commons.string.StringUtils;<a name="line.24"></a>
+<span class="sourceLineNo">025</span><a name="line.25"></a>
+<span class="sourceLineNo">026</span>import eu.cqse.check.framework.scanner.ETokenType;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import eu.cqse.check.framework.util.tokens.TokenPattern;<a name="line.28"></a>
+<span class="sourceLineNo">029</span><a name="line.29"></a>
+<span class="sourceLineNo">030</span>/** Collects patterns to determine Closure dependencies. */<a name="line.30"></a>
+<span class="sourceLineNo">031</span>public class ClosurePatterns {<a name="line.31"></a>
+<span class="sourceLineNo">032</span><a name="line.32"></a>
+<span class="sourceLineNo">033</span>        /** The index of the group in matches that contain the dependent namespace. */<a name="line.33"></a>
+<span class="sourceLineNo">034</span>        public static final int DEPENDENCY_NAMESPACE_GROUP_INDEX = 2;<a name="line.34"></a>
+<span class="sourceLineNo">035</span><a name="line.35"></a>
+<span class="sourceLineNo">036</span>        /**<a name="line.36"></a>
+<span class="sourceLineNo">037</span>         * Pattern to extract a (Closure) type dependency, e.g. x.y.MyNamespace. The<a name="line.37"></a>
+<span class="sourceLineNo">038</span>         * target namespace will be in group 2.<a name="line.38"></a>
+<span class="sourceLineNo">039</span>         */<a name="line.39"></a>
+<span class="sourceLineNo">040</span>        private static final Pattern DEPENDENCY_COMMENT_PATTERN = Pattern.compile("([|{:&lt;\\s])((\\w+\\.)+\\w+)[|}&gt;,]");<a name="line.40"></a>
+<span class="sourceLineNo">041</span><a name="line.41"></a>
+<span class="sourceLineNo">042</span>        /** Closure annotations that can be followed by a dependency. */<a name="line.42"></a>
+<span class="sourceLineNo">043</span>        private static final Set&lt;String&gt; DEPENDENCY_ANNOTATIONS = CollectionUtils.asHashSet("@type", "@extends", "@param",<a name="line.43"></a>
+<span class="sourceLineNo">044</span>                        "@return", "@implements");<a name="line.44"></a>
+<span class="sourceLineNo">045</span><a name="line.45"></a>
+<span class="sourceLineNo">046</span>        /** A closure namespace, e.g. x.y.MyType */<a name="line.46"></a>
+<span class="sourceLineNo">047</span>        public static final TokenPattern NAMESPACE_PATTERN = new TokenPattern().sequence(IDENTIFIER,<a name="line.47"></a>
+<span class="sourceLineNo">048</span>                        new TokenPattern().repeatedAtLeastOnce(DOT, IDENTIFIER));<a name="line.48"></a>
+<span class="sourceLineNo">049</span><a name="line.49"></a>
+<span class="sourceLineNo">050</span>        /** Pattern for a namespace with a constant, e.g. x.y.z.MY_CONSTANT */<a name="line.50"></a>
+<span class="sourceLineNo">051</span>        public static final TokenPattern NAMESPACE_CONSTANT_PATTERN = new TokenPattern().sequence(NAMESPACE_PATTERN)<a name="line.51"></a>
+<span class="sourceLineNo">052</span>                        .group(DEPENDENCY_NAMESPACE_GROUP_INDEX).notFollowedBy(LPAREN);<a name="line.52"></a>
+<span class="sourceLineNo">053</span><a name="line.53"></a>
+<span class="sourceLineNo">054</span>        /** Pattern for constructor, e.g. new x.y.MyClass( */<a name="line.54"></a>
+<span class="sourceLineNo">055</span>        public static final TokenPattern CONSTRUCTOR_PATTERN = new TokenPattern().sequence(NEW).sequence(NAMESPACE_PATTERN)<a name="line.55"></a>
+<span class="sourceLineNo">056</span>                        .group(DEPENDENCY_NAMESPACE_GROUP_INDEX).sequence(LPAREN);<a name="line.56"></a>
+<span class="sourceLineNo">057</span><a name="line.57"></a>
+<span class="sourceLineNo">058</span>        /** Pattern for a static method call, e.g. x.y.mynamespace.foo( */<a name="line.58"></a>
+<span class="sourceLineNo">059</span>        public static final TokenPattern STATIC_METHOD_CALL_PATTERN = new TokenPattern()<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                        .notPrecededBy(EnumSet.of(NEW, THIS, DOT)).sequence(NAMESPACE_PATTERN)<a name="line.60"></a>
+<span class="sourceLineNo">061</span>                        .group(DEPENDENCY_NAMESPACE_GROUP_INDEX).sequence(LPAREN);<a name="line.61"></a>
+<span class="sourceLineNo">062</span><a name="line.62"></a>
+<span class="sourceLineNo">063</span>        /**<a name="line.63"></a>
+<span class="sourceLineNo">064</span>         * Pattern of a closure constructor declaration, e.g. x.y.MyNamespace =<a name="line.64"></a>
+<span class="sourceLineNo">065</span>         * function(<a name="line.65"></a>
+<span class="sourceLineNo">066</span>         */<a name="line.66"></a>
+<span class="sourceLineNo">067</span>        public static final TokenPattern CLOSURE_CONSTRUCTOR_PATTERN = new TokenPattern().optional(DOCUMENTATION_COMMENT)<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                        .sequence(NAMESPACE_PATTERN).group(DEPENDENCY_NAMESPACE_GROUP_INDEX).alternative(ETokenType.SEMICOLON,<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                                        new TokenPattern().sequence(EQ, FUNCTION, LPAREN), new TokenPattern().sequence(EQ, CLASS));<a name="line.69"></a>
+<span class="sourceLineNo">070</span><a name="line.70"></a>
+<span class="sourceLineNo">071</span>        /**<a name="line.71"></a>
+<span class="sourceLineNo">072</span>         * A pattern that matches against Closure type inheritance functions, e.g.<a name="line.72"></a>
+<span class="sourceLineNo">073</span>         * 'goog.inherits(ts.dashboard.widgets.GridAwareResizeDragger, goog.fx.Dragger)'<a name="line.73"></a>
+<span class="sourceLineNo">074</span>         */<a name="line.74"></a>
+<span class="sourceLineNo">075</span>        public static final TokenPattern GOOG_INHERITS_PATTERN = new TokenPattern()<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                        .sequence(new TokenPattern().sequence(IDENTIFIER, DOT, IDENTIFIER).group(1), LPAREN, NAMESPACE_PATTERN,<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                                        COMMA)<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                        .sequence(NAMESPACE_PATTERN).group(DEPENDENCY_NAMESPACE_GROUP_INDEX).sequence(RPAREN);<a name="line.78"></a>
+<span class="sourceLineNo">079</span><a name="line.79"></a>
+<span class="sourceLineNo">080</span>        /**<a name="line.80"></a>
+<span class="sourceLineNo">081</span>         * @return the Closure dependencies in the given comment token, or an empty<a name="line.81"></a>
+<span class="sourceLineNo">082</span>         *         list.<a name="line.82"></a>
+<span class="sourceLineNo">083</span>         */<a name="line.83"></a>
+<span class="sourceLineNo">084</span>        public static List&lt;String&gt; getDependenciesFromComment(IToken commentToken) {<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                if (commentToken.getType() != DOCUMENTATION_COMMENT<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                                || !StringUtils.containsOneOf(commentToken.getText(), DEPENDENCY_ANNOTATIONS)) {<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                        return emptyList();<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                }<a name="line.88"></a>
+<span class="sourceLineNo">089</span><a name="line.89"></a>
+<span class="sourceLineNo">090</span>                List&lt;String&gt; dependencies = new ArrayList&lt;&gt;();<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                Matcher matcher = DEPENDENCY_COMMENT_PATTERN.matcher(commentToken.getText());<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                while (matcher.find()) {<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                        dependencies.add(matcher.group(2));<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                }<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                return dependencies;<a name="line.95"></a>
+<span class="sourceLineNo">096</span>        }<a name="line.96"></a>
+<span class="sourceLineNo">097</span>}<a name="line.97"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

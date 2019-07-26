@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*-------------------------------------------------------------------------+<a name="line.1"></a>
+<span class="sourceLineNo">002</span>|                                                                          |<a name="line.2"></a>
+<span class="sourceLineNo">003</span>| Copyright (c) 2009-2017 CQSE GmbH                                        |<a name="line.3"></a>
+<span class="sourceLineNo">004</span>|                                                                          |<a name="line.4"></a>
+<span class="sourceLineNo">005</span>+-------------------------------------------------------------------------*/<a name="line.5"></a>
+<span class="sourceLineNo">006</span>package eu.cqse.check.cpp.misra.libraries;<a name="line.6"></a>
+<span class="sourceLineNo">007</span><a name="line.7"></a>
+<span class="sourceLineNo">008</span>import static eu.cqse.check.framework.core.ruleset.ERuleset.MISRA;<a name="line.8"></a>
+<span class="sourceLineNo">009</span><a name="line.9"></a>
+<span class="sourceLineNo">010</span>import eu.cqse.check.framework.core.ACheck;<a name="line.10"></a>
+<span class="sourceLineNo">011</span>import eu.cqse.check.framework.core.CheckGroupNames;<a name="line.11"></a>
+<span class="sourceLineNo">012</span>import eu.cqse.check.framework.core.ECheckParameter;<a name="line.12"></a>
+<span class="sourceLineNo">013</span>import eu.cqse.check.framework.core.EFindingEnablement;<a name="line.13"></a>
+<span class="sourceLineNo">014</span>import eu.cqse.check.framework.core.ruleset.ACheckRuleset;<a name="line.14"></a>
+<span class="sourceLineNo">015</span>import eu.cqse.check.framework.scanner.ELanguage;<a name="line.15"></a>
+<span class="sourceLineNo">016</span><a name="line.16"></a>
+<span class="sourceLineNo">017</span>/**<a name="line.17"></a>
+<span class="sourceLineNo">018</span> * Check for misra 21.4<a name="line.18"></a>
+<span class="sourceLineNo">019</span> */<a name="line.19"></a>
+<span class="sourceLineNo">020</span>@ACheck(name = "The standard header file `setjmp.h` should not be used", description = "The standard header file `setjmp.h` should not be included because of undefined behaviour.", defaultEnablement = EFindingEnablement.YELLOW, languages = {<a name="line.20"></a>
+<span class="sourceLineNo">021</span>                ELanguage.CPP }, groupName = CheckGroupNames.BAD_PRACTICE, parameters = {<a name="line.21"></a>
+<span class="sourceLineNo">022</span>                                ECheckParameter.ABSTRACT_SYNTAX_TREE })<a name="line.22"></a>
+<span class="sourceLineNo">023</span>@ACheckRuleset(ruleId = "21.4", ruleset = MISRA)<a name="line.23"></a>
+<span class="sourceLineNo">024</span>public class DoNotIncludeSetJmpCheck extends DoNotUseIncludeCheckBase {<a name="line.24"></a>
+<span class="sourceLineNo">025</span><a name="line.25"></a>
+<span class="sourceLineNo">026</span>        /** {@inheritDoc} */<a name="line.26"></a>
+<span class="sourceLineNo">027</span>        @Override<a name="line.27"></a>
+<span class="sourceLineNo">028</span>        protected String getIllegalHeaderFileName() {<a name="line.28"></a>
+<span class="sourceLineNo">029</span>                return "setjmp.h";<a name="line.29"></a>
+<span class="sourceLineNo">030</span>        }<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>}<a name="line.32"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*-------------------------------------------------------------------------+<a name="line.1"></a>
+<span class="sourceLineNo">002</span>|                                                                          |<a name="line.2"></a>
+<span class="sourceLineNo">003</span>| Copyright (c) 2009-2018 CQSE GmbH                                        |<a name="line.3"></a>
+<span class="sourceLineNo">004</span>|                                                                          |<a name="line.4"></a>
+<span class="sourceLineNo">005</span>+-------------------------------------------------------------------------*/<a name="line.5"></a>
+<span class="sourceLineNo">006</span>package eu.cqse.check.framework.util.clike;<a name="line.6"></a>
+<span class="sourceLineNo">007</span><a name="line.7"></a>
+<span class="sourceLineNo">008</span>import java.util.EnumSet;<a name="line.8"></a>
+<span class="sourceLineNo">009</span>import java.util.List;<a name="line.9"></a>
+<span class="sourceLineNo">010</span>import java.util.stream.Collectors;<a name="line.10"></a>
+<span class="sourceLineNo">011</span><a name="line.11"></a>
+<span class="sourceLineNo">012</span>import org.conqat.lib.commons.collections.CollectionUtils;<a name="line.12"></a>
+<span class="sourceLineNo">013</span><a name="line.13"></a>
+<span class="sourceLineNo">014</span>import eu.cqse.check.framework.scanner.ETokenType;<a name="line.14"></a>
+<span class="sourceLineNo">015</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.15"></a>
+<span class="sourceLineNo">016</span>import eu.cqse.check.framework.shallowparser.SubTypeNames;<a name="line.16"></a>
+<span class="sourceLineNo">017</span>import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;<a name="line.17"></a>
+<span class="sourceLineNo">018</span><a name="line.18"></a>
+<span class="sourceLineNo">019</span>/**<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * This utility class provides methods that are used when working with blocks.<a name="line.20"></a>
+<span class="sourceLineNo">021</span> */<a name="line.21"></a>
+<span class="sourceLineNo">022</span>public class ConditionalBlockUtils {<a name="line.22"></a>
+<span class="sourceLineNo">023</span>        /** The blocks that have a condition. */<a name="line.23"></a>
+<span class="sourceLineNo">024</span>        public static final EnumSet&lt;EConditionalType&gt; BLOCKS_WITH_CONDITION = EnumSet.of(EConditionalType.IF,<a name="line.24"></a>
+<span class="sourceLineNo">025</span>                        EConditionalType.ELSE_IF, EConditionalType.CASE);<a name="line.25"></a>
+<span class="sourceLineNo">026</span><a name="line.26"></a>
+<span class="sourceLineNo">027</span>        /** The blocks that do not have a condition. */<a name="line.27"></a>
+<span class="sourceLineNo">028</span>        public static final EnumSet&lt;EConditionalType&gt; BLOCKS_WITHOUT_CONDITION = EnumSet.of(EConditionalType.SWITCH,<a name="line.28"></a>
+<span class="sourceLineNo">029</span>                        EConditionalType.ELSE, EConditionalType.DEFAULT);<a name="line.29"></a>
+<span class="sourceLineNo">030</span><a name="line.30"></a>
+<span class="sourceLineNo">031</span>        /** The blocks that correspond to an if block. */<a name="line.31"></a>
+<span class="sourceLineNo">032</span>        public static final EnumSet&lt;EConditionalType&gt; BLOCKS_CORRESPONDING_TO_IF = EnumSet.of(EConditionalType.ELSE_IF,<a name="line.32"></a>
+<span class="sourceLineNo">033</span>                        EConditionalType.ELSE);<a name="line.33"></a>
+<span class="sourceLineNo">034</span><a name="line.34"></a>
+<span class="sourceLineNo">035</span>        /** The blocks that correspond to a switch block. */<a name="line.35"></a>
+<span class="sourceLineNo">036</span>        public static final EnumSet&lt;EConditionalType&gt; BLOCKS_CORRESPONDING_TO_SWITCH = EnumSet.of(EConditionalType.CASE,<a name="line.36"></a>
+<span class="sourceLineNo">037</span>                        EConditionalType.DEFAULT);<a name="line.37"></a>
+<span class="sourceLineNo">038</span><a name="line.38"></a>
+<span class="sourceLineNo">039</span>        /** The token types that get sorted out when extracting the condition */<a name="line.39"></a>
+<span class="sourceLineNo">040</span>        public static final EnumSet&lt;ETokenType&gt; UNWANTED_TOKEN_TYPES_IN_CONDITION = EnumSet.of(ETokenType.SWITCH,<a name="line.40"></a>
+<span class="sourceLineNo">041</span>                        ETokenType.LBRACE, ETokenType.IF, ETokenType.ELSEIF, ETokenType.CASE, ETokenType.DOUBLE_DOT,<a name="line.41"></a>
+<span class="sourceLineNo">042</span>                        ETokenType.COLON);<a name="line.42"></a>
+<span class="sourceLineNo">043</span><a name="line.43"></a>
+<span class="sourceLineNo">044</span>        /**<a name="line.44"></a>
+<span class="sourceLineNo">045</span>         * Extracts the {@link EConditionalType} from the given {@link ShallowEntity}.<a name="line.45"></a>
+<span class="sourceLineNo">046</span>         */<a name="line.46"></a>
+<span class="sourceLineNo">047</span>        public static EConditionalType getBlockTypeFromEntity(ShallowEntity entity) throws IllegalArgumentException {<a name="line.47"></a>
+<span class="sourceLineNo">048</span>                return getBlockTypeFromEntitySubtype(entity.getSubtype());<a name="line.48"></a>
+<span class="sourceLineNo">049</span>        }<a name="line.49"></a>
+<span class="sourceLineNo">050</span><a name="line.50"></a>
+<span class="sourceLineNo">051</span>        /**<a name="line.51"></a>
+<span class="sourceLineNo">052</span>         * Converts the Subtype of an entity represented by a string to the<a name="line.52"></a>
+<span class="sourceLineNo">053</span>         * corresponding {@link EConditionalType}.<a name="line.53"></a>
+<span class="sourceLineNo">054</span>         */<a name="line.54"></a>
+<span class="sourceLineNo">055</span>        public static EConditionalType getBlockTypeFromEntitySubtype(String subtype) throws IllegalArgumentException {<a name="line.55"></a>
+<span class="sourceLineNo">056</span>                /**<a name="line.56"></a>
+<span class="sourceLineNo">057</span>                 * The fall-through in this switch construct is intended to clarify which<a name="line.57"></a>
+<span class="sourceLineNo">058</span>                 * {@link #SubTypeNames} corresponds to which {@link #EConditionalType}.<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                 */<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                switch (subtype) {<a name="line.60"></a>
+<span class="sourceLineNo">061</span>                case SubTypeNames.IF:<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                case SubTypeNames.IF_LET:<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                case SubTypeNames.IF_VAR:<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                        return EConditionalType.IF;<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                case SubTypeNames.ELIF:<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                case SubTypeNames.ELSIF:<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                case SubTypeNames.ELSE_IF:<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                case SubTypeNames.ELSE_IF_NOSPACE:<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                        return EConditionalType.ELSE_IF;<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                case SubTypeNames.ELSE:<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                        return EConditionalType.ELSE;<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                case SubTypeNames.SWITCH:<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                        return EConditionalType.SWITCH;<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                case SubTypeNames.CASE:<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                        return EConditionalType.CASE;<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                case SubTypeNames.DEFAULT:<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                        return EConditionalType.DEFAULT;<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                default:<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                        return null;<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                }<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        }<a name="line.81"></a>
+<span class="sourceLineNo">082</span><a name="line.82"></a>
+<span class="sourceLineNo">083</span>        /**<a name="line.83"></a>
+<span class="sourceLineNo">084</span>         * Extracts the tokens describing the condition out of the given list of tokens.<a name="line.84"></a>
+<span class="sourceLineNo">085</span>         */<a name="line.85"></a>
+<span class="sourceLineNo">086</span>        public static List&lt;IToken&gt; extractCondition(ShallowEntity entity) {<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                List&lt;IToken&gt; tokens = getHeaderTokens(entity);<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                return CollectionUtils.filter(tokens, token -&gt; !UNWANTED_TOKEN_TYPES_IN_CONDITION.contains(token.getType())<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                                &amp;&amp; token.getLineNumber() == tokens.get(0).getLineNumber());<a name="line.89"></a>
+<span class="sourceLineNo">090</span>        }<a name="line.90"></a>
+<span class="sourceLineNo">091</span><a name="line.91"></a>
+<span class="sourceLineNo">092</span>        /** Extracts the header tokens from the entity. */<a name="line.92"></a>
+<span class="sourceLineNo">093</span>        private static List&lt;IToken&gt; getHeaderTokens(ShallowEntity entity) {<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                int startTokenIndex = entity.getStartOffset();<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                int endTokenIndex;<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                if (entity.getChildren().size() == 0) {<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                        List&lt;IToken&gt; includedTokens = entity.includedTokens();<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                        endTokenIndex = includedTokens.get(includedTokens.size() - 1).getOffset();<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                } else {<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                        endTokenIndex = entity.getChildren().get(0).getStartOffset();<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                }<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                return entity.includedTokens().stream()<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                                .filter(token -&gt; token.getOffset() &gt; startTokenIndex &amp;&amp; token.getEndOffset() &lt; endTokenIndex)<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                                .collect(Collectors.toList());<a name="line.104"></a>
+<span class="sourceLineNo">105</span>        }<a name="line.105"></a>
+<span class="sourceLineNo">106</span>}<a name="line.106"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

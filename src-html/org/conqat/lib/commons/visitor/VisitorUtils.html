@@ -24,18 +24,18 @@
 <span class="sourceLineNo">016</span>+-------------------------------------------------------------------------*/<a name="line.16"></a>
 <span class="sourceLineNo">017</span>package org.conqat.lib.commons.visitor;<a name="line.17"></a>
 <span class="sourceLineNo">018</span><a name="line.18"></a>
-<span class="sourceLineNo">019</span>import java.util.ArrayList;<a name="line.19"></a>
-<span class="sourceLineNo">020</span>import java.util.Collection;<a name="line.20"></a>
-<span class="sourceLineNo">021</span>import java.util.List;<a name="line.21"></a>
-<span class="sourceLineNo">022</span>import java.util.Set;<a name="line.22"></a>
-<span class="sourceLineNo">023</span><a name="line.23"></a>
-<span class="sourceLineNo">024</span>import org.conqat.lib.commons.collections.IdentityHashSet;<a name="line.24"></a>
-<span class="sourceLineNo">025</span>import org.conqat.lib.commons.error.NeverThrownRuntimeException;<a name="line.25"></a>
-<span class="sourceLineNo">026</span><a name="line.26"></a>
-<span class="sourceLineNo">027</span>/**<a name="line.27"></a>
-<span class="sourceLineNo">028</span> * Utility class for working with visitors.<a name="line.28"></a>
-<span class="sourceLineNo">029</span> * <a name="line.29"></a>
-<span class="sourceLineNo">030</span> * @author hummelb<a name="line.30"></a>
+<span class="sourceLineNo">019</span>import java.util.ArrayDeque;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import java.util.ArrayList;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import java.util.Collection;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import java.util.Deque;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import java.util.List;<a name="line.23"></a>
+<span class="sourceLineNo">024</span><a name="line.24"></a>
+<span class="sourceLineNo">025</span>import org.conqat.lib.commons.collections.CollectionUtils;<a name="line.25"></a>
+<span class="sourceLineNo">026</span>import org.conqat.lib.commons.collections.IdentityHashSet;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import org.conqat.lib.commons.error.NeverThrownRuntimeException;<a name="line.27"></a>
+<span class="sourceLineNo">028</span><a name="line.28"></a>
+<span class="sourceLineNo">029</span>/**<a name="line.29"></a>
+<span class="sourceLineNo">030</span> * Utility class for working with visitors.<a name="line.30"></a>
 <span class="sourceLineNo">031</span> */<a name="line.31"></a>
 <span class="sourceLineNo">032</span>public class VisitorUtils {<a name="line.32"></a>
 <span class="sourceLineNo">033</span><a name="line.33"></a>
@@ -87,60 +87,58 @@
 <span class="sourceLineNo">079</span>         * each reachable element is visited exactly once, where we use equality of<a name="line.79"></a>
 <span class="sourceLineNo">080</span>         * references to determine elements that were seen before.<a name="line.80"></a>
 <span class="sourceLineNo">081</span>         * <a name="line.81"></a>
-<span class="sourceLineNo">082</span>         * @param start<a name="line.82"></a>
-<span class="sourceLineNo">083</span>         *            the element to start the traversal from.<a name="line.83"></a>
-<span class="sourceLineNo">084</span>         * @param walker<a name="line.84"></a>
-<span class="sourceLineNo">085</span>         *            the walker user for traversing the mesh.<a name="line.85"></a>
-<span class="sourceLineNo">086</span>         * @param visitor<a name="line.86"></a>
-<span class="sourceLineNo">087</span>         *            the visitor used for visiting the elements.<a name="line.87"></a>
-<span class="sourceLineNo">088</span>         */<a name="line.88"></a>
-<span class="sourceLineNo">089</span>        public static &lt;T, X1 extends Exception, X2 extends Exception&gt; void visitAllDepthFirst(T start,<a name="line.89"></a>
-<span class="sourceLineNo">090</span>                        IMeshWalker&lt;T, X1&gt; walker, IVisitor&lt;T, X2&gt; visitor) throws X1, X2 {<a name="line.90"></a>
-<span class="sourceLineNo">091</span><a name="line.91"></a>
-<span class="sourceLineNo">092</span>                IdentityHashSet&lt;T&gt; seen = new IdentityHashSet&lt;T&gt;();<a name="line.92"></a>
-<span class="sourceLineNo">093</span>                seen.add(start);<a name="line.93"></a>
-<span class="sourceLineNo">094</span>                visitAllDepthFirst(start, walker, visitor, seen);<a name="line.94"></a>
-<span class="sourceLineNo">095</span>        }<a name="line.95"></a>
-<span class="sourceLineNo">096</span><a name="line.96"></a>
-<span class="sourceLineNo">097</span>        /**<a name="line.97"></a>
-<span class="sourceLineNo">098</span>         * Helper method for<a name="line.98"></a>
-<span class="sourceLineNo">099</span>         * {@link #visitAllDepthFirst(Object, IMeshWalker, IVisitor)}. The<a name="line.99"></a>
-<span class="sourceLineNo">100</span>         * parameters are the same as there, only a set for storing seen elements is<a name="line.100"></a>
-<span class="sourceLineNo">101</span>         * added.<a name="line.101"></a>
-<span class="sourceLineNo">102</span>         */<a name="line.102"></a>
-<span class="sourceLineNo">103</span>        private static &lt;T, X1 extends Exception, X2 extends Exception&gt; void visitAllDepthFirst(T start,<a name="line.103"></a>
-<span class="sourceLineNo">104</span>                        IMeshWalker&lt;T, X1&gt; walker, IVisitor&lt;T, X2&gt; visitor, Set&lt;T&gt; seen) throws X1, X2 {<a name="line.104"></a>
-<span class="sourceLineNo">105</span>                visitor.visit(start);<a name="line.105"></a>
-<span class="sourceLineNo">106</span>                for (T element : walker.getAdjacentElements(start)) {<a name="line.106"></a>
-<span class="sourceLineNo">107</span>                        if (seen.add(element)) {<a name="line.107"></a>
-<span class="sourceLineNo">108</span>                                visitAllDepthFirst(element, walker, visitor, seen);<a name="line.108"></a>
-<span class="sourceLineNo">109</span>                        }<a name="line.109"></a>
-<span class="sourceLineNo">110</span>                }<a name="line.110"></a>
-<span class="sourceLineNo">111</span>        }<a name="line.111"></a>
-<span class="sourceLineNo">112</span><a name="line.112"></a>
-<span class="sourceLineNo">113</span>        /**<a name="line.113"></a>
-<span class="sourceLineNo">114</span>         * Lists all elements of a mesh in depth first order. It is made sure, that<a name="line.114"></a>
-<span class="sourceLineNo">115</span>         * each reachable element is visited exactly once, where we use equality of<a name="line.115"></a>
-<span class="sourceLineNo">116</span>         * references to determine elements that were seen before.<a name="line.116"></a>
-<span class="sourceLineNo">117</span>         * <a name="line.117"></a>
-<span class="sourceLineNo">118</span>         * @param start<a name="line.118"></a>
-<span class="sourceLineNo">119</span>         *            the element to start the traversal from.<a name="line.119"></a>
-<span class="sourceLineNo">120</span>         * @param walker<a name="line.120"></a>
-<span class="sourceLineNo">121</span>         *            the walker user for traversing the mesh.<a name="line.121"></a>
-<span class="sourceLineNo">122</span>         */<a name="line.122"></a>
-<span class="sourceLineNo">123</span>        public static &lt;T, X extends Exception&gt; List&lt;T&gt; listAllDepthFirst(T start, IMeshWalker&lt;T, X&gt; walker) throws X {<a name="line.123"></a>
-<span class="sourceLineNo">124</span>                final List&lt;T&gt; list = new ArrayList&lt;&gt;();<a name="line.124"></a>
-<span class="sourceLineNo">125</span>                visitAllDepthFirst(start, walker, new IVisitor&lt;T, NeverThrownRuntimeException&gt;() {<a name="line.125"></a>
-<span class="sourceLineNo">126</span><a name="line.126"></a>
-<span class="sourceLineNo">127</span>                        @Override<a name="line.127"></a>
-<span class="sourceLineNo">128</span>                        public void visit(T element) throws NeverThrownRuntimeException {<a name="line.128"></a>
-<span class="sourceLineNo">129</span>                                list.add(element);<a name="line.129"></a>
-<span class="sourceLineNo">130</span>                        }<a name="line.130"></a>
-<span class="sourceLineNo">131</span>                });<a name="line.131"></a>
-<span class="sourceLineNo">132</span>                return list;<a name="line.132"></a>
-<span class="sourceLineNo">133</span>        }<a name="line.133"></a>
-<span class="sourceLineNo">134</span><a name="line.134"></a>
-<span class="sourceLineNo">135</span>}<a name="line.135"></a>
+<span class="sourceLineNo">082</span>         * Does not use recursive function calls to enable listing large graphs.<a name="line.82"></a>
+<span class="sourceLineNo">083</span>         * <a name="line.83"></a>
+<span class="sourceLineNo">084</span>         * @param start<a name="line.84"></a>
+<span class="sourceLineNo">085</span>         *            the element to start the traversal from.<a name="line.85"></a>
+<span class="sourceLineNo">086</span>         * @param walker<a name="line.86"></a>
+<span class="sourceLineNo">087</span>         *            the walker user for traversing the mesh.<a name="line.87"></a>
+<span class="sourceLineNo">088</span>         * @param visitor<a name="line.88"></a>
+<span class="sourceLineNo">089</span>         *            the visitor used for visiting the elements.<a name="line.89"></a>
+<span class="sourceLineNo">090</span>         */<a name="line.90"></a>
+<span class="sourceLineNo">091</span>        public static &lt;T, X1 extends Exception, X2 extends Exception&gt; void visitAllDepthFirst(T start,<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                        IMeshWalker&lt;T, X1&gt; walker, IVisitor&lt;T, X2&gt; visitor) throws X1, X2 {<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                IdentityHashSet&lt;T&gt; visitedNodes = new IdentityHashSet&lt;T&gt;();<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                Deque&lt;T&gt; todoNodes = new ArrayDeque&lt;&gt;();<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                todoNodes.addFirst(start);<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                while (!todoNodes.isEmpty()) {<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                        T current = todoNodes.removeFirst();<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                        if (visitedNodes.contains(current)) {<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                                continue;<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                        }<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                        visitor.visit(current);<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                        visitedNodes.add(current);<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                        for (T succ : CollectionUtils.reverse(walker.getAdjacentElements(current))) {<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                                if (!visitedNodes.contains(succ)) {<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                                        todoNodes.addFirst(succ);<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                                }<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                        }<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                }<a name="line.108"></a>
+<span class="sourceLineNo">109</span>        }<a name="line.109"></a>
+<span class="sourceLineNo">110</span><a name="line.110"></a>
+<span class="sourceLineNo">111</span>        /**<a name="line.111"></a>
+<span class="sourceLineNo">112</span>         * Lists all elements of a mesh in depth first order. It is made sure, that<a name="line.112"></a>
+<span class="sourceLineNo">113</span>         * each reachable element is visited exactly once, where we use equality of<a name="line.113"></a>
+<span class="sourceLineNo">114</span>         * references to determine elements that were seen before.<a name="line.114"></a>
+<span class="sourceLineNo">115</span>         * <a name="line.115"></a>
+<span class="sourceLineNo">116</span>         * @param start<a name="line.116"></a>
+<span class="sourceLineNo">117</span>         *            the element to start the traversal from.<a name="line.117"></a>
+<span class="sourceLineNo">118</span>         * @param walker<a name="line.118"></a>
+<span class="sourceLineNo">119</span>         *            the walker user for traversing the mesh.<a name="line.119"></a>
+<span class="sourceLineNo">120</span>         */<a name="line.120"></a>
+<span class="sourceLineNo">121</span>        public static &lt;T, X extends Exception&gt; List&lt;T&gt; listAllDepthFirst(T start, IMeshWalker&lt;T, X&gt; walker) throws X {<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                final List&lt;T&gt; list = new ArrayList&lt;&gt;();<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                visitAllDepthFirst(start, walker, new IVisitor&lt;T, NeverThrownRuntimeException&gt;() {<a name="line.123"></a>
+<span class="sourceLineNo">124</span><a name="line.124"></a>
+<span class="sourceLineNo">125</span>                        @Override<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                        public void visit(T element) throws NeverThrownRuntimeException {<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                                list.add(element);<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                        }<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                });<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                return list;<a name="line.130"></a>
+<span class="sourceLineNo">131</span>        }<a name="line.131"></a>
+<span class="sourceLineNo">132</span><a name="line.132"></a>
+<span class="sourceLineNo">133</span>}<a name="line.133"></a>
 
 
 
