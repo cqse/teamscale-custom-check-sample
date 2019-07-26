@@ -1,36 +1,36 @@
 plugins {
-    id 'java-library'
-    id 'eclipse'
-    id 'idea'
+	id 'java-library'
+	id 'eclipse'
+	id 'idea'
 }
 
 sourceSets {
-    main {
-        java {
-            srcDir 'src/'
-            outputDir = file("$buildDir/build/classes/")
-        }
-    }
-    test {
-        java {
-            srcDir 'test-src/'
-            outputDir = file("$buildDir/build/classes/")
-        }
-    }
+	main {
+		java {
+			srcDir 'src/'
+			outputDir = file("$buildDir/build/classes/")
+		}
+	}
+	test {
+		java {
+			srcDir 'test-src/'
+			outputDir = file("$buildDir/build/classes/")
+		}
+	}
 
 }
 
-// jar {
-//     exclude ("**/CheckTest*")
-// }
+ jar {
+     exclude ("**/CheckTest*")
+ }
 
 test {
-    useJUnitPlatform()
-    testLogging {
-        // It's sometimes useful to see the stdout during testing
-        showStandardStreams = true
-        exceptionFormat='full'
-    }
+	useJUnitPlatform()
+	testLogging {
+		// It's sometimes useful to see the stdout during testing
+		showStandardStreams = true
+		exceptionFormat = 'full'
+	}
 }
 
 
@@ -39,16 +39,28 @@ repositories {
 }
 
 dependencies {
-    compileOnly files('lib/eu.cqse.check.jar')
-    
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.5.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.5.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.1'
-    testImplementation 'org.assertj:assertj-core:3.8.0'
+    implementation fileTree(dir: 'lib', exclude: '*-test-utils.jar')
+	runtimeOnly 'org.apache.commons:commons-compress:1.18'
+	runtimeOnly 'com.google.guava:guava:27.1-jre'
+	runtimeOnly 'com.thoughtworks.xstream:xstream:1.4.11.1'
+	runtimeOnly 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
+	runtimeOnly 'org.apache.httpcomponents:httpmime:4.5.8'
+	runtimeOnly 'org.eclipse.jgit:org.eclipse.jgit:5.3.1.201904271842-r'
+	runtimeOnly 'com.jcraft:jsch:0.1.55'
+	runtimeOnly 'org.apache.commons:commons-lang3:3.9'
+	runtimeOnly 'org.apache.logging.log4j:log4j-api:2.11.2'
+	runtimeOnly 'org.apache.logging.log4j:log4j-core:2.11.2'
+	runtimeOnly 'jaxen:jaxen:1.2.0'
+
+	testImplementation fileTree(dir: 'lib', include: '*-test-utils.jar')
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.4.1'
+	testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.4.1'
+	testImplementation 'org.assertj:assertj-core:3.12.2'
+	testImplementation 'nl.jqno.equalsverifier:equalsverifier:3.1.8'
 }
 
 eclipse {
-    classpath {
-        defaultOutputDir = file('build/classes')
-    }
+	classpath {
+		defaultOutputDir = file('build/classes')
+	}
 }
