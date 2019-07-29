@@ -5,3 +5,6 @@ build
 .settings
 .project
 bin
+*.iws
+*.ipr
+*.iml

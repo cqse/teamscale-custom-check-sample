@@ -16,36 +16,28 @@
 +-------------------------------------------------------------------------*/
 package eu.cqse.check.sample;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
+import java.util.stream.Stream;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.conqat.lib.commons.test.ManagedTestData;
+import org.conqat.lib.commons.test.ManagedTestDataExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.provider.Arguments;
 
 import eu.cqse.check.framework.checktest.CheckTestBase;
-import eu.cqse.check.framework.core.CheckInfo;
 
 /**
  * Main class for testing the checks in this library.
- *
- * @ConQAT.Rating YELLOW Hash: CD62B1001924DC6C2FAEFACA1258076E
  */
-@RunWith(Parameterized.class)
+@ExtendWith(ManagedTestDataExtension.class)
 public class CheckTest extends CheckTestBase {
 
-	/**
-	 * Constructor.
-	 */
-	public CheckTest(File referenceFile, Map<String, CheckInfo> checkInfoBySimpleClassName) {
-		super(referenceFile, checkInfoBySimpleClassName);
+	public CheckTest(ManagedTestData managedTestData) {
+		super(managedTestData);
 	}
 
-	/** Generate Test Parameters. */
-	@Parameters(name = "{0}")
-	public static Collection<Object[]> generateParameters() throws IOException {
-		return CheckTestBase.generateParameters(new CheckTest(null, null));
+	@Override
+	public Stream<Arguments> generateParameters() throws IOException {
+		return CheckTestBase.generateParameters(new CheckTest(testData), SampleCheck.class);
 	}
 }
