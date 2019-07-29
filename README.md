@@ -3,6 +3,10 @@ The Teamscale Custom Check Sample Repository
 
 This repository is meant to serve as a starting point for developing custom checks for [Teamscale](https://www.teamscale.com).
 
+Creating your own checks with IntelliJ IDEA
+-------------------------------------
+Use ```gradlew openIdea``` (linux/mac) or ```gradlew.bat openIdea``` (Windows) to create the IntelliJ module definition files and open the project in IntelliJ. You will find the sample custom check (```SampleCheck```) in the ```src/``` directory.
+
 Creating your own checks with Eclipse
 -------------------------------------
 Use ```gradlew eclipse``` (linux/mac) or ```gradlew.bat eclipse``` (Windows) to create Eclipse project files, afterwards you can easily import the project into Eclipse. You will find the sample custom check (```SampleCheck```) in the ```src/``` directory.
