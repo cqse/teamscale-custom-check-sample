@@ -40,77 +40,76 @@
 <span class="sourceLineNo">032</span> */<a name="line.32"></a>
 <span class="sourceLineNo">033</span>@ExportToJavaScript<a name="line.33"></a>
 <span class="sourceLineNo">034</span>@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = ElementLocation.class)<a name="line.34"></a>
-<span class="sourceLineNo">035</span>@JsonSubTypes({ @JsonSubTypes.Type(value = ElementLocation.class, name = "ElementLocation"),<a name="line.35"></a>
-<span class="sourceLineNo">036</span>                @JsonSubTypes.Type(value = TextRegionLocation.class, name = "TextRegionLocation"),<a name="line.36"></a>
-<span class="sourceLineNo">037</span>                @JsonSubTypes.Type(value = QualifiedNameLocation.class, name = "QualifiedNameLocation"), })<a name="line.37"></a>
-<span class="sourceLineNo">038</span>public class ElementLocation implements IDeepCloneable, Serializable {<a name="line.38"></a>
-<span class="sourceLineNo">039</span><a name="line.39"></a>
-<span class="sourceLineNo">040</span>        /** Version used for serialization. */<a name="line.40"></a>
-<span class="sourceLineNo">041</span>        private static final long serialVersionUID = 1;<a name="line.41"></a>
-<span class="sourceLineNo">042</span><a name="line.42"></a>
-<span class="sourceLineNo">043</span>        /** The name of the JSON property name for {@link #location}. */<a name="line.43"></a>
-<span class="sourceLineNo">044</span>        protected static final String LOCATION_PROPERTY = "location";<a name="line.44"></a>
-<span class="sourceLineNo">045</span><a name="line.45"></a>
-<span class="sourceLineNo">046</span>        /** The name of the JSON property name for {@link #uniformPath}. */<a name="line.46"></a>
-<span class="sourceLineNo">047</span>        protected static final String UNIFORM_PATH_PROPERTY = "uniformPath";<a name="line.47"></a>
-<span class="sourceLineNo">048</span><a name="line.48"></a>
-<span class="sourceLineNo">049</span>        /** The location (see {@link #getLocation()}). */<a name="line.49"></a>
-<span class="sourceLineNo">050</span>        @JsonProperty(LOCATION_PROPERTY)<a name="line.50"></a>
-<span class="sourceLineNo">051</span>        private final String location;<a name="line.51"></a>
-<span class="sourceLineNo">052</span><a name="line.52"></a>
-<span class="sourceLineNo">053</span>        /** The uniform path (see {@link #getUniformPath()}). */<a name="line.53"></a>
-<span class="sourceLineNo">054</span>        @JsonProperty(UNIFORM_PATH_PROPERTY)<a name="line.54"></a>
-<span class="sourceLineNo">055</span>        private final String uniformPath;<a name="line.55"></a>
-<span class="sourceLineNo">056</span><a name="line.56"></a>
-<span class="sourceLineNo">057</span>        @JsonCreator<a name="line.57"></a>
-<span class="sourceLineNo">058</span>        public ElementLocation(@JsonProperty(LOCATION_PROPERTY) String location,<a name="line.58"></a>
-<span class="sourceLineNo">059</span>                        @JsonProperty(UNIFORM_PATH_PROPERTY) String uniformPath) {<a name="line.59"></a>
-<span class="sourceLineNo">060</span>                this.location = location;<a name="line.60"></a>
-<span class="sourceLineNo">061</span>                this.uniformPath = uniformPath;<a name="line.61"></a>
-<span class="sourceLineNo">062</span>        }<a name="line.62"></a>
-<span class="sourceLineNo">063</span><a name="line.63"></a>
-<span class="sourceLineNo">064</span>        public ElementLocation(String uniformPath) {<a name="line.64"></a>
-<span class="sourceLineNo">065</span>                this(uniformPath, uniformPath);<a name="line.65"></a>
-<span class="sourceLineNo">066</span>        }<a name="line.66"></a>
-<span class="sourceLineNo">067</span><a name="line.67"></a>
-<span class="sourceLineNo">068</span>        /**<a name="line.68"></a>
-<span class="sourceLineNo">069</span>         * Get a string that identifies the location of the element, e.g. a file system<a name="line.69"></a>
-<span class="sourceLineNo">070</span>         * path. This location is specific to the running analysis, i.e. depends on time<a name="line.70"></a>
-<span class="sourceLineNo">071</span>         * and the concrete machine ConQAT is running on.<a name="line.71"></a>
-<span class="sourceLineNo">072</span>         */<a name="line.72"></a>
-<span class="sourceLineNo">073</span>        public String getLocation() {<a name="line.73"></a>
-<span class="sourceLineNo">074</span>                return location;<a name="line.74"></a>
-<span class="sourceLineNo">075</span>        }<a name="line.75"></a>
-<span class="sourceLineNo">076</span><a name="line.76"></a>
-<span class="sourceLineNo">077</span>        /**<a name="line.77"></a>
-<span class="sourceLineNo">078</span>         * Returns the uniform path. This is an artificial path that uniquely defines a<a name="line.78"></a>
-<span class="sourceLineNo">079</span>         * resource across machine boundaries. This should be used for persisted<a name="line.79"></a>
-<span class="sourceLineNo">080</span>         * information.<a name="line.80"></a>
-<span class="sourceLineNo">081</span>         */<a name="line.81"></a>
-<span class="sourceLineNo">082</span>        public String getUniformPath() {<a name="line.82"></a>
-<span class="sourceLineNo">083</span>                return uniformPath;<a name="line.83"></a>
-<span class="sourceLineNo">084</span>        }<a name="line.84"></a>
-<span class="sourceLineNo">085</span><a name="line.85"></a>
-<span class="sourceLineNo">086</span>        /** {@inheritDoc} */<a name="line.86"></a>
-<span class="sourceLineNo">087</span>        @Override<a name="line.87"></a>
-<span class="sourceLineNo">088</span>        public IDeepCloneable deepClone() {<a name="line.88"></a>
-<span class="sourceLineNo">089</span>                return this;<a name="line.89"></a>
-<span class="sourceLineNo">090</span>        }<a name="line.90"></a>
-<span class="sourceLineNo">091</span><a name="line.91"></a>
-<span class="sourceLineNo">092</span>        /**<a name="line.92"></a>
-<span class="sourceLineNo">093</span>         * Returns a single line description of the location that is meaningful to the<a name="line.93"></a>
-<span class="sourceLineNo">094</span>         * user.<a name="line.94"></a>
-<span class="sourceLineNo">095</span>         */<a name="line.95"></a>
-<span class="sourceLineNo">096</span>        public String toLocationString() {<a name="line.96"></a>
-<span class="sourceLineNo">097</span>                return getUniformPath();<a name="line.97"></a>
-<span class="sourceLineNo">098</span>        }<a name="line.98"></a>
-<span class="sourceLineNo">099</span><a name="line.99"></a>
-<span class="sourceLineNo">100</span>        /** {@inheritDoc} */<a name="line.100"></a>
-<span class="sourceLineNo">101</span>        @Override<a name="line.101"></a>
-<span class="sourceLineNo">102</span>        public String toString() {<a name="line.102"></a>
-<span class="sourceLineNo">103</span>                return toLocationString();<a name="line.103"></a>
-<span class="sourceLineNo">104</span>        }<a name="line.104"></a>
-<span class="sourceLineNo">105</span>}<a name="line.105"></a>
+<span class="sourceLineNo">035</span>@JsonSubTypes({ @JsonSubTypes.Type(value = TextRegionLocation.class, name = "TextRegionLocation"),<a name="line.35"></a>
+<span class="sourceLineNo">036</span>                @JsonSubTypes.Type(value = QualifiedNameLocation.class, name = "QualifiedNameLocation"), })<a name="line.36"></a>
+<span class="sourceLineNo">037</span>public class ElementLocation implements IDeepCloneable, Serializable {<a name="line.37"></a>
+<span class="sourceLineNo">038</span><a name="line.38"></a>
+<span class="sourceLineNo">039</span>        /** Version used for serialization. */<a name="line.39"></a>
+<span class="sourceLineNo">040</span>        private static final long serialVersionUID = 1;<a name="line.40"></a>
+<span class="sourceLineNo">041</span><a name="line.41"></a>
+<span class="sourceLineNo">042</span>        /** The name of the JSON property name for {@link #location}. */<a name="line.42"></a>
+<span class="sourceLineNo">043</span>        protected static final String LOCATION_PROPERTY = "location";<a name="line.43"></a>
+<span class="sourceLineNo">044</span><a name="line.44"></a>
+<span class="sourceLineNo">045</span>        /** The name of the JSON property name for {@link #uniformPath}. */<a name="line.45"></a>
+<span class="sourceLineNo">046</span>        protected static final String UNIFORM_PATH_PROPERTY = "uniformPath";<a name="line.46"></a>
+<span class="sourceLineNo">047</span><a name="line.47"></a>
+<span class="sourceLineNo">048</span>        /** The location (see {@link #getLocation()}). */<a name="line.48"></a>
+<span class="sourceLineNo">049</span>        @JsonProperty(LOCATION_PROPERTY)<a name="line.49"></a>
+<span class="sourceLineNo">050</span>        private final String location;<a name="line.50"></a>
+<span class="sourceLineNo">051</span><a name="line.51"></a>
+<span class="sourceLineNo">052</span>        /** The uniform path (see {@link #getUniformPath()}). */<a name="line.52"></a>
+<span class="sourceLineNo">053</span>        @JsonProperty(UNIFORM_PATH_PROPERTY)<a name="line.53"></a>
+<span class="sourceLineNo">054</span>        private final String uniformPath;<a name="line.54"></a>
+<span class="sourceLineNo">055</span><a name="line.55"></a>
+<span class="sourceLineNo">056</span>        @JsonCreator<a name="line.56"></a>
+<span class="sourceLineNo">057</span>        public ElementLocation(@JsonProperty(LOCATION_PROPERTY) String location,<a name="line.57"></a>
+<span class="sourceLineNo">058</span>                        @JsonProperty(UNIFORM_PATH_PROPERTY) String uniformPath) {<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                this.location = location;<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                this.uniformPath = uniformPath;<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        }<a name="line.61"></a>
+<span class="sourceLineNo">062</span><a name="line.62"></a>
+<span class="sourceLineNo">063</span>        public ElementLocation(String uniformPath) {<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                this(uniformPath, uniformPath);<a name="line.64"></a>
+<span class="sourceLineNo">065</span>        }<a name="line.65"></a>
+<span class="sourceLineNo">066</span><a name="line.66"></a>
+<span class="sourceLineNo">067</span>        /**<a name="line.67"></a>
+<span class="sourceLineNo">068</span>         * Get a string that identifies the location of the element, e.g. a file system<a name="line.68"></a>
+<span class="sourceLineNo">069</span>         * path. This location is specific to the running analysis, i.e. depends on time<a name="line.69"></a>
+<span class="sourceLineNo">070</span>         * and the concrete machine ConQAT is running on.<a name="line.70"></a>
+<span class="sourceLineNo">071</span>         */<a name="line.71"></a>
+<span class="sourceLineNo">072</span>        public String getLocation() {<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                return location;<a name="line.73"></a>
+<span class="sourceLineNo">074</span>        }<a name="line.74"></a>
+<span class="sourceLineNo">075</span><a name="line.75"></a>
+<span class="sourceLineNo">076</span>        /**<a name="line.76"></a>
+<span class="sourceLineNo">077</span>         * Returns the uniform path. This is an artificial path that uniquely defines a<a name="line.77"></a>
+<span class="sourceLineNo">078</span>         * resource across machine boundaries. This should be used for persisted<a name="line.78"></a>
+<span class="sourceLineNo">079</span>         * information.<a name="line.79"></a>
+<span class="sourceLineNo">080</span>         */<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        public String getUniformPath() {<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                return uniformPath;<a name="line.82"></a>
+<span class="sourceLineNo">083</span>        }<a name="line.83"></a>
+<span class="sourceLineNo">084</span><a name="line.84"></a>
+<span class="sourceLineNo">085</span>        /** {@inheritDoc} */<a name="line.85"></a>
+<span class="sourceLineNo">086</span>        @Override<a name="line.86"></a>
+<span class="sourceLineNo">087</span>        public IDeepCloneable deepClone() {<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                return this;<a name="line.88"></a>
+<span class="sourceLineNo">089</span>        }<a name="line.89"></a>
+<span class="sourceLineNo">090</span><a name="line.90"></a>
+<span class="sourceLineNo">091</span>        /**<a name="line.91"></a>
+<span class="sourceLineNo">092</span>         * Returns a single line description of the location that is meaningful to the<a name="line.92"></a>
+<span class="sourceLineNo">093</span>         * user.<a name="line.93"></a>
+<span class="sourceLineNo">094</span>         */<a name="line.94"></a>
+<span class="sourceLineNo">095</span>        public String toLocationString() {<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                return getUniformPath();<a name="line.96"></a>
+<span class="sourceLineNo">097</span>        }<a name="line.97"></a>
+<span class="sourceLineNo">098</span><a name="line.98"></a>
+<span class="sourceLineNo">099</span>        /** {@inheritDoc} */<a name="line.99"></a>
+<span class="sourceLineNo">100</span>        @Override<a name="line.100"></a>
+<span class="sourceLineNo">101</span>        public String toString() {<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                return toLocationString();<a name="line.102"></a>
+<span class="sourceLineNo">103</span>        }<a name="line.103"></a>
+<span class="sourceLineNo">104</span>}<a name="line.104"></a>
 
 
 

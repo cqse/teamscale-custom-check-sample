@@ -691,7 +691,7 @@
 <span class="sourceLineNo">683</span>         * Adds a recognizer that prints to std err, which is useful during debugging.<a name="line.683"></a>
 <span class="sourceLineNo">684</span>         */<a name="line.684"></a>
 <span class="sourceLineNo">685</span>        public RecognizerBase&lt;STATE&gt; debug(String message) {<a name="line.685"></a>
-<span class="sourceLineNo">686</span>                return appendRecognizer(new RecognizerBase&lt;STATE&gt;() {<a name="line.686"></a>
+<span class="sourceLineNo">686</span>                return appendRecognizer(new PreconditionRecognizer&lt;STATE&gt;(new RecognizerBase&lt;STATE&gt;() {<a name="line.686"></a>
 <span class="sourceLineNo">687</span>                        @Override<a name="line.687"></a>
 <span class="sourceLineNo">688</span>                        public int matchesLocally(ParserState&lt;STATE&gt; parserState, List&lt;IToken&gt; tokens, int startOffset) {<a name="line.688"></a>
 <span class="sourceLineNo">689</span>                                if (startOffset &gt;= tokens.size()) {<a name="line.689"></a>
@@ -708,7 +708,7 @@
 <span class="sourceLineNo">700</span>                        protected String getRecognizerStringRepresentation() {<a name="line.700"></a>
 <span class="sourceLineNo">701</span>                                return "debug";<a name="line.701"></a>
 <span class="sourceLineNo">702</span>                        }<a name="line.702"></a>
-<span class="sourceLineNo">703</span>                });<a name="line.703"></a>
+<span class="sourceLineNo">703</span>                }));<a name="line.703"></a>
 <span class="sourceLineNo">704</span>        }<a name="line.704"></a>
 <span class="sourceLineNo">705</span>}<a name="line.705"></a>
 

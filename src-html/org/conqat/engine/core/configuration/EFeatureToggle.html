@@ -77,36 +77,41 @@
 <span class="sourceLineNo">069</span>         */<a name="line.69"></a>
 <span class="sourceLineNo">070</span>        USE_COVERABLE_LINES_FROM_COVERAGE_REPORTS("com.teamscale.feature-toggle.use-coverable-lines-from-coverage-reports"),<a name="line.70"></a>
 <span class="sourceLineNo">071</span><a name="line.71"></a>
-<span class="sourceLineNo">072</span>        /** Enables the Reports perspective (work in progress) */<a name="line.72"></a>
-<span class="sourceLineNo">073</span>        ENABLE_REPORTS_PERSPECTIVE("com.teamscale.ui.reports-enabled");<a name="line.73"></a>
-<span class="sourceLineNo">074</span><a name="line.74"></a>
-<span class="sourceLineNo">075</span>        /**<a name="line.75"></a>
-<span class="sourceLineNo">076</span>         * The feature toggle's id. Also used as key for the corresponding System<a name="line.76"></a>
-<span class="sourceLineNo">077</span>         * property.<a name="line.77"></a>
-<span class="sourceLineNo">078</span>         */<a name="line.78"></a>
-<span class="sourceLineNo">079</span>        private String id;<a name="line.79"></a>
-<span class="sourceLineNo">080</span><a name="line.80"></a>
-<span class="sourceLineNo">081</span>        /** Returns whether the given feature toggle is enabled or not. */<a name="line.81"></a>
-<span class="sourceLineNo">082</span>        public boolean isEnabled() {<a name="line.82"></a>
-<span class="sourceLineNo">083</span>                return Boolean.getBoolean(id);<a name="line.83"></a>
-<span class="sourceLineNo">084</span>        }<a name="line.84"></a>
+<span class="sourceLineNo">072</span>        /**<a name="line.72"></a>
+<span class="sourceLineNo">073</span>         * Enables support for reading legacy ConQAT in-file review ratings.<a name="line.73"></a>
+<span class="sourceLineNo">074</span>         */<a name="line.74"></a>
+<span class="sourceLineNo">075</span>        ENABLE_CONQAT_INFILE_RATING("com.teamscale.feature-toggle.conqat-infile-rating"),<a name="line.75"></a>
+<span class="sourceLineNo">076</span><a name="line.76"></a>
+<span class="sourceLineNo">077</span>        /** Enables the Reports perspective (work in progress) */<a name="line.77"></a>
+<span class="sourceLineNo">078</span>        ENABLE_REPORTS_PERSPECTIVE("com.teamscale.ui.reports-enabled");<a name="line.78"></a>
+<span class="sourceLineNo">079</span><a name="line.79"></a>
+<span class="sourceLineNo">080</span>        /**<a name="line.80"></a>
+<span class="sourceLineNo">081</span>         * The feature toggle's id. Also used as key for the corresponding System<a name="line.81"></a>
+<span class="sourceLineNo">082</span>         * property.<a name="line.82"></a>
+<span class="sourceLineNo">083</span>         */<a name="line.83"></a>
+<span class="sourceLineNo">084</span>        private String id;<a name="line.84"></a>
 <span class="sourceLineNo">085</span><a name="line.85"></a>
-<span class="sourceLineNo">086</span>        /** Constructor */<a name="line.86"></a>
-<span class="sourceLineNo">087</span>        private EFeatureToggle(String id) {<a name="line.87"></a>
-<span class="sourceLineNo">088</span>                this.id = id;<a name="line.88"></a>
+<span class="sourceLineNo">086</span>        /** Returns whether the given feature toggle is enabled or not. */<a name="line.86"></a>
+<span class="sourceLineNo">087</span>        public boolean isEnabled() {<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                return Boolean.getBoolean(id);<a name="line.88"></a>
 <span class="sourceLineNo">089</span>        }<a name="line.89"></a>
 <span class="sourceLineNo">090</span><a name="line.90"></a>
-<span class="sourceLineNo">091</span>        /** @see #id */<a name="line.91"></a>
-<span class="sourceLineNo">092</span>        public String getId() {<a name="line.92"></a>
-<span class="sourceLineNo">093</span>                return id;<a name="line.93"></a>
+<span class="sourceLineNo">091</span>        /** Constructor */<a name="line.91"></a>
+<span class="sourceLineNo">092</span>        private EFeatureToggle(String id) {<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                this.id = id;<a name="line.93"></a>
 <span class="sourceLineNo">094</span>        }<a name="line.94"></a>
 <span class="sourceLineNo">095</span><a name="line.95"></a>
-<span class="sourceLineNo">096</span>        /** Allows to enable/disable the feature toggle. */<a name="line.96"></a>
-<span class="sourceLineNo">097</span>        public void setFeatureToggle(boolean value) {<a name="line.97"></a>
-<span class="sourceLineNo">098</span>                System.setProperty(id, Boolean.toString(value));<a name="line.98"></a>
-<span class="sourceLineNo">099</span><a name="line.99"></a>
-<span class="sourceLineNo">100</span>        }<a name="line.100"></a>
-<span class="sourceLineNo">101</span>}<a name="line.101"></a>
+<span class="sourceLineNo">096</span>        /** @see #id */<a name="line.96"></a>
+<span class="sourceLineNo">097</span>        public String getId() {<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                return id;<a name="line.98"></a>
+<span class="sourceLineNo">099</span>        }<a name="line.99"></a>
+<span class="sourceLineNo">100</span><a name="line.100"></a>
+<span class="sourceLineNo">101</span>        /** Allows to enable/disable the feature toggle. */<a name="line.101"></a>
+<span class="sourceLineNo">102</span>        public void setFeatureToggle(boolean value) {<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                System.setProperty(id, Boolean.toString(value));<a name="line.103"></a>
+<span class="sourceLineNo">104</span><a name="line.104"></a>
+<span class="sourceLineNo">105</span>        }<a name="line.105"></a>
+<span class="sourceLineNo">106</span>}<a name="line.106"></a>
 
 
 

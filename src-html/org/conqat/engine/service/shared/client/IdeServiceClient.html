@@ -46,286 +46,298 @@
 <span class="sourceLineNo">038</span>        public static final String FINDING_BLACKLIST_SERVICE_NAME = "finding-blacklist";<a name="line.38"></a>
 <span class="sourceLineNo">039</span><a name="line.39"></a>
 <span class="sourceLineNo">040</span>        /**<a name="line.40"></a>
-<span class="sourceLineNo">041</span>         * After how many characters do we want to cut off the path parameter of a<a name="line.41"></a>
-<span class="sourceLineNo">042</span>         * mappings request in case the server only supports GET (instead of POST)<a name="line.42"></a>
-<span class="sourceLineNo">043</span>         */<a name="line.43"></a>
-<span class="sourceLineNo">044</span>        private static final int MAPPINGS_GET_REQUEST_PATH_CUTOFF_LENGTH = 6000;<a name="line.44"></a>
-<span class="sourceLineNo">045</span><a name="line.45"></a>
-<span class="sourceLineNo">046</span>        /**<a name="line.46"></a>
-<span class="sourceLineNo">047</span>         * Tries to verify a connection to a Teamscale instance by loading the project<a name="line.47"></a>
-<span class="sourceLineNo">048</span>         * list.<a name="line.48"></a>
-<span class="sourceLineNo">049</span>         *<a name="line.49"></a>
-<span class="sourceLineNo">050</span>         * @return &lt;code&gt;true&lt;/code&gt; if the connection was successful,<a name="line.50"></a>
-<span class="sourceLineNo">051</span>         *         &lt;code&gt;false&lt;/code&gt; if no projects could be loaded.<a name="line.51"></a>
-<span class="sourceLineNo">052</span>         *<a name="line.52"></a>
-<span class="sourceLineNo">053</span>         * @throws ServiceCallException<a name="line.53"></a>
-<span class="sourceLineNo">054</span>         *             if the connection couldn't be established at all.<a name="line.54"></a>
-<span class="sourceLineNo">055</span>         *             {@link ServiceCallException#getMessage()} may be used to give a<a name="line.55"></a>
-<span class="sourceLineNo">056</span>         *             hint what went wrong.<a name="line.56"></a>
-<span class="sourceLineNo">057</span>         */<a name="line.57"></a>
-<span class="sourceLineNo">058</span>        public static boolean canConnect(ServerDetails serverDetails) throws ServiceCallException {<a name="line.58"></a>
-<span class="sourceLineNo">059</span>                CCSMAssert.isNotNull(serverDetails, "Parameter 'serverDetails' must not be null!");<a name="line.59"></a>
-<span class="sourceLineNo">060</span>                return ServiceClientUtils.uniformPathGetCall("projects", String[].class, "", null, serverDetails) != null;<a name="line.60"></a>
-<span class="sourceLineNo">061</span>        }<a name="line.61"></a>
-<span class="sourceLineNo">062</span><a name="line.62"></a>
-<span class="sourceLineNo">063</span>        /**<a name="line.63"></a>
-<span class="sourceLineNo">064</span>         * Return the HttpClient that should be used. Can be overridden for testing<a name="line.64"></a>
-<span class="sourceLineNo">065</span>         * purposes.<a name="line.65"></a>
-<span class="sourceLineNo">066</span>         */<a name="line.66"></a>
-<span class="sourceLineNo">067</span>        protected CloseableHttpClient getHttpClient(ServerDetails serverDetails) throws ServiceCallException {<a name="line.67"></a>
-<span class="sourceLineNo">068</span>                return ServiceClientUtils.getHttpClient(serverDetails);<a name="line.68"></a>
-<span class="sourceLineNo">069</span>        }<a name="line.69"></a>
-<span class="sourceLineNo">070</span><a name="line.70"></a>
-<span class="sourceLineNo">071</span>        @Override<a name="line.71"></a>
-<span class="sourceLineNo">072</span>        public String[] getProjectList(ServerDetails serverDetails) throws ServiceCallException {<a name="line.72"></a>
-<span class="sourceLineNo">073</span>                return ServiceClientCallable.withHttpClient(getHttpClient(serverDetails),<a name="line.73"></a>
-<span class="sourceLineNo">074</span>                                ServiceClientCallable.uniformPathGetCall("projects", String[].class, "", null, serverDetails));<a name="line.74"></a>
-<span class="sourceLineNo">075</span>        }<a name="line.75"></a>
-<span class="sourceLineNo">076</span><a name="line.76"></a>
-<span class="sourceLineNo">077</span>        @Override<a name="line.77"></a>
-<span class="sourceLineNo">078</span>        public ContainerInfo getContainerInfo(String uniformPath, String projectName, CommitDescriptor commitDescriptor,<a name="line.78"></a>
-<span class="sourceLineNo">079</span>                        ServerDetails serverDetails) throws ServiceCallException {<a name="line.79"></a>
-<span class="sourceLineNo">080</span>                ListMap&lt;String, String&gt; options = ServiceClientUtils.createCommitDescriptorOption(commitDescriptor);<a name="line.80"></a>
-<span class="sourceLineNo">081</span>                return ServiceClientCallable.withHttpClient(getHttpClient(serverDetails), ServiceClientCallable<a name="line.81"></a>
-<span class="sourceLineNo">082</span>                                .uniformPathGetCall("dir", ContainerInfo.class, uniformPath, projectName, serverDetails, options));<a name="line.82"></a>
-<span class="sourceLineNo">083</span>        }<a name="line.83"></a>
-<span class="sourceLineNo">084</span><a name="line.84"></a>
-<span class="sourceLineNo">085</span>        /** Returns the service API information for the specified server */<a name="line.85"></a>
-<span class="sourceLineNo">086</span>        @Override<a name="line.86"></a>
-<span class="sourceLineNo">087</span>        public ServiceApiInfo getServiceAPIInfo(ServerDetails serverDetails) throws ServiceCallException {<a name="line.87"></a>
-<span class="sourceLineNo">088</span>                return ServiceClientUtils.simpleGetCall("service-api-info", ServiceApiInfo.class, null, serverDetails);<a name="line.88"></a>
-<span class="sourceLineNo">089</span>        }<a name="line.89"></a>
-<span class="sourceLineNo">090</span><a name="line.90"></a>
-<span class="sourceLineNo">091</span>        @Override<a name="line.91"></a>
-<span class="sourceLineNo">092</span>        @SuppressWarnings({ "unchecked" })<a name="line.92"></a>
-<span class="sourceLineNo">093</span>        public List&lt;TrackedFinding&gt; getFindings(String uniformPath, String projectName, String baseline,<a name="line.93"></a>
-<span class="sourceLineNo">094</span>                        CommitDescriptor commitDescriptor, boolean includeChangedCodeFindings, ServerDetails serverDetails)<a name="line.94"></a>
-<span class="sourceLineNo">095</span>                        throws ServiceCallException {<a name="line.95"></a>
-<span class="sourceLineNo">096</span>                ListMap&lt;String, String&gt; options = ListMap.of(ServiceClientConstants.RECURSIVE_PARAMETER,<a name="line.96"></a>
-<span class="sourceLineNo">097</span>                                Boolean.FALSE.toString());<a name="line.97"></a>
-<span class="sourceLineNo">098</span>                if (commitDescriptor != null) {<a name="line.98"></a>
-<span class="sourceLineNo">099</span>                        options.add(ServiceClientConstants.TIMESTAMP_PARAMETER_NAME, commitDescriptor.toServiceCallFormat());<a name="line.99"></a>
-<span class="sourceLineNo">100</span>                }<a name="line.100"></a>
-<span class="sourceLineNo">101</span>                if (baseline != null) {<a name="line.101"></a>
-<span class="sourceLineNo">102</span>                        options.add(ServiceClientConstants.BASELINE_PARAMETER, baseline);<a name="line.102"></a>
-<span class="sourceLineNo">103</span>                        options.add(ServiceClientConstants.INCLUDE_CHANGED_CODE_FINDINGS_PARAMETER,<a name="line.103"></a>
-<span class="sourceLineNo">104</span>                                        String.valueOf(includeChangedCodeFindings));<a name="line.104"></a>
-<span class="sourceLineNo">105</span>                }<a name="line.105"></a>
-<span class="sourceLineNo">106</span>                return ServiceClientCallable.withHttpClient(getHttpClient(serverDetails), ServiceClientCallable<a name="line.106"></a>
-<span class="sourceLineNo">107</span>                                .uniformPathGetCall("findings", List.class, uniformPath, projectName, serverDetails, options));<a name="line.107"></a>
-<span class="sourceLineNo">108</span>        }<a name="line.108"></a>
-<span class="sourceLineNo">109</span><a name="line.109"></a>
-<span class="sourceLineNo">110</span>        @Override<a name="line.110"></a>
-<span class="sourceLineNo">111</span>        @SuppressWarnings({ "unchecked" })<a name="line.111"></a>
-<span class="sourceLineNo">112</span>        public List&lt;TrackedFinding&gt; getFindingsRecursive(String uniformPath, String projectName, String baseline,<a name="line.112"></a>
-<span class="sourceLineNo">113</span>                        boolean includeChangedCodeFindings, ServerDetails serverDetails, CommitDescriptor commitDescriptor,<a name="line.113"></a>
-<span class="sourceLineNo">114</span>                        boolean fetchAll) throws ServiceCallException {<a name="line.114"></a>
-<span class="sourceLineNo">115</span>                ListMap&lt;String, String&gt; options = ListMap.of(ServiceClientConstants.RECURSIVE_PARAMETER,<a name="line.115"></a>
-<span class="sourceLineNo">116</span>                                Boolean.TRUE.toString());<a name="line.116"></a>
-<span class="sourceLineNo">117</span>                if (baseline != null) {<a name="line.117"></a>
-<span class="sourceLineNo">118</span>                        options.add(ServiceClientConstants.BASELINE_PARAMETER, baseline);<a name="line.118"></a>
-<span class="sourceLineNo">119</span>                        options.add(ServiceClientConstants.INCLUDE_CHANGED_CODE_FINDINGS_PARAMETER,<a name="line.119"></a>
-<span class="sourceLineNo">120</span>                                        String.valueOf(includeChangedCodeFindings));<a name="line.120"></a>
-<span class="sourceLineNo">121</span>                }<a name="line.121"></a>
-<span class="sourceLineNo">122</span>                if (commitDescriptor != null) {<a name="line.122"></a>
-<span class="sourceLineNo">123</span>                        options.add(ServiceClientConstants.TIMESTAMP_PARAMETER_NAME, commitDescriptor.toServiceCallFormat());<a name="line.123"></a>
-<span class="sourceLineNo">124</span>                }<a name="line.124"></a>
-<span class="sourceLineNo">125</span>                if (fetchAll) {<a name="line.125"></a>
-<span class="sourceLineNo">126</span>                        options.add("all", "true");<a name="line.126"></a>
-<span class="sourceLineNo">127</span>                }<a name="line.127"></a>
-<span class="sourceLineNo">128</span>                return ServiceClientCallable.withHttpClient(getHttpClient(serverDetails), ServiceClientCallable<a name="line.128"></a>
-<span class="sourceLineNo">129</span>                                .uniformPathGetCall("findings", List.class, uniformPath, projectName, serverDetails, options));<a name="line.129"></a>
-<span class="sourceLineNo">130</span>        }<a name="line.130"></a>
-<span class="sourceLineNo">131</span><a name="line.131"></a>
-<span class="sourceLineNo">132</span>        @Override<a name="line.132"></a>
-<span class="sourceLineNo">133</span>        public BranchesInfo getBranches(String projectName, ServerDetails serverDetails) throws ServiceCallException {<a name="line.133"></a>
-<span class="sourceLineNo">134</span>                return ServiceClientCallable.withHttpClient(getHttpClient(serverDetails), ServiceClientCallable<a name="line.134"></a>
-<span class="sourceLineNo">135</span>                                .uniformPathGetCall("branches", BranchesInfo.class, "", projectName, serverDetails));<a name="line.135"></a>
-<span class="sourceLineNo">136</span>        }<a name="line.136"></a>
-<span class="sourceLineNo">137</span><a name="line.137"></a>
-<span class="sourceLineNo">138</span>        @Override<a name="line.138"></a>
-<span class="sourceLineNo">139</span>        public String addFindingBlacklistInfo(String projectName, FindingBlacklistInfo findingBlacklistInfo,<a name="line.139"></a>
-<span class="sourceLineNo">140</span>                        String branchName, ServerDetails serverDetails) throws ServiceCallException {<a name="line.140"></a>
-<span class="sourceLineNo">141</span>                int apiVersion = getServiceAPIInfo(serverDetails).getApiVersion();<a name="line.141"></a>
-<span class="sourceLineNo">142</span>                if (apiVersion &lt;= EServiceApiVersion.VERSION_6.getVersionNumber()) {<a name="line.142"></a>
-<span class="sourceLineNo">143</span>                        // old server which does not know about blacklist types<a name="line.143"></a>
-<span class="sourceLineNo">144</span>                        findingBlacklistInfo = findingBlacklistInfo.cloneWithNewType(null);<a name="line.144"></a>
-<span class="sourceLineNo">145</span>                }<a name="line.145"></a>
-<span class="sourceLineNo">146</span>                String url = ServiceClientUtils.getServiceUrl(serverDetails, projectName, FINDING_BLACKLIST_SERVICE_NAME);<a name="line.146"></a>
-<span class="sourceLineNo">147</span>                url += findingBlacklistInfo.getFindingId();<a name="line.147"></a>
-<span class="sourceLineNo">148</span>                url += "?t=" + CommitDescriptor.latestOnBranch(branchName).toServiceCallFormat();<a name="line.148"></a>
-<span class="sourceLineNo">149</span>                try (CloseableHttpClient httpClient = ServiceClientUtils.getHttpClient(serverDetails)) {<a name="line.149"></a>
-<span class="sourceLineNo">150</span>                        return ServiceClientUtils.executeRequest(httpClient,<a name="line.150"></a>
-<span class="sourceLineNo">151</span>                                        ServiceClientUtils.createPut(url, findingBlacklistInfo), String.class);<a name="line.151"></a>
-<span class="sourceLineNo">152</span>                } catch (IOException e) {<a name="line.152"></a>
-<span class="sourceLineNo">153</span>                        throw new ServiceCallException(ServiceClientUtils.PROBLEM_CLOSING_HTTP_CLIENT_MESSAGE, e);<a name="line.153"></a>
-<span class="sourceLineNo">154</span>                }<a name="line.154"></a>
-<span class="sourceLineNo">155</span>        }<a name="line.155"></a>
-<span class="sourceLineNo">156</span><a name="line.156"></a>
-<span class="sourceLineNo">157</span>        @Override<a name="line.157"></a>
-<span class="sourceLineNo">158</span>        public String getContent(CommitDescriptor commitDescriptor, String uniformPath, String projectName,<a name="line.158"></a>
-<span class="sourceLineNo">159</span>                        ServerDetails serverDetails) throws ServiceCallException {<a name="line.159"></a>
-<span class="sourceLineNo">160</span>                ListMap&lt;String, String&gt; options = ServiceClientUtils.createCommitDescriptorOption(commitDescriptor);<a name="line.160"></a>
-<span class="sourceLineNo">161</span>                BasicTokenElementInfo tokenElementInfo = getTokenElementInfo(uniformPath, projectName, serverDetails, options);<a name="line.161"></a>
-<span class="sourceLineNo">162</span>                return tokenElementInfo == null ? null : tokenElementInfo.getText();<a name="line.162"></a>
-<span class="sourceLineNo">163</span>        }<a name="line.163"></a>
-<span class="sourceLineNo">164</span><a name="line.164"></a>
-<span class="sourceLineNo">165</span>        /** Returns token element info. */<a name="line.165"></a>
-<span class="sourceLineNo">166</span>        public BasicTokenElementInfo getTokenElementInfo(String uniformPath, String projectName,<a name="line.166"></a>
-<span class="sourceLineNo">167</span>                        ServerDetails serverDetails, ListMap&lt;String, String&gt; options) throws ServiceCallException {<a name="line.167"></a>
-<span class="sourceLineNo">168</span>                return ServiceClientCallable.withHttpClient(getHttpClient(serverDetails),<a name="line.168"></a>
-<span class="sourceLineNo">169</span>                                ServiceClientCallable.uniformPathGetCall("content/", BasicTokenElementInfo.class, uniformPath,<a name="line.169"></a>
-<span class="sourceLineNo">170</span>                                                projectName, serverDetails, options));<a name="line.170"></a>
-<span class="sourceLineNo">171</span>        }<a name="line.171"></a>
-<span class="sourceLineNo">172</span><a name="line.172"></a>
-<span class="sourceLineNo">173</span>        /**<a name="line.173"></a>
-<span class="sourceLineNo">174</span>         * Tries to calculate the project and prefix mapping for the given files and<a name="line.174"></a>
-<span class="sourceLineNo">175</span>         * optionally project.<a name="line.175"></a>
-<span class="sourceLineNo">176</span>         *<a name="line.176"></a>
-<span class="sourceLineNo">177</span>         * To prevent 214: URI too large Errors the paths are normally sent via POST<a name="line.177"></a>
-<span class="sourceLineNo">178</span>         * request. In case the server does not support this (APIVersion &lt; 7), it<a name="line.178"></a>
-<span class="sourceLineNo">179</span>         * collects as many paths as fit into MAPPINGS_GET_REQUEST_PATH_CUTOFF_LENGTH<a name="line.179"></a>
-<span class="sourceLineNo">180</span>         * and then sends them via GET<a name="line.180"></a>
-<span class="sourceLineNo">181</span>         *<a name="line.181"></a>
-<span class="sourceLineNo">182</span>         * @param serverDetails<a name="line.182"></a>
-<span class="sourceLineNo">183</span>         *            Server connection information<a name="line.183"></a>
-<span class="sourceLineNo">184</span>         * @param paths<a name="line.184"></a>
-<span class="sourceLineNo">185</span>         *            A list of relative file paths<a name="line.185"></a>
-<span class="sourceLineNo">186</span>         * @param project<a name="line.186"></a>
-<span class="sourceLineNo">187</span>         *            The project id for which to search the mapping. Can be<a name="line.187"></a>
-<span class="sourceLineNo">188</span>         *            &lt;code&gt;null&lt;/code&gt; if the project is not known.<a name="line.188"></a>
-<span class="sourceLineNo">189</span>         * @param branch<a name="line.189"></a>
-<span class="sourceLineNo">190</span>         *            The repository branch name.<a name="line.190"></a>
-<span class="sourceLineNo">191</span>         */<a name="line.191"></a>
-<span class="sourceLineNo">192</span>        @Override<a name="line.192"></a>
-<span class="sourceLineNo">193</span>        public ProjectMapping[] calculateProjectMappings(ServerDetails serverDetails, List&lt;String&gt; paths, String project,<a name="line.193"></a>
-<span class="sourceLineNo">194</span>                        String branch) throws ServiceCallException {<a name="line.194"></a>
-<span class="sourceLineNo">195</span>                ListMap&lt;String, String&gt; options = new ListMap&lt;&gt;();<a name="line.195"></a>
-<span class="sourceLineNo">196</span>                if (!StringUtils.isEmpty(project)) {<a name="line.196"></a>
-<span class="sourceLineNo">197</span>                        options.add("project", project);<a name="line.197"></a>
-<span class="sourceLineNo">198</span>                }<a name="line.198"></a>
-<span class="sourceLineNo">199</span>                if (!StringUtils.isEmpty(branch)) {<a name="line.199"></a>
-<span class="sourceLineNo">200</span>                        options.add("branch", branch);<a name="line.200"></a>
-<span class="sourceLineNo">201</span>                }<a name="line.201"></a>
-<span class="sourceLineNo">202</span><a name="line.202"></a>
-<span class="sourceLineNo">203</span>                String pathSeparator = ",";<a name="line.203"></a>
-<span class="sourceLineNo">204</span>                String joinedPaths = String.join(pathSeparator, paths);<a name="line.204"></a>
-<span class="sourceLineNo">205</span><a name="line.205"></a>
-<span class="sourceLineNo">206</span>                // old server can only handle GET requests<a name="line.206"></a>
-<span class="sourceLineNo">207</span>                int apiVersion = getServiceAPIInfo(serverDetails).getApiVersion();<a name="line.207"></a>
-<span class="sourceLineNo">208</span>                if (apiVersion &lt; EServiceApiVersion.VERSION_7.getVersionNumber()) {<a name="line.208"></a>
-<span class="sourceLineNo">209</span>                        // to prevent '414: URI too large' we cut off long paths<a name="line.209"></a>
-<span class="sourceLineNo">210</span>                        if (joinedPaths.length() &gt; MAPPINGS_GET_REQUEST_PATH_CUTOFF_LENGTH) {<a name="line.210"></a>
-<span class="sourceLineNo">211</span>                                int lastCommaBeforeCutoff = joinedPaths.lastIndexOf(pathSeparator,<a name="line.211"></a>
-<span class="sourceLineNo">212</span>                                                MAPPINGS_GET_REQUEST_PATH_CUTOFF_LENGTH);<a name="line.212"></a>
-<span class="sourceLineNo">213</span>                                joinedPaths = joinedPaths.substring(0, lastCommaBeforeCutoff);<a name="line.213"></a>
-<span class="sourceLineNo">214</span>                        }<a name="line.214"></a>
-<span class="sourceLineNo">215</span>                        options.add("file", joinedPaths);<a name="line.215"></a>
-<span class="sourceLineNo">216</span><a name="line.216"></a>
-<span class="sourceLineNo">217</span>                        return ServiceClientCallable.withHttpClient(getHttpClient(serverDetails), ServiceClientCallable<a name="line.217"></a>
-<span class="sourceLineNo">218</span>                                        .uniformPathGetCall("project-mapping", ProjectMapping[].class, "", null, serverDetails, options));<a name="line.218"></a>
-<span class="sourceLineNo">219</span>                }<a name="line.219"></a>
-<span class="sourceLineNo">220</span><a name="line.220"></a>
-<span class="sourceLineNo">221</span>                String url = ServiceClientUtils.getServiceUrl(serverDetails, null, "project-mapping");<a name="line.221"></a>
-<span class="sourceLineNo">222</span>                String optionsString = ServiceClientUtils.createOptionString(options);<a name="line.222"></a>
-<span class="sourceLineNo">223</span><a name="line.223"></a>
-<span class="sourceLineNo">224</span>                try (CloseableHttpClient httpClient = getHttpClient(serverDetails)) {<a name="line.224"></a>
-<span class="sourceLineNo">225</span>                        HttpPost post = ServiceClientUtils.createPostForJsonContent(url + optionsString, joinedPaths);<a name="line.225"></a>
-<span class="sourceLineNo">226</span>                        return ServiceClientUtils.executeRequest(httpClient, post, ProjectMapping[].class);<a name="line.226"></a>
-<span class="sourceLineNo">227</span>                } catch (IOException e) {<a name="line.227"></a>
-<span class="sourceLineNo">228</span>                        throw new ServiceCallException(ServiceClientUtils.PROBLEM_CLOSING_HTTP_CLIENT_MESSAGE, e);<a name="line.228"></a>
-<span class="sourceLineNo">229</span>                }<a name="line.229"></a>
-<span class="sourceLineNo">230</span>        }<a name="line.230"></a>
-<span class="sourceLineNo">231</span><a name="line.231"></a>
-<span class="sourceLineNo">232</span>        /** Uploads precommit data. */<a name="line.232"></a>
-<span class="sourceLineNo">233</span>        public String uploadPreCommitData(ServerDetails serverDetails, String project, CommitDescriptor parentCommit,<a name="line.233"></a>
-<span class="sourceLineNo">234</span>                        PreCommitUploadData data) throws ServiceCallException {<a name="line.234"></a>
-<span class="sourceLineNo">235</span>                return ServiceClientUtils.executeRequest(ServiceClientUtils.getHttpClient(serverDetails),<a name="line.235"></a>
-<span class="sourceLineNo">236</span>                                ServiceClientUtils.createPut(ServiceClientUtils.getServiceUrl(serverDetails, project, "pre-commit")<a name="line.236"></a>
-<span class="sourceLineNo">237</span>                                                + parentCommit.toServiceCallFormat(), JsonUtils.serializeToJSON(data)),<a name="line.237"></a>
-<span class="sourceLineNo">238</span>                                String.class);<a name="line.238"></a>
-<span class="sourceLineNo">239</span>        }<a name="line.239"></a>
-<span class="sourceLineNo">240</span><a name="line.240"></a>
-<span class="sourceLineNo">241</span>        /**<a name="line.241"></a>
-<span class="sourceLineNo">242</span>         * Filters the provided paths based on the connector configuration of the<a name="line.242"></a>
-<span class="sourceLineNo">243</span>         * Teamscale project.<a name="line.243"></a>
-<span class="sourceLineNo">244</span>         */<a name="line.244"></a>
-<span class="sourceLineNo">245</span>        public PreCommitDeltaInfo filterPreCommitDelta(ServerDetails serverDetails, String teamscaleProject,<a name="line.245"></a>
-<span class="sourceLineNo">246</span>                        EVersionControlSystemType repoType, String branchName, PreCommitDeltaInfo deltaInfo)<a name="line.246"></a>
-<span class="sourceLineNo">247</span>                        throws ServiceCallException {<a name="line.247"></a>
-<span class="sourceLineNo">248</span>                int apiVersion = getServiceAPIInfo(serverDetails).getApiVersion();<a name="line.248"></a>
-<span class="sourceLineNo">249</span>                if (apiVersion &lt;= EServiceApiVersion.VERSION_7.getVersionNumber()) {<a name="line.249"></a>
-<span class="sourceLineNo">250</span>                        // Server older than API version 8 do not offer the precommit-delta-filter<a name="line.250"></a>
-<span class="sourceLineNo">251</span>                        // service. As fallback, assume nothing is filtered.<a name="line.251"></a>
-<span class="sourceLineNo">252</span>                        return deltaInfo;<a name="line.252"></a>
-<span class="sourceLineNo">253</span>                }<a name="line.253"></a>
-<span class="sourceLineNo">254</span><a name="line.254"></a>
-<span class="sourceLineNo">255</span>                String url = ServiceClientUtils.getServiceUrl(serverDetails, teamscaleProject, "precommit-delta-filter");<a name="line.255"></a>
-<span class="sourceLineNo">256</span>                url += "?branch=" + branchName;<a name="line.256"></a>
-<span class="sourceLineNo">257</span>                url += "&amp;repo-type=" + repoType.getLabel();<a name="line.257"></a>
-<span class="sourceLineNo">258</span>                try (CloseableHttpClient httpClient = ServiceClientUtils.getHttpClient(serverDetails)) {<a name="line.258"></a>
-<span class="sourceLineNo">259</span>                        HttpPost post = ServiceClientUtils.createPostForJsonContent(url, deltaInfo);<a name="line.259"></a>
-<span class="sourceLineNo">260</span>                        return ServiceClientUtils.executeRequest(httpClient, post, PreCommitDeltaInfo.class);<a name="line.260"></a>
-<span class="sourceLineNo">261</span>                } catch (IOException e) {<a name="line.261"></a>
-<span class="sourceLineNo">262</span>                        throw new ServiceCallException(ServiceClientUtils.PROBLEM_CLOSING_HTTP_CLIENT_MESSAGE, e);<a name="line.262"></a>
-<span class="sourceLineNo">263</span>                }<a name="line.263"></a>
-<span class="sourceLineNo">264</span>        }<a name="line.264"></a>
-<span class="sourceLineNo">265</span><a name="line.265"></a>
-<span class="sourceLineNo">266</span>        /**<a name="line.266"></a>
-<span class="sourceLineNo">267</span>         * Returns PreCommit result as {@link FindingDelta} or null if the analysis has<a name="line.267"></a>
-<span class="sourceLineNo">268</span>         * not finished.<a name="line.268"></a>
-<span class="sourceLineNo">269</span>         */<a name="line.269"></a>
-<span class="sourceLineNo">270</span>        public FindingDelta getPreCommitResult(ServerDetails serverDetails, String project, CommitDescriptor parentCommit)<a name="line.270"></a>
-<span class="sourceLineNo">271</span>                        throws ServiceCallException {<a name="line.271"></a>
-<span class="sourceLineNo">272</span>                return ServiceClientCallable.withHttpClient(getHttpClient(serverDetails),<a name="line.272"></a>
-<span class="sourceLineNo">273</span>                                ServiceClientCallable.uniformPathGetCall("pre-commit", FindingDelta.class,<a name="line.273"></a>
-<span class="sourceLineNo">274</span>                                                parentCommit.toServiceCallFormat(), project, serverDetails));<a name="line.274"></a>
-<span class="sourceLineNo">275</span>        }<a name="line.275"></a>
-<span class="sourceLineNo">276</span><a name="line.276"></a>
-<span class="sourceLineNo">277</span>        /**<a name="line.277"></a>
-<span class="sourceLineNo">278</span>         * Returns the languages of a Teamscale-analyzed project.<a name="line.278"></a>
-<span class="sourceLineNo">279</span>         *<a name="line.279"></a>
-<span class="sourceLineNo">280</span>         * @param projectName<a name="line.280"></a>
-<span class="sourceLineNo">281</span>         *            The name of a Teamscale analyzed project<a name="line.281"></a>
-<span class="sourceLineNo">282</span>         * @param serverDetails<a name="line.282"></a>
-<span class="sourceLineNo">283</span>         *            Server connection details<a name="line.283"></a>
-<span class="sourceLineNo">284</span>         */<a name="line.284"></a>
-<span class="sourceLineNo">285</span>        public Set&lt;ELanguage&gt; getLanguagesForProject(String projectName, ServerDetails serverDetails)<a name="line.285"></a>
-<span class="sourceLineNo">286</span>                        throws ServiceCallException {<a name="line.286"></a>
-<span class="sourceLineNo">287</span>                ListMap&lt;String, String&gt; options = ListMap.of("project", projectName);<a name="line.287"></a>
-<span class="sourceLineNo">288</span>                ELanguage[] languages = ServiceClientCallable.withHttpClient(getHttpClient(serverDetails), ServiceClientCallable<a name="line.288"></a>
-<span class="sourceLineNo">289</span>                                .uniformPathGetCall("project-languages", ELanguage[].class, "", null, serverDetails, options));<a name="line.289"></a>
-<span class="sourceLineNo">290</span>                return CollectionUtils.asHashSet(languages);<a name="line.290"></a>
-<span class="sourceLineNo">291</span>        }<a name="line.291"></a>
-<span class="sourceLineNo">292</span><a name="line.292"></a>
-<span class="sourceLineNo">293</span>        /**<a name="line.293"></a>
-<span class="sourceLineNo">294</span>         * Returns all commits that were found for the given revision. An empty list is<a name="line.294"></a>
-<span class="sourceLineNo">295</span>         * returned if the revision was not found, more than one commit might be<a name="line.295"></a>
-<span class="sourceLineNo">296</span>         * returned in case of multiple repositories.<a name="line.296"></a>
-<span class="sourceLineNo">297</span>         */<a name="line.297"></a>
-<span class="sourceLineNo">298</span>        @SuppressWarnings("unchecked")<a name="line.298"></a>
-<span class="sourceLineNo">299</span>        public List&lt;CommitDescriptor&gt; getCommitsForRevision(String projectName, ServerDetails serverDetails,<a name="line.299"></a>
-<span class="sourceLineNo">300</span>                        String revision) throws ServiceCallException {<a name="line.300"></a>
-<span class="sourceLineNo">301</span>                List&lt;CommitDescriptor&gt; commits = ServiceClientCallable.withHttpClient(getHttpClient(serverDetails),<a name="line.301"></a>
-<span class="sourceLineNo">302</span>                                ServiceClientCallable.uniformPathGetCall("repository-timestamp-by-revision", List.class, revision,<a name="line.302"></a>
-<span class="sourceLineNo">303</span>                                                projectName, serverDetails));<a name="line.303"></a>
-<span class="sourceLineNo">304</span>                if (commits == null) {<a name="line.304"></a>
-<span class="sourceLineNo">305</span>                        return Collections.emptyList();<a name="line.305"></a>
-<span class="sourceLineNo">306</span>                }<a name="line.306"></a>
-<span class="sourceLineNo">307</span>                return commits;<a name="line.307"></a>
-<span class="sourceLineNo">308</span>        }<a name="line.308"></a>
-<span class="sourceLineNo">309</span><a name="line.309"></a>
-<span class="sourceLineNo">310</span>        public PreCommitServerLimits getPreCommitServerLimits(ServerDetails serverDetails) throws ServiceCallException {<a name="line.310"></a>
-<span class="sourceLineNo">311</span>                CCSMAssert.isNotNull(serverDetails, "Parameter 'serverDetails' must not be null");<a name="line.311"></a>
-<span class="sourceLineNo">312</span>                return ServiceClientCallable.withHttpClient(getHttpClient(serverDetails), ServiceClientCallable<a name="line.312"></a>
-<span class="sourceLineNo">313</span>                                .uniformPathGetCall("pre-commit-server-limits", PreCommitServerLimits.class, "", null, serverDetails));<a name="line.313"></a>
-<span class="sourceLineNo">314</span>        }<a name="line.314"></a>
-<span class="sourceLineNo">315</span><a name="line.315"></a>
-<span class="sourceLineNo">316</span>        /** Returns the name of all baselines for a given Teamscale project. */<a name="line.316"></a>
-<span class="sourceLineNo">317</span>        public String[] getBaselines(String projectName, ServerDetails serverDetails) throws ServiceCallException {<a name="line.317"></a>
-<span class="sourceLineNo">318</span>                return ServiceClientUtils.simpleGetCall("baselines", String[].class, projectName, serverDetails);<a name="line.318"></a>
-<span class="sourceLineNo">319</span>        }<a name="line.319"></a>
-<span class="sourceLineNo">320</span>}<a name="line.320"></a>
+<span class="sourceLineNo">041</span>         * The factor used for extending the timeout when fetching findings.<a name="line.41"></a>
+<span class="sourceLineNo">042</span>         *<a name="line.42"></a>
+<span class="sourceLineNo">043</span>         * It has to be a bit longer than usual (twice as long), because even though the<a name="line.43"></a>
+<span class="sourceLineNo">044</span>         * server will only send back a limited number of findings, it first has to load<a name="line.44"></a>
+<span class="sourceLineNo">045</span>         * all of them from the database for filtering purposes. This can take a long<a name="line.45"></a>
+<span class="sourceLineNo">046</span>         * time when there is a large number of findings for a given path.<a name="line.46"></a>
+<span class="sourceLineNo">047</span>         */<a name="line.47"></a>
+<span class="sourceLineNo">048</span>        private static final int GET_FINDINGS_TIMEOUT_FACTOR = 2;<a name="line.48"></a>
+<span class="sourceLineNo">049</span><a name="line.49"></a>
+<span class="sourceLineNo">050</span>        /**<a name="line.50"></a>
+<span class="sourceLineNo">051</span>         * After how many characters do we want to cut off the path parameter of a<a name="line.51"></a>
+<span class="sourceLineNo">052</span>         * mappings request in case the server only supports GET (instead of POST)<a name="line.52"></a>
+<span class="sourceLineNo">053</span>         */<a name="line.53"></a>
+<span class="sourceLineNo">054</span>        private static final int MAPPINGS_GET_REQUEST_PATH_CUTOFF_LENGTH = 6000;<a name="line.54"></a>
+<span class="sourceLineNo">055</span><a name="line.55"></a>
+<span class="sourceLineNo">056</span>        /**<a name="line.56"></a>
+<span class="sourceLineNo">057</span>         * Tries to verify a connection to a Teamscale instance by loading the project<a name="line.57"></a>
+<span class="sourceLineNo">058</span>         * list.<a name="line.58"></a>
+<span class="sourceLineNo">059</span>         *<a name="line.59"></a>
+<span class="sourceLineNo">060</span>         * @return &lt;code&gt;true&lt;/code&gt; if the connection was successful,<a name="line.60"></a>
+<span class="sourceLineNo">061</span>         *         &lt;code&gt;false&lt;/code&gt; if no projects could be loaded.<a name="line.61"></a>
+<span class="sourceLineNo">062</span>         *<a name="line.62"></a>
+<span class="sourceLineNo">063</span>         * @throws ServiceCallException<a name="line.63"></a>
+<span class="sourceLineNo">064</span>         *             if the connection couldn't be established at all.<a name="line.64"></a>
+<span class="sourceLineNo">065</span>         *             {@link ServiceCallException#getMessage()} may be used to give a<a name="line.65"></a>
+<span class="sourceLineNo">066</span>         *             hint what went wrong.<a name="line.66"></a>
+<span class="sourceLineNo">067</span>         */<a name="line.67"></a>
+<span class="sourceLineNo">068</span>        public static boolean canConnect(ServerDetails serverDetails) throws ServiceCallException {<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                CCSMAssert.isNotNull(serverDetails, "Parameter 'serverDetails' must not be null!");<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                return ServiceClientUtils.uniformPathGetCall("projects", String[].class, "", null, serverDetails) != null;<a name="line.70"></a>
+<span class="sourceLineNo">071</span>        }<a name="line.71"></a>
+<span class="sourceLineNo">072</span><a name="line.72"></a>
+<span class="sourceLineNo">073</span>        /**<a name="line.73"></a>
+<span class="sourceLineNo">074</span>         * Return the HttpClient that should be used. Can be overridden for testing<a name="line.74"></a>
+<span class="sourceLineNo">075</span>         * purposes.<a name="line.75"></a>
+<span class="sourceLineNo">076</span>         */<a name="line.76"></a>
+<span class="sourceLineNo">077</span>        protected CloseableHttpClient getHttpClient(ServerDetails serverDetails) throws ServiceCallException {<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                return ServiceClientUtils.getHttpClient(serverDetails);<a name="line.78"></a>
+<span class="sourceLineNo">079</span>        }<a name="line.79"></a>
+<span class="sourceLineNo">080</span><a name="line.80"></a>
+<span class="sourceLineNo">081</span>        @Override<a name="line.81"></a>
+<span class="sourceLineNo">082</span>        public String[] getProjectList(ServerDetails serverDetails) throws ServiceCallException {<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                return ServiceClientCallable.withHttpClient(getHttpClient(serverDetails),<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                                ServiceClientCallable.uniformPathGetCall("projects", String[].class, "", null, serverDetails));<a name="line.84"></a>
+<span class="sourceLineNo">085</span>        }<a name="line.85"></a>
+<span class="sourceLineNo">086</span><a name="line.86"></a>
+<span class="sourceLineNo">087</span>        @Override<a name="line.87"></a>
+<span class="sourceLineNo">088</span>        public ContainerInfo getContainerInfo(String uniformPath, String projectName, CommitDescriptor commitDescriptor,<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                        ServerDetails serverDetails) throws ServiceCallException {<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                ListMap&lt;String, String&gt; options = ServiceClientUtils.createCommitDescriptorOption(commitDescriptor);<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                return ServiceClientCallable.withHttpClient(getHttpClient(serverDetails), ServiceClientCallable<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                                .uniformPathGetCall("dir", ContainerInfo.class, uniformPath, projectName, serverDetails, options));<a name="line.92"></a>
+<span class="sourceLineNo">093</span>        }<a name="line.93"></a>
+<span class="sourceLineNo">094</span><a name="line.94"></a>
+<span class="sourceLineNo">095</span>        /** Returns the service API information for the specified server */<a name="line.95"></a>
+<span class="sourceLineNo">096</span>        @Override<a name="line.96"></a>
+<span class="sourceLineNo">097</span>        public ServiceApiInfo getServiceAPIInfo(ServerDetails serverDetails) throws ServiceCallException {<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                return ServiceClientUtils.simpleGetCall("service-api-info", ServiceApiInfo.class, null, serverDetails);<a name="line.98"></a>
+<span class="sourceLineNo">099</span>        }<a name="line.99"></a>
+<span class="sourceLineNo">100</span><a name="line.100"></a>
+<span class="sourceLineNo">101</span>        @Override<a name="line.101"></a>
+<span class="sourceLineNo">102</span>        @SuppressWarnings({ "unchecked" })<a name="line.102"></a>
+<span class="sourceLineNo">103</span>        public List&lt;TrackedFinding&gt; getFindings(String uniformPath, String projectName, String baseline,<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                        CommitDescriptor commitDescriptor, boolean includeChangedCodeFindings, ServerDetails serverDetails)<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                        throws ServiceCallException {<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                ListMap&lt;String, String&gt; options = ListMap.of(ServiceClientConstants.RECURSIVE_PARAMETER,<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                                Boolean.FALSE.toString());<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                if (commitDescriptor != null) {<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                        options.add(ServiceClientConstants.TIMESTAMP_PARAMETER_NAME, commitDescriptor.toServiceCallFormat());<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                }<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                if (baseline != null) {<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                        options.add(ServiceClientConstants.BASELINE_PARAMETER, baseline);<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                        options.add(ServiceClientConstants.INCLUDE_CHANGED_CODE_FINDINGS_PARAMETER,<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                                        String.valueOf(includeChangedCodeFindings));<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                }<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                serverDetails = serverDetails.withTimeOut(serverDetails.getTimeoutSeconds() * GET_FINDINGS_TIMEOUT_FACTOR);<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                return ServiceClientCallable.withHttpClient(getHttpClient(serverDetails), ServiceClientCallable<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                                .uniformPathGetCall("findings", List.class, uniformPath, projectName, serverDetails, options));<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        }<a name="line.119"></a>
+<span class="sourceLineNo">120</span><a name="line.120"></a>
+<span class="sourceLineNo">121</span>        @Override<a name="line.121"></a>
+<span class="sourceLineNo">122</span>        @SuppressWarnings({ "unchecked" })<a name="line.122"></a>
+<span class="sourceLineNo">123</span>        public List&lt;TrackedFinding&gt; getFindingsRecursive(String uniformPath, String projectName, String baseline,<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                        boolean includeChangedCodeFindings, ServerDetails serverDetails, CommitDescriptor commitDescriptor,<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                        boolean fetchAll) throws ServiceCallException {<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                ListMap&lt;String, String&gt; options = ListMap.of(ServiceClientConstants.RECURSIVE_PARAMETER,<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                                Boolean.TRUE.toString());<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                if (baseline != null) {<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                        options.add(ServiceClientConstants.BASELINE_PARAMETER, baseline);<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                        options.add(ServiceClientConstants.INCLUDE_CHANGED_CODE_FINDINGS_PARAMETER,<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                                        String.valueOf(includeChangedCodeFindings));<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                }<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                if (commitDescriptor != null) {<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                        options.add(ServiceClientConstants.TIMESTAMP_PARAMETER_NAME, commitDescriptor.toServiceCallFormat());<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                }<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                if (fetchAll) {<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                        options.add("all", "true");<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                }<a name="line.138"></a>
+<span class="sourceLineNo">139</span>                serverDetails = serverDetails.withTimeOut(serverDetails.getTimeoutSeconds() * GET_FINDINGS_TIMEOUT_FACTOR);<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                return ServiceClientCallable.withHttpClient(getHttpClient(serverDetails), ServiceClientCallable<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                                .uniformPathGetCall("findings", List.class, uniformPath, projectName, serverDetails, options));<a name="line.141"></a>
+<span class="sourceLineNo">142</span>        }<a name="line.142"></a>
+<span class="sourceLineNo">143</span><a name="line.143"></a>
+<span class="sourceLineNo">144</span>        @Override<a name="line.144"></a>
+<span class="sourceLineNo">145</span>        public BranchesInfo getBranches(String projectName, ServerDetails serverDetails) throws ServiceCallException {<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                return ServiceClientCallable.withHttpClient(getHttpClient(serverDetails), ServiceClientCallable<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                                .uniformPathGetCall("branches", BranchesInfo.class, "", projectName, serverDetails));<a name="line.147"></a>
+<span class="sourceLineNo">148</span>        }<a name="line.148"></a>
+<span class="sourceLineNo">149</span><a name="line.149"></a>
+<span class="sourceLineNo">150</span>        @Override<a name="line.150"></a>
+<span class="sourceLineNo">151</span>        public String addFindingBlacklistInfo(String projectName, FindingBlacklistInfo findingBlacklistInfo,<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                        String branchName, ServerDetails serverDetails) throws ServiceCallException {<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                int apiVersion = getServiceAPIInfo(serverDetails).getApiVersion();<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                if (apiVersion &lt;= EServiceApiVersion.VERSION_6.getVersionNumber()) {<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                        // old server which does not know about blacklist types<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                        findingBlacklistInfo = findingBlacklistInfo.cloneWithNewType(null);<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                }<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                String url = ServiceClientUtils.getServiceUrl(serverDetails, projectName, FINDING_BLACKLIST_SERVICE_NAME);<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                url += findingBlacklistInfo.getFindingId();<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                url += "?t=" + CommitDescriptor.latestOnBranch(branchName).toServiceCallFormat();<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                try (CloseableHttpClient httpClient = ServiceClientUtils.getHttpClient(serverDetails)) {<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                        return ServiceClientUtils.executeRequest(httpClient,<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                                        ServiceClientUtils.createPut(url, findingBlacklistInfo), String.class);<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                } catch (IOException e) {<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                        throw new ServiceCallException(ServiceClientUtils.PROBLEM_CLOSING_HTTP_CLIENT_MESSAGE, e);<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                }<a name="line.166"></a>
+<span class="sourceLineNo">167</span>        }<a name="line.167"></a>
+<span class="sourceLineNo">168</span><a name="line.168"></a>
+<span class="sourceLineNo">169</span>        @Override<a name="line.169"></a>
+<span class="sourceLineNo">170</span>        public String getContent(CommitDescriptor commitDescriptor, String uniformPath, String projectName,<a name="line.170"></a>
+<span class="sourceLineNo">171</span>                        ServerDetails serverDetails) throws ServiceCallException {<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                ListMap&lt;String, String&gt; options = ServiceClientUtils.createCommitDescriptorOption(commitDescriptor);<a name="line.172"></a>
+<span class="sourceLineNo">173</span>                BasicTokenElementInfo tokenElementInfo = getTokenElementInfo(uniformPath, projectName, serverDetails, options);<a name="line.173"></a>
+<span class="sourceLineNo">174</span>                return tokenElementInfo == null ? null : tokenElementInfo.getText();<a name="line.174"></a>
+<span class="sourceLineNo">175</span>        }<a name="line.175"></a>
+<span class="sourceLineNo">176</span><a name="line.176"></a>
+<span class="sourceLineNo">177</span>        /** Returns token element info. */<a name="line.177"></a>
+<span class="sourceLineNo">178</span>        public BasicTokenElementInfo getTokenElementInfo(String uniformPath, String projectName,<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                        ServerDetails serverDetails, ListMap&lt;String, String&gt; options) throws ServiceCallException {<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                return ServiceClientCallable.withHttpClient(getHttpClient(serverDetails),<a name="line.180"></a>
+<span class="sourceLineNo">181</span>                                ServiceClientCallable.uniformPathGetCall("content/", BasicTokenElementInfo.class, uniformPath,<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                                                projectName, serverDetails, options));<a name="line.182"></a>
+<span class="sourceLineNo">183</span>        }<a name="line.183"></a>
+<span class="sourceLineNo">184</span><a name="line.184"></a>
+<span class="sourceLineNo">185</span>        /**<a name="line.185"></a>
+<span class="sourceLineNo">186</span>         * Tries to calculate the project and prefix mapping for the given files and<a name="line.186"></a>
+<span class="sourceLineNo">187</span>         * optionally project.<a name="line.187"></a>
+<span class="sourceLineNo">188</span>         *<a name="line.188"></a>
+<span class="sourceLineNo">189</span>         * To prevent 214: URI too large Errors the paths are normally sent via POST<a name="line.189"></a>
+<span class="sourceLineNo">190</span>         * request. In case the server does not support this (APIVersion &lt; 7), it<a name="line.190"></a>
+<span class="sourceLineNo">191</span>         * collects as many paths as fit into MAPPINGS_GET_REQUEST_PATH_CUTOFF_LENGTH<a name="line.191"></a>
+<span class="sourceLineNo">192</span>         * and then sends them via GET<a name="line.192"></a>
+<span class="sourceLineNo">193</span>         *<a name="line.193"></a>
+<span class="sourceLineNo">194</span>         * @param serverDetails<a name="line.194"></a>
+<span class="sourceLineNo">195</span>         *            Server connection information<a name="line.195"></a>
+<span class="sourceLineNo">196</span>         * @param paths<a name="line.196"></a>
+<span class="sourceLineNo">197</span>         *            A list of relative file paths<a name="line.197"></a>
+<span class="sourceLineNo">198</span>         * @param project<a name="line.198"></a>
+<span class="sourceLineNo">199</span>         *            The project id for which to search the mapping. Can be<a name="line.199"></a>
+<span class="sourceLineNo">200</span>         *            &lt;code&gt;null&lt;/code&gt; if the project is not known.<a name="line.200"></a>
+<span class="sourceLineNo">201</span>         * @param branch<a name="line.201"></a>
+<span class="sourceLineNo">202</span>         *            The repository branch name.<a name="line.202"></a>
+<span class="sourceLineNo">203</span>         */<a name="line.203"></a>
+<span class="sourceLineNo">204</span>        @Override<a name="line.204"></a>
+<span class="sourceLineNo">205</span>        public ProjectMapping[] calculateProjectMappings(ServerDetails serverDetails, List&lt;String&gt; paths, String project,<a name="line.205"></a>
+<span class="sourceLineNo">206</span>                        String branch) throws ServiceCallException {<a name="line.206"></a>
+<span class="sourceLineNo">207</span>                ListMap&lt;String, String&gt; options = new ListMap&lt;&gt;();<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                if (!StringUtils.isEmpty(project)) {<a name="line.208"></a>
+<span class="sourceLineNo">209</span>                        options.add("project", project);<a name="line.209"></a>
+<span class="sourceLineNo">210</span>                }<a name="line.210"></a>
+<span class="sourceLineNo">211</span>                if (!StringUtils.isEmpty(branch)) {<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                        options.add("branch", branch);<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                }<a name="line.213"></a>
+<span class="sourceLineNo">214</span><a name="line.214"></a>
+<span class="sourceLineNo">215</span>                String pathSeparator = ",";<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                String joinedPaths = String.join(pathSeparator, paths);<a name="line.216"></a>
+<span class="sourceLineNo">217</span><a name="line.217"></a>
+<span class="sourceLineNo">218</span>                // old server can only handle GET requests<a name="line.218"></a>
+<span class="sourceLineNo">219</span>                int apiVersion = getServiceAPIInfo(serverDetails).getApiVersion();<a name="line.219"></a>
+<span class="sourceLineNo">220</span>                if (apiVersion &lt; EServiceApiVersion.VERSION_7.getVersionNumber()) {<a name="line.220"></a>
+<span class="sourceLineNo">221</span>                        // to prevent '414: URI too large' we cut off long paths<a name="line.221"></a>
+<span class="sourceLineNo">222</span>                        if (joinedPaths.length() &gt; MAPPINGS_GET_REQUEST_PATH_CUTOFF_LENGTH) {<a name="line.222"></a>
+<span class="sourceLineNo">223</span>                                int lastCommaBeforeCutoff = joinedPaths.lastIndexOf(pathSeparator,<a name="line.223"></a>
+<span class="sourceLineNo">224</span>                                                MAPPINGS_GET_REQUEST_PATH_CUTOFF_LENGTH);<a name="line.224"></a>
+<span class="sourceLineNo">225</span>                                joinedPaths = joinedPaths.substring(0, lastCommaBeforeCutoff);<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                        }<a name="line.226"></a>
+<span class="sourceLineNo">227</span>                        options.add("file", joinedPaths);<a name="line.227"></a>
+<span class="sourceLineNo">228</span><a name="line.228"></a>
+<span class="sourceLineNo">229</span>                        return ServiceClientCallable.withHttpClient(getHttpClient(serverDetails), ServiceClientCallable<a name="line.229"></a>
+<span class="sourceLineNo">230</span>                                        .uniformPathGetCall("project-mapping", ProjectMapping[].class, "", null, serverDetails, options));<a name="line.230"></a>
+<span class="sourceLineNo">231</span>                }<a name="line.231"></a>
+<span class="sourceLineNo">232</span><a name="line.232"></a>
+<span class="sourceLineNo">233</span>                String url = ServiceClientUtils.getServiceUrl(serverDetails, null, "project-mapping");<a name="line.233"></a>
+<span class="sourceLineNo">234</span>                String optionsString = ServiceClientUtils.createOptionString(options);<a name="line.234"></a>
+<span class="sourceLineNo">235</span><a name="line.235"></a>
+<span class="sourceLineNo">236</span>                try (CloseableHttpClient httpClient = getHttpClient(serverDetails)) {<a name="line.236"></a>
+<span class="sourceLineNo">237</span>                        HttpPost post = ServiceClientUtils.createPostForJsonContent(url + optionsString, joinedPaths);<a name="line.237"></a>
+<span class="sourceLineNo">238</span>                        return ServiceClientUtils.executeRequest(httpClient, post, ProjectMapping[].class);<a name="line.238"></a>
+<span class="sourceLineNo">239</span>                } catch (IOException e) {<a name="line.239"></a>
+<span class="sourceLineNo">240</span>                        throw new ServiceCallException(ServiceClientUtils.PROBLEM_CLOSING_HTTP_CLIENT_MESSAGE, e);<a name="line.240"></a>
+<span class="sourceLineNo">241</span>                }<a name="line.241"></a>
+<span class="sourceLineNo">242</span>        }<a name="line.242"></a>
+<span class="sourceLineNo">243</span><a name="line.243"></a>
+<span class="sourceLineNo">244</span>        /** Uploads precommit data. */<a name="line.244"></a>
+<span class="sourceLineNo">245</span>        public String uploadPreCommitData(ServerDetails serverDetails, String project, CommitDescriptor parentCommit,<a name="line.245"></a>
+<span class="sourceLineNo">246</span>                        PreCommitUploadData data) throws ServiceCallException {<a name="line.246"></a>
+<span class="sourceLineNo">247</span>                return ServiceClientUtils.executeRequest(ServiceClientUtils.getHttpClient(serverDetails),<a name="line.247"></a>
+<span class="sourceLineNo">248</span>                                ServiceClientUtils.createPut(ServiceClientUtils.getServiceUrl(serverDetails, project, "pre-commit")<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                                                + parentCommit.toServiceCallFormat(), JsonUtils.serializeToJSON(data)),<a name="line.249"></a>
+<span class="sourceLineNo">250</span>                                String.class);<a name="line.250"></a>
+<span class="sourceLineNo">251</span>        }<a name="line.251"></a>
+<span class="sourceLineNo">252</span><a name="line.252"></a>
+<span class="sourceLineNo">253</span>        /**<a name="line.253"></a>
+<span class="sourceLineNo">254</span>         * Filters the provided paths based on the connector configuration of the<a name="line.254"></a>
+<span class="sourceLineNo">255</span>         * Teamscale project.<a name="line.255"></a>
+<span class="sourceLineNo">256</span>         */<a name="line.256"></a>
+<span class="sourceLineNo">257</span>        public PreCommitDeltaInfo filterPreCommitDelta(ServerDetails serverDetails, String teamscaleProject,<a name="line.257"></a>
+<span class="sourceLineNo">258</span>                        EVersionControlSystemType repoType, String branchName, PreCommitDeltaInfo deltaInfo)<a name="line.258"></a>
+<span class="sourceLineNo">259</span>                        throws ServiceCallException {<a name="line.259"></a>
+<span class="sourceLineNo">260</span>                int apiVersion = getServiceAPIInfo(serverDetails).getApiVersion();<a name="line.260"></a>
+<span class="sourceLineNo">261</span>                if (apiVersion &lt;= EServiceApiVersion.VERSION_7.getVersionNumber()) {<a name="line.261"></a>
+<span class="sourceLineNo">262</span>                        // Server older than API version 8 do not offer the precommit-delta-filter<a name="line.262"></a>
+<span class="sourceLineNo">263</span>                        // service. As fallback, assume nothing is filtered.<a name="line.263"></a>
+<span class="sourceLineNo">264</span>                        return deltaInfo;<a name="line.264"></a>
+<span class="sourceLineNo">265</span>                }<a name="line.265"></a>
+<span class="sourceLineNo">266</span><a name="line.266"></a>
+<span class="sourceLineNo">267</span>                String url = ServiceClientUtils.getServiceUrl(serverDetails, teamscaleProject, "precommit-delta-filter");<a name="line.267"></a>
+<span class="sourceLineNo">268</span>                url += "?branch=" + branchName;<a name="line.268"></a>
+<span class="sourceLineNo">269</span>                url += "&amp;repo-type=" + repoType.getLabel();<a name="line.269"></a>
+<span class="sourceLineNo">270</span>                try (CloseableHttpClient httpClient = ServiceClientUtils.getHttpClient(serverDetails)) {<a name="line.270"></a>
+<span class="sourceLineNo">271</span>                        HttpPost post = ServiceClientUtils.createPostForJsonContent(url, deltaInfo);<a name="line.271"></a>
+<span class="sourceLineNo">272</span>                        return ServiceClientUtils.executeRequest(httpClient, post, PreCommitDeltaInfo.class);<a name="line.272"></a>
+<span class="sourceLineNo">273</span>                } catch (IOException e) {<a name="line.273"></a>
+<span class="sourceLineNo">274</span>                        throw new ServiceCallException(ServiceClientUtils.PROBLEM_CLOSING_HTTP_CLIENT_MESSAGE, e);<a name="line.274"></a>
+<span class="sourceLineNo">275</span>                }<a name="line.275"></a>
+<span class="sourceLineNo">276</span>        }<a name="line.276"></a>
+<span class="sourceLineNo">277</span><a name="line.277"></a>
+<span class="sourceLineNo">278</span>        /**<a name="line.278"></a>
+<span class="sourceLineNo">279</span>         * Returns PreCommit result as {@link FindingDelta} or null if the analysis has<a name="line.279"></a>
+<span class="sourceLineNo">280</span>         * not finished.<a name="line.280"></a>
+<span class="sourceLineNo">281</span>         */<a name="line.281"></a>
+<span class="sourceLineNo">282</span>        public FindingDelta getPreCommitResult(ServerDetails serverDetails, String project, CommitDescriptor parentCommit)<a name="line.282"></a>
+<span class="sourceLineNo">283</span>                        throws ServiceCallException {<a name="line.283"></a>
+<span class="sourceLineNo">284</span>                return ServiceClientCallable.withHttpClient(getHttpClient(serverDetails),<a name="line.284"></a>
+<span class="sourceLineNo">285</span>                                ServiceClientCallable.uniformPathGetCall("pre-commit", FindingDelta.class,<a name="line.285"></a>
+<span class="sourceLineNo">286</span>                                                parentCommit.toServiceCallFormat(), project, serverDetails));<a name="line.286"></a>
+<span class="sourceLineNo">287</span>        }<a name="line.287"></a>
+<span class="sourceLineNo">288</span><a name="line.288"></a>
+<span class="sourceLineNo">289</span>        /**<a name="line.289"></a>
+<span class="sourceLineNo">290</span>         * Returns the languages of a Teamscale-analyzed project.<a name="line.290"></a>
+<span class="sourceLineNo">291</span>         *<a name="line.291"></a>
+<span class="sourceLineNo">292</span>         * @param projectName<a name="line.292"></a>
+<span class="sourceLineNo">293</span>         *            The name of a Teamscale analyzed project<a name="line.293"></a>
+<span class="sourceLineNo">294</span>         * @param serverDetails<a name="line.294"></a>
+<span class="sourceLineNo">295</span>         *            Server connection details<a name="line.295"></a>
+<span class="sourceLineNo">296</span>         */<a name="line.296"></a>
+<span class="sourceLineNo">297</span>        public Set&lt;ELanguage&gt; getLanguagesForProject(String projectName, ServerDetails serverDetails)<a name="line.297"></a>
+<span class="sourceLineNo">298</span>                        throws ServiceCallException {<a name="line.298"></a>
+<span class="sourceLineNo">299</span>                ListMap&lt;String, String&gt; options = ListMap.of("project", projectName);<a name="line.299"></a>
+<span class="sourceLineNo">300</span>                ELanguage[] languages = ServiceClientCallable.withHttpClient(getHttpClient(serverDetails), ServiceClientCallable<a name="line.300"></a>
+<span class="sourceLineNo">301</span>                                .uniformPathGetCall("project-languages", ELanguage[].class, "", null, serverDetails, options));<a name="line.301"></a>
+<span class="sourceLineNo">302</span>                return CollectionUtils.asHashSet(languages);<a name="line.302"></a>
+<span class="sourceLineNo">303</span>        }<a name="line.303"></a>
+<span class="sourceLineNo">304</span><a name="line.304"></a>
+<span class="sourceLineNo">305</span>        /**<a name="line.305"></a>
+<span class="sourceLineNo">306</span>         * Returns all commits that were found for the given revision. An empty list is<a name="line.306"></a>
+<span class="sourceLineNo">307</span>         * returned if the revision was not found, more than one commit might be<a name="line.307"></a>
+<span class="sourceLineNo">308</span>         * returned in case of multiple repositories.<a name="line.308"></a>
+<span class="sourceLineNo">309</span>         */<a name="line.309"></a>
+<span class="sourceLineNo">310</span>        @SuppressWarnings("unchecked")<a name="line.310"></a>
+<span class="sourceLineNo">311</span>        public List&lt;CommitDescriptor&gt; getCommitsForRevision(String projectName, ServerDetails serverDetails,<a name="line.311"></a>
+<span class="sourceLineNo">312</span>                        String revision) throws ServiceCallException {<a name="line.312"></a>
+<span class="sourceLineNo">313</span>                List&lt;CommitDescriptor&gt; commits = ServiceClientCallable.withHttpClient(getHttpClient(serverDetails),<a name="line.313"></a>
+<span class="sourceLineNo">314</span>                                ServiceClientCallable.uniformPathGetCall("repository-timestamp-by-revision", List.class, revision,<a name="line.314"></a>
+<span class="sourceLineNo">315</span>                                                projectName, serverDetails));<a name="line.315"></a>
+<span class="sourceLineNo">316</span>                if (commits == null) {<a name="line.316"></a>
+<span class="sourceLineNo">317</span>                        return Collections.emptyList();<a name="line.317"></a>
+<span class="sourceLineNo">318</span>                }<a name="line.318"></a>
+<span class="sourceLineNo">319</span>                return commits;<a name="line.319"></a>
+<span class="sourceLineNo">320</span>        }<a name="line.320"></a>
+<span class="sourceLineNo">321</span><a name="line.321"></a>
+<span class="sourceLineNo">322</span>        public PreCommitServerLimits getPreCommitServerLimits(ServerDetails serverDetails) throws ServiceCallException {<a name="line.322"></a>
+<span class="sourceLineNo">323</span>                CCSMAssert.isNotNull(serverDetails, "Parameter 'serverDetails' must not be null");<a name="line.323"></a>
+<span class="sourceLineNo">324</span>                return ServiceClientCallable.withHttpClient(getHttpClient(serverDetails), ServiceClientCallable<a name="line.324"></a>
+<span class="sourceLineNo">325</span>                                .uniformPathGetCall("pre-commit-server-limits", PreCommitServerLimits.class, "", null, serverDetails));<a name="line.325"></a>
+<span class="sourceLineNo">326</span>        }<a name="line.326"></a>
+<span class="sourceLineNo">327</span><a name="line.327"></a>
+<span class="sourceLineNo">328</span>        /** Returns the name of all baselines for a given Teamscale project. */<a name="line.328"></a>
+<span class="sourceLineNo">329</span>        public String[] getBaselines(String projectName, ServerDetails serverDetails) throws ServiceCallException {<a name="line.329"></a>
+<span class="sourceLineNo">330</span>                return ServiceClientUtils.simpleGetCall("baselines", String[].class, projectName, serverDetails);<a name="line.330"></a>
+<span class="sourceLineNo">331</span>        }<a name="line.331"></a>
+<span class="sourceLineNo">332</span>}<a name="line.332"></a>
 
 
 

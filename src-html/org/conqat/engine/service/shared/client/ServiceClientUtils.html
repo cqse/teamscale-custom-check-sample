@@ -280,7 +280,7 @@
 <span class="sourceLineNo">272</span>                url = ServiceUtils.padSlash(url);<a name="line.272"></a>
 <span class="sourceLineNo">273</span><a name="line.273"></a>
 <span class="sourceLineNo">274</span>                if (projectName != null) {<a name="line.274"></a>
-<span class="sourceLineNo">275</span>                        url += ServiceConstants.LEGACY_PROJECT_PREFIX + projectName + "/";<a name="line.275"></a>
+<span class="sourceLineNo">275</span>                        url += ServiceUtils.padSlash(ServiceConstants.LEGACY_PROJECT_PREFIX + projectName);<a name="line.275"></a>
 <span class="sourceLineNo">276</span>                }<a name="line.276"></a>
 <span class="sourceLineNo">277</span>                url = ServiceUtils.padSlash(url);<a name="line.277"></a>
 <span class="sourceLineNo">278</span><a name="line.278"></a>
@@ -391,64 +391,67 @@
 <span class="sourceLineNo">383</span>                        switch (statusCode) {<a name="line.383"></a>
 <span class="sourceLineNo">384</span>                        case HttpStatus.SC_OK:<a name="line.384"></a>
 <span class="sourceLineNo">385</span>                                return deriveResponseOnSuccess(resultClass, response);<a name="line.385"></a>
-<span class="sourceLineNo">386</span>                        case HttpStatus.SC_NOT_FOUND:<a name="line.386"></a>
+<span class="sourceLineNo">386</span>                        case HttpStatus.SC_NO_CONTENT:<a name="line.386"></a>
 <span class="sourceLineNo">387</span>                                return null;<a name="line.387"></a>
-<span class="sourceLineNo">388</span>                        default:<a name="line.388"></a>
-<span class="sourceLineNo">389</span>                                String responseBody = EntityUtils.toString(response.getEntity());<a name="line.389"></a>
-<span class="sourceLineNo">390</span>                                throw new ServiceCallException(<a name="line.390"></a>
-<span class="sourceLineNo">391</span>                                                "Service returned with status code " + statusCode + ". "<a name="line.391"></a>
-<span class="sourceLineNo">392</span>                                                                + response.getStatusLine().getReasonPhrase() + "\n" + responseBody,<a name="line.392"></a>
-<span class="sourceLineNo">393</span>                                                statusCode, responseBody);<a name="line.393"></a>
-<span class="sourceLineNo">394</span>                        }<a name="line.394"></a>
-<span class="sourceLineNo">395</span>                } catch (IOException | IllegalArgumentException e) {<a name="line.395"></a>
-<span class="sourceLineNo">396</span>                        // IllegalArgumentException raised when the server port is illegal. Note that<a name="line.396"></a>
-<span class="sourceLineNo">397</span>                        // this will also catch IllegalArgumentExceptions thrown for other reasons.<a name="line.397"></a>
-<span class="sourceLineNo">398</span>                        throw new ServiceCallException("Service call " + request.getURI() + " failed:" + e.getMessage(), e);<a name="line.398"></a>
-<span class="sourceLineNo">399</span>                }<a name="line.399"></a>
-<span class="sourceLineNo">400</span>        }<a name="line.400"></a>
-<span class="sourceLineNo">401</span><a name="line.401"></a>
-<span class="sourceLineNo">402</span>        /**<a name="line.402"></a>
-<span class="sourceLineNo">403</span>         * Derive the appropriate type of response to a successful service request<a name="line.403"></a>
-<span class="sourceLineNo">404</span>         */<a name="line.404"></a>
-<span class="sourceLineNo">405</span>        @SuppressWarnings("unchecked")<a name="line.405"></a>
-<span class="sourceLineNo">406</span>        private static &lt;T&gt; T deriveResponseOnSuccess(Class&lt;T&gt; resultClass, HttpResponse response) throws IOException {<a name="line.406"></a>
-<span class="sourceLineNo">407</span>                if (resultClass == String.class) {<a name="line.407"></a>
-<span class="sourceLineNo">408</span>                        return (T) EntityUtils.toString(response.getEntity());<a name="line.408"></a>
-<span class="sourceLineNo">409</span>                }<a name="line.409"></a>
-<span class="sourceLineNo">410</span>                if (resultClass == byte[].class) {<a name="line.410"></a>
-<span class="sourceLineNo">411</span>                        return (T) EntityUtils.toByteArray(response.getEntity());<a name="line.411"></a>
-<span class="sourceLineNo">412</span>                }<a name="line.412"></a>
-<span class="sourceLineNo">413</span><a name="line.413"></a>
-<span class="sourceLineNo">414</span>                return XmlSerializationUtils.deserializeFromXML(EntityUtils.toString(response.getEntity()), resultClass);<a name="line.414"></a>
-<span class="sourceLineNo">415</span>        }<a name="line.415"></a>
-<span class="sourceLineNo">416</span><a name="line.416"></a>
-<span class="sourceLineNo">417</span>        /**<a name="line.417"></a>
-<span class="sourceLineNo">418</span>         * Creates a HTTP context for preemptive basic authentication, i.e. without<a name="line.418"></a>
-<span class="sourceLineNo">419</span>         * waiting for a server authentication request.&lt;/a&gt;.<a name="line.419"></a>
-<span class="sourceLineNo">420</span>         */<a name="line.420"></a>
-<span class="sourceLineNo">421</span>        public static HttpClientContext createPreemptiveAuthContext(HttpRequestBase request) {<a name="line.421"></a>
-<span class="sourceLineNo">422</span>                URI uri = request.getURI();<a name="line.422"></a>
-<span class="sourceLineNo">423</span>                AuthCache authCache = new BasicAuthCache();<a name="line.423"></a>
-<span class="sourceLineNo">424</span>                authCache.put(new HttpHost(uri.getHost(), uri.getPort(), uri.getScheme()), new BasicScheme());<a name="line.424"></a>
-<span class="sourceLineNo">425</span>                HttpClientContext context = HttpClientContext.create();<a name="line.425"></a>
-<span class="sourceLineNo">426</span>                context.setAuthCache(authCache);<a name="line.426"></a>
-<span class="sourceLineNo">427</span>                return context;<a name="line.427"></a>
-<span class="sourceLineNo">428</span>        }<a name="line.428"></a>
-<span class="sourceLineNo">429</span><a name="line.429"></a>
-<span class="sourceLineNo">430</span>        /**<a name="line.430"></a>
-<span class="sourceLineNo">431</span>         * Creates a multi-part entity that uploads the given files under the given<a name="line.431"></a>
-<span class="sourceLineNo">432</span>         * request parameter.<a name="line.432"></a>
-<span class="sourceLineNo">433</span>         */<a name="line.433"></a>
-<span class="sourceLineNo">434</span>        public static HttpEntity createMultiPartEntity(String parameterName, List&lt;File&gt; files) {<a name="line.434"></a>
-<span class="sourceLineNo">435</span>                MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();<a name="line.435"></a>
-<span class="sourceLineNo">436</span>                for (File file : files) {<a name="line.436"></a>
-<span class="sourceLineNo">437</span>                        FormBodyPart bodyPart = FormBodyPartBuilder<a name="line.437"></a>
-<span class="sourceLineNo">438</span>                                        .create(parameterName, new FileBody(file, ContentType.APPLICATION_OCTET_STREAM)).build();<a name="line.438"></a>
-<span class="sourceLineNo">439</span>                        multipartEntityBuilder.addPart(bodyPart);<a name="line.439"></a>
-<span class="sourceLineNo">440</span>                }<a name="line.440"></a>
-<span class="sourceLineNo">441</span>                return multipartEntityBuilder.build();<a name="line.441"></a>
-<span class="sourceLineNo">442</span>        }<a name="line.442"></a>
-<span class="sourceLineNo">443</span>}<a name="line.443"></a>
+<span class="sourceLineNo">388</span>                        case HttpStatus.SC_NOT_FOUND:<a name="line.388"></a>
+<span class="sourceLineNo">389</span>                                return null;<a name="line.389"></a>
+<span class="sourceLineNo">390</span>                        default:<a name="line.390"></a>
+<span class="sourceLineNo">391</span>                                String responseBody = EntityUtils.toString(response.getEntity());<a name="line.391"></a>
+<span class="sourceLineNo">392</span>                                throw new ServiceCallException(<a name="line.392"></a>
+<span class="sourceLineNo">393</span>                                                "Service returned with status code " + statusCode + ". "<a name="line.393"></a>
+<span class="sourceLineNo">394</span>                                                                + response.getStatusLine().getReasonPhrase() + "\n" + responseBody,<a name="line.394"></a>
+<span class="sourceLineNo">395</span>                                                statusCode, responseBody);<a name="line.395"></a>
+<span class="sourceLineNo">396</span>                        }<a name="line.396"></a>
+<span class="sourceLineNo">397</span>                } catch (IOException | IllegalArgumentException e) {<a name="line.397"></a>
+<span class="sourceLineNo">398</span>                        // IllegalArgumentException raised when the server port is illegal. Note that<a name="line.398"></a>
+<span class="sourceLineNo">399</span>                        // this will also catch IllegalArgumentExceptions thrown for other reasons.<a name="line.399"></a>
+<span class="sourceLineNo">400</span>                        throw new ServiceCallException("Service call " + request.getURI() + " failed:" + e.getMessage(), e);<a name="line.400"></a>
+<span class="sourceLineNo">401</span>                }<a name="line.401"></a>
+<span class="sourceLineNo">402</span>        }<a name="line.402"></a>
+<span class="sourceLineNo">403</span><a name="line.403"></a>
+<span class="sourceLineNo">404</span>        /**<a name="line.404"></a>
+<span class="sourceLineNo">405</span>         * Derive the appropriate type of response to a successful service request<a name="line.405"></a>
+<span class="sourceLineNo">406</span>         */<a name="line.406"></a>
+<span class="sourceLineNo">407</span>        @SuppressWarnings("unchecked")<a name="line.407"></a>
+<span class="sourceLineNo">408</span>        private static &lt;T&gt; T deriveResponseOnSuccess(Class&lt;T&gt; resultClass, HttpResponse response) throws IOException {<a name="line.408"></a>
+<span class="sourceLineNo">409</span>                if (resultClass == String.class) {<a name="line.409"></a>
+<span class="sourceLineNo">410</span>                        return (T) EntityUtils.toString(response.getEntity());<a name="line.410"></a>
+<span class="sourceLineNo">411</span>                }<a name="line.411"></a>
+<span class="sourceLineNo">412</span>                if (resultClass == byte[].class) {<a name="line.412"></a>
+<span class="sourceLineNo">413</span>                        return (T) EntityUtils.toByteArray(response.getEntity());<a name="line.413"></a>
+<span class="sourceLineNo">414</span>                }<a name="line.414"></a>
+<span class="sourceLineNo">415</span><a name="line.415"></a>
+<span class="sourceLineNo">416</span>                return XmlSerializationUtils.deserializeFromXML(EntityUtils.toString(response.getEntity()), resultClass);<a name="line.416"></a>
+<span class="sourceLineNo">417</span>        }<a name="line.417"></a>
+<span class="sourceLineNo">418</span><a name="line.418"></a>
+<span class="sourceLineNo">419</span>        /**<a name="line.419"></a>
+<span class="sourceLineNo">420</span>         * Creates a HTTP context for preemptive basic authentication, i.e. without<a name="line.420"></a>
+<span class="sourceLineNo">421</span>         * waiting for a server authentication request.&lt;/a&gt;.<a name="line.421"></a>
+<span class="sourceLineNo">422</span>         */<a name="line.422"></a>
+<span class="sourceLineNo">423</span>        public static HttpClientContext createPreemptiveAuthContext(HttpRequestBase request) {<a name="line.423"></a>
+<span class="sourceLineNo">424</span>                URI uri = request.getURI();<a name="line.424"></a>
+<span class="sourceLineNo">425</span>                AuthCache authCache = new BasicAuthCache();<a name="line.425"></a>
+<span class="sourceLineNo">426</span>                authCache.put(new HttpHost(uri.getHost(), uri.getPort(), uri.getScheme()), new BasicScheme());<a name="line.426"></a>
+<span class="sourceLineNo">427</span>                HttpClientContext context = HttpClientContext.create();<a name="line.427"></a>
+<span class="sourceLineNo">428</span>                context.setAuthCache(authCache);<a name="line.428"></a>
+<span class="sourceLineNo">429</span>                return context;<a name="line.429"></a>
+<span class="sourceLineNo">430</span>        }<a name="line.430"></a>
+<span class="sourceLineNo">431</span><a name="line.431"></a>
+<span class="sourceLineNo">432</span>        /**<a name="line.432"></a>
+<span class="sourceLineNo">433</span>         * Creates a multi-part entity that uploads the given files under the given<a name="line.433"></a>
+<span class="sourceLineNo">434</span>         * request parameter.<a name="line.434"></a>
+<span class="sourceLineNo">435</span>         */<a name="line.435"></a>
+<span class="sourceLineNo">436</span>        public static HttpEntity createMultiPartEntity(String parameterName, List&lt;File&gt; files) {<a name="line.436"></a>
+<span class="sourceLineNo">437</span>                MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();<a name="line.437"></a>
+<span class="sourceLineNo">438</span>                for (File file : files) {<a name="line.438"></a>
+<span class="sourceLineNo">439</span>                        FormBodyPart bodyPart = FormBodyPartBuilder<a name="line.439"></a>
+<span class="sourceLineNo">440</span>                                        .create(parameterName, new FileBody(file, ContentType.APPLICATION_OCTET_STREAM)).build();<a name="line.440"></a>
+<span class="sourceLineNo">441</span>                        multipartEntityBuilder.addPart(bodyPart);<a name="line.441"></a>
+<span class="sourceLineNo">442</span>                }<a name="line.442"></a>
+<span class="sourceLineNo">443</span>                return multipartEntityBuilder.build();<a name="line.443"></a>
+<span class="sourceLineNo">444</span>        }<a name="line.444"></a>
+<span class="sourceLineNo">445</span><a name="line.445"></a>
+<span class="sourceLineNo">446</span>}<a name="line.446"></a>
 
 
 

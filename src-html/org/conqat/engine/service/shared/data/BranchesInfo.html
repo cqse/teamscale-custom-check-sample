@@ -30,108 +30,112 @@
 <span class="sourceLineNo">022</span>import java.util.List;<a name="line.22"></a>
 <span class="sourceLineNo">023</span>import java.util.Map;<a name="line.23"></a>
 <span class="sourceLineNo">024</span><a name="line.24"></a>
-<span class="sourceLineNo">025</span>import org.apache.commons.lang3.builder.ToStringBuilder;<a name="line.25"></a>
-<span class="sourceLineNo">026</span>import org.apache.commons.lang3.builder.ToStringStyle;<a name="line.26"></a>
-<span class="sourceLineNo">027</span>import org.conqat.engine.index.shared.GitUtils;<a name="line.27"></a>
-<span class="sourceLineNo">028</span>import org.conqat.lib.commons.js_export.ExportToJavaScript;<a name="line.28"></a>
-<span class="sourceLineNo">029</span><a name="line.29"></a>
-<span class="sourceLineNo">030</span>import com.fasterxml.jackson.annotation.JsonProperty;<a name="line.30"></a>
-<span class="sourceLineNo">031</span><a name="line.31"></a>
-<span class="sourceLineNo">032</span>/**<a name="line.32"></a>
-<span class="sourceLineNo">033</span> * Transport class for the branches of a project.<a name="line.33"></a>
-<span class="sourceLineNo">034</span> *<a name="line.34"></a>
-<span class="sourceLineNo">035</span> * &lt;strong&gt;This class is used for communication with IDE clients (via the @link<a name="line.35"></a>
-<span class="sourceLineNo">036</span> * {@link org.conqat.engine.service.shared.client.IdeServiceClient}, special<a name="line.36"></a>
-<span class="sourceLineNo">037</span> * care has to be taken when changing its signature!&lt;/strong&gt;<a name="line.37"></a>
-<span class="sourceLineNo">038</span> */<a name="line.38"></a>
-<span class="sourceLineNo">039</span>@ExportToJavaScript<a name="line.39"></a>
-<span class="sourceLineNo">040</span>public class BranchesInfo {<a name="line.40"></a>
-<span class="sourceLineNo">041</span><a name="line.41"></a>
-<span class="sourceLineNo">042</span>        /**<a name="line.42"></a>
-<span class="sourceLineNo">043</span>         * Name of the default branch. This is called "main" branch for history reasons<a name="line.43"></a>
-<span class="sourceLineNo">044</span>         * and we decided to keep as is, as we otherwise need migrations and new<a name="line.44"></a>
-<span class="sourceLineNo">045</span>         * versions for the IDE plugins.<a name="line.45"></a>
-<span class="sourceLineNo">046</span>         */<a name="line.46"></a>
-<span class="sourceLineNo">047</span>        @JsonProperty("mainBranchName")<a name="line.47"></a>
-<span class="sourceLineNo">048</span>        private final String mainBranchName;<a name="line.48"></a>
-<span class="sourceLineNo">049</span><a name="line.49"></a>
-<span class="sourceLineNo">050</span>        /**<a name="line.50"></a>
-<span class="sourceLineNo">051</span>         * The names of all available active branches, including the default branch, but<a name="line.51"></a>
-<span class="sourceLineNo">052</span>         * excluding deleted and anonymous branches.<a name="line.52"></a>
-<span class="sourceLineNo">053</span>         */<a name="line.53"></a>
-<span class="sourceLineNo">054</span>        @JsonProperty("branchNames")<a name="line.54"></a>
-<span class="sourceLineNo">055</span>        private final List&lt;String&gt; branchNames = new ArrayList&lt;&gt;();<a name="line.55"></a>
-<span class="sourceLineNo">056</span><a name="line.56"></a>
-<span class="sourceLineNo">057</span>        /** The names of deleted/inactive branches. */<a name="line.57"></a>
-<span class="sourceLineNo">058</span>        @JsonProperty("deletedBranches")<a name="line.58"></a>
-<span class="sourceLineNo">059</span>        private final List&lt;String&gt; deletedBranches = new ArrayList&lt;&gt;();<a name="line.59"></a>
-<span class="sourceLineNo">060</span><a name="line.60"></a>
-<span class="sourceLineNo">061</span>        /** A list of anonymous branches or an empty list if non exist. */<a name="line.61"></a>
-<span class="sourceLineNo">062</span>        @JsonProperty("anonymousBranches")<a name="line.62"></a>
-<span class="sourceLineNo">063</span>        private final List&lt;String&gt; anonymousBranches = new ArrayList&lt;&gt;();<a name="line.63"></a>
-<span class="sourceLineNo">064</span><a name="line.64"></a>
-<span class="sourceLineNo">065</span>        /**<a name="line.65"></a>
-<span class="sourceLineNo">066</span>         * This maps aliases to branch names. The aliases are displayed in the UI,<a name="line.66"></a>
-<span class="sourceLineNo">067</span>         * instead of the branch name.<a name="line.67"></a>
-<span class="sourceLineNo">068</span>         */<a name="line.68"></a>
-<span class="sourceLineNo">069</span>        @JsonProperty("aliases")<a name="line.69"></a>
-<span class="sourceLineNo">070</span>        private final Map&lt;String, String&gt; aliases = new HashMap&lt;&gt;();<a name="line.70"></a>
-<span class="sourceLineNo">071</span><a name="line.71"></a>
-<span class="sourceLineNo">072</span>        /** Empty constructor for serialization purposes */<a name="line.72"></a>
-<span class="sourceLineNo">073</span>        public BranchesInfo() {<a name="line.73"></a>
-<span class="sourceLineNo">074</span>                this("", Collections.emptyList(), Collections.emptyList());<a name="line.74"></a>
-<span class="sourceLineNo">075</span>        }<a name="line.75"></a>
-<span class="sourceLineNo">076</span><a name="line.76"></a>
-<span class="sourceLineNo">077</span>        public BranchesInfo(String defaultBranchName, List&lt;String&gt; branchNames, List&lt;String&gt; deletedBranches) {<a name="line.77"></a>
-<span class="sourceLineNo">078</span>                this.mainBranchName = defaultBranchName;<a name="line.78"></a>
-<span class="sourceLineNo">079</span><a name="line.79"></a>
-<span class="sourceLineNo">080</span>                copyNonAnonymousBranches(branchNames, this.branchNames);<a name="line.80"></a>
-<span class="sourceLineNo">081</span>                copyNonAnonymousBranches(deletedBranches, this.deletedBranches);<a name="line.81"></a>
-<span class="sourceLineNo">082</span>        }<a name="line.82"></a>
-<span class="sourceLineNo">083</span><a name="line.83"></a>
-<span class="sourceLineNo">084</span>        /**<a name="line.84"></a>
-<span class="sourceLineNo">085</span>         * Copies all non-anonymous branches from source to target. Anonymous branches<a name="line.85"></a>
-<span class="sourceLineNo">086</span>         * are stored in {@link #anonymousBranches}.<a name="line.86"></a>
-<span class="sourceLineNo">087</span>         */<a name="line.87"></a>
-<span class="sourceLineNo">088</span>        private void copyNonAnonymousBranches(List&lt;String&gt; sourceBranches, List&lt;String&gt; targetBranches) {<a name="line.88"></a>
-<span class="sourceLineNo">089</span>                for (String branchName : sourceBranches) {<a name="line.89"></a>
-<span class="sourceLineNo">090</span>                        if (branchName.startsWith(GitUtils.ANONYMOUS_BRANCH_NAME)) {<a name="line.90"></a>
-<span class="sourceLineNo">091</span>                                anonymousBranches.add(branchName);<a name="line.91"></a>
-<span class="sourceLineNo">092</span>                        } else {<a name="line.92"></a>
-<span class="sourceLineNo">093</span>                                targetBranches.add(branchName);<a name="line.93"></a>
-<span class="sourceLineNo">094</span>                        }<a name="line.94"></a>
-<span class="sourceLineNo">095</span>                }<a name="line.95"></a>
-<span class="sourceLineNo">096</span>        }<a name="line.96"></a>
-<span class="sourceLineNo">097</span><a name="line.97"></a>
-<span class="sourceLineNo">098</span>        /** @see #aliases */<a name="line.98"></a>
-<span class="sourceLineNo">099</span>        public void addBranchAlias(String branch, String alias) {<a name="line.99"></a>
-<span class="sourceLineNo">100</span>                aliases.put(branch, alias);<a name="line.100"></a>
-<span class="sourceLineNo">101</span>        }<a name="line.101"></a>
-<span class="sourceLineNo">102</span><a name="line.102"></a>
-<span class="sourceLineNo">103</span>        /** @see #mainBranchName */<a name="line.103"></a>
-<span class="sourceLineNo">104</span>        public String getDefaultBranchName() {<a name="line.104"></a>
-<span class="sourceLineNo">105</span>                return mainBranchName;<a name="line.105"></a>
-<span class="sourceLineNo">106</span>        }<a name="line.106"></a>
-<span class="sourceLineNo">107</span><a name="line.107"></a>
-<span class="sourceLineNo">108</span>        /** Returns the union of all branch names. */<a name="line.108"></a>
-<span class="sourceLineNo">109</span>        public List&lt;String&gt; getAllBranchNames() {<a name="line.109"></a>
-<span class="sourceLineNo">110</span>                List&lt;String&gt; allBranchNames = new ArrayList&lt;&gt;(branchNames);<a name="line.110"></a>
+<span class="sourceLineNo">025</span>import org.conqat.engine.index.shared.GitUtils;<a name="line.25"></a>
+<span class="sourceLineNo">026</span>import org.conqat.lib.commons.js_export.ExportToJavaScript;<a name="line.26"></a>
+<span class="sourceLineNo">027</span><a name="line.27"></a>
+<span class="sourceLineNo">028</span>import com.fasterxml.jackson.annotation.JsonProperty;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>import com.teamscale.commons.lang.ToStringHelpers;<a name="line.29"></a>
+<span class="sourceLineNo">030</span><a name="line.30"></a>
+<span class="sourceLineNo">031</span>/**<a name="line.31"></a>
+<span class="sourceLineNo">032</span> * Transport class for the branches of a project.<a name="line.32"></a>
+<span class="sourceLineNo">033</span> *<a name="line.33"></a>
+<span class="sourceLineNo">034</span> * &lt;strong&gt;This class is used for communication with IDE clients (via the @link<a name="line.34"></a>
+<span class="sourceLineNo">035</span> * {@link org.conqat.engine.service.shared.client.IdeServiceClient}, special<a name="line.35"></a>
+<span class="sourceLineNo">036</span> * care has to be taken when changing its signature!&lt;/strong&gt;<a name="line.36"></a>
+<span class="sourceLineNo">037</span> */<a name="line.37"></a>
+<span class="sourceLineNo">038</span>@ExportToJavaScript<a name="line.38"></a>
+<span class="sourceLineNo">039</span>public class BranchesInfo {<a name="line.39"></a>
+<span class="sourceLineNo">040</span><a name="line.40"></a>
+<span class="sourceLineNo">041</span>        /**<a name="line.41"></a>
+<span class="sourceLineNo">042</span>         * Name of the default branch. This is called "main" branch for history reasons<a name="line.42"></a>
+<span class="sourceLineNo">043</span>         * and we decided to keep as is, as we otherwise need migrations and new<a name="line.43"></a>
+<span class="sourceLineNo">044</span>         * versions for the IDE plugins.<a name="line.44"></a>
+<span class="sourceLineNo">045</span>         */<a name="line.45"></a>
+<span class="sourceLineNo">046</span>        @JsonProperty("mainBranchName")<a name="line.46"></a>
+<span class="sourceLineNo">047</span>        private final String mainBranchName;<a name="line.47"></a>
+<span class="sourceLineNo">048</span><a name="line.48"></a>
+<span class="sourceLineNo">049</span>        /**<a name="line.49"></a>
+<span class="sourceLineNo">050</span>         * The names of all available active branches, including the default branch, but<a name="line.50"></a>
+<span class="sourceLineNo">051</span>         * excluding deleted and anonymous branches.<a name="line.51"></a>
+<span class="sourceLineNo">052</span>         */<a name="line.52"></a>
+<span class="sourceLineNo">053</span>        @JsonProperty("branchNames")<a name="line.53"></a>
+<span class="sourceLineNo">054</span>        private final List&lt;String&gt; branchNames = new ArrayList&lt;&gt;();<a name="line.54"></a>
+<span class="sourceLineNo">055</span><a name="line.55"></a>
+<span class="sourceLineNo">056</span>        /** The names of deleted/inactive branches. */<a name="line.56"></a>
+<span class="sourceLineNo">057</span>        @JsonProperty("deletedBranches")<a name="line.57"></a>
+<span class="sourceLineNo">058</span>        private final List&lt;String&gt; deletedBranches = new ArrayList&lt;&gt;();<a name="line.58"></a>
+<span class="sourceLineNo">059</span><a name="line.59"></a>
+<span class="sourceLineNo">060</span>        /** A list of anonymous branches or an empty list if non exist. */<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        @JsonProperty("anonymousBranches")<a name="line.61"></a>
+<span class="sourceLineNo">062</span>        private final List&lt;String&gt; anonymousBranches = new ArrayList&lt;&gt;();<a name="line.62"></a>
+<span class="sourceLineNo">063</span><a name="line.63"></a>
+<span class="sourceLineNo">064</span>        /**<a name="line.64"></a>
+<span class="sourceLineNo">065</span>         * This maps aliases to branch names. The aliases are displayed in the UI,<a name="line.65"></a>
+<span class="sourceLineNo">066</span>         * instead of the branch name.<a name="line.66"></a>
+<span class="sourceLineNo">067</span>         */<a name="line.67"></a>
+<span class="sourceLineNo">068</span>        @JsonProperty("aliases")<a name="line.68"></a>
+<span class="sourceLineNo">069</span>        private final Map&lt;String, String&gt; aliases = new HashMap&lt;&gt;();<a name="line.69"></a>
+<span class="sourceLineNo">070</span><a name="line.70"></a>
+<span class="sourceLineNo">071</span>        /** Empty constructor for serialization purposes */<a name="line.71"></a>
+<span class="sourceLineNo">072</span>        public BranchesInfo() {<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                this("", Collections.emptyList(), Collections.emptyList());<a name="line.73"></a>
+<span class="sourceLineNo">074</span>        }<a name="line.74"></a>
+<span class="sourceLineNo">075</span><a name="line.75"></a>
+<span class="sourceLineNo">076</span>        public BranchesInfo(String defaultBranchName, List&lt;String&gt; branchNames, List&lt;String&gt; deletedBranches) {<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                this.mainBranchName = defaultBranchName;<a name="line.77"></a>
+<span class="sourceLineNo">078</span><a name="line.78"></a>
+<span class="sourceLineNo">079</span>                copyNonAnonymousBranches(branchNames, this.branchNames);<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                copyNonAnonymousBranches(deletedBranches, this.deletedBranches);<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        }<a name="line.81"></a>
+<span class="sourceLineNo">082</span><a name="line.82"></a>
+<span class="sourceLineNo">083</span>        /**<a name="line.83"></a>
+<span class="sourceLineNo">084</span>         * Copies all non-anonymous branches from source to target. Anonymous branches<a name="line.84"></a>
+<span class="sourceLineNo">085</span>         * are stored in {@link #anonymousBranches}.<a name="line.85"></a>
+<span class="sourceLineNo">086</span>         */<a name="line.86"></a>
+<span class="sourceLineNo">087</span>        private void copyNonAnonymousBranches(List&lt;String&gt; sourceBranches, List&lt;String&gt; targetBranches) {<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                for (String branchName : sourceBranches) {<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                        if (branchName.startsWith(GitUtils.ANONYMOUS_BRANCH_NAME)) {<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                                anonymousBranches.add(branchName);<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                        } else {<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                                targetBranches.add(branchName);<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                        }<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                }<a name="line.94"></a>
+<span class="sourceLineNo">095</span>        }<a name="line.95"></a>
+<span class="sourceLineNo">096</span><a name="line.96"></a>
+<span class="sourceLineNo">097</span>        /** @see #aliases */<a name="line.97"></a>
+<span class="sourceLineNo">098</span>        public void addBranchAlias(String branch, String alias) {<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                aliases.put(branch, alias);<a name="line.99"></a>
+<span class="sourceLineNo">100</span>        }<a name="line.100"></a>
+<span class="sourceLineNo">101</span><a name="line.101"></a>
+<span class="sourceLineNo">102</span>        /** @see #aliases */<a name="line.102"></a>
+<span class="sourceLineNo">103</span>        public Map&lt;String, String&gt; getAliases() {<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                return Collections.unmodifiableMap(aliases);<a name="line.104"></a>
+<span class="sourceLineNo">105</span>        }<a name="line.105"></a>
+<span class="sourceLineNo">106</span><a name="line.106"></a>
+<span class="sourceLineNo">107</span>        /** @see #mainBranchName */<a name="line.107"></a>
+<span class="sourceLineNo">108</span>        public String getDefaultBranchName() {<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                return mainBranchName;<a name="line.109"></a>
+<span class="sourceLineNo">110</span>        }<a name="line.110"></a>
 <span class="sourceLineNo">111</span><a name="line.111"></a>
-<span class="sourceLineNo">112</span>                // prevent NPE for deserialized objects (https://jira.cqse.eu/browse/TS-18489)<a name="line.112"></a>
-<span class="sourceLineNo">113</span>                if (deletedBranches != null) {<a name="line.113"></a>
-<span class="sourceLineNo">114</span>                        allBranchNames.addAll(deletedBranches);<a name="line.114"></a>
-<span class="sourceLineNo">115</span>                }<a name="line.115"></a>
-<span class="sourceLineNo">116</span>                if (anonymousBranches != null) {<a name="line.116"></a>
-<span class="sourceLineNo">117</span>                        allBranchNames.addAll(anonymousBranches);<a name="line.117"></a>
-<span class="sourceLineNo">118</span>                }<a name="line.118"></a>
-<span class="sourceLineNo">119</span>                return allBranchNames;<a name="line.119"></a>
-<span class="sourceLineNo">120</span>        }<a name="line.120"></a>
-<span class="sourceLineNo">121</span><a name="line.121"></a>
-<span class="sourceLineNo">122</span>        @Override<a name="line.122"></a>
-<span class="sourceLineNo">123</span>        public String toString() {<a name="line.123"></a>
-<span class="sourceLineNo">124</span>                return ToStringBuilder.reflectionToString(this, ToStringStyle.NO_CLASS_NAME_STYLE);<a name="line.124"></a>
-<span class="sourceLineNo">125</span>        }<a name="line.125"></a>
-<span class="sourceLineNo">126</span>}<a name="line.126"></a>
+<span class="sourceLineNo">112</span>        /** Returns the union of all branch names. */<a name="line.112"></a>
+<span class="sourceLineNo">113</span>        public List&lt;String&gt; getAllBranchNames() {<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                List&lt;String&gt; allBranchNames = new ArrayList&lt;&gt;(branchNames);<a name="line.114"></a>
+<span class="sourceLineNo">115</span><a name="line.115"></a>
+<span class="sourceLineNo">116</span>                // prevent NPE for deserialized objects (https://jira.cqse.eu/browse/TS-18489)<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                if (deletedBranches != null) {<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                        allBranchNames.addAll(deletedBranches);<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                }<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                if (anonymousBranches != null) {<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                        allBranchNames.addAll(anonymousBranches);<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                }<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                return allBranchNames;<a name="line.123"></a>
+<span class="sourceLineNo">124</span>        }<a name="line.124"></a>
+<span class="sourceLineNo">125</span><a name="line.125"></a>
+<span class="sourceLineNo">126</span>        @Override<a name="line.126"></a>
+<span class="sourceLineNo">127</span>        public String toString() {<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                return ToStringHelpers.toReflectiveStringHelper(this).toString();<a name="line.128"></a>
+<span class="sourceLineNo">129</span>        }<a name="line.129"></a>
+<span class="sourceLineNo">130</span>}<a name="line.130"></a>
 
 
 

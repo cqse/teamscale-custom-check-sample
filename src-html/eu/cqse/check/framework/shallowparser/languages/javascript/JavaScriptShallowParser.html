@@ -785,56 +785,55 @@
 <span class="sourceLineNo">777</span>        private void createSwitchCaseRules() {<a name="line.777"></a>
 <span class="sourceLineNo">778</span>                HashSet&lt;ETokenType&gt; literalsAndIdentifiers = new HashSet&lt;&gt;(LITERALS);<a name="line.778"></a>
 <span class="sourceLineNo">779</span>                literalsAndIdentifiers.addAll(IDENTIFIERS);<a name="line.779"></a>
-<span class="sourceLineNo">780</span>                inAnyState().sequence(CASE, literalsAndIdentifiers, COLON)<a name="line.780"></a>
-<span class="sourceLineNo">781</span>                                .createNode(EShallowEntityType.META, new int[] { 0, 1 }).endNode();<a name="line.781"></a>
-<span class="sourceLineNo">782</span>                inAnyState().sequence(CASE).skipToWithNesting(COLON, LPAREN, RPAREN).createNode(EShallowEntityType.META, 0)<a name="line.782"></a>
-<span class="sourceLineNo">783</span>                                .endNode();<a name="line.783"></a>
-<span class="sourceLineNo">784</span><a name="line.784"></a>
-<span class="sourceLineNo">785</span>                inAnyState().sequence(DEFAULT, COLON).createNode(EShallowEntityType.META, 0).endNode();<a name="line.785"></a>
-<span class="sourceLineNo">786</span>        }<a name="line.786"></a>
-<span class="sourceLineNo">787</span><a name="line.787"></a>
-<span class="sourceLineNo">788</span>        /**<a name="line.788"></a>
-<span class="sourceLineNo">789</span>         * Creates a rule for recognizing a statement starting with a single keyword,<a name="line.789"></a>
-<span class="sourceLineNo">790</span>         * optionally followed by an expression in parentheses, and followed by a block<a name="line.790"></a>
-<span class="sourceLineNo">791</span>         * or a single statement.<a name="line.791"></a>
-<span class="sourceLineNo">792</span>         *<a name="line.792"></a>
-<span class="sourceLineNo">793</span>         * @param continuationTokens<a name="line.793"></a>
-<span class="sourceLineNo">794</span>         *            list of tokens that indicate a continued statement if encountered<a name="line.794"></a>
-<span class="sourceLineNo">795</span>         *            after the block. May be null.<a name="line.795"></a>
-<span class="sourceLineNo">796</span>         */<a name="line.796"></a>
-<span class="sourceLineNo">797</span>        private void createBlockRuleWithContinuation(EnumSet&lt;ETokenType&gt; startTokens,<a name="line.797"></a>
-<span class="sourceLineNo">798</span>                        EnumSet&lt;ETokenType&gt; continuationTokens, boolean canBeFollowedByParentheses) {<a name="line.798"></a>
-<span class="sourceLineNo">799</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; alternative = inAnyState().sequence(startTokens)<a name="line.799"></a>
-<span class="sourceLineNo">800</span>                                .createNode(EShallowEntityType.STATEMENT, 0);<a name="line.800"></a>
-<span class="sourceLineNo">801</span>                blockRuleWithContinuationHelper(alternative, continuationTokens, canBeFollowedByParentheses);<a name="line.801"></a>
-<span class="sourceLineNo">802</span>        }<a name="line.802"></a>
-<span class="sourceLineNo">803</span><a name="line.803"></a>
-<span class="sourceLineNo">804</span>        /**<a name="line.804"></a>
-<span class="sourceLineNo">805</span>         * This method extracts shared code for block rules with single (e.g. 'for') and multiple keywords ('else if').<a name="line.805"></a>
-<span class="sourceLineNo">806</span>         * @param alternative recognizer<a name="line.806"></a>
-<span class="sourceLineNo">807</span>         * @param continuationTokens list of tokens that indicate a continued statement if encountered<a name="line.807"></a>
-<span class="sourceLineNo">808</span>         *       *            after the block. May be null.<a name="line.808"></a>
-<span class="sourceLineNo">809</span>         * @param canBeFollowedByParentheses True e.g. for 'if' and 'for', False e.g. for 'else' and 'finally'<a name="line.809"></a>
-<span class="sourceLineNo">810</span>         */<a name="line.810"></a>
-<span class="sourceLineNo">811</span>        private void blockRuleWithContinuationHelper(RecognizerBase&lt;EJavaScriptParserStates&gt; alternative,<a name="line.811"></a>
-<span class="sourceLineNo">812</span>                                                                                                 EnumSet&lt;ETokenType&gt; continuationTokens,<a name="line.812"></a>
-<span class="sourceLineNo">813</span>                                                                                                 boolean canBeFollowedByParentheses) {<a name="line.813"></a>
-<span class="sourceLineNo">814</span>                if (canBeFollowedByParentheses) {<a name="line.814"></a>
-<span class="sourceLineNo">815</span>                        alternative = alternative.skipNested(LPAREN, RPAREN, new JavaScriptFunctionRecognizer());<a name="line.815"></a>
-<span class="sourceLineNo">816</span>                }<a name="line.816"></a>
-<span class="sourceLineNo">817</span><a name="line.817"></a>
-<span class="sourceLineNo">818</span>                endWithPossibleContinuation(alternative.sequence(LBRACE).parseUntil(ANY).sequence(RBRACE), continuationTokens);<a name="line.818"></a>
-<span class="sourceLineNo">819</span>                endWithPossibleContinuation(alternative.parseOnce(ANY), continuationTokens);<a name="line.819"></a>
-<span class="sourceLineNo">820</span>        }<a name="line.820"></a>
-<span class="sourceLineNo">821</span><a name="line.821"></a>
-<span class="sourceLineNo">822</span>        /** {@inheritDoc} */<a name="line.822"></a>
-<span class="sourceLineNo">823</span>        @Override<a name="line.823"></a>
-<span class="sourceLineNo">824</span>        protected boolean isFilteredToken(IToken token, IToken previousToken) {<a name="line.824"></a>
-<span class="sourceLineNo">825</span>                // Triple slash directives have ETokenClass COMMENT, but they indicate<a name="line.825"></a>
-<span class="sourceLineNo">826</span>                // TypeScript dependencies. Thus, they should not be filtered out.<a name="line.826"></a>
-<span class="sourceLineNo">827</span>                return super.isFilteredToken(token, previousToken) &amp;&amp; token.getType() != ETokenType.TRIPLE_SLASH_DIRECTIVE;<a name="line.827"></a>
-<span class="sourceLineNo">828</span>        }<a name="line.828"></a>
-<span class="sourceLineNo">829</span>}<a name="line.829"></a>
+<span class="sourceLineNo">780</span>                inAnyState().sequence(CASE, literalsAndIdentifiers, COLON).createNode(EShallowEntityType.META, 0).endNode();<a name="line.780"></a>
+<span class="sourceLineNo">781</span>                inAnyState().sequence(CASE).skipToWithNesting(COLON, LPAREN, RPAREN).createNode(EShallowEntityType.META, 0)<a name="line.781"></a>
+<span class="sourceLineNo">782</span>                                .endNode();<a name="line.782"></a>
+<span class="sourceLineNo">783</span><a name="line.783"></a>
+<span class="sourceLineNo">784</span>                inAnyState().sequence(DEFAULT, COLON).createNode(EShallowEntityType.META, 0).endNode();<a name="line.784"></a>
+<span class="sourceLineNo">785</span>        }<a name="line.785"></a>
+<span class="sourceLineNo">786</span><a name="line.786"></a>
+<span class="sourceLineNo">787</span>        /**<a name="line.787"></a>
+<span class="sourceLineNo">788</span>         * Creates a rule for recognizing a statement starting with a single keyword,<a name="line.788"></a>
+<span class="sourceLineNo">789</span>         * optionally followed by an expression in parentheses, and followed by a block<a name="line.789"></a>
+<span class="sourceLineNo">790</span>         * or a single statement.<a name="line.790"></a>
+<span class="sourceLineNo">791</span>         *<a name="line.791"></a>
+<span class="sourceLineNo">792</span>         * @param continuationTokens<a name="line.792"></a>
+<span class="sourceLineNo">793</span>         *            list of tokens that indicate a continued statement if encountered<a name="line.793"></a>
+<span class="sourceLineNo">794</span>         *            after the block. May be null.<a name="line.794"></a>
+<span class="sourceLineNo">795</span>         */<a name="line.795"></a>
+<span class="sourceLineNo">796</span>        private void createBlockRuleWithContinuation(EnumSet&lt;ETokenType&gt; startTokens,<a name="line.796"></a>
+<span class="sourceLineNo">797</span>                        EnumSet&lt;ETokenType&gt; continuationTokens, boolean canBeFollowedByParentheses) {<a name="line.797"></a>
+<span class="sourceLineNo">798</span>                RecognizerBase&lt;EJavaScriptParserStates&gt; alternative = inAnyState().sequence(startTokens)<a name="line.798"></a>
+<span class="sourceLineNo">799</span>                                .createNode(EShallowEntityType.STATEMENT, 0);<a name="line.799"></a>
+<span class="sourceLineNo">800</span>                blockRuleWithContinuationHelper(alternative, continuationTokens, canBeFollowedByParentheses);<a name="line.800"></a>
+<span class="sourceLineNo">801</span>        }<a name="line.801"></a>
+<span class="sourceLineNo">802</span><a name="line.802"></a>
+<span class="sourceLineNo">803</span>        /**<a name="line.803"></a>
+<span class="sourceLineNo">804</span>         * This method extracts shared code for block rules with single (e.g. 'for') and multiple keywords ('else if').<a name="line.804"></a>
+<span class="sourceLineNo">805</span>         * @param alternative recognizer<a name="line.805"></a>
+<span class="sourceLineNo">806</span>         * @param continuationTokens list of tokens that indicate a continued statement if encountered<a name="line.806"></a>
+<span class="sourceLineNo">807</span>         *       *            after the block. May be null.<a name="line.807"></a>
+<span class="sourceLineNo">808</span>         * @param canBeFollowedByParentheses True e.g. for 'if' and 'for', False e.g. for 'else' and 'finally'<a name="line.808"></a>
+<span class="sourceLineNo">809</span>         */<a name="line.809"></a>
+<span class="sourceLineNo">810</span>        private void blockRuleWithContinuationHelper(RecognizerBase&lt;EJavaScriptParserStates&gt; alternative,<a name="line.810"></a>
+<span class="sourceLineNo">811</span>                                                                                                 EnumSet&lt;ETokenType&gt; continuationTokens,<a name="line.811"></a>
+<span class="sourceLineNo">812</span>                                                                                                 boolean canBeFollowedByParentheses) {<a name="line.812"></a>
+<span class="sourceLineNo">813</span>                if (canBeFollowedByParentheses) {<a name="line.813"></a>
+<span class="sourceLineNo">814</span>                        alternative = alternative.skipNested(LPAREN, RPAREN, new JavaScriptFunctionRecognizer());<a name="line.814"></a>
+<span class="sourceLineNo">815</span>                }<a name="line.815"></a>
+<span class="sourceLineNo">816</span><a name="line.816"></a>
+<span class="sourceLineNo">817</span>                endWithPossibleContinuation(alternative.sequence(LBRACE).parseUntil(ANY).sequence(RBRACE), continuationTokens);<a name="line.817"></a>
+<span class="sourceLineNo">818</span>                endWithPossibleContinuation(alternative.parseOnce(ANY), continuationTokens);<a name="line.818"></a>
+<span class="sourceLineNo">819</span>        }<a name="line.819"></a>
+<span class="sourceLineNo">820</span><a name="line.820"></a>
+<span class="sourceLineNo">821</span>        /** {@inheritDoc} */<a name="line.821"></a>
+<span class="sourceLineNo">822</span>        @Override<a name="line.822"></a>
+<span class="sourceLineNo">823</span>        protected boolean isFilteredToken(IToken token, IToken previousToken) {<a name="line.823"></a>
+<span class="sourceLineNo">824</span>                // Triple slash directives have ETokenClass COMMENT, but they indicate<a name="line.824"></a>
+<span class="sourceLineNo">825</span>                // TypeScript dependencies. Thus, they should not be filtered out.<a name="line.825"></a>
+<span class="sourceLineNo">826</span>                return super.isFilteredToken(token, previousToken) &amp;&amp; token.getType() != ETokenType.TRIPLE_SLASH_DIRECTIVE;<a name="line.826"></a>
+<span class="sourceLineNo">827</span>        }<a name="line.827"></a>
+<span class="sourceLineNo">828</span>}<a name="line.828"></a>
 
 
 
