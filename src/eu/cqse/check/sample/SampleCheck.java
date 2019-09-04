@@ -1,7 +1,7 @@
 package eu.cqse.check.sample;
 
 import eu.cqse.check.base.EntityCheckBase;
-import eu.cqse.check.framework.core.ACheck;
+import eu.cqse.check.framework.core.Check;
 import eu.cqse.check.framework.core.CheckException;
 import eu.cqse.check.framework.core.CheckGroupNames;
 import eu.cqse.check.framework.core.ECheckParameter;
@@ -13,7 +13,7 @@ import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;
  * This class is meant to demonstrate a simple custom check for Teamscale. It
  * creates a new finding for every method encountered in the system.
  */
-@ACheck(name = "Sample Check 1", description = "This is a simple sample check, that creates a sample finding for every method in the system.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED, languages = {
+@Check(name = "Sample Check 1", description = "This is a simple sample check, that creates a sample finding for every method in the system.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED, languages = {
 		ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })
 public class SampleCheck extends EntityCheckBase {
 
