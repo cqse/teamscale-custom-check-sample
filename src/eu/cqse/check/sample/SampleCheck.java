@@ -8,6 +8,9 @@ import eu.cqse.check.framework.core.ECheckParameter;
 import eu.cqse.check.framework.core.EFindingEnablement;
 import eu.cqse.check.framework.scanner.ELanguage;
 import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 /**
  * This class is meant to demonstrate a simple custom check for Teamscale. It
@@ -17,7 +20,8 @@ import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;
 		ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })
 public class SampleCheck extends EntityCheckBase {
 
-	/** {@inheritDoc} */
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	@Override
 	protected String getXPathSelectionString() {
 		// Select all methods
@@ -26,9 +30,9 @@ public class SampleCheck extends EntityCheckBase {
 
 	// This method is now called for every entity selected by the XPath
 	// expression in getXPathSelectionString.
-	/** {@inheritDoc} */
 	@Override
 	protected void processEntity(ShallowEntity entity) throws CheckException {
+		LOGGER.info("Checking entity {}", entity);
 		// Create a new finding on the first line of each method.
 		createFindingOnFirstLine("This is a sample finding for method " + entity.getName() + ".", entity);
 	}
