@@ -16,15 +16,9 @@
 +-------------------------------------------------------------------------*/
 package eu.cqse.check.sample;
 
-import java.io.IOException;
-import java.util.stream.Stream;
-
-import org.conqat.lib.commons.test.ManagedTestData;
+import eu.cqse.check.framework.checktest.CheckTestBase;
 import org.conqat.lib.commons.test.ManagedTestDataExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.provider.Arguments;
-
-import eu.cqse.check.framework.checktest.CheckTestBase;
 
 /**
  * Main class for testing the checks in this library.
@@ -32,12 +26,8 @@ import eu.cqse.check.framework.checktest.CheckTestBase;
 @ExtendWith(ManagedTestDataExtension.class)
 public class CheckTest extends CheckTestBase {
 
-	public CheckTest(ManagedTestData managedTestData) {
-		super(managedTestData);
+	public CheckTest() {
+		super(SampleCheck.class);
 	}
 
-	@Override
-	public Stream<Arguments> generateParameters() throws IOException {
-		return CheckTestBase.generateParameters(new CheckTest(testData), SampleCheck.class);
-	}
 }
