@@ -17,7 +17,6 @@
 package eu.cqse.check.sample;
 
 import eu.cqse.check.framework.checktest.CheckTestBase;
-import org.conqat.lib.commons.test.ManagedTestDataExtension;
 
 /**
  * Main class for testing the checks in this library.
