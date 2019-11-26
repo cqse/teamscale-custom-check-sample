@@ -15,16 +15,19 @@
 <span class="sourceLineNo">007</span><a name="line.7"></a>
 <span class="sourceLineNo">008</span>import static java.lang.annotation.RetentionPolicy.RUNTIME;<a name="line.8"></a>
 <span class="sourceLineNo">009</span><a name="line.9"></a>
-<span class="sourceLineNo">010</span>import java.lang.annotation.Retention;<a name="line.10"></a>
-<span class="sourceLineNo">011</span><a name="line.11"></a>
-<span class="sourceLineNo">012</span>import org.atteo.classindex.IndexAnnotated;<a name="line.12"></a>
+<span class="sourceLineNo">010</span>import java.lang.annotation.ElementType;<a name="line.10"></a>
+<span class="sourceLineNo">011</span>import java.lang.annotation.Retention;<a name="line.11"></a>
+<span class="sourceLineNo">012</span>import java.lang.annotation.Target;<a name="line.12"></a>
 <span class="sourceLineNo">013</span><a name="line.13"></a>
-<span class="sourceLineNo">014</span>/** Marks types that should be exported to JavaScript. */<a name="line.14"></a>
-<span class="sourceLineNo">015</span>@Retention(RUNTIME)<a name="line.15"></a>
-<span class="sourceLineNo">016</span>@IndexAnnotated<a name="line.16"></a>
-<span class="sourceLineNo">017</span>public @interface ExportToJavaScript {<a name="line.17"></a>
-<span class="sourceLineNo">018</span>        // This interface servers as a marker, so no methods are needed.<a name="line.18"></a>
-<span class="sourceLineNo">019</span>}<a name="line.19"></a>
+<span class="sourceLineNo">014</span>import org.atteo.classindex.IndexAnnotated;<a name="line.14"></a>
+<span class="sourceLineNo">015</span><a name="line.15"></a>
+<span class="sourceLineNo">016</span>/** Marks types that should be exported to JavaScript. */<a name="line.16"></a>
+<span class="sourceLineNo">017</span>@Retention(RUNTIME)<a name="line.17"></a>
+<span class="sourceLineNo">018</span>@IndexAnnotated<a name="line.18"></a>
+<span class="sourceLineNo">019</span>@Target(ElementType.TYPE)<a name="line.19"></a>
+<span class="sourceLineNo">020</span>public @interface ExportToJavaScript {<a name="line.20"></a>
+<span class="sourceLineNo">021</span>        // This interface servers as a marker, so no methods are needed.<a name="line.21"></a>
+<span class="sourceLineNo">022</span>}<a name="line.22"></a>
 
 
 

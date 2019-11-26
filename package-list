@@ -1,5 +1,7 @@
+com.teamscale.commons.annotation
 com.teamscale.commons.lang
 com.teamscale.core.migration
+com.teamscale.index.utils
 eu.cqse.check
 eu.cqse.check.abap
 eu.cqse.check.base
@@ -17,6 +19,7 @@ eu.cqse.check.framework.postprocessor.cobol
 eu.cqse.check.framework.preprocessor
 eu.cqse.check.framework.preprocessor.abap
 eu.cqse.check.framework.preprocessor.c
+eu.cqse.check.framework.preprocessor.iec61131
 eu.cqse.check.framework.scanner
 eu.cqse.check.framework.scanner.highlighting
 eu.cqse.check.framework.shallowparser
@@ -59,6 +62,7 @@ eu.cqse.check.framework.typetracker.clike
 eu.cqse.check.framework.typetracker.cpp
 eu.cqse.check.framework.typetracker.cs
 eu.cqse.check.framework.typetracker.java
+eu.cqse.check.framework.typetracker.objc
 eu.cqse.check.framework.util
 eu.cqse.check.framework.util.abap
 eu.cqse.check.framework.util.clike
@@ -72,6 +76,7 @@ eu.cqse.check.java
 eu.cqse.check.util
 eu.cqse.check.util.clang
 eu.cqse.check.util.clang.misra
+eu.cqse.check.util.clang.visitors
 org.conqat.engine.commons
 org.conqat.engine.commons.css
 org.conqat.engine.commons.findings
@@ -123,6 +128,7 @@ org.conqat.lib.commons.options
 org.conqat.lib.commons.predicate
 org.conqat.lib.commons.reflect
 org.conqat.lib.commons.region
+org.conqat.lib.commons.resources
 org.conqat.lib.commons.serialization
 org.conqat.lib.commons.serialization.classes
 org.conqat.lib.commons.serialization.objects

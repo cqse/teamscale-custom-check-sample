@@ -267,8 +267,8 @@
 <span class="sourceLineNo">259</span>                EnumSet&lt;ETokenType&gt; typeNames = EnumSet.of(IDENTIFIER, VOID, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, CHAR,<a name="line.259"></a>
 <span class="sourceLineNo">260</span>                                BOOLEAN);<a name="line.260"></a>
 <span class="sourceLineNo">261</span><a name="line.261"></a>
-<span class="sourceLineNo">262</span>                RecognizerBase&lt;EGenericParserStates&gt; annotationSubRecognizer = emptyRecognizer();<a name="line.262"></a>
-<span class="sourceLineNo">263</span>                annotationSubRecognizer.sequence(AT_OPERATOR, IDENTIFIER).repeated(DOT, IDENTIFIER);<a name="line.263"></a>
+<span class="sourceLineNo">262</span>                RecognizerBase&lt;EGenericParserStates&gt; annotationSubRecognizer = createRecognizer(<a name="line.262"></a>
+<span class="sourceLineNo">263</span>                                start -&gt; start.sequence(AT_OPERATOR, IDENTIFIER).repeated(DOT, IDENTIFIER));<a name="line.263"></a>
 <span class="sourceLineNo">264</span><a name="line.264"></a>
 <span class="sourceLineNo">265</span>                return currentState.repeated(modifierKeywords).skipNested(LT, GT).repeatedSubRecognizer(annotationSubRecognizer)<a name="line.265"></a>
 <span class="sourceLineNo">266</span>                                .repeated(IDENTIFIER, DOT).optional(THIS, DOT).sequence(typeNames).skipNested(LT, GT)<a name="line.266"></a>

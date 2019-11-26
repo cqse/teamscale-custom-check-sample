@@ -434,7 +434,7 @@
 <span class="sourceLineNo">426</span>         * Parses a RECEIVING parameter. Returns whether parsing was successful.<a name="line.426"></a>
 <span class="sourceLineNo">427</span>         */<a name="line.427"></a>
 <span class="sourceLineNo">428</span>        private boolean parseReceivingParameter(MethodCallInfo details) throws MethodCallParserException {<a name="line.428"></a>
-<span class="sourceLineNo">429</span>                if (!TokenStreamUtils.tokenTypesAt(tokens, currentPosition, IDENTIFIER, EQ, IDENTIFIER)) {<a name="line.429"></a>
+<span class="sourceLineNo">429</span>                if (!TokenStreamUtils.hasTokenTypeSequence(tokens, currentPosition, IDENTIFIER, EQ, IDENTIFIER)) {<a name="line.429"></a>
 <span class="sourceLineNo">430</span>                        throw new MethodCallParserException(<a name="line.430"></a>
 <span class="sourceLineNo">431</span>                                        "Did not find pattern \"x = y\" in receiving parameter at position " + currentPosition + " .");<a name="line.431"></a>
 <span class="sourceLineNo">432</span>                }<a name="line.432"></a>

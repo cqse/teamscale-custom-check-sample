@@ -237,7 +237,7 @@
 <span class="sourceLineNo">229</span>                        String variableName;<a name="line.229"></a>
 <span class="sourceLineNo">230</span>                        // If the method parameter is marked as pass-by-value with<a name="line.230"></a>
 <span class="sourceLineNo">231</span>                        // &lt;code&gt;value(varName) TYPE t&lt;/code&gt;, skip the parenthesized part<a name="line.231"></a>
-<span class="sourceLineNo">232</span>                        if (TokenStreamUtils.tokenTypesAt(section, currentIndex + 1, LPAREN, IDENTIFIER, RPAREN)) {<a name="line.232"></a>
+<span class="sourceLineNo">232</span>                        if (TokenStreamUtils.hasTokenTypeSequence(section, currentIndex + 1, LPAREN, IDENTIFIER, RPAREN)) {<a name="line.232"></a>
 <span class="sourceLineNo">233</span>                                variableName = section.get(currentIndex + 2).getText();<a name="line.233"></a>
 <span class="sourceLineNo">234</span>                                currentIndex += 4;<a name="line.234"></a>
 <span class="sourceLineNo">235</span>                        } else {<a name="line.235"></a>

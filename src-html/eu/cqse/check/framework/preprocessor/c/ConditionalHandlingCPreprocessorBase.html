@@ -69,7 +69,7 @@
 <span class="sourceLineNo">061</span>         */<a name="line.61"></a>
 <span class="sourceLineNo">062</span>        private static final ICache&lt;String, Boolean, NeverThrownRuntimeException&gt; EXPRESSION_CACHE = new SynchronizedCache&lt;&gt;(<a name="line.62"></a>
 <span class="sourceLineNo">063</span>                        "EXPRESSION_CACHE", (String expression) -&gt; evaluateExpression(expression),<a name="line.63"></a>
-<span class="sourceLineNo">064</span>                        ECachingStrategy.LRU.&lt;String, Boolean&gt; getBackend(5000));<a name="line.64"></a>
+<span class="sourceLineNo">064</span>                        ECachingStrategy.LRU.&lt;String, Boolean&gt;getBackend(5000));<a name="line.64"></a>
 <span class="sourceLineNo">065</span><a name="line.65"></a>
 <span class="sourceLineNo">066</span>        /** Patterns used for finding endif directives. */<a name="line.66"></a>
 <span class="sourceLineNo">067</span>        private static final Pattern ENDIF_DIRECTIVE_START_PATTERN = Pattern.compile("^#\\s*endif");<a name="line.67"></a>
@@ -213,7 +213,7 @@
 <span class="sourceLineNo">205</span>                for (int i = 0; i &lt; tokens.size(); ++i) {<a name="line.205"></a>
 <span class="sourceLineNo">206</span>                        IToken token = tokens.get(i);<a name="line.206"></a>
 <span class="sourceLineNo">207</span>                        if (token.getType() == ETokenType.IDENTIFIER &amp;&amp; token.getText().equals("defined")) {<a name="line.207"></a>
-<span class="sourceLineNo">208</span>                                if (i + 3 &gt;= tokens.size() || !TokenStreamUtils.tokenTypesAt(tokens, i + 1, ETokenType.LPAREN,<a name="line.208"></a>
+<span class="sourceLineNo">208</span>                                if (i + 3 &gt;= tokens.size() || !TokenStreamUtils.hasTokenTypeSequence(tokens, i + 1, ETokenType.LPAREN,<a name="line.208"></a>
 <span class="sourceLineNo">209</span>                                                ETokenType.IDENTIFIER, ETokenType.RPAREN)) {<a name="line.209"></a>
 <span class="sourceLineNo">210</span>                                        // broken define; break here<a name="line.210"></a>
 <span class="sourceLineNo">211</span>                                        return result;<a name="line.211"></a>

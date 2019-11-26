@@ -16,8 +16,17 @@
 <span class="sourceLineNo">008</span>/** Enumeration of known rule sets. */<a name="line.8"></a>
 <span class="sourceLineNo">009</span>public enum ERuleset {<a name="line.9"></a>
 <span class="sourceLineNo">010</span><a name="line.10"></a>
-<span class="sourceLineNo">011</span>        MISRA<a name="line.11"></a>
-<span class="sourceLineNo">012</span>}<a name="line.12"></a>
+<span class="sourceLineNo">011</span>        /**<a name="line.11"></a>
+<span class="sourceLineNo">012</span>         * This means Misra C 2012 or newer. Checks implementing a rule from this Misra<a name="line.12"></a>
+<span class="sourceLineNo">013</span>         * specification might still apply to C++ code, too.<a name="line.13"></a>
+<span class="sourceLineNo">014</span>         */<a name="line.14"></a>
+<span class="sourceLineNo">015</span>        MISRA,<a name="line.15"></a>
+<span class="sourceLineNo">016</span>        /**<a name="line.16"></a>
+<span class="sourceLineNo">017</span>         * This means Misra C++ 2008 or newer. Checks implementing a rule from this<a name="line.17"></a>
+<span class="sourceLineNo">018</span>         * Misra specification might still apply to C code, too.<a name="line.18"></a>
+<span class="sourceLineNo">019</span>         */<a name="line.19"></a>
+<span class="sourceLineNo">020</span>        MISRA_CPP<a name="line.20"></a>
+<span class="sourceLineNo">021</span>}<a name="line.21"></a>
 
 
 

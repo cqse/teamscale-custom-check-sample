@@ -71,7 +71,7 @@
 <span class="sourceLineNo">063</span>public class RubyShallowParser extends ShallowParserBase&lt;ERubyParserStates&gt; {<a name="line.63"></a>
 <span class="sourceLineNo">064</span><a name="line.64"></a>
 <span class="sourceLineNo">065</span>        /** The states used in this parser. */<a name="line.65"></a>
-<span class="sourceLineNo">066</span>        public static enum ERubyParserStates {<a name="line.66"></a>
+<span class="sourceLineNo">066</span>        public enum ERubyParserStates {<a name="line.66"></a>
 <span class="sourceLineNo">067</span><a name="line.67"></a>
 <span class="sourceLineNo">068</span>                /** Single state, as any construct can occur at any place. */<a name="line.68"></a>
 <span class="sourceLineNo">069</span>                ANY<a name="line.69"></a>
@@ -169,10 +169,11 @@
 <span class="sourceLineNo">161</span><a name="line.161"></a>
 <span class="sourceLineNo">162</span>        private RecognizerBase&lt;ERubyParserStates&gt; appendTrailingConditionRecognizer(<a name="line.162"></a>
 <span class="sourceLineNo">163</span>                        RecognizerBase&lt;ERubyParserStates&gt; recognizer) {<a name="line.163"></a>
-<span class="sourceLineNo">164</span>                return recognizer.subRecognizer(emptyRecognizer().sequence(EnumSet.of(FOR, IF, UNLESS, WHILE, UNTIL))<a name="line.164"></a>
-<span class="sourceLineNo">165</span>                                .subRecognizer(new RubyTrailingConditionRecognizer(), 1, 1), 0, Integer.MAX_VALUE);<a name="line.165"></a>
-<span class="sourceLineNo">166</span>        }<a name="line.166"></a>
-<span class="sourceLineNo">167</span>}<a name="line.167"></a>
+<span class="sourceLineNo">164</span>                return recognizer<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                                .subRecognizer(createRecognizer(start -&gt; start.sequence(EnumSet.of(FOR, IF, UNLESS, WHILE, UNTIL)))<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                                                .subRecognizer(new RubyTrailingConditionRecognizer(), 1, 1), 0, Integer.MAX_VALUE);<a name="line.166"></a>
+<span class="sourceLineNo">167</span>        }<a name="line.167"></a>
+<span class="sourceLineNo">168</span>}<a name="line.168"></a>
 
 
 

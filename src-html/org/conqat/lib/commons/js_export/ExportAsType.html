@@ -15,19 +15,22 @@
 <span class="sourceLineNo">007</span><a name="line.7"></a>
 <span class="sourceLineNo">008</span>import static java.lang.annotation.RetentionPolicy.RUNTIME;<a name="line.8"></a>
 <span class="sourceLineNo">009</span><a name="line.9"></a>
-<span class="sourceLineNo">010</span>import java.lang.annotation.Retention;<a name="line.10"></a>
-<span class="sourceLineNo">011</span><a name="line.11"></a>
-<span class="sourceLineNo">012</span>/**<a name="line.12"></a>
-<span class="sourceLineNo">013</span> * Enforces the annotated field to be exported with the given type. Should be<a name="line.13"></a>
-<span class="sourceLineNo">014</span> * used sparely, i.e. for rather special cases that the exporter logic cannot<a name="line.14"></a>
-<span class="sourceLineNo">015</span> * handle right now.<a name="line.15"></a>
-<span class="sourceLineNo">016</span> */<a name="line.16"></a>
-<span class="sourceLineNo">017</span>@Retention(RUNTIME)<a name="line.17"></a>
-<span class="sourceLineNo">018</span>public @interface ExportAsType {<a name="line.18"></a>
-<span class="sourceLineNo">019</span><a name="line.19"></a>
-<span class="sourceLineNo">020</span>        /** The enforced JavaScript type to use, e.g. "string" */<a name="line.20"></a>
-<span class="sourceLineNo">021</span>        public String value();<a name="line.21"></a>
-<span class="sourceLineNo">022</span>}<a name="line.22"></a>
+<span class="sourceLineNo">010</span>import java.lang.annotation.ElementType;<a name="line.10"></a>
+<span class="sourceLineNo">011</span>import java.lang.annotation.Retention;<a name="line.11"></a>
+<span class="sourceLineNo">012</span>import java.lang.annotation.Target;<a name="line.12"></a>
+<span class="sourceLineNo">013</span><a name="line.13"></a>
+<span class="sourceLineNo">014</span>/**<a name="line.14"></a>
+<span class="sourceLineNo">015</span> * Enforces the annotated field to be exported with the given type. Should be<a name="line.15"></a>
+<span class="sourceLineNo">016</span> * used sparely, i.e. for rather special cases that the exporter logic cannot<a name="line.16"></a>
+<span class="sourceLineNo">017</span> * handle right now.<a name="line.17"></a>
+<span class="sourceLineNo">018</span> */<a name="line.18"></a>
+<span class="sourceLineNo">019</span>@Retention(RUNTIME)<a name="line.19"></a>
+<span class="sourceLineNo">020</span>@Target(ElementType.FIELD)<a name="line.20"></a>
+<span class="sourceLineNo">021</span>public @interface ExportAsType {<a name="line.21"></a>
+<span class="sourceLineNo">022</span><a name="line.22"></a>
+<span class="sourceLineNo">023</span>        /** The enforced JavaScript type to use, e.g. "string" */<a name="line.23"></a>
+<span class="sourceLineNo">024</span>        public String value();<a name="line.24"></a>
+<span class="sourceLineNo">025</span>}<a name="line.25"></a>
 
 
 

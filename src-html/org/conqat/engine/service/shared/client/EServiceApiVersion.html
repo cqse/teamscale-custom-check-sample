@@ -55,37 +55,42 @@
 <span class="sourceLineNo">047</span>         * Seventh version (Teamscale 4.7) introducing blacklist types (toleration and<a name="line.47"></a>
 <span class="sourceLineNo">048</span>         * false positive)<a name="line.48"></a>
 <span class="sourceLineNo">049</span>         */<a name="line.49"></a>
-<span class="sourceLineNo">050</span>        VERSION_7(7);<a name="line.50"></a>
+<span class="sourceLineNo">050</span>        VERSION_7(7),<a name="line.50"></a>
 <span class="sourceLineNo">051</span><a name="line.51"></a>
-<span class="sourceLineNo">052</span>        // when adding values here, make sure updating the IDE clients, e.g.<a name="line.52"></a>
-<span class="sourceLineNo">053</span>        // TeamscaleIDEActivator<a name="line.53"></a>
-<span class="sourceLineNo">054</span><a name="line.54"></a>
-<span class="sourceLineNo">055</span>        /** The current version of the service API. */<a name="line.55"></a>
-<span class="sourceLineNo">056</span>        public static final EServiceApiVersion CURRENT_VERSION = values()[values().length - 1];<a name="line.56"></a>
-<span class="sourceLineNo">057</span><a name="line.57"></a>
-<span class="sourceLineNo">058</span>        /**<a name="line.58"></a>
-<span class="sourceLineNo">059</span>         * The minimum version of service clients that are still supported by this<a name="line.59"></a>
-<span class="sourceLineNo">060</span>         * server.<a name="line.60"></a>
-<span class="sourceLineNo">061</span>         */<a name="line.61"></a>
-<span class="sourceLineNo">062</span>        public static final EServiceApiVersion MIN_SUPPORTED_VERSION = VERSION_6;<a name="line.62"></a>
-<span class="sourceLineNo">063</span><a name="line.63"></a>
-<span class="sourceLineNo">064</span>        /**<a name="line.64"></a>
-<span class="sourceLineNo">065</span>         * The version number. This can be used by service clients for version<a name="line.65"></a>
-<span class="sourceLineNo">066</span>         * compatibility checking.<a name="line.66"></a>
-<span class="sourceLineNo">067</span>         */<a name="line.67"></a>
-<span class="sourceLineNo">068</span>        private final int versionNumber;<a name="line.68"></a>
-<span class="sourceLineNo">069</span><a name="line.69"></a>
-<span class="sourceLineNo">070</span>        /** Constructor */<a name="line.70"></a>
-<span class="sourceLineNo">071</span>        private EServiceApiVersion(int versionNumber) {<a name="line.71"></a>
-<span class="sourceLineNo">072</span>                this.versionNumber = versionNumber;<a name="line.72"></a>
-<span class="sourceLineNo">073</span>        }<a name="line.73"></a>
+<span class="sourceLineNo">052</span>        /**<a name="line.52"></a>
+<span class="sourceLineNo">053</span>         * Version 8 (Teamscale 5.5)<a name="line.53"></a>
+<span class="sourceLineNo">054</span>         */<a name="line.54"></a>
+<span class="sourceLineNo">055</span>        VERSION_8(8);<a name="line.55"></a>
+<span class="sourceLineNo">056</span><a name="line.56"></a>
+<span class="sourceLineNo">057</span>        // when adding values here, make sure updating the IDE clients, e.g.<a name="line.57"></a>
+<span class="sourceLineNo">058</span>        // com.teamscale.ide.commons.client.services.TeamscaleConnectorUtils<a name="line.58"></a>
+<span class="sourceLineNo">059</span><a name="line.59"></a>
+<span class="sourceLineNo">060</span>        /** The current version of the service API. */<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        public static final EServiceApiVersion CURRENT_VERSION = values()[values().length - 1];<a name="line.61"></a>
+<span class="sourceLineNo">062</span><a name="line.62"></a>
+<span class="sourceLineNo">063</span>        /**<a name="line.63"></a>
+<span class="sourceLineNo">064</span>         * The minimum version of service clients that are still supported by this<a name="line.64"></a>
+<span class="sourceLineNo">065</span>         * server.<a name="line.65"></a>
+<span class="sourceLineNo">066</span>         */<a name="line.66"></a>
+<span class="sourceLineNo">067</span>        public static final EServiceApiVersion MIN_SUPPORTED_VERSION = VERSION_6;<a name="line.67"></a>
+<span class="sourceLineNo">068</span><a name="line.68"></a>
+<span class="sourceLineNo">069</span>        /**<a name="line.69"></a>
+<span class="sourceLineNo">070</span>         * The version number. This can be used by service clients for version<a name="line.70"></a>
+<span class="sourceLineNo">071</span>         * compatibility checking.<a name="line.71"></a>
+<span class="sourceLineNo">072</span>         */<a name="line.72"></a>
+<span class="sourceLineNo">073</span>        private final int versionNumber;<a name="line.73"></a>
 <span class="sourceLineNo">074</span><a name="line.74"></a>
-<span class="sourceLineNo">075</span>        /** Returns number. */<a name="line.75"></a>
-<span class="sourceLineNo">076</span>        public int getVersionNumber() {<a name="line.76"></a>
-<span class="sourceLineNo">077</span>                return versionNumber;<a name="line.77"></a>
+<span class="sourceLineNo">075</span>        /** Constructor */<a name="line.75"></a>
+<span class="sourceLineNo">076</span>        private EServiceApiVersion(int versionNumber) {<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                this.versionNumber = versionNumber;<a name="line.77"></a>
 <span class="sourceLineNo">078</span>        }<a name="line.78"></a>
 <span class="sourceLineNo">079</span><a name="line.79"></a>
-<span class="sourceLineNo">080</span>}<a name="line.80"></a>
+<span class="sourceLineNo">080</span>        /** Returns number. */<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        public int getVersionNumber() {<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                return versionNumber;<a name="line.82"></a>
+<span class="sourceLineNo">083</span>        }<a name="line.83"></a>
+<span class="sourceLineNo">084</span><a name="line.84"></a>
+<span class="sourceLineNo">085</span>}<a name="line.85"></a>
 
 
 

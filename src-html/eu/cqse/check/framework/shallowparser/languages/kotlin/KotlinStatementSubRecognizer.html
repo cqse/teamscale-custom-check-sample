@@ -58,155 +58,145 @@
 <span class="sourceLineNo">050</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.50"></a>
 <span class="sourceLineNo">051</span>import eu.cqse.check.framework.shallowparser.framework.ParserState;<a name="line.51"></a>
 <span class="sourceLineNo">052</span>import eu.cqse.check.framework.shallowparser.framework.RecognizerBase;<a name="line.52"></a>
-<span class="sourceLineNo">053</span><a name="line.53"></a>
-<span class="sourceLineNo">054</span>/**<a name="line.54"></a>
-<span class="sourceLineNo">055</span> * A recognizer that allows to match a Kotlin statement, which potentially spans<a name="line.55"></a>
-<span class="sourceLineNo">056</span> * across multiple lines<a name="line.56"></a>
-<span class="sourceLineNo">057</span> */<a name="line.57"></a>
-<span class="sourceLineNo">058</span>public class KotlinStatementSubRecognizer extends RecognizerBase&lt;EKotlinParserStates&gt; {<a name="line.58"></a>
-<span class="sourceLineNo">059</span><a name="line.59"></a>
-<span class="sourceLineNo">060</span>        /**<a name="line.60"></a>
-<span class="sourceLineNo">061</span>         * All tokens that are valid statement separators.<a name="line.61"></a>
-<span class="sourceLineNo">062</span>         */<a name="line.62"></a>
-<span class="sourceLineNo">063</span>        private static final EnumSet&lt;ETokenType&gt; STATEMENT_SEPARATORS = EnumSet.of(EOL, SEMICOLON, RBRACE, EOF, LT, COMMA,<a name="line.63"></a>
-<span class="sourceLineNo">064</span>                        RPAREN, RBRACK, ELSE);<a name="line.64"></a>
-<span class="sourceLineNo">065</span><a name="line.65"></a>
-<span class="sourceLineNo">066</span>        /**<a name="line.66"></a>
-<span class="sourceLineNo">067</span>         * Binary operators, which can cause a statement to continue on the next line,<a name="line.67"></a>
-<span class="sourceLineNo">068</span>         * even though a EOL has been found.<a name="line.68"></a>
-<span class="sourceLineNo">069</span>         */<a name="line.69"></a>
-<span class="sourceLineNo">070</span>        private static final EnumSet&lt;ETokenType&gt; BINARY_OPERATORS = EnumSet.of(DOT, SAFECALL_OPERATOR, ELVIS, PLUS, MINUS,<a name="line.70"></a>
-<span class="sourceLineNo">071</span>                        MULT, DIV, MOD, ANDAND, OROR, EQEQ, NOTEQ, GT, LT, LTEQ, GTEQ, OR);<a name="line.71"></a>
-<span class="sourceLineNo">072</span><a name="line.72"></a>
-<span class="sourceLineNo">073</span>        /** Matches a partial statement, which does only match one line. */<a name="line.73"></a>
-<span class="sourceLineNo">074</span>        private final RecognizerBase&lt;EKotlinParserStates&gt; partialStatementRecognizer;<a name="line.74"></a>
-<span class="sourceLineNo">075</span><a name="line.75"></a>
-<span class="sourceLineNo">076</span>        /**<a name="line.76"></a>
-<span class="sourceLineNo">077</span>         * Matches the end of a line together with tokens that allow the statement to<a name="line.77"></a>
-<span class="sourceLineNo">078</span>         * continue.<a name="line.78"></a>
-<span class="sourceLineNo">079</span>         */<a name="line.79"></a>
-<span class="sourceLineNo">080</span>        private final RecognizerBase&lt;EKotlinParserStates&gt; statementContinuationRecognizer = new RecognizerBase&lt;EKotlinParserStates&gt;() {<a name="line.80"></a>
-<span class="sourceLineNo">081</span><a name="line.81"></a>
-<span class="sourceLineNo">082</span>                /**<a name="line.82"></a>
-<span class="sourceLineNo">083</span>                 * Expects to be invoked after a STATEMENT_SEPARATOR has been found. It returns<a name="line.83"></a>
-<span class="sourceLineNo">084</span>                 * NO_MATCH if anything besides EOL is found at the end. In case of EOL if the<a name="line.84"></a>
-<span class="sourceLineNo">085</span>                 * last token of the currently ended line or the first token of the next<a name="line.85"></a>
-<span class="sourceLineNo">086</span>                 * non-empty line is a binary operator and therefore allows the statement to be<a name="line.86"></a>
-<span class="sourceLineNo">087</span>                 * continued it matches to the position of the first token after the operator<a name="line.87"></a>
-<span class="sourceLineNo">088</span>                 * and EOL's.<a name="line.88"></a>
-<span class="sourceLineNo">089</span>                 */<a name="line.89"></a>
-<span class="sourceLineNo">090</span>                @Override<a name="line.90"></a>
-<span class="sourceLineNo">091</span>                protected int matchesLocally(ParserState&lt;EKotlinParserStates&gt; parserState, List&lt;IToken&gt; tokens,<a name="line.91"></a>
-<span class="sourceLineNo">092</span>                                int startOffset) {<a name="line.92"></a>
-<span class="sourceLineNo">093</span>                        if (startOffset &lt; tokens.size() &amp;&amp; tokens.get(startOffset).getType() == EOL) {<a name="line.93"></a>
-<span class="sourceLineNo">094</span>                                if (startOffset &gt; 1) {<a name="line.94"></a>
-<span class="sourceLineNo">095</span>                                        IToken lastTokenOnLine = tokens.get(startOffset - 1);<a name="line.95"></a>
-<span class="sourceLineNo">096</span>                                        if (BINARY_OPERATORS.contains(lastTokenOnLine.getType())) {<a name="line.96"></a>
-<span class="sourceLineNo">097</span>                                                return skipEOLs(tokens, startOffset);<a name="line.97"></a>
-<span class="sourceLineNo">098</span>                                        }<a name="line.98"></a>
-<span class="sourceLineNo">099</span>                                }<a name="line.99"></a>
-<span class="sourceLineNo">100</span><a name="line.100"></a>
-<span class="sourceLineNo">101</span>                                int newOffset = skipEOLs(tokens, startOffset);<a name="line.101"></a>
-<span class="sourceLineNo">102</span>                                if (newOffset &gt;= tokens.size()) {<a name="line.102"></a>
-<span class="sourceLineNo">103</span>                                        return NO_MATCH;<a name="line.103"></a>
-<span class="sourceLineNo">104</span>                                }<a name="line.104"></a>
-<span class="sourceLineNo">105</span>                                IToken tokenOnNextLine = tokens.get(newOffset);<a name="line.105"></a>
-<span class="sourceLineNo">106</span>                                if (tokenOnNextLine.getType() != EOL) {<a name="line.106"></a>
-<span class="sourceLineNo">107</span>                                        if (BINARY_OPERATORS.contains(tokenOnNextLine.getType()) || tokenOnNextLine.getType() == LBRACE) {<a name="line.107"></a>
-<span class="sourceLineNo">108</span>                                                return newOffset;<a name="line.108"></a>
-<span class="sourceLineNo">109</span>                                        }<a name="line.109"></a>
-<span class="sourceLineNo">110</span>                                        return NO_MATCH;<a name="line.110"></a>
-<span class="sourceLineNo">111</span>                                }<a name="line.111"></a>
-<span class="sourceLineNo">112</span>                        }<a name="line.112"></a>
-<span class="sourceLineNo">113</span><a name="line.113"></a>
-<span class="sourceLineNo">114</span>                        return NO_MATCH;<a name="line.114"></a>
-<span class="sourceLineNo">115</span>                }<a name="line.115"></a>
-<span class="sourceLineNo">116</span><a name="line.116"></a>
-<span class="sourceLineNo">117</span>                /**<a name="line.117"></a>
-<span class="sourceLineNo">118</span>                 * Skips EOL tokens in the given token list and returns the index of the first<a name="line.118"></a>
-<span class="sourceLineNo">119</span>                 * non-EOL token. Implicitly expects<a name="line.119"></a>
-<span class="sourceLineNo">120</span>                 */<a name="line.120"></a>
-<span class="sourceLineNo">121</span>                private int skipEOLs(List&lt;IToken&gt; tokens, int startOffset) {<a name="line.121"></a>
-<span class="sourceLineNo">122</span>                        for (int i = startOffset; i &lt; tokens.size(); i++) {<a name="line.122"></a>
-<span class="sourceLineNo">123</span>                                if (tokens.get(i).getType() != EOL) {<a name="line.123"></a>
-<span class="sourceLineNo">124</span>                                        return i;<a name="line.124"></a>
-<span class="sourceLineNo">125</span>                                }<a name="line.125"></a>
-<span class="sourceLineNo">126</span>                        }<a name="line.126"></a>
-<span class="sourceLineNo">127</span>                        return tokens.size();<a name="line.127"></a>
-<span class="sourceLineNo">128</span>                }<a name="line.128"></a>
-<span class="sourceLineNo">129</span><a name="line.129"></a>
-<span class="sourceLineNo">130</span>                /** {@inheritDoc} */<a name="line.130"></a>
-<span class="sourceLineNo">131</span>                @Override<a name="line.131"></a>
-<span class="sourceLineNo">132</span>                protected String getRecognizerStringRepresentation() {<a name="line.132"></a>
-<span class="sourceLineNo">133</span>                        return "statement continuation";<a name="line.133"></a>
-<span class="sourceLineNo">134</span>                }<a name="line.134"></a>
-<span class="sourceLineNo">135</span><a name="line.135"></a>
-<span class="sourceLineNo">136</span>        };<a name="line.136"></a>
-<span class="sourceLineNo">137</span><a name="line.137"></a>
-<span class="sourceLineNo">138</span>        /**<a name="line.138"></a>
-<span class="sourceLineNo">139</span>         * Constructor.<a name="line.139"></a>
-<span class="sourceLineNo">140</span>         * <a name="line.140"></a>
-<span class="sourceLineNo">141</span>         * @param subExpressionRecognizer<a name="line.141"></a>
-<span class="sourceLineNo">142</span>         *            Recognizer to be used to find nested lambdas etc. in the statement<a name="line.142"></a>
-<span class="sourceLineNo">143</span>         * @param openingBrackets<a name="line.143"></a>
-<span class="sourceLineNo">144</span>         *            List of opening brackets, which are skipped<a name="line.144"></a>
-<span class="sourceLineNo">145</span>         * @param closingBrackets<a name="line.145"></a>
-<span class="sourceLineNo">146</span>         *            List of closing brackets, which are skipped<a name="line.146"></a>
-<span class="sourceLineNo">147</span>         */<a name="line.147"></a>
-<span class="sourceLineNo">148</span>        public KotlinStatementSubRecognizer(RecognizerBase&lt;EKotlinParserStates&gt; subExpressionRecognizer,<a name="line.148"></a>
-<span class="sourceLineNo">149</span>                        List&lt;ETokenType&gt; openingBrackets, List&lt;ETokenType&gt; closingBrackets) {<a name="line.149"></a>
-<span class="sourceLineNo">150</span>                RecognizerBase&lt;EKotlinParserStates&gt; genericRecognizer = emptyRecognizer();<a name="line.150"></a>
-<span class="sourceLineNo">151</span>                genericRecognizer.sequence(LT).repeated(KotlinShallowParser.VALID_INSIDE_GENERIC_TOKEN_TYPES).sequence(GT)<a name="line.151"></a>
-<span class="sourceLineNo">152</span>                                .skipBeforeWithNesting(STATEMENT_SEPARATORS, openingBrackets, closingBrackets, subExpressionRecognizer);<a name="line.152"></a>
-<span class="sourceLineNo">153</span>                genericRecognizer.sequence(LT).skipBeforeWithNesting(STATEMENT_SEPARATORS, openingBrackets, closingBrackets,<a name="line.153"></a>
-<span class="sourceLineNo">154</span>                                subExpressionRecognizer);<a name="line.154"></a>
-<span class="sourceLineNo">155</span>                this.partialStatementRecognizer = emptyRecognizer();<a name="line.155"></a>
-<span class="sourceLineNo">156</span>                this.partialStatementRecognizer<a name="line.156"></a>
-<span class="sourceLineNo">157</span>                                .skipBeforeWithNesting(STATEMENT_SEPARATORS, openingBrackets, closingBrackets, subExpressionRecognizer)<a name="line.157"></a>
-<span class="sourceLineNo">158</span>                                .repeatedSubRecognizer(genericRecognizer).optional(SEMICOLON);<a name="line.158"></a>
-<span class="sourceLineNo">159</span>        }<a name="line.159"></a>
-<span class="sourceLineNo">160</span><a name="line.160"></a>
-<span class="sourceLineNo">161</span>        /** {@inheritDoc} */<a name="line.161"></a>
-<span class="sourceLineNo">162</span>        @Override<a name="line.162"></a>
-<span class="sourceLineNo">163</span>        protected int matchesLocally(ParserState&lt;EKotlinParserStates&gt; parserState, List&lt;IToken&gt; tokens, int startOffset) {<a name="line.163"></a>
-<span class="sourceLineNo">164</span>                int currentOffset = startOffset;<a name="line.164"></a>
-<span class="sourceLineNo">165</span><a name="line.165"></a>
-<span class="sourceLineNo">166</span>                while (true) {<a name="line.166"></a>
-<span class="sourceLineNo">167</span>                        int newOffset = partialStatementRecognizer.matches(parserState, tokens, currentOffset);<a name="line.167"></a>
-<span class="sourceLineNo">168</span>                        if (newOffset == NO_MATCH || newOffset == currentOffset) {<a name="line.168"></a>
-<span class="sourceLineNo">169</span>                                return currentOffset;<a name="line.169"></a>
-<span class="sourceLineNo">170</span>                        }<a name="line.170"></a>
-<span class="sourceLineNo">171</span><a name="line.171"></a>
-<span class="sourceLineNo">172</span>                        currentOffset = newOffset;<a name="line.172"></a>
+<span class="sourceLineNo">053</span>import eu.cqse.check.framework.shallowparser.framework.RecognizerUtils;<a name="line.53"></a>
+<span class="sourceLineNo">054</span><a name="line.54"></a>
+<span class="sourceLineNo">055</span>/**<a name="line.55"></a>
+<span class="sourceLineNo">056</span> * A recognizer that allows to match a Kotlin statement, which potentially spans<a name="line.56"></a>
+<span class="sourceLineNo">057</span> * across multiple lines<a name="line.57"></a>
+<span class="sourceLineNo">058</span> */<a name="line.58"></a>
+<span class="sourceLineNo">059</span>public class KotlinStatementSubRecognizer extends RecognizerBase&lt;EKotlinParserStates&gt; {<a name="line.59"></a>
+<span class="sourceLineNo">060</span><a name="line.60"></a>
+<span class="sourceLineNo">061</span>        /**<a name="line.61"></a>
+<span class="sourceLineNo">062</span>         * All tokens that are valid statement separators.<a name="line.62"></a>
+<span class="sourceLineNo">063</span>         */<a name="line.63"></a>
+<span class="sourceLineNo">064</span>        private static final EnumSet&lt;ETokenType&gt; STATEMENT_SEPARATORS = EnumSet.of(EOL, SEMICOLON, RBRACE, EOF, LT, COMMA,<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                        RPAREN, RBRACK, ELSE);<a name="line.65"></a>
+<span class="sourceLineNo">066</span><a name="line.66"></a>
+<span class="sourceLineNo">067</span>        /**<a name="line.67"></a>
+<span class="sourceLineNo">068</span>         * Binary operators, which can cause a statement to continue on the next line,<a name="line.68"></a>
+<span class="sourceLineNo">069</span>         * even though a EOL has been found.<a name="line.69"></a>
+<span class="sourceLineNo">070</span>         */<a name="line.70"></a>
+<span class="sourceLineNo">071</span>        private static final EnumSet&lt;ETokenType&gt; BINARY_OPERATORS = EnumSet.of(DOT, SAFECALL_OPERATOR, ELVIS, PLUS, MINUS,<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                        MULT, DIV, MOD, ANDAND, OROR, EQEQ, NOTEQ, GT, LT, LTEQ, GTEQ, OR);<a name="line.72"></a>
+<span class="sourceLineNo">073</span><a name="line.73"></a>
+<span class="sourceLineNo">074</span>        /** Matches a partial statement, which does only match one line. */<a name="line.74"></a>
+<span class="sourceLineNo">075</span>        private final RecognizerBase&lt;EKotlinParserStates&gt; partialStatementRecognizer;<a name="line.75"></a>
+<span class="sourceLineNo">076</span><a name="line.76"></a>
+<span class="sourceLineNo">077</span>        /**<a name="line.77"></a>
+<span class="sourceLineNo">078</span>         * Matches the end of a line together with tokens that allow the statement to<a name="line.78"></a>
+<span class="sourceLineNo">079</span>         * continue.<a name="line.79"></a>
+<span class="sourceLineNo">080</span>         */<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        private final RecognizerBase&lt;EKotlinParserStates&gt; statementContinuationRecognizer = new RecognizerBase&lt;EKotlinParserStates&gt;() {<a name="line.81"></a>
+<span class="sourceLineNo">082</span><a name="line.82"></a>
+<span class="sourceLineNo">083</span>                /**<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                 * Expects to be invoked after a STATEMENT_SEPARATOR has been found. It returns<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                 * NO_MATCH if anything besides EOL is found at the end. In case of EOL if the<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                 * last token of the currently ended line or the first token of the next<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                 * non-empty line is a binary operator and therefore allows the statement to be<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                 * continued it matches to the position of the first token after the operator<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                 * and EOL's.<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                 */<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                @Override<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                protected int matchesLocally(ParserState&lt;EKotlinParserStates&gt; parserState, List&lt;IToken&gt; tokens,<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                                int startOffset) {<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                        if (startOffset &lt; tokens.size() &amp;&amp; tokens.get(startOffset).getType() == EOL) {<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                                if (startOffset &gt; 1) {<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                                        IToken lastTokenOnLine = tokens.get(startOffset - 1);<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                                        if (BINARY_OPERATORS.contains(lastTokenOnLine.getType())) {<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                                                return skipEOLs(tokens, startOffset);<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                                        }<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                                }<a name="line.100"></a>
+<span class="sourceLineNo">101</span><a name="line.101"></a>
+<span class="sourceLineNo">102</span>                                int newOffset = skipEOLs(tokens, startOffset);<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                                if (newOffset &gt;= tokens.size()) {<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                                        return NO_MATCH;<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                                }<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                                IToken tokenOnNextLine = tokens.get(newOffset);<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                                if (tokenOnNextLine.getType() != EOL) {<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                                        if (BINARY_OPERATORS.contains(tokenOnNextLine.getType()) || tokenOnNextLine.getType() == LBRACE) {<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                                                return newOffset;<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                                        }<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                                        return NO_MATCH;<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                                }<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                        }<a name="line.113"></a>
+<span class="sourceLineNo">114</span><a name="line.114"></a>
+<span class="sourceLineNo">115</span>                        return NO_MATCH;<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                }<a name="line.116"></a>
+<span class="sourceLineNo">117</span><a name="line.117"></a>
+<span class="sourceLineNo">118</span>                /**<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                 * Skips EOL tokens in the given token list and returns the index of the first<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                 * non-EOL token. Implicitly expects<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                 */<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                private int skipEOLs(List&lt;IToken&gt; tokens, int startOffset) {<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                        for (int i = startOffset; i &lt; tokens.size(); i++) {<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                                if (tokens.get(i).getType() != EOL) {<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                                        return i;<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                                }<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                        }<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                        return tokens.size();<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                }<a name="line.129"></a>
+<span class="sourceLineNo">130</span><a name="line.130"></a>
+<span class="sourceLineNo">131</span>                /** {@inheritDoc} */<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                @Override<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                protected String getRecognizerStringRepresentation() {<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                        return "statement continuation";<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                }<a name="line.135"></a>
+<span class="sourceLineNo">136</span><a name="line.136"></a>
+<span class="sourceLineNo">137</span>        };<a name="line.137"></a>
+<span class="sourceLineNo">138</span><a name="line.138"></a>
+<span class="sourceLineNo">139</span>        /**<a name="line.139"></a>
+<span class="sourceLineNo">140</span>         * Constructor.<a name="line.140"></a>
+<span class="sourceLineNo">141</span>         * <a name="line.141"></a>
+<span class="sourceLineNo">142</span>         * @param subExpressionRecognizer<a name="line.142"></a>
+<span class="sourceLineNo">143</span>         *            Recognizer to be used to find nested lambdas etc. in the statement<a name="line.143"></a>
+<span class="sourceLineNo">144</span>         * @param openingBrackets<a name="line.144"></a>
+<span class="sourceLineNo">145</span>         *            List of opening brackets, which are skipped<a name="line.145"></a>
+<span class="sourceLineNo">146</span>         * @param closingBrackets<a name="line.146"></a>
+<span class="sourceLineNo">147</span>         *            List of closing brackets, which are skipped<a name="line.147"></a>
+<span class="sourceLineNo">148</span>         */<a name="line.148"></a>
+<span class="sourceLineNo">149</span>        public KotlinStatementSubRecognizer(RecognizerBase&lt;EKotlinParserStates&gt; subExpressionRecognizer,<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                        List&lt;ETokenType&gt; openingBrackets, List&lt;ETokenType&gt; closingBrackets) {<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                RecognizerBase&lt;EKotlinParserStates&gt; genericRecognizer = RecognizerUtils.createRecognizer(start -&gt; {<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                        start.sequence(LT).repeated(KotlinShallowParser.VALID_INSIDE_GENERIC_TOKEN_TYPES).sequence(GT)<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                                        .skipBeforeWithNesting(STATEMENT_SEPARATORS, openingBrackets, closingBrackets,<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                                                        subExpressionRecognizer);<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                        start.sequence(LT).skipBeforeWithNesting(STATEMENT_SEPARATORS, openingBrackets, closingBrackets,<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                                        subExpressionRecognizer);<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                });<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                partialStatementRecognizer = RecognizerUtils.createRecognizer(start -&gt; start<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                                .skipBeforeWithNesting(STATEMENT_SEPARATORS, openingBrackets, closingBrackets, subExpressionRecognizer)<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                                .repeatedSubRecognizer(genericRecognizer).optional(SEMICOLON));<a name="line.160"></a>
+<span class="sourceLineNo">161</span>        }<a name="line.161"></a>
+<span class="sourceLineNo">162</span><a name="line.162"></a>
+<span class="sourceLineNo">163</span>        /** {@inheritDoc} */<a name="line.163"></a>
+<span class="sourceLineNo">164</span>        @Override<a name="line.164"></a>
+<span class="sourceLineNo">165</span>        protected int matchesLocally(ParserState&lt;EKotlinParserStates&gt; parserState, List&lt;IToken&gt; tokens, int startOffset) {<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                int currentOffset = startOffset;<a name="line.166"></a>
+<span class="sourceLineNo">167</span><a name="line.167"></a>
+<span class="sourceLineNo">168</span>                while (true) {<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                        int newOffset = partialStatementRecognizer.matches(parserState, tokens, currentOffset);<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                        if (newOffset == NO_MATCH || newOffset == currentOffset) {<a name="line.170"></a>
+<span class="sourceLineNo">171</span>                                return currentOffset;<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                        }<a name="line.172"></a>
 <span class="sourceLineNo">173</span><a name="line.173"></a>
-<span class="sourceLineNo">174</span>                        newOffset = statementContinuationRecognizer.matches(parserState, tokens, currentOffset);<a name="line.174"></a>
-<span class="sourceLineNo">175</span>                        if (newOffset == NO_MATCH || newOffset == currentOffset) {<a name="line.175"></a>
-<span class="sourceLineNo">176</span>                                return currentOffset;<a name="line.176"></a>
-<span class="sourceLineNo">177</span>                        }<a name="line.177"></a>
-<span class="sourceLineNo">178</span><a name="line.178"></a>
-<span class="sourceLineNo">179</span>                        currentOffset = newOffset;<a name="line.179"></a>
-<span class="sourceLineNo">180</span>                }<a name="line.180"></a>
-<span class="sourceLineNo">181</span>        }<a name="line.181"></a>
-<span class="sourceLineNo">182</span><a name="line.182"></a>
-<span class="sourceLineNo">183</span>        /** Returns an empty recognizer that can be used for local sub-rules. */<a name="line.183"></a>
-<span class="sourceLineNo">184</span>        protected RecognizerBase&lt;EKotlinParserStates&gt; emptyRecognizer() {<a name="line.184"></a>
-<span class="sourceLineNo">185</span>                return new RecognizerBase&lt;EKotlinParserStates&gt;() {<a name="line.185"></a>
-<span class="sourceLineNo">186</span><a name="line.186"></a>
-<span class="sourceLineNo">187</span>                        /** {@inheritDoc} */<a name="line.187"></a>
-<span class="sourceLineNo">188</span>                        @Override<a name="line.188"></a>
-<span class="sourceLineNo">189</span>                        protected String getRecognizerStringRepresentation() {<a name="line.189"></a>
-<span class="sourceLineNo">190</span>                                return "empty";<a name="line.190"></a>
-<span class="sourceLineNo">191</span>                        }<a name="line.191"></a>
-<span class="sourceLineNo">192</span>                };<a name="line.192"></a>
-<span class="sourceLineNo">193</span>        }<a name="line.193"></a>
-<span class="sourceLineNo">194</span><a name="line.194"></a>
-<span class="sourceLineNo">195</span>        /** {@inheritDoc} */<a name="line.195"></a>
-<span class="sourceLineNo">196</span>        @Override<a name="line.196"></a>
-<span class="sourceLineNo">197</span>        protected String getRecognizerStringRepresentation() {<a name="line.197"></a>
-<span class="sourceLineNo">198</span>                return super.getRecognizerStringRepresentation() + "[" + partialStatementRecognizer.toString() + ", "<a name="line.198"></a>
-<span class="sourceLineNo">199</span>                                + statementContinuationRecognizer.toString() + "]";<a name="line.199"></a>
-<span class="sourceLineNo">200</span>        }<a name="line.200"></a>
-<span class="sourceLineNo">201</span>}<a name="line.201"></a>
+<span class="sourceLineNo">174</span>                        currentOffset = newOffset;<a name="line.174"></a>
+<span class="sourceLineNo">175</span><a name="line.175"></a>
+<span class="sourceLineNo">176</span>                        newOffset = statementContinuationRecognizer.matches(parserState, tokens, currentOffset);<a name="line.176"></a>
+<span class="sourceLineNo">177</span>                        if (newOffset == NO_MATCH || newOffset == currentOffset) {<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                                return currentOffset;<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                        }<a name="line.179"></a>
+<span class="sourceLineNo">180</span><a name="line.180"></a>
+<span class="sourceLineNo">181</span>                        currentOffset = newOffset;<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                }<a name="line.182"></a>
+<span class="sourceLineNo">183</span>        }<a name="line.183"></a>
+<span class="sourceLineNo">184</span><a name="line.184"></a>
+<span class="sourceLineNo">185</span>        /** {@inheritDoc} */<a name="line.185"></a>
+<span class="sourceLineNo">186</span>        @Override<a name="line.186"></a>
+<span class="sourceLineNo">187</span>        protected String getRecognizerStringRepresentation() {<a name="line.187"></a>
+<span class="sourceLineNo">188</span>                return super.getRecognizerStringRepresentation() + "[" + partialStatementRecognizer.toString() + ", "<a name="line.188"></a>
+<span class="sourceLineNo">189</span>                                + statementContinuationRecognizer.toString() + "]";<a name="line.189"></a>
+<span class="sourceLineNo">190</span>        }<a name="line.190"></a>
+<span class="sourceLineNo">191</span>}<a name="line.191"></a>
 
 
 

@@ -25,19 +25,19 @@
 <span class="sourceLineNo">017</span>package eu.cqse.check.framework.shallowparser.util;<a name="line.17"></a>
 <span class="sourceLineNo">018</span><a name="line.18"></a>
 <span class="sourceLineNo">019</span>import java.util.ArrayList;<a name="line.19"></a>
-<span class="sourceLineNo">020</span>import java.util.Arrays;<a name="line.20"></a>
-<span class="sourceLineNo">021</span>import java.util.Collection;<a name="line.21"></a>
-<span class="sourceLineNo">022</span>import java.util.EnumSet;<a name="line.22"></a>
-<span class="sourceLineNo">023</span>import java.util.HashSet;<a name="line.23"></a>
-<span class="sourceLineNo">024</span>import java.util.List;<a name="line.24"></a>
-<span class="sourceLineNo">025</span>import java.util.Optional;<a name="line.25"></a>
-<span class="sourceLineNo">026</span>import java.util.Set;<a name="line.26"></a>
-<span class="sourceLineNo">027</span>import java.util.function.Predicate;<a name="line.27"></a>
-<span class="sourceLineNo">028</span><a name="line.28"></a>
-<span class="sourceLineNo">029</span>import org.conqat.lib.commons.collections.CollectionUtils;<a name="line.29"></a>
-<span class="sourceLineNo">030</span>import org.conqat.lib.commons.collections.UnmodifiableList;<a name="line.30"></a>
-<span class="sourceLineNo">031</span>import org.conqat.lib.commons.region.LineBasedRegion;<a name="line.31"></a>
-<span class="sourceLineNo">032</span>import org.conqat.lib.commons.region.OffsetBasedRegion;<a name="line.32"></a>
+<span class="sourceLineNo">020</span>import java.util.Collection;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import java.util.EnumSet;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import java.util.List;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import java.util.Optional;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import java.util.Set;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import java.util.function.Predicate;<a name="line.25"></a>
+<span class="sourceLineNo">026</span><a name="line.26"></a>
+<span class="sourceLineNo">027</span>import org.conqat.lib.commons.collections.CollectionUtils;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import org.conqat.lib.commons.collections.UnmodifiableList;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>import org.conqat.lib.commons.region.LineBasedRegion;<a name="line.29"></a>
+<span class="sourceLineNo">030</span>import org.conqat.lib.commons.region.OffsetBasedRegion;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>import com.google.common.collect.ImmutableSet;<a name="line.32"></a>
 <span class="sourceLineNo">033</span><a name="line.33"></a>
 <span class="sourceLineNo">034</span>import eu.cqse.check.framework.scanner.ELanguage;<a name="line.34"></a>
 <span class="sourceLineNo">035</span>import eu.cqse.check.framework.scanner.ETokenType;<a name="line.35"></a>
@@ -61,24 +61,24 @@
 <span class="sourceLineNo">053</span>         * covering a do-while loop (where while is the branching statement) can be of<a name="line.53"></a>
 <span class="sourceLineNo">054</span>         * type DO.<a name="line.54"></a>
 <span class="sourceLineNo">055</span>         */<a name="line.55"></a>
-<span class="sourceLineNo">056</span>        private static final Set&lt;String&gt; SUBPART_BRANCHING_STATEMENTS = new HashSet&lt;&gt;(Arrays<a name="line.56"></a>
-<span class="sourceLineNo">057</span>                        .asList(new String[] { SubTypeNames.ELSE_IF, SubTypeNames.ELSE, SubTypeNames.CATCH, SubTypeNames.FINALLY,<a name="line.57"></a>
-<span class="sourceLineNo">058</span>                                        SubTypeNames.CASE, SubTypeNames.DEFAULT, SubTypeNames.USING, SubTypeNames.DO }));<a name="line.58"></a>
+<span class="sourceLineNo">056</span>        private static final Set&lt;String&gt; SUBPART_BRANCHING_STATEMENTS = ImmutableSet.of(SubTypeNames.ELSE_IF,<a name="line.56"></a>
+<span class="sourceLineNo">057</span>                        SubTypeNames.ELSE, SubTypeNames.CATCH, SubTypeNames.FINALLY, SubTypeNames.CASE, SubTypeNames.DEFAULT,<a name="line.57"></a>
+<span class="sourceLineNo">058</span>                        SubTypeNames.USING, SubTypeNames.DO);<a name="line.58"></a>
 <span class="sourceLineNo">059</span><a name="line.59"></a>
 <span class="sourceLineNo">060</span>        /**<a name="line.60"></a>
 <span class="sourceLineNo">061</span>         * A set containing C# contextual keywords. A contextual keyword is used to<a name="line.61"></a>
 <span class="sourceLineNo">062</span>         * provide a specific meaning in the code, but it is not a reserved word in C#.<a name="line.62"></a>
 <span class="sourceLineNo">063</span>         * Thus, one could name a local variable or method using a contextual keyword.<a name="line.63"></a>
 <span class="sourceLineNo">064</span>         */<a name="line.64"></a>
-<span class="sourceLineNo">065</span>        private static final Set&lt;ETokenType&gt; CONTEXTUAL_KEYWORDS = new HashSet&lt;&gt;(<a name="line.65"></a>
-<span class="sourceLineNo">066</span>                        Arrays.asList(ETokenType.ADD, ETokenType.ASYNC, ETokenType.AWAIT, ETokenType.DYNAMIC, ETokenType.GET,<a name="line.66"></a>
-<span class="sourceLineNo">067</span>                                        ETokenType.GLOBAL, ETokenType.PARTIAL, ETokenType.REMOVE, ETokenType.SET, ETokenType.VALUE,<a name="line.67"></a>
-<span class="sourceLineNo">068</span>                                        ETokenType.VAR, ETokenType.WHEN, ETokenType.WHERE, ETokenType.YIELD, ETokenType.GROUP));<a name="line.68"></a>
+<span class="sourceLineNo">065</span>        private static final Set&lt;ETokenType&gt; CONTEXTUAL_KEYWORDS = ImmutableSet.of(ETokenType.ADD, ETokenType.ASYNC,<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                        ETokenType.AWAIT, ETokenType.DYNAMIC, ETokenType.GET, ETokenType.GLOBAL, ETokenType.PARTIAL,<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                        ETokenType.REMOVE, ETokenType.SET, ETokenType.VALUE, ETokenType.VAR, ETokenType.WHEN, ETokenType.WHERE,<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                        ETokenType.YIELD, ETokenType.GROUP);<a name="line.68"></a>
 <span class="sourceLineNo">069</span><a name="line.69"></a>
 <span class="sourceLineNo">070</span>        /**<a name="line.70"></a>
 <span class="sourceLineNo">071</span>         * EnumSet containing every language in which it is possible that the type info<a name="line.71"></a>
 <span class="sourceLineNo">072</span>         * of a variable or parameter might be after a colon.<a name="line.72"></a>
-<span class="sourceLineNo">073</span>         *<a name="line.73"></a>
+<span class="sourceLineNo">073</span>         * &lt;p&gt;<a name="line.73"></a>
 <span class="sourceLineNo">074</span>         * E.g. test(param1 : String)<a name="line.74"></a>
 <span class="sourceLineNo">075</span>         */<a name="line.75"></a>
 <span class="sourceLineNo">076</span>        private static final EnumSet&lt;ELanguage&gt; LANGUAGES_TYPE_INFO_AFTER_COLON = EnumSet.of(ELanguage.JAVASCRIPT,<a name="line.76"></a>
@@ -87,8 +87,8 @@
 <span class="sourceLineNo">079</span>        /**<a name="line.79"></a>
 <span class="sourceLineNo">080</span>         * Entity subtypes that represent looping statements<a name="line.80"></a>
 <span class="sourceLineNo">081</span>         */<a name="line.81"></a>
-<span class="sourceLineNo">082</span>        private static final Set&lt;String&gt; LOOP_SUBTYPES = new HashSet&lt;&gt;(<a name="line.82"></a>
-<span class="sourceLineNo">083</span>                        Arrays.asList(new String[] { SubTypeNames.FOR, SubTypeNames.FOREACH, SubTypeNames.WHILE }));<a name="line.83"></a>
+<span class="sourceLineNo">082</span>        private static final Set&lt;String&gt; LOOP_SUBTYPES = ImmutableSet.of(SubTypeNames.FOR, SubTypeNames.FOREACH,<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                        SubTypeNames.WHILE);<a name="line.83"></a>
 <span class="sourceLineNo">084</span><a name="line.84"></a>
 <span class="sourceLineNo">085</span>        /** Lists all primitive statements (i.e. statements without children). */<a name="line.85"></a>
 <span class="sourceLineNo">086</span>        public static List&lt;ShallowEntity&gt; listPrimitiveStatements(Collection&lt;ShallowEntity&gt; entities) {<a name="line.86"></a>
@@ -133,7 +133,7 @@
 <span class="sourceLineNo">125</span>         * equals sign, or closing parenthesis. The equals sign is needed to deal with<a name="line.125"></a>
 <span class="sourceLineNo">126</span>         * C++ default parameters and assignments in local variables. Additionally, we<a name="line.126"></a>
 <span class="sourceLineNo">127</span>         * drop brackets, as they can obscure the type/name separation.<a name="line.127"></a>
-<span class="sourceLineNo">128</span>         * <a name="line.128"></a>
+<span class="sourceLineNo">128</span>         *<a name="line.128"></a>
 <span class="sourceLineNo">129</span>         * @param ignoreParameterTypes<a name="line.129"></a>
 <span class="sourceLineNo">130</span>         *            if this is true, identifiers at the beginning, or after a comma or<a name="line.130"></a>
 <span class="sourceLineNo">131</span>         *            a double-colon are ignored, as they are likely type names in a<a name="line.131"></a>
@@ -588,7 +588,7 @@
 <span class="sourceLineNo">580</span>        /**<a name="line.580"></a>
 <span class="sourceLineNo">581</span>         * Recursive computation if the statement is located in an anonymous class or<a name="line.581"></a>
 <span class="sourceLineNo">582</span>         * lambda.<a name="line.582"></a>
-<span class="sourceLineNo">583</span>         * <a name="line.583"></a>
+<span class="sourceLineNo">583</span>         *<a name="line.583"></a>
 <span class="sourceLineNo">584</span>         * @param statement<a name="line.584"></a>
 <span class="sourceLineNo">585</span>         *            {@link ShallowEntity} that represents the statement<a name="line.585"></a>
 <span class="sourceLineNo">586</span>         * @return whether the statement is located in an anonymous class or lambda<a name="line.586"></a>
@@ -734,7 +734,7 @@
 <span class="sourceLineNo">726</span>         * Checks if the given entity is part of a branching statement but not the first<a name="line.726"></a>
 <span class="sourceLineNo">727</span>         * option of the branches. Those statements must not be separated from the first<a name="line.727"></a>
 <span class="sourceLineNo">728</span>         * part of the branching statement when we consider refactoring suggestions.<a name="line.728"></a>
-<span class="sourceLineNo">729</span>         * <a name="line.729"></a>
+<span class="sourceLineNo">729</span>         *<a name="line.729"></a>
 <span class="sourceLineNo">730</span>         * @return For entities of {@link SubTypeNames subtype} ELSE IF, ELSE, CATCH,<a name="line.730"></a>
 <span class="sourceLineNo">731</span>         *         FINALLY, CASE, DEFAULT, USING, DO will return &lt;code&gt;true&lt;/code&gt; but<a name="line.731"></a>
 <span class="sourceLineNo">732</span>         *         for other subtypes (including IF, SWITCH, TRY) return<a name="line.732"></a>

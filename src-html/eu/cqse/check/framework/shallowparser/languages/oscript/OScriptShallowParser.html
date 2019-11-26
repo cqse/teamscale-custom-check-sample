@@ -180,215 +180,208 @@
 <span class="sourceLineNo">172</span>         * name and end.<a name="line.172"></a>
 <span class="sourceLineNo">173</span>         */<a name="line.173"></a>
 <span class="sourceLineNo">174</span>        private RecognizerBase&lt;EOScriptParserState&gt; getVariableRecognizer() {<a name="line.174"></a>
-<span class="sourceLineNo">175</span>                RecognizerBase&lt;EOScriptParserState&gt; recognizer = emptyRecognizer();<a name="line.175"></a>
-<span class="sourceLineNo">176</span>                recognizer.subRecognizer(getVariableNameRecognizer()).subRecognizer(getStatementEndRecognizer());<a name="line.176"></a>
-<span class="sourceLineNo">177</span>                return recognizer;<a name="line.177"></a>
-<span class="sourceLineNo">178</span>        }<a name="line.178"></a>
-<span class="sourceLineNo">179</span><a name="line.179"></a>
-<span class="sourceLineNo">180</span>        /**<a name="line.180"></a>
-<span class="sourceLineNo">181</span>         * Recognizer for the name or way a variable is adressed. This also includes<a name="line.181"></a>
-<span class="sourceLineNo">182</span>         * stuff like: test.test().test<a name="line.182"></a>
-<span class="sourceLineNo">183</span>         */<a name="line.183"></a>
-<span class="sourceLineNo">184</span>        private RecognizerBase&lt;EOScriptParserState&gt; getVariableNameRecognizer() {<a name="line.184"></a>
-<span class="sourceLineNo">185</span>                RecognizerBase&lt;EOScriptParserState&gt; recognizer = emptyRecognizer();<a name="line.185"></a>
-<span class="sourceLineNo">186</span>                RecognizerBase&lt;EOScriptParserState&gt; start = recognizer.optional(EnumSet.of(DOLLAR, DOT)).markStart()<a name="line.186"></a>
-<span class="sourceLineNo">187</span>                                .optionalSubRecognizer(getMethodCallRecognizer(false)).optional(DOT).repeated(IDENTIFIER, DOT);<a name="line.187"></a>
-<span class="sourceLineNo">188</span><a name="line.188"></a>
-<span class="sourceLineNo">189</span>                // Munich RE's scripts has some weird object property assignment<a name="line.189"></a>
-<span class="sourceLineNo">190</span>                // &lt;code&gt;a.(b)=c&lt;code&gt;<a name="line.190"></a>
-<span class="sourceLineNo">191</span>                start.repeated(IDENTIFIER, DOT).optional(IDENTIFIER, DOT).sequence(LPAREN).skipToWithNesting(RPAREN, LPAREN,<a name="line.191"></a>
-<span class="sourceLineNo">192</span>                                RPAREN);<a name="line.192"></a>
-<span class="sourceLineNo">193</span>                start.sequence(IDENTIFIER);<a name="line.193"></a>
-<span class="sourceLineNo">194</span>                return recognizer;<a name="line.194"></a>
-<span class="sourceLineNo">195</span>        }<a name="line.195"></a>
-<span class="sourceLineNo">196</span><a name="line.196"></a>
-<span class="sourceLineNo">197</span>        /** Recognizer for a variable declaration */<a name="line.197"></a>
-<span class="sourceLineNo">198</span>        private RecognizerBase&lt;EOScriptParserState&gt; getDeclarationRecognizer() {<a name="line.198"></a>
-<span class="sourceLineNo">199</span>                RecognizerBase&lt;EOScriptParserState&gt; recognizer = emptyRecognizer();<a name="line.199"></a>
-<span class="sourceLineNo">200</span>                recognizer.sequence(COMMA);<a name="line.200"></a>
-<span class="sourceLineNo">201</span>                recognizer.sequence(STATEMENT_END_TOKENS);<a name="line.201"></a>
-<span class="sourceLineNo">202</span>                return recognizer;<a name="line.202"></a>
-<span class="sourceLineNo">203</span>        }<a name="line.203"></a>
-<span class="sourceLineNo">204</span><a name="line.204"></a>
-<span class="sourceLineNo">205</span>        /** Recognizer for an assignment starting with an '='. */<a name="line.205"></a>
-<span class="sourceLineNo">206</span>        private RecognizerBase&lt;EOScriptParserState&gt; getAssignmentRecognizer() {<a name="line.206"></a>
-<span class="sourceLineNo">207</span>                RecognizerBase&lt;EOScriptParserState&gt; recognizer = emptyRecognizer();<a name="line.207"></a>
-<span class="sourceLineNo">208</span>                RecognizerBase&lt;EOScriptParserState&gt; assignmentRecognizer = recognizer.sequence(EQUAL);<a name="line.208"></a>
-<span class="sourceLineNo">209</span><a name="line.209"></a>
-<span class="sourceLineNo">210</span>                assignmentRecognizer.subRecognizer(getMethodCallRecognizer(false)).repeated(DOT, IDENTIFIER);<a name="line.210"></a>
-<span class="sourceLineNo">211</span>                assignmentRecognizer.sequence(LBRACE).skipToWithNesting(RBRACE, LBRACE, RBRACE);<a name="line.211"></a>
-<span class="sourceLineNo">212</span>                assignmentRecognizer.sequence(LBRACK).skipToWithNesting(RBRACK, LBRACK, RBRACK);<a name="line.212"></a>
-<span class="sourceLineNo">213</span>                assignmentRecognizer.skipTo(STATEMENT_END_TOKENS);<a name="line.213"></a>
+<span class="sourceLineNo">175</span>                return createRecognizer(<a name="line.175"></a>
+<span class="sourceLineNo">176</span>                                start -&gt; start.subRecognizer(getVariableNameRecognizer()).subRecognizer(getStatementEndRecognizer()));<a name="line.176"></a>
+<span class="sourceLineNo">177</span>        }<a name="line.177"></a>
+<span class="sourceLineNo">178</span><a name="line.178"></a>
+<span class="sourceLineNo">179</span>        /**<a name="line.179"></a>
+<span class="sourceLineNo">180</span>         * Recognizer for the name or way a variable is adressed. This also includes<a name="line.180"></a>
+<span class="sourceLineNo">181</span>         * stuff like: test.test().test<a name="line.181"></a>
+<span class="sourceLineNo">182</span>         */<a name="line.182"></a>
+<span class="sourceLineNo">183</span>        private RecognizerBase&lt;EOScriptParserState&gt; getVariableNameRecognizer() {<a name="line.183"></a>
+<span class="sourceLineNo">184</span>                return createRecognizer(start -&gt; {<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                        RecognizerBase&lt;EOScriptParserState&gt; prefix = start.optional(EnumSet.of(DOLLAR, DOT)).markStart()<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                                        .optionalSubRecognizer(getMethodCallRecognizer(false)).optional(DOT).repeated(IDENTIFIER, DOT);<a name="line.186"></a>
+<span class="sourceLineNo">187</span><a name="line.187"></a>
+<span class="sourceLineNo">188</span>                        // Munich RE's scripts has some weird object property assignment<a name="line.188"></a>
+<span class="sourceLineNo">189</span>                        // &lt;code&gt;a.(b)=c&lt;code&gt;<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                        prefix.repeated(IDENTIFIER, DOT).optional(IDENTIFIER, DOT).sequence(LPAREN).skipToWithNesting(RPAREN,<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                                        LPAREN, RPAREN);<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                        prefix.sequence(IDENTIFIER);<a name="line.192"></a>
+<span class="sourceLineNo">193</span>                });<a name="line.193"></a>
+<span class="sourceLineNo">194</span>        }<a name="line.194"></a>
+<span class="sourceLineNo">195</span><a name="line.195"></a>
+<span class="sourceLineNo">196</span>        /** Recognizer for a variable declaration */<a name="line.196"></a>
+<span class="sourceLineNo">197</span>        private RecognizerBase&lt;EOScriptParserState&gt; getDeclarationRecognizer() {<a name="line.197"></a>
+<span class="sourceLineNo">198</span>                return createRecognizer(start -&gt; {<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                        start.sequence(COMMA);<a name="line.199"></a>
+<span class="sourceLineNo">200</span>                        start.sequence(STATEMENT_END_TOKENS);<a name="line.200"></a>
+<span class="sourceLineNo">201</span>                });<a name="line.201"></a>
+<span class="sourceLineNo">202</span>        }<a name="line.202"></a>
+<span class="sourceLineNo">203</span><a name="line.203"></a>
+<span class="sourceLineNo">204</span>        /** Recognizer for an assignment starting with an '='. */<a name="line.204"></a>
+<span class="sourceLineNo">205</span>        private RecognizerBase&lt;EOScriptParserState&gt; getAssignmentRecognizer() {<a name="line.205"></a>
+<span class="sourceLineNo">206</span>                return createRecognizer(start -&gt; {<a name="line.206"></a>
+<span class="sourceLineNo">207</span>                        RecognizerBase&lt;EOScriptParserState&gt; prefix = start.sequence(EQUAL);<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                        prefix.subRecognizer(getMethodCallRecognizer(false)).repeated(DOT, IDENTIFIER);<a name="line.208"></a>
+<span class="sourceLineNo">209</span>                        prefix.sequence(LBRACE).skipToWithNesting(RBRACE, LBRACE, RBRACE);<a name="line.209"></a>
+<span class="sourceLineNo">210</span>                        prefix.sequence(LBRACK).skipToWithNesting(RBRACK, LBRACK, RBRACK);<a name="line.210"></a>
+<span class="sourceLineNo">211</span>                        prefix.skipTo(STATEMENT_END_TOKENS);<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                });<a name="line.212"></a>
+<span class="sourceLineNo">213</span>        }<a name="line.213"></a>
 <span class="sourceLineNo">214</span><a name="line.214"></a>
-<span class="sourceLineNo">215</span>                return recognizer;<a name="line.215"></a>
-<span class="sourceLineNo">216</span>        }<a name="line.216"></a>
-<span class="sourceLineNo">217</span><a name="line.217"></a>
-<span class="sourceLineNo">218</span>        /**<a name="line.218"></a>
-<span class="sourceLineNo">219</span>         * Returns a recognizer which identifies if it is a valid statement end. This<a name="line.219"></a>
-<span class="sourceLineNo">220</span>         * recognizer starts after the variable identifier.<a name="line.220"></a>
-<span class="sourceLineNo">221</span>         * <a name="line.221"></a>
-<span class="sourceLineNo">222</span>         * String a --&gt;| = 3 (so here it would recognize every valid part which can come<a name="line.222"></a>
-<span class="sourceLineNo">223</span>         * after "String a"<a name="line.223"></a>
-<span class="sourceLineNo">224</span>         */<a name="line.224"></a>
-<span class="sourceLineNo">225</span>        private RecognizerBase&lt;EOScriptParserState&gt; getStatementEndRecognizer() {<a name="line.225"></a>
-<span class="sourceLineNo">226</span>                RecognizerBase&lt;EOScriptParserState&gt; recognizer = emptyRecognizer();<a name="line.226"></a>
-<span class="sourceLineNo">227</span>                recognizer.subRecognizer(getDeclarationRecognizer());<a name="line.227"></a>
-<span class="sourceLineNo">228</span>                recognizer.subRecognizer(getAssignmentRecognizer());<a name="line.228"></a>
-<span class="sourceLineNo">229</span>                return recognizer;<a name="line.229"></a>
-<span class="sourceLineNo">230</span>        }<a name="line.230"></a>
-<span class="sourceLineNo">231</span><a name="line.231"></a>
-<span class="sourceLineNo">232</span>        /**<a name="line.232"></a>
-<span class="sourceLineNo">233</span>         * A recognizer for the declaration of a variable with possible modifier and<a name="line.233"></a>
-<span class="sourceLineNo">234</span>         * type. Stops before the identifier.<a name="line.234"></a>
-<span class="sourceLineNo">235</span>         */<a name="line.235"></a>
-<span class="sourceLineNo">236</span>        private RecognizerBase&lt;EOScriptParserState&gt; getTypeRecognizer() {<a name="line.236"></a>
-<span class="sourceLineNo">237</span>                RecognizerBase&lt;EOScriptParserState&gt; recognizer = emptyRecognizer();<a name="line.237"></a>
-<span class="sourceLineNo">238</span>                recognizer.optional(MODIFIER).sequence(VARIABLE_TYPES).sequenceBefore(IDENTIFIER);<a name="line.238"></a>
-<span class="sourceLineNo">239</span>                return recognizer;<a name="line.239"></a>
-<span class="sourceLineNo">240</span>        }<a name="line.240"></a>
-<span class="sourceLineNo">241</span><a name="line.241"></a>
-<span class="sourceLineNo">242</span>        /**<a name="line.242"></a>
-<span class="sourceLineNo">243</span>         * Recognizer for a method call. This covers also multiple chained method calls<a name="line.243"></a>
-<span class="sourceLineNo">244</span>         * and calls over multiple lines.<a name="line.244"></a>
-<span class="sourceLineNo">245</span>         *<a name="line.245"></a>
-<span class="sourceLineNo">246</span>         * For example: test.test().test(\n, a,\n b)<a name="line.246"></a>
-<span class="sourceLineNo">247</span>         */<a name="line.247"></a>
-<span class="sourceLineNo">248</span>        private RecognizerBase&lt;EOScriptParserState&gt; getMethodCallRecognizer(boolean markStart) {<a name="line.248"></a>
-<span class="sourceLineNo">249</span>                RecognizerBase&lt;EOScriptParserState&gt; recognizer = emptyRecognizer();<a name="line.249"></a>
-<span class="sourceLineNo">250</span>                if (markStart) {<a name="line.250"></a>
-<span class="sourceLineNo">251</span>                        recognizer.optional(EnumSet.of(DOLLAR, DOT)).markStart().subRecognizer(getSimpleMethodCallRecognizer(), 1,<a name="line.251"></a>
-<span class="sourceLineNo">252</span>                                        Integer.MAX_VALUE);<a name="line.252"></a>
-<span class="sourceLineNo">253</span>                } else {<a name="line.253"></a>
-<span class="sourceLineNo">254</span>                        recognizer.optional(EnumSet.of(DOLLAR, DOT)).subRecognizer(getSimpleMethodCallRecognizer(), 1,<a name="line.254"></a>
-<span class="sourceLineNo">255</span>                                        Integer.MAX_VALUE);<a name="line.255"></a>
-<span class="sourceLineNo">256</span>                }<a name="line.256"></a>
-<span class="sourceLineNo">257</span>                return recognizer;<a name="line.257"></a>
-<span class="sourceLineNo">258</span>        }<a name="line.258"></a>
-<span class="sourceLineNo">259</span><a name="line.259"></a>
-<span class="sourceLineNo">260</span>        /**<a name="line.260"></a>
-<span class="sourceLineNo">261</span>         * Recognizer for a simple method call like .test(), $test() or test()<a name="line.261"></a>
-<span class="sourceLineNo">262</span>         */<a name="line.262"></a>
-<span class="sourceLineNo">263</span>        private RecognizerBase&lt;EOScriptParserState&gt; getSimpleMethodCallRecognizer() {<a name="line.263"></a>
-<span class="sourceLineNo">264</span>                RecognizerBase&lt;EOScriptParserState&gt; recognizer = emptyRecognizer();<a name="line.264"></a>
-<span class="sourceLineNo">265</span>                recognizer.optional(DOT).repeated(IDENTIFIER, DOT).sequence(IDENTIFIER, LPAREN).skipToWithNesting(RPAREN,<a name="line.265"></a>
-<span class="sourceLineNo">266</span>                                LPAREN, RPAREN);<a name="line.266"></a>
-<span class="sourceLineNo">267</span>                return recognizer;<a name="line.267"></a>
-<span class="sourceLineNo">268</span>        }<a name="line.268"></a>
-<span class="sourceLineNo">269</span><a name="line.269"></a>
-<span class="sourceLineNo">270</span>        /**<a name="line.270"></a>
-<span class="sourceLineNo">271</span>         * Rules for top-level declarations: package and object statements. These are<a name="line.271"></a>
-<span class="sourceLineNo">272</span>         * according to the new source format.<a name="line.272"></a>
-<span class="sourceLineNo">273</span>         */<a name="line.273"></a>
-<span class="sourceLineNo">274</span>        private void createTopLevelRules() {<a name="line.274"></a>
-<span class="sourceLineNo">275</span>                // Package<a name="line.275"></a>
-<span class="sourceLineNo">276</span>                inState(TOP_LEVEL).sequence(PACKAGE).skipTo(STATEMENT_END_TOKENS)<a name="line.276"></a>
-<span class="sourceLineNo">277</span>                                .createNode(MODULE, SubTypeNames.PACKAGE, new Region(1, -2)).endNode();<a name="line.277"></a>
-<span class="sourceLineNo">278</span><a name="line.278"></a>
-<span class="sourceLineNo">279</span>                // Object<a name="line.279"></a>
-<span class="sourceLineNo">280</span>                inState(TOP_LEVEL).sequence(PUBLIC, OBJECT, IDENTIFIER).markStart().createNode(TYPE, SubTypeNames.OBJECT, -1)<a name="line.280"></a>
-<span class="sourceLineNo">281</span>                                .optional(INHERITS, IDENTIFIER).repeated(DOUBLE_COLON, IDENTIFIER).parseUntil(IN_OBJECT).sequence(END)<a name="line.281"></a>
-<span class="sourceLineNo">282</span>                                .endNode();<a name="line.282"></a>
+<span class="sourceLineNo">215</span>        /**<a name="line.215"></a>
+<span class="sourceLineNo">216</span>         * Returns a recognizer which identifies if it is a valid statement end. This<a name="line.216"></a>
+<span class="sourceLineNo">217</span>         * recognizer starts after the variable identifier.<a name="line.217"></a>
+<span class="sourceLineNo">218</span>         * <a name="line.218"></a>
+<span class="sourceLineNo">219</span>         * String a --&gt;| = 3 (so here it would recognize every valid part which can come<a name="line.219"></a>
+<span class="sourceLineNo">220</span>         * after "String a"<a name="line.220"></a>
+<span class="sourceLineNo">221</span>         */<a name="line.221"></a>
+<span class="sourceLineNo">222</span>        private RecognizerBase&lt;EOScriptParserState&gt; getStatementEndRecognizer() {<a name="line.222"></a>
+<span class="sourceLineNo">223</span>                return createRecognizer(start -&gt; {<a name="line.223"></a>
+<span class="sourceLineNo">224</span>                        start.subRecognizer(getDeclarationRecognizer());<a name="line.224"></a>
+<span class="sourceLineNo">225</span>                        start.subRecognizer(getAssignmentRecognizer());<a name="line.225"></a>
+<span class="sourceLineNo">226</span>                });<a name="line.226"></a>
+<span class="sourceLineNo">227</span>        }<a name="line.227"></a>
+<span class="sourceLineNo">228</span><a name="line.228"></a>
+<span class="sourceLineNo">229</span>        /**<a name="line.229"></a>
+<span class="sourceLineNo">230</span>         * A recognizer for the declaration of a variable with possible modifier and<a name="line.230"></a>
+<span class="sourceLineNo">231</span>         * type. Stops before the identifier.<a name="line.231"></a>
+<span class="sourceLineNo">232</span>         */<a name="line.232"></a>
+<span class="sourceLineNo">233</span>        private RecognizerBase&lt;EOScriptParserState&gt; getTypeRecognizer() {<a name="line.233"></a>
+<span class="sourceLineNo">234</span>                return createRecognizer(start -&gt; start.optional(MODIFIER).sequence(VARIABLE_TYPES).sequenceBefore(IDENTIFIER));<a name="line.234"></a>
+<span class="sourceLineNo">235</span>        }<a name="line.235"></a>
+<span class="sourceLineNo">236</span><a name="line.236"></a>
+<span class="sourceLineNo">237</span>        /**<a name="line.237"></a>
+<span class="sourceLineNo">238</span>         * Recognizer for a method call. This covers also multiple chained method calls<a name="line.238"></a>
+<span class="sourceLineNo">239</span>         * and calls over multiple lines.<a name="line.239"></a>
+<span class="sourceLineNo">240</span>         *<a name="line.240"></a>
+<span class="sourceLineNo">241</span>         * For example: test.test().test(\n, a,\n b)<a name="line.241"></a>
+<span class="sourceLineNo">242</span>         */<a name="line.242"></a>
+<span class="sourceLineNo">243</span>        private RecognizerBase&lt;EOScriptParserState&gt; getMethodCallRecognizer(boolean markStart) {<a name="line.243"></a>
+<span class="sourceLineNo">244</span>                return createRecognizer(start -&gt; {<a name="line.244"></a>
+<span class="sourceLineNo">245</span>                        if (markStart) {<a name="line.245"></a>
+<span class="sourceLineNo">246</span>                                start.optional(EnumSet.of(DOLLAR, DOT)).markStart().subRecognizer(getSimpleMethodCallRecognizer(), 1,<a name="line.246"></a>
+<span class="sourceLineNo">247</span>                                                Integer.MAX_VALUE);<a name="line.247"></a>
+<span class="sourceLineNo">248</span>                        } else {<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                                start.optional(EnumSet.of(DOLLAR, DOT)).subRecognizer(getSimpleMethodCallRecognizer(), 1,<a name="line.249"></a>
+<span class="sourceLineNo">250</span>                                                Integer.MAX_VALUE);<a name="line.250"></a>
+<span class="sourceLineNo">251</span>                        }<a name="line.251"></a>
+<span class="sourceLineNo">252</span>                });<a name="line.252"></a>
+<span class="sourceLineNo">253</span>        }<a name="line.253"></a>
+<span class="sourceLineNo">254</span><a name="line.254"></a>
+<span class="sourceLineNo">255</span>        /**<a name="line.255"></a>
+<span class="sourceLineNo">256</span>         * Recognizer for a simple method call like .test(), $test() or test()<a name="line.256"></a>
+<span class="sourceLineNo">257</span>         */<a name="line.257"></a>
+<span class="sourceLineNo">258</span>        private RecognizerBase&lt;EOScriptParserState&gt; getSimpleMethodCallRecognizer() {<a name="line.258"></a>
+<span class="sourceLineNo">259</span>                return createRecognizer(start -&gt; start.optional(DOT).repeated(IDENTIFIER, DOT).sequence(IDENTIFIER, LPAREN)<a name="line.259"></a>
+<span class="sourceLineNo">260</span>                                .skipToWithNesting(RPAREN, LPAREN, RPAREN));<a name="line.260"></a>
+<span class="sourceLineNo">261</span>        }<a name="line.261"></a>
+<span class="sourceLineNo">262</span><a name="line.262"></a>
+<span class="sourceLineNo">263</span>        /**<a name="line.263"></a>
+<span class="sourceLineNo">264</span>         * Rules for top-level declarations: package and object statements. These are<a name="line.264"></a>
+<span class="sourceLineNo">265</span>         * according to the new source format.<a name="line.265"></a>
+<span class="sourceLineNo">266</span>         */<a name="line.266"></a>
+<span class="sourceLineNo">267</span>        private void createTopLevelRules() {<a name="line.267"></a>
+<span class="sourceLineNo">268</span>                // Package<a name="line.268"></a>
+<span class="sourceLineNo">269</span>                inState(TOP_LEVEL).sequence(PACKAGE).skipTo(STATEMENT_END_TOKENS)<a name="line.269"></a>
+<span class="sourceLineNo">270</span>                                .createNode(MODULE, SubTypeNames.PACKAGE, new Region(1, -2)).endNode();<a name="line.270"></a>
+<span class="sourceLineNo">271</span><a name="line.271"></a>
+<span class="sourceLineNo">272</span>                // Object<a name="line.272"></a>
+<span class="sourceLineNo">273</span>                inState(TOP_LEVEL).sequence(PUBLIC, OBJECT, IDENTIFIER).markStart().createNode(TYPE, SubTypeNames.OBJECT, -1)<a name="line.273"></a>
+<span class="sourceLineNo">274</span>                                .optional(INHERITS, IDENTIFIER).repeated(DOUBLE_COLON, IDENTIFIER).parseUntil(IN_OBJECT).sequence(END)<a name="line.274"></a>
+<span class="sourceLineNo">275</span>                                .endNode();<a name="line.275"></a>
+<span class="sourceLineNo">276</span><a name="line.276"></a>
+<span class="sourceLineNo">277</span>                inState(TOP_LEVEL).sequence(EnumSet.of(NAME, PARENT, ADDFEATURE)).skipTo(STATEMENT_END_TOKENS)<a name="line.277"></a>
+<span class="sourceLineNo">278</span>                                .createNode(META, 0).endNode();<a name="line.278"></a>
+<span class="sourceLineNo">279</span><a name="line.279"></a>
+<span class="sourceLineNo">280</span>                // Preprocessor directives<a name="line.280"></a>
+<span class="sourceLineNo">281</span>                inAnyState().sequence(PREPROCESSOR_DIRECTIVE).createNode(EShallowEntityType.META, 0).endNode();<a name="line.281"></a>
+<span class="sourceLineNo">282</span>        }<a name="line.282"></a>
 <span class="sourceLineNo">283</span><a name="line.283"></a>
-<span class="sourceLineNo">284</span>                inState(TOP_LEVEL).sequence(EnumSet.of(NAME, PARENT, ADDFEATURE)).skipTo(STATEMENT_END_TOKENS)<a name="line.284"></a>
-<span class="sourceLineNo">285</span>                                .createNode(META, 0).endNode();<a name="line.285"></a>
-<span class="sourceLineNo">286</span><a name="line.286"></a>
-<span class="sourceLineNo">287</span>                // Preprocessor directives<a name="line.287"></a>
-<span class="sourceLineNo">288</span>                inAnyState().sequence(PREPROCESSOR_DIRECTIVE).createNode(EShallowEntityType.META, 0).endNode();<a name="line.288"></a>
+<span class="sourceLineNo">284</span>        /** Rule for a script */<a name="line.284"></a>
+<span class="sourceLineNo">285</span>        private void createScriptRules() {<a name="line.285"></a>
+<span class="sourceLineNo">286</span>                inState(TOP_LEVEL, IN_OBJECT).optional(EnumSet.of(OVERRIDE, PUBLIC, PRIVATE))<a name="line.286"></a>
+<span class="sourceLineNo">287</span>                                .sequence(SCRIPT, OSCRIPT_IDENTIFIERS).createNode(TYPE, SubTypeNames.SCRIPT, -1).parseUntil(IN_SCRIPT)<a name="line.287"></a>
+<span class="sourceLineNo">288</span>                                .sequence(ENDSCRIPT).endNode();<a name="line.288"></a>
 <span class="sourceLineNo">289</span>        }<a name="line.289"></a>
 <span class="sourceLineNo">290</span><a name="line.290"></a>
-<span class="sourceLineNo">291</span>        /** Rule for a script */<a name="line.291"></a>
-<span class="sourceLineNo">292</span>        private void createScriptRules() {<a name="line.292"></a>
-<span class="sourceLineNo">293</span>                inState(TOP_LEVEL, IN_OBJECT).optional(EnumSet.of(OVERRIDE, PUBLIC, PRIVATE))<a name="line.293"></a>
-<span class="sourceLineNo">294</span>                                .sequence(SCRIPT, OSCRIPT_IDENTIFIERS).createNode(TYPE, SubTypeNames.SCRIPT, -1).parseUntil(IN_SCRIPT)<a name="line.294"></a>
-<span class="sourceLineNo">295</span>                                .sequence(ENDSCRIPT).endNode();<a name="line.295"></a>
-<span class="sourceLineNo">296</span>        }<a name="line.296"></a>
-<span class="sourceLineNo">297</span><a name="line.297"></a>
-<span class="sourceLineNo">298</span>        /** Rule for a function */<a name="line.298"></a>
-<span class="sourceLineNo">299</span>        private void createFunctionRules() {<a name="line.299"></a>
-<span class="sourceLineNo">300</span>                inState(TOP_LEVEL, IN_OBJECT, IN_SCRIPT).optional(MODIFIER)<a name="line.300"></a>
-<span class="sourceLineNo">301</span>                                .sequence(FUNCTION,<a name="line.301"></a>
-<span class="sourceLineNo">302</span>                                                EnumSet.of(BOOLEAN, INTEGER, REAL, STRING, OBJECT, ASSOC, LIST, DATE, DYNAMIC, VOID),<a name="line.302"></a>
-<span class="sourceLineNo">303</span>                                                OSCRIPT_IDENTIFIERS, LPAREN)<a name="line.303"></a>
-<span class="sourceLineNo">304</span>                                .createNode(METHOD, SubTypeNames.FUNCTION, 2).skipToWithNesting(RPAREN, LPAREN, RPAREN)<a name="line.304"></a>
-<span class="sourceLineNo">305</span>                                .parseUntil(IN_FUNCTION).sequence(END).endNode();<a name="line.305"></a>
-<span class="sourceLineNo">306</span>        }<a name="line.306"></a>
-<span class="sourceLineNo">307</span><a name="line.307"></a>
-<span class="sourceLineNo">308</span>        /** Rules for function and script statements */<a name="line.308"></a>
-<span class="sourceLineNo">309</span>        private void createRulesForStatements() {<a name="line.309"></a>
-<span class="sourceLineNo">310</span>                createRulesForConditionStatements();<a name="line.310"></a>
-<span class="sourceLineNo">311</span>                createRulesForLoopStatements();<a name="line.311"></a>
-<span class="sourceLineNo">312</span><a name="line.312"></a>
-<span class="sourceLineNo">313</span>                // Labels and goto jumps<a name="line.313"></a>
-<span class="sourceLineNo">314</span>                inState(TOP_LEVEL, IN_FUNCTION, IN_SCRIPT).sequence(IDENTIFIER, COLON).createNode(STATEMENT, SubTypeNames.LABEL)<a name="line.314"></a>
-<span class="sourceLineNo">315</span>                                .optional(STATEMENT_END_TOKENS).endNode();<a name="line.315"></a>
-<span class="sourceLineNo">316</span>                inState(TOP_LEVEL, IN_FUNCTION, IN_SCRIPT).sequence(GOTO, IDENTIFIER).createNode(STATEMENT, -1)<a name="line.316"></a>
-<span class="sourceLineNo">317</span>                                .optional(STATEMENT_END_TOKENS).endNode();<a name="line.317"></a>
-<span class="sourceLineNo">318</span><a name="line.318"></a>
-<span class="sourceLineNo">319</span>                // Simple keywords<a name="line.319"></a>
-<span class="sourceLineNo">320</span>                inState(TOP_LEVEL, IN_FUNCTION, IN_SCRIPT).sequence(EnumSet.of(RETURN, BREAK, CONTINUE, BREAKIF, CONTINUEIF))<a name="line.320"></a>
-<span class="sourceLineNo">321</span>                                .createNode(STATEMENT, 0).skipNested(LPAREN, RPAREN).skipTo(STATEMENT_END_TOKENS).endNode();<a name="line.321"></a>
-<span class="sourceLineNo">322</span><a name="line.322"></a>
-<span class="sourceLineNo">323</span>                // Label<a name="line.323"></a>
-<span class="sourceLineNo">324</span>                inAnyState().sequence(IDENTIFIER, COLON).createNode(STATEMENT, SubTypeNames.LABEL, 0)<a name="line.324"></a>
-<span class="sourceLineNo">325</span>                                .skipTo(STATEMENT_END_TOKENS).endNode();<a name="line.325"></a>
-<span class="sourceLineNo">326</span><a name="line.326"></a>
-<span class="sourceLineNo">327</span>                // Method calls<a name="line.327"></a>
-<span class="sourceLineNo">328</span>                inAnyState().subRecognizer(getMethodCallRecognizer(true)).createNode(STATEMENT, SIMPLE_STATEMENT, 0).endNode();<a name="line.328"></a>
-<span class="sourceLineNo">329</span>        }<a name="line.329"></a>
+<span class="sourceLineNo">291</span>        /** Rule for a function */<a name="line.291"></a>
+<span class="sourceLineNo">292</span>        private void createFunctionRules() {<a name="line.292"></a>
+<span class="sourceLineNo">293</span>                inState(TOP_LEVEL, IN_OBJECT, IN_SCRIPT).optional(MODIFIER)<a name="line.293"></a>
+<span class="sourceLineNo">294</span>                                .sequence(FUNCTION,<a name="line.294"></a>
+<span class="sourceLineNo">295</span>                                                EnumSet.of(BOOLEAN, INTEGER, REAL, STRING, OBJECT, ASSOC, LIST, DATE, DYNAMIC, VOID),<a name="line.295"></a>
+<span class="sourceLineNo">296</span>                                                OSCRIPT_IDENTIFIERS, LPAREN)<a name="line.296"></a>
+<span class="sourceLineNo">297</span>                                .createNode(METHOD, SubTypeNames.FUNCTION, 2).skipToWithNesting(RPAREN, LPAREN, RPAREN)<a name="line.297"></a>
+<span class="sourceLineNo">298</span>                                .parseUntil(IN_FUNCTION).sequence(END).endNode();<a name="line.298"></a>
+<span class="sourceLineNo">299</span>        }<a name="line.299"></a>
+<span class="sourceLineNo">300</span><a name="line.300"></a>
+<span class="sourceLineNo">301</span>        /** Rules for function and script statements */<a name="line.301"></a>
+<span class="sourceLineNo">302</span>        private void createRulesForStatements() {<a name="line.302"></a>
+<span class="sourceLineNo">303</span>                createRulesForConditionStatements();<a name="line.303"></a>
+<span class="sourceLineNo">304</span>                createRulesForLoopStatements();<a name="line.304"></a>
+<span class="sourceLineNo">305</span><a name="line.305"></a>
+<span class="sourceLineNo">306</span>                // Labels and goto jumps<a name="line.306"></a>
+<span class="sourceLineNo">307</span>                inState(TOP_LEVEL, IN_FUNCTION, IN_SCRIPT).sequence(IDENTIFIER, COLON).createNode(STATEMENT, SubTypeNames.LABEL)<a name="line.307"></a>
+<span class="sourceLineNo">308</span>                                .optional(STATEMENT_END_TOKENS).endNode();<a name="line.308"></a>
+<span class="sourceLineNo">309</span>                inState(TOP_LEVEL, IN_FUNCTION, IN_SCRIPT).sequence(GOTO, IDENTIFIER).createNode(STATEMENT, -1)<a name="line.309"></a>
+<span class="sourceLineNo">310</span>                                .optional(STATEMENT_END_TOKENS).endNode();<a name="line.310"></a>
+<span class="sourceLineNo">311</span><a name="line.311"></a>
+<span class="sourceLineNo">312</span>                // Simple keywords<a name="line.312"></a>
+<span class="sourceLineNo">313</span>                inState(TOP_LEVEL, IN_FUNCTION, IN_SCRIPT).sequence(EnumSet.of(RETURN, BREAK, CONTINUE, BREAKIF, CONTINUEIF))<a name="line.313"></a>
+<span class="sourceLineNo">314</span>                                .createNode(STATEMENT, 0).skipNested(LPAREN, RPAREN).skipTo(STATEMENT_END_TOKENS).endNode();<a name="line.314"></a>
+<span class="sourceLineNo">315</span><a name="line.315"></a>
+<span class="sourceLineNo">316</span>                // Label<a name="line.316"></a>
+<span class="sourceLineNo">317</span>                inAnyState().sequence(IDENTIFIER, COLON).createNode(STATEMENT, SubTypeNames.LABEL, 0)<a name="line.317"></a>
+<span class="sourceLineNo">318</span>                                .skipTo(STATEMENT_END_TOKENS).endNode();<a name="line.318"></a>
+<span class="sourceLineNo">319</span><a name="line.319"></a>
+<span class="sourceLineNo">320</span>                // Method calls<a name="line.320"></a>
+<span class="sourceLineNo">321</span>                inAnyState().subRecognizer(getMethodCallRecognizer(true)).createNode(STATEMENT, SIMPLE_STATEMENT, 0).endNode();<a name="line.321"></a>
+<span class="sourceLineNo">322</span>        }<a name="line.322"></a>
+<span class="sourceLineNo">323</span><a name="line.323"></a>
+<span class="sourceLineNo">324</span>        /** Create rules for condition statements */<a name="line.324"></a>
+<span class="sourceLineNo">325</span>        private void createRulesForConditionStatements() {<a name="line.325"></a>
+<span class="sourceLineNo">326</span>                // If Statement<a name="line.326"></a>
+<span class="sourceLineNo">327</span>                createIfRules(IF);<a name="line.327"></a>
+<span class="sourceLineNo">328</span>                createIfRules(ELSE);<a name="line.328"></a>
+<span class="sourceLineNo">329</span>                createIfRules(ELSEIF);<a name="line.329"></a>
 <span class="sourceLineNo">330</span><a name="line.330"></a>
-<span class="sourceLineNo">331</span>        /** Create rules for condition statements */<a name="line.331"></a>
-<span class="sourceLineNo">332</span>        private void createRulesForConditionStatements() {<a name="line.332"></a>
-<span class="sourceLineNo">333</span>                // If Statement<a name="line.333"></a>
-<span class="sourceLineNo">334</span>                createIfRules(IF);<a name="line.334"></a>
-<span class="sourceLineNo">335</span>                createIfRules(ELSE);<a name="line.335"></a>
-<span class="sourceLineNo">336</span>                createIfRules(ELSEIF);<a name="line.336"></a>
-<span class="sourceLineNo">337</span><a name="line.337"></a>
-<span class="sourceLineNo">338</span>                // Switch<a name="line.338"></a>
-<span class="sourceLineNo">339</span>                inState(TOP_LEVEL, IN_FUNCTION, IN_SCRIPT).sequence(SWITCH).createNode(STATEMENT, 0)<a name="line.339"></a>
-<span class="sourceLineNo">340</span>                                .skipToWithNesting(STATEMENT_END_TOKENS, LPAREN, RPAREN).parseUntil(IN_FUNCTION).sequence(END)<a name="line.340"></a>
-<span class="sourceLineNo">341</span>                                .endNode();<a name="line.341"></a>
-<span class="sourceLineNo">342</span>                inState(TOP_LEVEL, IN_FUNCTION, IN_SCRIPT).sequence(CASE)<a name="line.342"></a>
-<span class="sourceLineNo">343</span>                                .skipToWithNesting(STATEMENT_END_TOKENS, LPAREN, RPAREN)<a name="line.343"></a>
-<span class="sourceLineNo">344</span>                                .createNode(EShallowEntityType.META, new int[] { 0, 1 }).parseUntil(IN_FUNCTION).sequence(END)<a name="line.344"></a>
-<span class="sourceLineNo">345</span>                                .endNode();<a name="line.345"></a>
-<span class="sourceLineNo">346</span>                inState(TOP_LEVEL, IN_FUNCTION, IN_SCRIPT).sequence(DEFAULT, STATEMENT_END_TOKENS)<a name="line.346"></a>
-<span class="sourceLineNo">347</span>                                .createNode(EShallowEntityType.META, 0).parseUntil(IN_FUNCTION).sequence(END).endNode();<a name="line.347"></a>
-<span class="sourceLineNo">348</span>        }<a name="line.348"></a>
-<span class="sourceLineNo">349</span><a name="line.349"></a>
-<span class="sourceLineNo">350</span>        /** Create rules for If/else-if conditions */<a name="line.350"></a>
-<span class="sourceLineNo">351</span>        private void createIfRules(ETokenType conditionToken) {<a name="line.351"></a>
-<span class="sourceLineNo">352</span>                RecognizerBase&lt;EOScriptParserState&gt; ifRecognizer = inState(TOP_LEVEL, IN_FUNCTION, IN_SCRIPT)<a name="line.352"></a>
-<span class="sourceLineNo">353</span>                                .sequence(conditionToken).skipToWithNesting(STATEMENT_END_TOKENS, LPAREN, RPAREN)<a name="line.353"></a>
-<span class="sourceLineNo">354</span>                                .createNode(STATEMENT, 0).parseUntil(IN_FUNCTION);<a name="line.354"></a>
-<span class="sourceLineNo">355</span>                if (conditionToken == ELSE) {<a name="line.355"></a>
-<span class="sourceLineNo">356</span>                        ifRecognizer.sequence(END).endNode();<a name="line.356"></a>
-<span class="sourceLineNo">357</span>                        return;<a name="line.357"></a>
-<span class="sourceLineNo">358</span>                }<a name="line.358"></a>
-<span class="sourceLineNo">359</span><a name="line.359"></a>
-<span class="sourceLineNo">360</span>                ifRecognizer.sequenceBefore(EnumSet.of(ELSE, ELSEIF)).endNodeWithContinuation();<a name="line.360"></a>
-<span class="sourceLineNo">361</span>                ifRecognizer.sequence(END).endNode();<a name="line.361"></a>
-<span class="sourceLineNo">362</span>        }<a name="line.362"></a>
-<span class="sourceLineNo">363</span><a name="line.363"></a>
-<span class="sourceLineNo">364</span>        /** Create rules for loop statements */<a name="line.364"></a>
-<span class="sourceLineNo">365</span>        private void createRulesForLoopStatements() {<a name="line.365"></a>
-<span class="sourceLineNo">366</span>                // While<a name="line.366"></a>
-<span class="sourceLineNo">367</span>                inState(TOP_LEVEL, IN_FUNCTION, IN_SCRIPT).sequence(WHILE).createNode(STATEMENT, 0).skipNested(LPAREN, RPAREN)<a name="line.367"></a>
-<span class="sourceLineNo">368</span>                                .parseUntil(IN_FUNCTION).sequence(END).endNode();<a name="line.368"></a>
-<span class="sourceLineNo">369</span><a name="line.369"></a>
-<span class="sourceLineNo">370</span>                // Repeat<a name="line.370"></a>
-<span class="sourceLineNo">371</span>                inState(TOP_LEVEL, IN_FUNCTION, IN_SCRIPT).sequence(REPEAT).createNode(STATEMENT, 0).parseUntil(IN_FUNCTION)<a name="line.371"></a>
-<span class="sourceLineNo">372</span>                                .sequence(WHILE).skipNested(LPAREN, RPAREN).endNode();<a name="line.372"></a>
-<span class="sourceLineNo">373</span><a name="line.373"></a>
-<span class="sourceLineNo">374</span>                // For...each, C-style and structured for loops<a name="line.374"></a>
-<span class="sourceLineNo">375</span>                RecognizerBase&lt;EOScriptParserState&gt; forRecognizer = inState(TOP_LEVEL, IN_FUNCTION, IN_SCRIPT).sequence(FOR)<a name="line.375"></a>
-<span class="sourceLineNo">376</span>                                .markStart();<a name="line.376"></a>
-<span class="sourceLineNo">377</span>                forRecognizer.sequence(IDENTIFIER).createNode(STATEMENT, -2).skipNested(LPAREN, RPAREN)<a name="line.377"></a>
-<span class="sourceLineNo">378</span>                                .skipTo(STATEMENT_END_TOKENS).parseUntil(IN_FUNCTION).sequence(END).endNode();<a name="line.378"></a>
-<span class="sourceLineNo">379</span>                forRecognizer.skipNested(LPAREN, RPAREN).createNode(STATEMENT, -3).parseUntil(IN_FUNCTION).sequence(END)<a name="line.379"></a>
-<span class="sourceLineNo">380</span>                                .endNode();<a name="line.380"></a>
-<span class="sourceLineNo">381</span>        }<a name="line.381"></a>
-<span class="sourceLineNo">382</span><a name="line.382"></a>
-<span class="sourceLineNo">383</span>}<a name="line.383"></a>
+<span class="sourceLineNo">331</span>                // Switch<a name="line.331"></a>
+<span class="sourceLineNo">332</span>                inState(TOP_LEVEL, IN_FUNCTION, IN_SCRIPT).sequence(SWITCH).createNode(STATEMENT, 0)<a name="line.332"></a>
+<span class="sourceLineNo">333</span>                                .skipToWithNesting(STATEMENT_END_TOKENS, LPAREN, RPAREN).parseUntil(IN_FUNCTION).sequence(END)<a name="line.333"></a>
+<span class="sourceLineNo">334</span>                                .endNode();<a name="line.334"></a>
+<span class="sourceLineNo">335</span>                inState(TOP_LEVEL, IN_FUNCTION, IN_SCRIPT).sequence(CASE)<a name="line.335"></a>
+<span class="sourceLineNo">336</span>                                .skipToWithNesting(STATEMENT_END_TOKENS, LPAREN, RPAREN)<a name="line.336"></a>
+<span class="sourceLineNo">337</span>                                .createNode(EShallowEntityType.META, new int[] { 0, 1 }).parseUntil(IN_FUNCTION).sequence(END)<a name="line.337"></a>
+<span class="sourceLineNo">338</span>                                .endNode();<a name="line.338"></a>
+<span class="sourceLineNo">339</span>                inState(TOP_LEVEL, IN_FUNCTION, IN_SCRIPT).sequence(DEFAULT, STATEMENT_END_TOKENS)<a name="line.339"></a>
+<span class="sourceLineNo">340</span>                                .createNode(EShallowEntityType.META, 0).parseUntil(IN_FUNCTION).sequence(END).endNode();<a name="line.340"></a>
+<span class="sourceLineNo">341</span>        }<a name="line.341"></a>
+<span class="sourceLineNo">342</span><a name="line.342"></a>
+<span class="sourceLineNo">343</span>        /** Create rules for If/else-if conditions */<a name="line.343"></a>
+<span class="sourceLineNo">344</span>        private void createIfRules(ETokenType conditionToken) {<a name="line.344"></a>
+<span class="sourceLineNo">345</span>                RecognizerBase&lt;EOScriptParserState&gt; ifRecognizer = inState(TOP_LEVEL, IN_FUNCTION, IN_SCRIPT)<a name="line.345"></a>
+<span class="sourceLineNo">346</span>                                .sequence(conditionToken).skipToWithNesting(STATEMENT_END_TOKENS, LPAREN, RPAREN)<a name="line.346"></a>
+<span class="sourceLineNo">347</span>                                .createNode(STATEMENT, 0).parseUntil(IN_FUNCTION);<a name="line.347"></a>
+<span class="sourceLineNo">348</span>                if (conditionToken == ELSE) {<a name="line.348"></a>
+<span class="sourceLineNo">349</span>                        ifRecognizer.sequence(END).endNode();<a name="line.349"></a>
+<span class="sourceLineNo">350</span>                        return;<a name="line.350"></a>
+<span class="sourceLineNo">351</span>                }<a name="line.351"></a>
+<span class="sourceLineNo">352</span><a name="line.352"></a>
+<span class="sourceLineNo">353</span>                ifRecognizer.sequenceBefore(EnumSet.of(ELSE, ELSEIF)).endNodeWithContinuation();<a name="line.353"></a>
+<span class="sourceLineNo">354</span>                ifRecognizer.sequence(END).endNode();<a name="line.354"></a>
+<span class="sourceLineNo">355</span>        }<a name="line.355"></a>
+<span class="sourceLineNo">356</span><a name="line.356"></a>
+<span class="sourceLineNo">357</span>        /** Create rules for loop statements */<a name="line.357"></a>
+<span class="sourceLineNo">358</span>        private void createRulesForLoopStatements() {<a name="line.358"></a>
+<span class="sourceLineNo">359</span>                // While<a name="line.359"></a>
+<span class="sourceLineNo">360</span>                inState(TOP_LEVEL, IN_FUNCTION, IN_SCRIPT).sequence(WHILE).createNode(STATEMENT, 0).skipNested(LPAREN, RPAREN)<a name="line.360"></a>
+<span class="sourceLineNo">361</span>                                .parseUntil(IN_FUNCTION).sequence(END).endNode();<a name="line.361"></a>
+<span class="sourceLineNo">362</span><a name="line.362"></a>
+<span class="sourceLineNo">363</span>                // Repeat<a name="line.363"></a>
+<span class="sourceLineNo">364</span>                inState(TOP_LEVEL, IN_FUNCTION, IN_SCRIPT).sequence(REPEAT).createNode(STATEMENT, 0).parseUntil(IN_FUNCTION)<a name="line.364"></a>
+<span class="sourceLineNo">365</span>                                .sequence(WHILE).skipNested(LPAREN, RPAREN).endNode();<a name="line.365"></a>
+<span class="sourceLineNo">366</span><a name="line.366"></a>
+<span class="sourceLineNo">367</span>                // For...each, C-style and structured for loops<a name="line.367"></a>
+<span class="sourceLineNo">368</span>                RecognizerBase&lt;EOScriptParserState&gt; forRecognizer = inState(TOP_LEVEL, IN_FUNCTION, IN_SCRIPT).sequence(FOR)<a name="line.368"></a>
+<span class="sourceLineNo">369</span>                                .markStart();<a name="line.369"></a>
+<span class="sourceLineNo">370</span>                forRecognizer.sequence(IDENTIFIER).createNode(STATEMENT, -2).skipNested(LPAREN, RPAREN)<a name="line.370"></a>
+<span class="sourceLineNo">371</span>                                .skipTo(STATEMENT_END_TOKENS).parseUntil(IN_FUNCTION).sequence(END).endNode();<a name="line.371"></a>
+<span class="sourceLineNo">372</span>                forRecognizer.skipNested(LPAREN, RPAREN).createNode(STATEMENT, -3).parseUntil(IN_FUNCTION).sequence(END)<a name="line.372"></a>
+<span class="sourceLineNo">373</span>                                .endNode();<a name="line.373"></a>
+<span class="sourceLineNo">374</span>        }<a name="line.374"></a>
+<span class="sourceLineNo">375</span><a name="line.375"></a>
+<span class="sourceLineNo">376</span>}<a name="line.376"></a>
 
 
 

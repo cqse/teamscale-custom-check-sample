@@ -395,7 +395,7 @@
 <span class="sourceLineNo">387</span>         * {@link RecognizerBase#NO_MATCH} if it is malformed.<a name="line.387"></a>
 <span class="sourceLineNo">388</span>         */<a name="line.388"></a>
 <span class="sourceLineNo">389</span>        public static int skipOptionalParameters(List&lt;IToken&gt; tokens, int currentOffset) {<a name="line.389"></a>
-<span class="sourceLineNo">390</span>                if (!TokenStreamUtils.tokenTypesAt(tokens, currentOffset, LPAREN)) {<a name="line.390"></a>
+<span class="sourceLineNo">390</span>                if (!TokenStreamUtils.hasTokenTypeSequence(tokens, currentOffset, LPAREN)) {<a name="line.390"></a>
 <span class="sourceLineNo">391</span>                        return currentOffset;<a name="line.391"></a>
 <span class="sourceLineNo">392</span>                }<a name="line.392"></a>
 <span class="sourceLineNo">393</span><a name="line.393"></a>

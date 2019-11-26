@@ -38,126 +38,149 @@
 <span class="sourceLineNo">030</span> * types in the same category).<a name="line.30"></a>
 <span class="sourceLineNo">031</span> */<a name="line.31"></a>
 <span class="sourceLineNo">032</span>public enum EEssentialType {<a name="line.32"></a>
-<span class="sourceLineNo">033</span>        // Essential-Type Category Boolean<a name="line.33"></a>
+<span class="sourceLineNo">033</span><a name="line.33"></a>
 <span class="sourceLineNo">034</span>        BOOL(EEssentialTypeCategory.BOOLEAN),<a name="line.34"></a>
-<span class="sourceLineNo">035</span>        // Essential-Type Category Character<a name="line.35"></a>
+<span class="sourceLineNo">035</span><a name="line.35"></a>
 <span class="sourceLineNo">036</span>        CHAR(EEssentialTypeCategory.CHARACTER),<a name="line.36"></a>
-<span class="sourceLineNo">037</span>        // Essential-Type Category Signed<a name="line.37"></a>
-<span class="sourceLineNo">038</span>        SIGNED_CHAR(EEssentialTypeCategory.SIGNED), SIGNED_SHORT(EEssentialTypeCategory.SIGNED),<a name="line.38"></a>
-<span class="sourceLineNo">039</span>        SIGNED_INT(EEssentialTypeCategory.SIGNED), SIGNED_LONG(EEssentialTypeCategory.SIGNED),<a name="line.39"></a>
-<span class="sourceLineNo">040</span>        SIGNED_LONG_LONG(EEssentialTypeCategory.SIGNED),<a name="line.40"></a>
-<span class="sourceLineNo">041</span>        // Essential-Type Category Unsigned<a name="line.41"></a>
-<span class="sourceLineNo">042</span>        UNSIGNED_CHAR(EEssentialTypeCategory.UNSIGNED), UNSIGNED_SHORT(EEssentialTypeCategory.UNSIGNED),<a name="line.42"></a>
-<span class="sourceLineNo">043</span>        UNSIGNED_INT(EEssentialTypeCategory.UNSIGNED), UNSIGNED_LONG(EEssentialTypeCategory.UNSIGNED),<a name="line.43"></a>
-<span class="sourceLineNo">044</span>        UNSIGNED_LONG_LONG(EEssentialTypeCategory.UNSIGNED),<a name="line.44"></a>
-<span class="sourceLineNo">045</span>        // Essential-Type Category Enum&lt;i&gt;<a name="line.45"></a>
-<span class="sourceLineNo">046</span>        /**<a name="line.46"></a>
-<span class="sourceLineNo">047</span>         * All instances of NAMED_ENUM are considered different (MISRA C2012 D.5)<a name="line.47"></a>
-<span class="sourceLineNo">048</span>         */<a name="line.48"></a>
-<span class="sourceLineNo">049</span>        NAMED_ENUM(EEssentialTypeCategory.ENUM),<a name="line.49"></a>
-<span class="sourceLineNo">050</span>        // Essential-Type Category Floating<a name="line.50"></a>
-<span class="sourceLineNo">051</span>        FLOAT(EEssentialTypeCategory.FLOATING), DOUBLE(EEssentialTypeCategory.FLOATING),<a name="line.51"></a>
-<span class="sourceLineNo">052</span>        LONG_DOUBLE(EEssentialTypeCategory.FLOATING);<a name="line.52"></a>
+<span class="sourceLineNo">037</span><a name="line.37"></a>
+<span class="sourceLineNo">038</span>        SIGNED_CHAR(EEssentialTypeCategory.SIGNED),<a name="line.38"></a>
+<span class="sourceLineNo">039</span><a name="line.39"></a>
+<span class="sourceLineNo">040</span>        SIGNED_SHORT(EEssentialTypeCategory.SIGNED),<a name="line.40"></a>
+<span class="sourceLineNo">041</span><a name="line.41"></a>
+<span class="sourceLineNo">042</span>        SIGNED_INT(EEssentialTypeCategory.SIGNED),<a name="line.42"></a>
+<span class="sourceLineNo">043</span><a name="line.43"></a>
+<span class="sourceLineNo">044</span>        SIGNED_LONG(EEssentialTypeCategory.SIGNED),<a name="line.44"></a>
+<span class="sourceLineNo">045</span><a name="line.45"></a>
+<span class="sourceLineNo">046</span>        SIGNED_LONG_LONG(EEssentialTypeCategory.SIGNED),<a name="line.46"></a>
+<span class="sourceLineNo">047</span><a name="line.47"></a>
+<span class="sourceLineNo">048</span>        UNSIGNED_CHAR(EEssentialTypeCategory.UNSIGNED),<a name="line.48"></a>
+<span class="sourceLineNo">049</span><a name="line.49"></a>
+<span class="sourceLineNo">050</span>        UNSIGNED_SHORT(EEssentialTypeCategory.UNSIGNED),<a name="line.50"></a>
+<span class="sourceLineNo">051</span><a name="line.51"></a>
+<span class="sourceLineNo">052</span>        UNSIGNED_INT(EEssentialTypeCategory.UNSIGNED),<a name="line.52"></a>
 <span class="sourceLineNo">053</span><a name="line.53"></a>
-<span class="sourceLineNo">054</span>        private final EEssentialTypeCategory category;<a name="line.54"></a>
-<span class="sourceLineNo">055</span>        /**<a name="line.55"></a>
-<span class="sourceLineNo">056</span>         * Map from the basic type names used in clang to the {@link EEssentialType}<a name="line.56"></a>
-<span class="sourceLineNo">057</span>         * enum items. This list does not include {@link EEssentialType#NAMED_ENUM}<a name="line.57"></a>
-<span class="sourceLineNo">058</span>         * since the named-enum type names in clang start with "enum " but also contain<a name="line.58"></a>
-<span class="sourceLineNo">059</span>         * the enum name.<a name="line.59"></a>
+<span class="sourceLineNo">054</span>        UNSIGNED_LONG(EEssentialTypeCategory.UNSIGNED),<a name="line.54"></a>
+<span class="sourceLineNo">055</span><a name="line.55"></a>
+<span class="sourceLineNo">056</span>        UNSIGNED_LONG_LONG(EEssentialTypeCategory.UNSIGNED),<a name="line.56"></a>
+<span class="sourceLineNo">057</span><a name="line.57"></a>
+<span class="sourceLineNo">058</span>        /**<a name="line.58"></a>
+<span class="sourceLineNo">059</span>         * All instances of NAMED_ENUM are considered different (MISRA C2012 D.5).<a name="line.59"></a>
 <span class="sourceLineNo">060</span>         */<a name="line.60"></a>
-<span class="sourceLineNo">061</span>        private static final Map&lt;String, EEssentialType&gt; CLANG_TYPENAME_TO_ESSENTIALTYPE = CollectionUtils.asMap(<a name="line.61"></a>
-<span class="sourceLineNo">062</span>                        // Essential-Type Category Boolean<a name="line.62"></a>
-<span class="sourceLineNo">063</span>                        createPair("_bool", BOOL),<a name="line.63"></a>
-<span class="sourceLineNo">064</span>                        // Essential-Type Category Character<a name="line.64"></a>
-<span class="sourceLineNo">065</span>                        createPair("char", SIGNED_CHAR),<a name="line.65"></a>
-<span class="sourceLineNo">066</span>                        // Essential-Type Category Signed<a name="line.66"></a>
-<span class="sourceLineNo">067</span>                        createPair("short", SIGNED_SHORT), createPair("int", SIGNED_INT), createPair("long", SIGNED_LONG),<a name="line.67"></a>
-<span class="sourceLineNo">068</span>                        createPair("long long", SIGNED_LONG_LONG),<a name="line.68"></a>
-<span class="sourceLineNo">069</span>                        // Essential-Type Category Unsigned<a name="line.69"></a>
-<span class="sourceLineNo">070</span>                        createPair("unsigned char", UNSIGNED_CHAR), createPair("unsigned short", UNSIGNED_SHORT),<a name="line.70"></a>
-<span class="sourceLineNo">071</span>                        createPair("unsigned int", UNSIGNED_INT), createPair("unsigned long", UNSIGNED_LONG),<a name="line.71"></a>
-<span class="sourceLineNo">072</span>                        createPair("unsigned long long", UNSIGNED_LONG_LONG),<a name="line.72"></a>
-<span class="sourceLineNo">073</span>                        // Essential-Type Category Floating<a name="line.73"></a>
-<span class="sourceLineNo">074</span>                        createPair("float", FLOAT), createPair("double", DOUBLE), createPair("long double", LONG_DOUBLE));<a name="line.74"></a>
-<span class="sourceLineNo">075</span><a name="line.75"></a>
-<span class="sourceLineNo">076</span>        EEssentialType(EEssentialTypeCategory category) {<a name="line.76"></a>
-<span class="sourceLineNo">077</span>                this.category = category;<a name="line.77"></a>
-<span class="sourceLineNo">078</span>        }<a name="line.78"></a>
-<span class="sourceLineNo">079</span><a name="line.79"></a>
-<span class="sourceLineNo">080</span>        /**<a name="line.80"></a>
-<span class="sourceLineNo">081</span>         * Returns the highest-ranking type (and widest) of the given types. The given<a name="line.81"></a>
-<span class="sourceLineNo">082</span>         * types must be of the same essential-type category.<a name="line.82"></a>
-<span class="sourceLineNo">083</span>         */<a name="line.83"></a>
-<span class="sourceLineNo">084</span>        public static EEssentialType getHighestRankType(EEssentialType type1, EEssentialType type2) {<a name="line.84"></a>
-<span class="sourceLineNo">085</span>                CCSMAssert.isTrue(type1.category == type2.category,<a name="line.85"></a>
-<span class="sourceLineNo">086</span>                                () -&gt; "Essential types must be of same category for comparison (" + type1 + " vs " + type2 + ")");<a name="line.86"></a>
-<span class="sourceLineNo">087</span>                if (type1.ordinal() &gt; type2.ordinal()) {<a name="line.87"></a>
-<span class="sourceLineNo">088</span>                        return type1;<a name="line.88"></a>
-<span class="sourceLineNo">089</span>                }<a name="line.89"></a>
-<span class="sourceLineNo">090</span>                return type2;<a name="line.90"></a>
-<span class="sourceLineNo">091</span>        }<a name="line.91"></a>
-<span class="sourceLineNo">092</span><a name="line.92"></a>
-<span class="sourceLineNo">093</span>        /**<a name="line.93"></a>
-<span class="sourceLineNo">094</span>         * Determines the essential type of the given Cursor.<a name="line.94"></a>
-<span class="sourceLineNo">095</span>         * &lt;p&gt;<a name="line.95"></a>
-<span class="sourceLineNo">096</span>         * This implementation is based on Section D of Misra C2012.<a name="line.96"></a>
-<span class="sourceLineNo">097</span>         */<a name="line.97"></a>
-<span class="sourceLineNo">098</span>        public static Optional&lt;EEssentialType&gt; getEssentialTypeOfCursor(CXCursor cursor) {<a name="line.98"></a>
-<span class="sourceLineNo">099</span>                CXCursorKind kind = Clang.clang_getCursorKind(cursor);<a name="line.99"></a>
-<span class="sourceLineNo">100</span>                if (kind.equals(CXCursorKind.CXCursor_FirstExpr)) {<a name="line.100"></a>
-<span class="sourceLineNo">101</span>                        CXCursor firstChild = ClangUtils.getDirectChildren(cursor).get(0);<a name="line.101"></a>
-<span class="sourceLineNo">102</span>                        return getEssentialTypeOfCursor(firstChild);<a name="line.102"></a>
-<span class="sourceLineNo">103</span>                } else if (kind.equals(CXCursorKind.CXCursor_BinaryOperator)) {<a name="line.103"></a>
-<span class="sourceLineNo">104</span>                        // this is the implementation of the "Operations subject to the usual arithmetic<a name="line.104"></a>
-<span class="sourceLineNo">105</span>                        // conversions (* / % + - &amp; | ^)" section in C2012 D.6.<a name="line.105"></a>
-<span class="sourceLineNo">106</span>                        // I did not test whether this works correctly for other binary operators such<a name="line.106"></a>
-<span class="sourceLineNo">107</span>                        // as &gt;&gt; or =<a name="line.107"></a>
-<span class="sourceLineNo">108</span>                        List&lt;CXCursor&gt; children = ClangUtils.getDirectChildren(cursor);<a name="line.108"></a>
-<span class="sourceLineNo">109</span>                        Optional&lt;EEssentialType&gt; essentialLeft = getEssentialTypeOfCursor(children.get(0));<a name="line.109"></a>
-<span class="sourceLineNo">110</span>                        Optional&lt;EEssentialType&gt; essentialRight = getEssentialTypeOfCursor(children.get(1));<a name="line.110"></a>
-<span class="sourceLineNo">111</span>                        if (essentialLeft.isPresent() &amp;&amp; essentialRight.isPresent()<a name="line.111"></a>
-<span class="sourceLineNo">112</span>                                        &amp;&amp; essentialLeft.get().category == essentialRight.get().category) {<a name="line.112"></a>
-<span class="sourceLineNo">113</span>                                return Optional.of(getHighestRankType(essentialLeft.get(), essentialRight.get()));<a name="line.113"></a>
-<span class="sourceLineNo">114</span>                        }<a name="line.114"></a>
-<span class="sourceLineNo">115</span>                }<a name="line.115"></a>
-<span class="sourceLineNo">116</span><a name="line.116"></a>
-<span class="sourceLineNo">117</span>                // use the "standard type" of the current cursor<a name="line.117"></a>
-<span class="sourceLineNo">118</span>                CXType resolvedType = ClangUtils.resolveTypedefs(Clang.clang_getCursorType(cursor));<a name="line.118"></a>
-<span class="sourceLineNo">119</span>                return fromClangResolvedType(resolvedType);<a name="line.119"></a>
-<span class="sourceLineNo">120</span>        }<a name="line.120"></a>
-<span class="sourceLineNo">121</span><a name="line.121"></a>
-<span class="sourceLineNo">122</span>        /**<a name="line.122"></a>
-<span class="sourceLineNo">123</span>         * Returns the {@link EEssentialType} of the given {@link CXType}. This can't be<a name="line.123"></a>
-<span class="sourceLineNo">124</span>         * done with {@link #valueOf(String)} since we can't be sure that types in Clang<a name="line.124"></a>
-<span class="sourceLineNo">125</span>         * are named identical to the essential-type names in Misra.<a name="line.125"></a>
-<span class="sourceLineNo">126</span>         */<a name="line.126"></a>
-<span class="sourceLineNo">127</span>        public static Optional&lt;EEssentialType&gt; fromClangResolvedType(CXType resolvedType) {<a name="line.127"></a>
-<span class="sourceLineNo">128</span>                String typeName = Clang.clang_getCString(Clang.clang_getTypeSpelling(resolvedType)).toLowerCase();<a name="line.128"></a>
-<span class="sourceLineNo">129</span>                if (typeName.startsWith("enum ")) {<a name="line.129"></a>
-<span class="sourceLineNo">130</span>                        return Optional.of(NAMED_ENUM);<a name="line.130"></a>
-<span class="sourceLineNo">131</span>                }<a name="line.131"></a>
-<span class="sourceLineNo">132</span>                return Optional.ofNullable(CLANG_TYPENAME_TO_ESSENTIALTYPE.get(typeName));<a name="line.132"></a>
-<span class="sourceLineNo">133</span>        }<a name="line.133"></a>
-<span class="sourceLineNo">134</span><a name="line.134"></a>
-<span class="sourceLineNo">135</span>        /**<a name="line.135"></a>
-<span class="sourceLineNo">136</span>         * Returns whether this essential type is wider (needs more bits to be stored)<a name="line.136"></a>
-<span class="sourceLineNo">137</span>         * than the given type.<a name="line.137"></a>
-<span class="sourceLineNo">138</span>         */<a name="line.138"></a>
-<span class="sourceLineNo">139</span>        public boolean isWiderThan(EEssentialType other) {<a name="line.139"></a>
-<span class="sourceLineNo">140</span>                if (category != other.category) {<a name="line.140"></a>
-<span class="sourceLineNo">141</span>                        return false;<a name="line.141"></a>
-<span class="sourceLineNo">142</span>                }<a name="line.142"></a>
-<span class="sourceLineNo">143</span>                return ordinal() &gt; other.ordinal();<a name="line.143"></a>
-<span class="sourceLineNo">144</span>        }<a name="line.144"></a>
-<span class="sourceLineNo">145</span><a name="line.145"></a>
-<span class="sourceLineNo">146</span>        /**<a name="line.146"></a>
-<span class="sourceLineNo">147</span>         * Category of this essential type (defined in Misra C:2012)<a name="line.147"></a>
-<span class="sourceLineNo">148</span>         */<a name="line.148"></a>
-<span class="sourceLineNo">149</span>        public EEssentialTypeCategory getCategory() {<a name="line.149"></a>
-<span class="sourceLineNo">150</span>                return category;<a name="line.150"></a>
-<span class="sourceLineNo">151</span>        }<a name="line.151"></a>
-<span class="sourceLineNo">152</span>}<a name="line.152"></a>
+<span class="sourceLineNo">061</span>        NAMED_ENUM(EEssentialTypeCategory.ENUM),<a name="line.61"></a>
+<span class="sourceLineNo">062</span><a name="line.62"></a>
+<span class="sourceLineNo">063</span>        FLOAT(EEssentialTypeCategory.FLOATING),<a name="line.63"></a>
+<span class="sourceLineNo">064</span><a name="line.64"></a>
+<span class="sourceLineNo">065</span>        DOUBLE(EEssentialTypeCategory.FLOATING),<a name="line.65"></a>
+<span class="sourceLineNo">066</span><a name="line.66"></a>
+<span class="sourceLineNo">067</span>        LONG_DOUBLE(EEssentialTypeCategory.FLOATING);<a name="line.67"></a>
+<span class="sourceLineNo">068</span><a name="line.68"></a>
+<span class="sourceLineNo">069</span>        private final EEssentialTypeCategory category;<a name="line.69"></a>
+<span class="sourceLineNo">070</span>        /**<a name="line.70"></a>
+<span class="sourceLineNo">071</span>         * Map from the basic type names used in clang to the {@link EEssentialType}<a name="line.71"></a>
+<span class="sourceLineNo">072</span>         * enum items. This list does not include {@link EEssentialType#NAMED_ENUM}<a name="line.72"></a>
+<span class="sourceLineNo">073</span>         * since the named-enum type names in clang start with "enum " but also contain<a name="line.73"></a>
+<span class="sourceLineNo">074</span>         * the enum name.<a name="line.74"></a>
+<span class="sourceLineNo">075</span>         */<a name="line.75"></a>
+<span class="sourceLineNo">076</span>        private static final Map&lt;String, EEssentialType&gt; CLANG_TYPENAME_TO_ESSENTIAL_TYPE = CollectionUtils.asMap(<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                        // Essential-Type Category Boolean<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                        createPair("_bool", BOOL),<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                        // Essential-Type Category Character<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                        createPair("char", CHAR),<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                        // Essential-Type Category Signed<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                        // Note that all integer types except for char are signed by default.<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                        createPair("signed char", SIGNED_CHAR), //<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                        createPair("short", SIGNED_SHORT), createPair("signed short", SIGNED_SHORT), //<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                        createPair("int", SIGNED_INT), createPair("signed int", SIGNED_INT), //<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                        createPair("long", SIGNED_LONG), createPair("signed long", SIGNED_LONG),<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                        createPair("long long", SIGNED_LONG_LONG), createPair("signed long long", SIGNED_LONG_LONG),<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                        // Essential-Type Category Unsigned<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                        createPair("unsigned char", UNSIGNED_CHAR), //<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                        createPair("unsigned short", UNSIGNED_SHORT), //<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                        createPair("unsigned int", UNSIGNED_INT), //<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                        createPair("unsigned long", UNSIGNED_LONG), //<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                        createPair("unsigned long long", UNSIGNED_LONG_LONG),<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                        // Essential-Type Category Floating<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                        createPair("float", FLOAT), //<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                        createPair("double", DOUBLE), //<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                        createPair("long double", LONG_DOUBLE));<a name="line.97"></a>
+<span class="sourceLineNo">098</span><a name="line.98"></a>
+<span class="sourceLineNo">099</span>        EEssentialType(EEssentialTypeCategory category) {<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                this.category = category;<a name="line.100"></a>
+<span class="sourceLineNo">101</span>        }<a name="line.101"></a>
+<span class="sourceLineNo">102</span><a name="line.102"></a>
+<span class="sourceLineNo">103</span>        /**<a name="line.103"></a>
+<span class="sourceLineNo">104</span>         * Returns the highest-ranking type (and widest) of the given types. The given<a name="line.104"></a>
+<span class="sourceLineNo">105</span>         * types must be of the same essential-type category.<a name="line.105"></a>
+<span class="sourceLineNo">106</span>         */<a name="line.106"></a>
+<span class="sourceLineNo">107</span>        public static EEssentialType getHighestRankType(EEssentialType type1, EEssentialType type2) {<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                CCSMAssert.isTrue(type1.category == type2.category,<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                                () -&gt; "Essential types must be of same category for comparison (" + type1 + " vs " + type2 + ")");<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                if (type1.ordinal() &gt; type2.ordinal()) {<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                        return type1;<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                }<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                return type2;<a name="line.113"></a>
+<span class="sourceLineNo">114</span>        }<a name="line.114"></a>
+<span class="sourceLineNo">115</span><a name="line.115"></a>
+<span class="sourceLineNo">116</span>        /**<a name="line.116"></a>
+<span class="sourceLineNo">117</span>         * Determines the essential type of the given Cursor.<a name="line.117"></a>
+<span class="sourceLineNo">118</span>         * &lt;p&gt;<a name="line.118"></a>
+<span class="sourceLineNo">119</span>         * This implementation is based on Section D of Misra C2012.<a name="line.119"></a>
+<span class="sourceLineNo">120</span>         */<a name="line.120"></a>
+<span class="sourceLineNo">121</span>        public static Optional&lt;EEssentialType&gt; getEssentialTypeOfCursor(CXCursor cursor) {<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                CXCursorKind kind = Clang.clang_getCursorKind(cursor);<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                if (kind.equals(CXCursorKind.CXCursor_FirstExpr)) {<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                        CXCursor firstChild = ClangUtils.getDirectChildren(cursor).get(0);<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                        return getEssentialTypeOfCursor(firstChild);<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                } else if (kind.equals(CXCursorKind.CXCursor_BinaryOperator)) {<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                        // this is the implementation of the "Operations subject to the usual arithmetic<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                        // conversions (* / % + - &amp; | ^)" section in C2012 D.6.<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                        // I did not test whether this works correctly for other binary operators such<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                        // as &gt;&gt; or =<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                        List&lt;CXCursor&gt; children = ClangUtils.getDirectChildren(cursor);<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                        Optional&lt;EEssentialType&gt; essentialLeft = getEssentialTypeOfCursor(children.get(0));<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                        Optional&lt;EEssentialType&gt; essentialRight = getEssentialTypeOfCursor(children.get(1));<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                        if (essentialLeft.isPresent() &amp;&amp; essentialRight.isPresent()<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                                        &amp;&amp; essentialLeft.get().category == essentialRight.get().category) {<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                                return Optional.of(getHighestRankType(essentialLeft.get(), essentialRight.get()));<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                        }<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                }<a name="line.138"></a>
+<span class="sourceLineNo">139</span><a name="line.139"></a>
+<span class="sourceLineNo">140</span>                // use the "standard type" of the current cursor<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                CXType resolvedType = ClangUtils.resolveTypedefs(Clang.clang_getCursorType(cursor));<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                return fromClangResolvedType(resolvedType);<a name="line.142"></a>
+<span class="sourceLineNo">143</span>        }<a name="line.143"></a>
+<span class="sourceLineNo">144</span><a name="line.144"></a>
+<span class="sourceLineNo">145</span>        /**<a name="line.145"></a>
+<span class="sourceLineNo">146</span>         * Returns the {@link EEssentialType} of the given {@link CXType}. This can't be<a name="line.146"></a>
+<span class="sourceLineNo">147</span>         * done with {@link #valueOf(String)} since we can't be sure that types in Clang<a name="line.147"></a>
+<span class="sourceLineNo">148</span>         * are named identical to the essential-type names in Misra.<a name="line.148"></a>
+<span class="sourceLineNo">149</span>         */<a name="line.149"></a>
+<span class="sourceLineNo">150</span>        public static Optional&lt;EEssentialType&gt; fromClangResolvedType(CXType resolvedType) {<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                String typeName = Clang.clang_getCString(Clang.clang_getTypeSpelling(resolvedType)).toLowerCase();<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                if (typeName.startsWith("enum ")) {<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                        return Optional.of(NAMED_ENUM);<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                }<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                return Optional.ofNullable(CLANG_TYPENAME_TO_ESSENTIAL_TYPE.get(typeName));<a name="line.155"></a>
+<span class="sourceLineNo">156</span>        }<a name="line.156"></a>
+<span class="sourceLineNo">157</span><a name="line.157"></a>
+<span class="sourceLineNo">158</span>        /**<a name="line.158"></a>
+<span class="sourceLineNo">159</span>         * Returns whether this essential type is wider (needs more bits to be stored)<a name="line.159"></a>
+<span class="sourceLineNo">160</span>         * than the given type.<a name="line.160"></a>
+<span class="sourceLineNo">161</span>         */<a name="line.161"></a>
+<span class="sourceLineNo">162</span>        public boolean isWiderThan(EEssentialType other) {<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                if (category != other.category) {<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                        return false;<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                }<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                return ordinal() &gt; other.ordinal();<a name="line.166"></a>
+<span class="sourceLineNo">167</span>        }<a name="line.167"></a>
+<span class="sourceLineNo">168</span><a name="line.168"></a>
+<span class="sourceLineNo">169</span>        /**<a name="line.169"></a>
+<span class="sourceLineNo">170</span>         * Category of this essential type (defined in Misra C:2012)<a name="line.170"></a>
+<span class="sourceLineNo">171</span>         */<a name="line.171"></a>
+<span class="sourceLineNo">172</span>        public EEssentialTypeCategory getCategory() {<a name="line.172"></a>
+<span class="sourceLineNo">173</span>                return category;<a name="line.173"></a>
+<span class="sourceLineNo">174</span>        }<a name="line.174"></a>
+<span class="sourceLineNo">175</span>}<a name="line.175"></a>
 
 
 

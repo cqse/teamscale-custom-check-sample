@@ -67,7 +67,7 @@
 <span class="sourceLineNo">059</span>        /** Creates a rule that is active in each of the given states. */<a name="line.59"></a>
 <span class="sourceLineNo">060</span>        @SuppressWarnings("unchecked")<a name="line.60"></a>
 <span class="sourceLineNo">061</span>        protected RecognizerBase&lt;STATE&gt; inState(STATE... states) {<a name="line.61"></a>
-<span class="sourceLineNo">062</span>                RecognizerBase&lt;STATE&gt; recognizer = emptyRecognizer();<a name="line.62"></a>
+<span class="sourceLineNo">062</span>                RecognizerBase&lt;STATE&gt; recognizer = RecognizerUtils.emptyRecognizer();<a name="line.62"></a>
 <span class="sourceLineNo">063</span><a name="line.63"></a>
 <span class="sourceLineNo">064</span>                // we need this seemingly complicated construct as states may be empty<a name="line.64"></a>
 <span class="sourceLineNo">065</span>                EnumSet&lt;STATE&gt; stateSet = EnumSet.noneOf(stateClass);<a name="line.65"></a>
@@ -77,135 +77,130 @@
 <span class="sourceLineNo">069</span>                return recognizer;<a name="line.69"></a>
 <span class="sourceLineNo">070</span>        }<a name="line.70"></a>
 <span class="sourceLineNo">071</span><a name="line.71"></a>
-<span class="sourceLineNo">072</span>        /** Returns an empty recognizer that can be used for local sub-rules. */<a name="line.72"></a>
-<span class="sourceLineNo">073</span>        protected RecognizerBase&lt;STATE&gt; emptyRecognizer() {<a name="line.73"></a>
-<span class="sourceLineNo">074</span>                return new RecognizerBase&lt;STATE&gt;() {<a name="line.74"></a>
-<span class="sourceLineNo">075</span><a name="line.75"></a>
-<span class="sourceLineNo">076</span>                        /** {@inheritDoc} */<a name="line.76"></a>
-<span class="sourceLineNo">077</span>                        @Override<a name="line.77"></a>
-<span class="sourceLineNo">078</span>                        protected String getRecognizerStringRepresentation() {<a name="line.78"></a>
-<span class="sourceLineNo">079</span>                                return "empty";<a name="line.79"></a>
-<span class="sourceLineNo">080</span>                        }<a name="line.80"></a>
-<span class="sourceLineNo">081</span>                };<a name="line.81"></a>
-<span class="sourceLineNo">082</span>        }<a name="line.82"></a>
-<span class="sourceLineNo">083</span><a name="line.83"></a>
-<span class="sourceLineNo">084</span>        /** Creates a rule that is active in any state. */<a name="line.84"></a>
-<span class="sourceLineNo">085</span>        protected RecognizerBase&lt;STATE&gt; inAnyState() {<a name="line.85"></a>
-<span class="sourceLineNo">086</span>                return inState(stateClass.getEnumConstants());<a name="line.86"></a>
-<span class="sourceLineNo">087</span>        }<a name="line.87"></a>
-<span class="sourceLineNo">088</span><a name="line.88"></a>
-<span class="sourceLineNo">089</span>        /**<a name="line.89"></a>
-<span class="sourceLineNo">090</span>         * Template method that can be used to ignore/filter certain tokens. Default<a name="line.90"></a>
-<span class="sourceLineNo">091</span>         * implementation ignores comments.<a name="line.91"></a>
-<span class="sourceLineNo">092</span>         * <a name="line.92"></a>
-<span class="sourceLineNo">093</span>         * @param previousToken<a name="line.93"></a>
-<span class="sourceLineNo">094</span>         *            the last non-filtered token (can be used for context sensitive<a name="line.94"></a>
-<span class="sourceLineNo">095</span>         *            filtering). This may be null is no previous token exists.<a name="line.95"></a>
-<span class="sourceLineNo">096</span>         */<a name="line.96"></a>
-<span class="sourceLineNo">097</span>        protected boolean isFilteredToken(IToken token, IToken previousToken) {<a name="line.97"></a>
-<span class="sourceLineNo">098</span>                return TokenUtils.isCommentToken(token);<a name="line.98"></a>
-<span class="sourceLineNo">099</span>        }<a name="line.99"></a>
-<span class="sourceLineNo">100</span><a name="line.100"></a>
-<span class="sourceLineNo">101</span>        /** {@inheritDoc} */<a name="line.101"></a>
-<span class="sourceLineNo">102</span>        @Override<a name="line.102"></a>
-<span class="sourceLineNo">103</span>        public List&lt;ShallowEntity&gt; parseTopLevel(List&lt;IToken&gt; tokens) {<a name="line.103"></a>
-<span class="sourceLineNo">104</span>                tokens = filterTokens(tokens);<a name="line.104"></a>
-<span class="sourceLineNo">105</span>                return parse(initialState, tokens);<a name="line.105"></a>
-<span class="sourceLineNo">106</span>        }<a name="line.106"></a>
-<span class="sourceLineNo">107</span><a name="line.107"></a>
-<span class="sourceLineNo">108</span>        /**<a name="line.108"></a>
-<span class="sourceLineNo">109</span>         * {@inheritDoc}<a name="line.109"></a>
-<span class="sourceLineNo">110</span>         * &lt;p&gt;<a name="line.110"></a>
-<span class="sourceLineNo">111</span>         * This works by attempting to parse from all possible states and returns<a name="line.111"></a>
-<span class="sourceLineNo">112</span>         * the best result, where 'best' is measured in terms of completed entities.<a name="line.112"></a>
-<span class="sourceLineNo">113</span>         */<a name="line.113"></a>
-<span class="sourceLineNo">114</span>        @Override<a name="line.114"></a>
-<span class="sourceLineNo">115</span>        public List&lt;ShallowEntity&gt; parseFragment(List&lt;IToken&gt; tokens) {<a name="line.115"></a>
-<span class="sourceLineNo">116</span>                tokens = filterTokens(tokens);<a name="line.116"></a>
+<span class="sourceLineNo">072</span>        /**<a name="line.72"></a>
+<span class="sourceLineNo">073</span>         * Creates a recognizer using the given builder and returns the start of the<a name="line.73"></a>
+<span class="sourceLineNo">074</span>         * created recognizer tree.<a name="line.74"></a>
+<span class="sourceLineNo">075</span>         */<a name="line.75"></a>
+<span class="sourceLineNo">076</span>        protected RecognizerBase&lt;STATE&gt; createRecognizer(RecognizerUtils.RecognizerBuilder&lt;STATE&gt; builder) {<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                return RecognizerUtils.createRecognizer(builder);<a name="line.77"></a>
+<span class="sourceLineNo">078</span>        }<a name="line.78"></a>
+<span class="sourceLineNo">079</span><a name="line.79"></a>
+<span class="sourceLineNo">080</span>        /** Creates a rule that is active in any state. */<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        protected RecognizerBase&lt;STATE&gt; inAnyState() {<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                return inState(stateClass.getEnumConstants());<a name="line.82"></a>
+<span class="sourceLineNo">083</span>        }<a name="line.83"></a>
+<span class="sourceLineNo">084</span><a name="line.84"></a>
+<span class="sourceLineNo">085</span>        /**<a name="line.85"></a>
+<span class="sourceLineNo">086</span>         * Template method that can be used to ignore/filter certain tokens. Default<a name="line.86"></a>
+<span class="sourceLineNo">087</span>         * implementation ignores comments.<a name="line.87"></a>
+<span class="sourceLineNo">088</span>         * <a name="line.88"></a>
+<span class="sourceLineNo">089</span>         * @param previousToken<a name="line.89"></a>
+<span class="sourceLineNo">090</span>         *            the last non-filtered token (can be used for context sensitive<a name="line.90"></a>
+<span class="sourceLineNo">091</span>         *            filtering). This may be null is no previous token exists.<a name="line.91"></a>
+<span class="sourceLineNo">092</span>         */<a name="line.92"></a>
+<span class="sourceLineNo">093</span>        protected boolean isFilteredToken(IToken token, IToken previousToken) {<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                return TokenUtils.isCommentToken(token);<a name="line.94"></a>
+<span class="sourceLineNo">095</span>        }<a name="line.95"></a>
+<span class="sourceLineNo">096</span><a name="line.96"></a>
+<span class="sourceLineNo">097</span>        /** {@inheritDoc} */<a name="line.97"></a>
+<span class="sourceLineNo">098</span>        @Override<a name="line.98"></a>
+<span class="sourceLineNo">099</span>        public List&lt;ShallowEntity&gt; parseTopLevel(List&lt;IToken&gt; tokens) {<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                tokens = filterTokens(tokens);<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                return parse(initialState, tokens);<a name="line.101"></a>
+<span class="sourceLineNo">102</span>        }<a name="line.102"></a>
+<span class="sourceLineNo">103</span><a name="line.103"></a>
+<span class="sourceLineNo">104</span>        /**<a name="line.104"></a>
+<span class="sourceLineNo">105</span>         * {@inheritDoc}<a name="line.105"></a>
+<span class="sourceLineNo">106</span>         * &lt;p&gt;<a name="line.106"></a>
+<span class="sourceLineNo">107</span>         * This works by attempting to parse from all possible states and returns the<a name="line.107"></a>
+<span class="sourceLineNo">108</span>         * best result, where 'best' is measured in terms of completed entities.<a name="line.108"></a>
+<span class="sourceLineNo">109</span>         */<a name="line.109"></a>
+<span class="sourceLineNo">110</span>        @Override<a name="line.110"></a>
+<span class="sourceLineNo">111</span>        public List&lt;ShallowEntity&gt; parseFragment(List&lt;IToken&gt; tokens) {<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                tokens = filterTokens(tokens);<a name="line.112"></a>
+<span class="sourceLineNo">113</span><a name="line.113"></a>
+<span class="sourceLineNo">114</span>                List&lt;ShallowEntity&gt; best = new ArrayList&lt;ShallowEntity&gt;();<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                int bestCount = 0;<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                int bestStart = Integer.MAX_VALUE;<a name="line.116"></a>
 <span class="sourceLineNo">117</span><a name="line.117"></a>
-<span class="sourceLineNo">118</span>                List&lt;ShallowEntity&gt; best = new ArrayList&lt;ShallowEntity&gt;();<a name="line.118"></a>
-<span class="sourceLineNo">119</span>                int bestCount = 0;<a name="line.119"></a>
-<span class="sourceLineNo">120</span>                int bestStart = Integer.MAX_VALUE;<a name="line.120"></a>
-<span class="sourceLineNo">121</span><a name="line.121"></a>
-<span class="sourceLineNo">122</span>                for (STATE state : stateClass.getEnumConstants()) {<a name="line.122"></a>
-<span class="sourceLineNo">123</span>                        List&lt;ShallowEntity&gt; list = parse(state, tokens);<a name="line.123"></a>
-<span class="sourceLineNo">124</span>                        int count = countCompleteEntities(list);<a name="line.124"></a>
-<span class="sourceLineNo">125</span>                        int start = Integer.MAX_VALUE;<a name="line.125"></a>
-<span class="sourceLineNo">126</span>                        if (!list.isEmpty()) {<a name="line.126"></a>
-<span class="sourceLineNo">127</span>                                start = list.get(0).getStartTokenIndex();<a name="line.127"></a>
-<span class="sourceLineNo">128</span>                        }<a name="line.128"></a>
-<span class="sourceLineNo">129</span><a name="line.129"></a>
-<span class="sourceLineNo">130</span>                        // prefer parse results that produce more entities (or if same<a name="line.130"></a>
-<span class="sourceLineNo">131</span>                        // number those that start earlier, i.e., skip less tokens)<a name="line.131"></a>
-<span class="sourceLineNo">132</span>                        if (count &gt; bestCount || (count == bestCount &amp;&amp; start &lt; bestStart)) {<a name="line.132"></a>
-<span class="sourceLineNo">133</span>                                best = list;<a name="line.133"></a>
-<span class="sourceLineNo">134</span>                                bestCount = count;<a name="line.134"></a>
-<span class="sourceLineNo">135</span>                                bestStart = start;<a name="line.135"></a>
-<span class="sourceLineNo">136</span>                        }<a name="line.136"></a>
-<span class="sourceLineNo">137</span>                }<a name="line.137"></a>
-<span class="sourceLineNo">138</span>                return best;<a name="line.138"></a>
-<span class="sourceLineNo">139</span>        }<a name="line.139"></a>
-<span class="sourceLineNo">140</span><a name="line.140"></a>
-<span class="sourceLineNo">141</span>        /** Recursively counts and returns the entities contained in the list. */<a name="line.141"></a>
-<span class="sourceLineNo">142</span>        private static int countCompleteEntities(List&lt;ShallowEntity&gt; list) {<a name="line.142"></a>
-<span class="sourceLineNo">143</span>                int result = 0;<a name="line.143"></a>
-<span class="sourceLineNo">144</span>                for (ShallowEntity entity : list) {<a name="line.144"></a>
-<span class="sourceLineNo">145</span>                        result += entity.getCompleteEntityCount();<a name="line.145"></a>
-<span class="sourceLineNo">146</span>                }<a name="line.146"></a>
-<span class="sourceLineNo">147</span>                return result;<a name="line.147"></a>
-<span class="sourceLineNo">148</span>        }<a name="line.148"></a>
-<span class="sourceLineNo">149</span><a name="line.149"></a>
-<span class="sourceLineNo">150</span>        /** Creates a filtered view of the tokens. */<a name="line.150"></a>
-<span class="sourceLineNo">151</span>        protected List&lt;IToken&gt; filterTokens(List&lt;IToken&gt; tokens) {<a name="line.151"></a>
-<span class="sourceLineNo">152</span>                List&lt;IToken&gt; result = new ArrayList&lt;IToken&gt;();<a name="line.152"></a>
-<span class="sourceLineNo">153</span>                IToken previousToken = null;<a name="line.153"></a>
-<span class="sourceLineNo">154</span>                for (IToken token : tokens) {<a name="line.154"></a>
-<span class="sourceLineNo">155</span>                        if (!isFilteredToken(token, previousToken)) {<a name="line.155"></a>
-<span class="sourceLineNo">156</span>                                result.add(token);<a name="line.156"></a>
-<span class="sourceLineNo">157</span>                                previousToken = token;<a name="line.157"></a>
-<span class="sourceLineNo">158</span>                        }<a name="line.158"></a>
-<span class="sourceLineNo">159</span>                }<a name="line.159"></a>
-<span class="sourceLineNo">160</span>                return result;<a name="line.160"></a>
-<span class="sourceLineNo">161</span>        }<a name="line.161"></a>
-<span class="sourceLineNo">162</span><a name="line.162"></a>
-<span class="sourceLineNo">163</span>        /**<a name="line.163"></a>
-<span class="sourceLineNo">164</span>         * Performs a shallow parse for the given list of tokens and given initial<a name="line.164"></a>
-<span class="sourceLineNo">165</span>         * state.<a name="line.165"></a>
-<span class="sourceLineNo">166</span>         */<a name="line.166"></a>
-<span class="sourceLineNo">167</span>        protected List&lt;ShallowEntity&gt; parse(STATE startState, List&lt;IToken&gt; tokens) {<a name="line.167"></a>
-<span class="sourceLineNo">168</span>                ParserState&lt;STATE&gt; parserState = new ParserState&lt;STATE&gt;(recognizers);<a name="line.168"></a>
-<span class="sourceLineNo">169</span><a name="line.169"></a>
-<span class="sourceLineNo">170</span>                int offset = 0;<a name="line.170"></a>
-<span class="sourceLineNo">171</span>                while (offset &lt; tokens.size()) {<a name="line.171"></a>
-<span class="sourceLineNo">172</span>                        int match = parserState.parse(startState, tokens, offset);<a name="line.172"></a>
-<span class="sourceLineNo">173</span>                        if (match == RecognizerBase.NO_MATCH) {<a name="line.173"></a>
-<span class="sourceLineNo">174</span>                                offset += 1;<a name="line.174"></a>
-<span class="sourceLineNo">175</span>                        } else {<a name="line.175"></a>
-<span class="sourceLineNo">176</span>                                CCSMAssert.isTrue(match &gt; offset, "The parser does not make any progress!");<a name="line.176"></a>
-<span class="sourceLineNo">177</span>                                offset = match;<a name="line.177"></a>
-<span class="sourceLineNo">178</span>                        }<a name="line.178"></a>
-<span class="sourceLineNo">179</span>                }<a name="line.179"></a>
-<span class="sourceLineNo">180</span><a name="line.180"></a>
-<span class="sourceLineNo">181</span>                return parserState.result;<a name="line.181"></a>
-<span class="sourceLineNo">182</span>        }<a name="line.182"></a>
-<span class="sourceLineNo">183</span><a name="line.183"></a>
-<span class="sourceLineNo">184</span>        /**<a name="line.184"></a>
-<span class="sourceLineNo">185</span>         * Completes a recognizer with an end. If the next token is one of the<a name="line.185"></a>
-<span class="sourceLineNo">186</span>         * provided continuation tokens, the entity creation finishes with a<a name="line.186"></a>
-<span class="sourceLineNo">187</span>         * continued node.<a name="line.187"></a>
-<span class="sourceLineNo">188</span>         * <a name="line.188"></a>
-<span class="sourceLineNo">189</span>         * @param continuationTokens<a name="line.189"></a>
-<span class="sourceLineNo">190</span>         *            list of tokens that indicate a continued statement if<a name="line.190"></a>
-<span class="sourceLineNo">191</span>         *            encountered at the end. May be null.<a name="line.191"></a>
-<span class="sourceLineNo">192</span>         */<a name="line.192"></a>
-<span class="sourceLineNo">193</span>        protected void endWithPossibleContinuation(RecognizerBase&lt;STATE&gt; recognizer,<a name="line.193"></a>
-<span class="sourceLineNo">194</span>                        EnumSet&lt;ETokenType&gt; continuationTokens) {<a name="line.194"></a>
-<span class="sourceLineNo">195</span>                if (continuationTokens != null &amp;&amp; !continuationTokens.isEmpty()) {<a name="line.195"></a>
-<span class="sourceLineNo">196</span>                        recognizer.sequenceBefore(continuationTokens).endNodeWithContinuation();<a name="line.196"></a>
-<span class="sourceLineNo">197</span>                }<a name="line.197"></a>
-<span class="sourceLineNo">198</span>                recognizer.endNode();<a name="line.198"></a>
-<span class="sourceLineNo">199</span>        }<a name="line.199"></a>
-<span class="sourceLineNo">200</span>}<a name="line.200"></a>
+<span class="sourceLineNo">118</span>                for (STATE state : stateClass.getEnumConstants()) {<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                        List&lt;ShallowEntity&gt; list = parse(state, tokens);<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                        int count = countCompleteEntities(list);<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                        int start = Integer.MAX_VALUE;<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                        if (!list.isEmpty()) {<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                                start = list.get(0).getStartTokenIndex();<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                        }<a name="line.124"></a>
+<span class="sourceLineNo">125</span><a name="line.125"></a>
+<span class="sourceLineNo">126</span>                        // prefer parse results that produce more entities (or if same<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                        // number those that start earlier, i.e., skip less tokens)<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                        if (count &gt; bestCount || (count == bestCount &amp;&amp; start &lt; bestStart)) {<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                                best = list;<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                                bestCount = count;<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                                bestStart = start;<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                        }<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                }<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                return best;<a name="line.134"></a>
+<span class="sourceLineNo">135</span>        }<a name="line.135"></a>
+<span class="sourceLineNo">136</span><a name="line.136"></a>
+<span class="sourceLineNo">137</span>        /** Recursively counts and returns the entities contained in the list. */<a name="line.137"></a>
+<span class="sourceLineNo">138</span>        private static int countCompleteEntities(List&lt;ShallowEntity&gt; list) {<a name="line.138"></a>
+<span class="sourceLineNo">139</span>                int result = 0;<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                for (ShallowEntity entity : list) {<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                        result += entity.getCompleteEntityCount();<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                }<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                return result;<a name="line.143"></a>
+<span class="sourceLineNo">144</span>        }<a name="line.144"></a>
+<span class="sourceLineNo">145</span><a name="line.145"></a>
+<span class="sourceLineNo">146</span>        /** Creates a filtered view of the tokens. */<a name="line.146"></a>
+<span class="sourceLineNo">147</span>        protected List&lt;IToken&gt; filterTokens(List&lt;IToken&gt; tokens) {<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                List&lt;IToken&gt; result = new ArrayList&lt;IToken&gt;();<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                IToken previousToken = null;<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                for (IToken token : tokens) {<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                        if (!isFilteredToken(token, previousToken)) {<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                                result.add(token);<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                                previousToken = token;<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                        }<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                }<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                return result;<a name="line.156"></a>
+<span class="sourceLineNo">157</span>        }<a name="line.157"></a>
+<span class="sourceLineNo">158</span><a name="line.158"></a>
+<span class="sourceLineNo">159</span>        /**<a name="line.159"></a>
+<span class="sourceLineNo">160</span>         * Performs a shallow parse for the given list of tokens and given initial<a name="line.160"></a>
+<span class="sourceLineNo">161</span>         * state.<a name="line.161"></a>
+<span class="sourceLineNo">162</span>         */<a name="line.162"></a>
+<span class="sourceLineNo">163</span>        protected List&lt;ShallowEntity&gt; parse(STATE startState, List&lt;IToken&gt; tokens) {<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                ParserState&lt;STATE&gt; parserState = new ParserState&lt;STATE&gt;(recognizers);<a name="line.164"></a>
+<span class="sourceLineNo">165</span><a name="line.165"></a>
+<span class="sourceLineNo">166</span>                int offset = 0;<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                while (offset &lt; tokens.size()) {<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                        int match = parserState.parse(startState, tokens, offset);<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                        if (match == RecognizerBase.NO_MATCH) {<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                                offset += 1;<a name="line.170"></a>
+<span class="sourceLineNo">171</span>                        } else {<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                                CCSMAssert.isTrue(match &gt; offset, "The parser does not make any progress!");<a name="line.172"></a>
+<span class="sourceLineNo">173</span>                                offset = match;<a name="line.173"></a>
+<span class="sourceLineNo">174</span>                        }<a name="line.174"></a>
+<span class="sourceLineNo">175</span>                }<a name="line.175"></a>
+<span class="sourceLineNo">176</span><a name="line.176"></a>
+<span class="sourceLineNo">177</span>                return parserState.result;<a name="line.177"></a>
+<span class="sourceLineNo">178</span>        }<a name="line.178"></a>
+<span class="sourceLineNo">179</span><a name="line.179"></a>
+<span class="sourceLineNo">180</span>        /**<a name="line.180"></a>
+<span class="sourceLineNo">181</span>         * Completes a recognizer with an end. If the next token is one of the provided<a name="line.181"></a>
+<span class="sourceLineNo">182</span>         * continuation tokens, the entity creation finishes with a continued node.<a name="line.182"></a>
+<span class="sourceLineNo">183</span>         * <a name="line.183"></a>
+<span class="sourceLineNo">184</span>         * @param continuationTokens<a name="line.184"></a>
+<span class="sourceLineNo">185</span>         *            list of tokens that indicate a continued statement if encountered<a name="line.185"></a>
+<span class="sourceLineNo">186</span>         *            at the end. May be null.<a name="line.186"></a>
+<span class="sourceLineNo">187</span>         */<a name="line.187"></a>
+<span class="sourceLineNo">188</span>        protected void endWithPossibleContinuation(RecognizerBase&lt;STATE&gt; recognizer,<a name="line.188"></a>
+<span class="sourceLineNo">189</span>                        EnumSet&lt;ETokenType&gt; continuationTokens) {<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                if (continuationTokens != null &amp;&amp; !continuationTokens.isEmpty()) {<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                        recognizer.sequenceBefore(continuationTokens).endNodeWithContinuation();<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                }<a name="line.192"></a>
+<span class="sourceLineNo">193</span>                recognizer.endNode();<a name="line.193"></a>
+<span class="sourceLineNo">194</span>        }<a name="line.194"></a>
+<span class="sourceLineNo">195</span>}<a name="line.195"></a>
 
 
 

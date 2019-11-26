@@ -115,7 +115,7 @@
 <span class="sourceLineNo">107</span>public class GosuShallowParser extends ShallowParserBase&lt;EGosuParserStates&gt; {<a name="line.107"></a>
 <span class="sourceLineNo">108</span><a name="line.108"></a>
 <span class="sourceLineNo">109</span>        /** The states used in this parser. */<a name="line.109"></a>
-<span class="sourceLineNo">110</span>        public static enum EGosuParserStates {<a name="line.110"></a>
+<span class="sourceLineNo">110</span>        public enum EGosuParserStates {<a name="line.110"></a>
 <span class="sourceLineNo">111</span><a name="line.111"></a>
 <span class="sourceLineNo">112</span>                /** Top-level parsing state. */<a name="line.112"></a>
 <span class="sourceLineNo">113</span>                TOP_LEVEL,<a name="line.113"></a>
@@ -244,7 +244,7 @@
 <span class="sourceLineNo">236</span>                 */<a name="line.236"></a>
 <span class="sourceLineNo">237</span>                // var declaration with EQ and sub expression<a name="line.237"></a>
 <span class="sourceLineNo">238</span>                varStart.sequence(EQ).createNode(EShallowEntityType.ATTRIBUTE, SubTypeNames.FIELD, 1)<a name="line.238"></a>
-<span class="sourceLineNo">239</span>                                .optionalSubRecognizer(emptyRecognizer().parseOnce(IN_EXPRESSION))<a name="line.239"></a>
+<span class="sourceLineNo">239</span>                                .optionalSubRecognizer(createRecognizer(start -&gt; start.parseOnce(IN_EXPRESSION)))<a name="line.239"></a>
 <span class="sourceLineNo">240</span>                                .skipBeforeWithNesting(MEMBER_TERMINATOR_TOKENS, ALL_OPEN_PAREN, ALL_CLOSE_PAREN).endNode();<a name="line.240"></a>
 <span class="sourceLineNo">241</span><a name="line.241"></a>
 <span class="sourceLineNo">242</span>                // var without EQ<a name="line.242"></a>
@@ -341,8 +341,8 @@
 <span class="sourceLineNo">333</span>                createSwitchCaseRules();<a name="line.333"></a>
 <span class="sourceLineNo">334</span><a name="line.334"></a>
 <span class="sourceLineNo">335</span>                // var statement<a name="line.335"></a>
-<span class="sourceLineNo">336</span>                RecognizerBase&lt;EGosuParserStates&gt; varStatementRecognizer = emptyRecognizer();<a name="line.336"></a>
-<span class="sourceLineNo">337</span>                varStatementRecognizer.repeated(MODIFIERS).sequence(VAR, IDENTIFIER);<a name="line.337"></a>
+<span class="sourceLineNo">336</span>                RecognizerBase&lt;EGosuParserStates&gt; varStatementRecognizer = createRecognizer(<a name="line.336"></a>
+<span class="sourceLineNo">337</span>                                start -&gt; start.repeated(MODIFIERS).sequence(VAR, IDENTIFIER));<a name="line.337"></a>
 <span class="sourceLineNo">338</span>                inState(IN_METHOD, IN_TYPE).preCondition(varStatementRecognizer)<a name="line.338"></a>
 <span class="sourceLineNo">339</span>                                .subRecognizer(<a name="line.339"></a>
 <span class="sourceLineNo">340</span>                                                new GosuSimpleStatementRecognizer(EShallowEntityType.STATEMENT, SubTypeNames.LOCAL_VARIABLE), 1,<a name="line.340"></a>
@@ -424,7 +424,7 @@
 <span class="sourceLineNo">416</span>         * Create rules for shallow entities that can occur in expressions e.g.,<a name="line.416"></a>
 <span class="sourceLineNo">417</span>         * lambdas.<a name="line.417"></a>
 <span class="sourceLineNo">418</span>         */<a name="line.418"></a>
-<span class="sourceLineNo">419</span>        protected void createSubExpressionRules() {<a name="line.419"></a>
+<span class="sourceLineNo">419</span>        private void createSubExpressionRules() {<a name="line.419"></a>
 <span class="sourceLineNo">420</span>                // lambda expressions<a name="line.420"></a>
 <span class="sourceLineNo">421</span>                RecognizerBase&lt;EGosuParserStates&gt; lambdaStart = inState(IN_EXPRESSION).sequence(BACKSLASH).skipTo(ARROW)<a name="line.421"></a>
 <span class="sourceLineNo">422</span>                                .createNode(EShallowEntityType.METHOD, LAMBDA);<a name="line.422"></a>
@@ -435,13 +435,11 @@
 <span class="sourceLineNo">427</span>        }<a name="line.427"></a>
 <span class="sourceLineNo">428</span><a name="line.428"></a>
 <span class="sourceLineNo">429</span>        /** Returns a sub expression recognizer */<a name="line.429"></a>
-<span class="sourceLineNo">430</span>        protected RecognizerBase&lt;EGosuParserStates&gt; getSubExpressionRecognizer() {<a name="line.430"></a>
-<span class="sourceLineNo">431</span>                RecognizerBase&lt;EGosuParserStates&gt; subExpressionRule = emptyRecognizer();<a name="line.431"></a>
-<span class="sourceLineNo">432</span>                // the BACKSLASH should trigger the lambda parsing rules<a name="line.432"></a>
-<span class="sourceLineNo">433</span>                subExpressionRule.sequenceBefore(BACKSLASH).parseOnce(EGosuParserStates.IN_EXPRESSION);<a name="line.433"></a>
-<span class="sourceLineNo">434</span>                return subExpressionRule;<a name="line.434"></a>
-<span class="sourceLineNo">435</span>        }<a name="line.435"></a>
-<span class="sourceLineNo">436</span>}<a name="line.436"></a>
+<span class="sourceLineNo">430</span>        private RecognizerBase&lt;EGosuParserStates&gt; getSubExpressionRecognizer() {<a name="line.430"></a>
+<span class="sourceLineNo">431</span>                // the BACKSLASH should trigger the lambda parsing rules<a name="line.431"></a>
+<span class="sourceLineNo">432</span>                return createRecognizer(start -&gt; start.sequenceBefore(BACKSLASH).parseOnce(EGosuParserStates.IN_EXPRESSION));<a name="line.432"></a>
+<span class="sourceLineNo">433</span>        }<a name="line.433"></a>
+<span class="sourceLineNo">434</span>}<a name="line.434"></a>
 
 
 

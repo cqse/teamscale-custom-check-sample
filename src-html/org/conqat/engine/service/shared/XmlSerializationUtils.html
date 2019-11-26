@@ -26,188 +26,212 @@
 <span class="sourceLineNo">018</span><a name="line.18"></a>
 <span class="sourceLineNo">019</span>import java.io.IOException;<a name="line.19"></a>
 <span class="sourceLineNo">020</span>import java.io.Writer;<a name="line.20"></a>
-<span class="sourceLineNo">021</span>import java.util.Arrays;<a name="line.21"></a>
-<span class="sourceLineNo">022</span>import java.util.HashSet;<a name="line.22"></a>
-<span class="sourceLineNo">023</span>import java.util.Set;<a name="line.23"></a>
-<span class="sourceLineNo">024</span>import java.util.regex.Pattern;<a name="line.24"></a>
-<span class="sourceLineNo">025</span><a name="line.25"></a>
-<span class="sourceLineNo">026</span>import org.conqat.engine.index.shared.BasicTokenElementInfo;<a name="line.26"></a>
-<span class="sourceLineNo">027</span><a name="line.27"></a>
-<span class="sourceLineNo">028</span>import com.thoughtworks.xstream.XStream;<a name="line.28"></a>
-<span class="sourceLineNo">029</span>import com.thoughtworks.xstream.XStreamException;<a name="line.29"></a>
-<span class="sourceLineNo">030</span>import com.thoughtworks.xstream.core.util.QuickWriter;<a name="line.30"></a>
-<span class="sourceLineNo">031</span>import com.thoughtworks.xstream.io.HierarchicalStreamWriter;<a name="line.31"></a>
-<span class="sourceLineNo">032</span>import com.thoughtworks.xstream.io.naming.NameCoder;<a name="line.32"></a>
-<span class="sourceLineNo">033</span>import com.thoughtworks.xstream.io.xml.DomDriver;<a name="line.33"></a>
-<span class="sourceLineNo">034</span>import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;<a name="line.34"></a>
-<span class="sourceLineNo">035</span><a name="line.35"></a>
-<span class="sourceLineNo">036</span>/**<a name="line.36"></a>
-<span class="sourceLineNo">037</span> * Utility code for serializing to XML.<a name="line.37"></a>
-<span class="sourceLineNo">038</span> */<a name="line.38"></a>
-<span class="sourceLineNo">039</span>public class XmlSerializationUtils {<a name="line.39"></a>
-<span class="sourceLineNo">040</span><a name="line.40"></a>
-<span class="sourceLineNo">041</span>        /** We allow xstream to deserialize all classes from these packages. */<a name="line.41"></a>
-<span class="sourceLineNo">042</span>        private static final String[] WHITELISTED_PACKAGES = new String[] { "com.teamscale.**", "org.conqat.**" };<a name="line.42"></a>
-<span class="sourceLineNo">043</span><a name="line.43"></a>
-<span class="sourceLineNo">044</span>        /** We also allow to deserialize these specific classes. */<a name="line.44"></a>
-<span class="sourceLineNo">045</span>        private static final String[] WHITELISTED_CLASSES = new String[] { "java.util.Collections$ReverseComparator" };<a name="line.45"></a>
-<span class="sourceLineNo">046</span><a name="line.46"></a>
-<span class="sourceLineNo">047</span>        /**<a name="line.47"></a>
-<span class="sourceLineNo">048</span>         * Patterns used for removing character escapes that are not allowed in XML 1.0.<a name="line.48"></a>
-<span class="sourceLineNo">049</span>         * See &lt;a href="http://stackoverflow.com/a/9987636/1237576"&gt;here&lt;/a&gt; for the<a name="line.49"></a>
-<span class="sourceLineNo">050</span>         * origin of the regex.<a name="line.50"></a>
-<span class="sourceLineNo">051</span>         */<a name="line.51"></a>
-<span class="sourceLineNo">052</span>        private static final Pattern INVALID_CHARACTER_ESCAPE_PATTERN = Pattern<a name="line.52"></a>
-<span class="sourceLineNo">053</span>                        .compile("&amp;#x(0?[0-8bcef]|1[0-9]|d[89abcd]..|fff[ef]);", Pattern.CASE_INSENSITIVE);<a name="line.53"></a>
-<span class="sourceLineNo">054</span><a name="line.54"></a>
-<span class="sourceLineNo">055</span>        /**<a name="line.55"></a>
-<span class="sourceLineNo">056</span>         * Serializes the given object to XML.<a name="line.56"></a>
-<span class="sourceLineNo">057</span>         * <a name="line.57"></a>
-<span class="sourceLineNo">058</span>         * @param cdataAttributes<a name="line.58"></a>
-<span class="sourceLineNo">059</span>         *            all attributes with given name are converted to CDATA instead of<a name="line.59"></a>
-<span class="sourceLineNo">060</span>         *            "normal" strings.<a name="line.60"></a>
-<span class="sourceLineNo">061</span>         */<a name="line.61"></a>
-<span class="sourceLineNo">062</span>        public static String serializeToXML(Object object, String... cdataAttributes) {<a name="line.62"></a>
-<span class="sourceLineNo">063</span>                CDataAwareXStream xstream = new CDataAwareXStream();<a name="line.63"></a>
-<span class="sourceLineNo">064</span>                return xstream.toXML(object, cdataAttributes);<a name="line.64"></a>
-<span class="sourceLineNo">065</span>        }<a name="line.65"></a>
-<span class="sourceLineNo">066</span><a name="line.66"></a>
-<span class="sourceLineNo">067</span>        /**<a name="line.67"></a>
-<span class="sourceLineNo">068</span>         * Serializes the given object to XML.<a name="line.68"></a>
-<span class="sourceLineNo">069</span>         * <a name="line.69"></a>
-<span class="sourceLineNo">070</span>         * @throws IOException<a name="line.70"></a>
-<span class="sourceLineNo">071</span>         *             if deserialization returns a different class or the underlying<a name="line.71"></a>
-<span class="sourceLineNo">072</span>         *             XStream library throws an {@link XStreamException} .<a name="line.72"></a>
-<span class="sourceLineNo">073</span>         */<a name="line.73"></a>
-<span class="sourceLineNo">074</span>        @SuppressWarnings("unchecked")<a name="line.74"></a>
-<span class="sourceLineNo">075</span>        public static &lt;T&gt; T deserializeFromXML(String xml, Class&lt;T&gt; expectedClass) throws IOException {<a name="line.75"></a>
-<span class="sourceLineNo">076</span>                XStream xstream = new CDataAwareXStream();<a name="line.76"></a>
-<span class="sourceLineNo">077</span>                xstream.processAnnotations(expectedClass);<a name="line.77"></a>
-<span class="sourceLineNo">078</span>                xstream.autodetectAnnotations(true);<a name="line.78"></a>
+<span class="sourceLineNo">021</span>import java.lang.reflect.Array;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import java.util.Arrays;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import java.util.Collections;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import java.util.HashSet;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import java.util.List;<a name="line.25"></a>
+<span class="sourceLineNo">026</span>import java.util.Map;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import java.util.Set;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import java.util.regex.Pattern;<a name="line.28"></a>
+<span class="sourceLineNo">029</span><a name="line.29"></a>
+<span class="sourceLineNo">030</span>import com.thoughtworks.xstream.XStream;<a name="line.30"></a>
+<span class="sourceLineNo">031</span>import com.thoughtworks.xstream.XStreamException;<a name="line.31"></a>
+<span class="sourceLineNo">032</span>import com.thoughtworks.xstream.core.util.QuickWriter;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import com.thoughtworks.xstream.io.HierarchicalStreamWriter;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import com.thoughtworks.xstream.io.naming.NameCoder;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import com.thoughtworks.xstream.io.xml.DomDriver;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;<a name="line.36"></a>
+<span class="sourceLineNo">037</span><a name="line.37"></a>
+<span class="sourceLineNo">038</span>/**<a name="line.38"></a>
+<span class="sourceLineNo">039</span> * Utility code for serializing to XML.<a name="line.39"></a>
+<span class="sourceLineNo">040</span> */<a name="line.40"></a>
+<span class="sourceLineNo">041</span>public class XmlSerializationUtils {<a name="line.41"></a>
+<span class="sourceLineNo">042</span><a name="line.42"></a>
+<span class="sourceLineNo">043</span>        /** We allow xstream to deserialize all classes from these packages. */<a name="line.43"></a>
+<span class="sourceLineNo">044</span>        private static final String[] WHITELISTED_PACKAGES = new String[] { "com.teamscale.**", "org.conqat.**" };<a name="line.44"></a>
+<span class="sourceLineNo">045</span><a name="line.45"></a>
+<span class="sourceLineNo">046</span>        /** We also allow to deserialize these specific classes. */<a name="line.46"></a>
+<span class="sourceLineNo">047</span>        private static final String[] WHITELISTED_CLASSES = new String[] { "java.util.Collections$ReverseComparator" };<a name="line.47"></a>
+<span class="sourceLineNo">048</span><a name="line.48"></a>
+<span class="sourceLineNo">049</span>        /**<a name="line.49"></a>
+<span class="sourceLineNo">050</span>         * Patterns used for removing character escapes that are not allowed in XML 1.0.<a name="line.50"></a>
+<span class="sourceLineNo">051</span>         * See &lt;a href="http://stackoverflow.com/a/9987636/1237576"&gt;here&lt;/a&gt; for the<a name="line.51"></a>
+<span class="sourceLineNo">052</span>         * origin of the regex.<a name="line.52"></a>
+<span class="sourceLineNo">053</span>         */<a name="line.53"></a>
+<span class="sourceLineNo">054</span>        private static final Pattern INVALID_CHARACTER_ESCAPE_PATTERN = Pattern<a name="line.54"></a>
+<span class="sourceLineNo">055</span>                        .compile("&amp;#x(0?[0-8bcef]|1[0-9]|d[89abcd]..|fff[ef]);", Pattern.CASE_INSENSITIVE);<a name="line.55"></a>
+<span class="sourceLineNo">056</span><a name="line.56"></a>
+<span class="sourceLineNo">057</span>        /**<a name="line.57"></a>
+<span class="sourceLineNo">058</span>         * Serializes the given object to XML.<a name="line.58"></a>
+<span class="sourceLineNo">059</span>         * <a name="line.59"></a>
+<span class="sourceLineNo">060</span>         * @param cdataAttributes<a name="line.60"></a>
+<span class="sourceLineNo">061</span>         *            all attributes with given name are converted to CDATA instead of<a name="line.61"></a>
+<span class="sourceLineNo">062</span>         *            "normal" strings.<a name="line.62"></a>
+<span class="sourceLineNo">063</span>         */<a name="line.63"></a>
+<span class="sourceLineNo">064</span>        public static String serializeToXML(Object object, String... cdataAttributes) {<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                CDataAwareXStream xstream = new CDataAwareXStream();<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                return xstream.toXML(object, cdataAttributes);<a name="line.66"></a>
+<span class="sourceLineNo">067</span>        }<a name="line.67"></a>
+<span class="sourceLineNo">068</span><a name="line.68"></a>
+<span class="sourceLineNo">069</span>        /**<a name="line.69"></a>
+<span class="sourceLineNo">070</span>         * Serializes the given object to XML.<a name="line.70"></a>
+<span class="sourceLineNo">071</span>         * <a name="line.71"></a>
+<span class="sourceLineNo">072</span>         * @throws IOException<a name="line.72"></a>
+<span class="sourceLineNo">073</span>         *             if deserialization returns a different class or the underlying<a name="line.73"></a>
+<span class="sourceLineNo">074</span>         *             XStream library throws an {@link XStreamException} .<a name="line.74"></a>
+<span class="sourceLineNo">075</span>         */<a name="line.75"></a>
+<span class="sourceLineNo">076</span>        public static &lt;T&gt; T deserializeFromXML(String xml, Class&lt;T&gt; expectedClass) throws IOException {<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                return deserializeFromXMLWithAliases(xml, expectedClass, Collections.emptyMap());<a name="line.77"></a>
+<span class="sourceLineNo">078</span>        }<a name="line.78"></a>
 <span class="sourceLineNo">079</span><a name="line.79"></a>
-<span class="sourceLineNo">080</span>                // TokenElementInfo is not present in com.teamscale.ide's dependencies; but as<a name="line.80"></a>
-<span class="sourceLineNo">081</span>                // it extends BasicTokenElementInfo only with @XStreamOmitField-annotated<a name="line.81"></a>
-<span class="sourceLineNo">082</span>                // fields, we can get away with deserializing &lt;TokenElementInfo&gt; elements to<a name="line.82"></a>
-<span class="sourceLineNo">083</span>                // BasicTokenElementInfo instances.<a name="line.83"></a>
-<span class="sourceLineNo">084</span>                xstream.alias("org.conqat.engine.index.shared.TokenElementInfo", BasicTokenElementInfo.class);<a name="line.84"></a>
-<span class="sourceLineNo">085</span><a name="line.85"></a>
-<span class="sourceLineNo">086</span>                // remove any entities that are not allowed in XML 1.0 and replace with<a name="line.86"></a>
-<span class="sourceLineNo">087</span>                // "?". In most cases where we use this code, this will not cause any<a name="line.87"></a>
-<span class="sourceLineNo">088</span>                // problems.<a name="line.88"></a>
-<span class="sourceLineNo">089</span>                xml = INVALID_CHARACTER_ESCAPE_PATTERN.matcher(xml).replaceAll("?");<a name="line.89"></a>
-<span class="sourceLineNo">090</span><a name="line.90"></a>
-<span class="sourceLineNo">091</span>                try {<a name="line.91"></a>
-<span class="sourceLineNo">092</span>                        Object result = xstream.fromXML(xml);<a name="line.92"></a>
-<span class="sourceLineNo">093</span>                        if (result != null &amp;&amp; !expectedClass.isInstance(result)) {<a name="line.93"></a>
-<span class="sourceLineNo">094</span>                                throw new IOException("Invalid class returned during deserialization. Expected " + expectedClass<a name="line.94"></a>
-<span class="sourceLineNo">095</span>                                                + " but was " + result.getClass());<a name="line.95"></a>
-<span class="sourceLineNo">096</span>                        }<a name="line.96"></a>
-<span class="sourceLineNo">097</span>                        return (T) result;<a name="line.97"></a>
-<span class="sourceLineNo">098</span>                } catch (XStreamException e) {<a name="line.98"></a>
-<span class="sourceLineNo">099</span>                        throw new IOException(e);<a name="line.99"></a>
-<span class="sourceLineNo">100</span>                }<a name="line.100"></a>
-<span class="sourceLineNo">101</span>        }<a name="line.101"></a>
-<span class="sourceLineNo">102</span><a name="line.102"></a>
-<span class="sourceLineNo">103</span>        /** An {@link XStream} that also support CDATA encoding. */<a name="line.103"></a>
-<span class="sourceLineNo">104</span>        private static class CDataAwareXStream extends XStream {<a name="line.104"></a>
+<span class="sourceLineNo">080</span>        /**<a name="line.80"></a>
+<span class="sourceLineNo">081</span>         * Identical to {@link #deserializeFromXML(String, Class)} with the additional<a name="line.81"></a>
+<span class="sourceLineNo">082</span>         * option of adding class aliases.<a name="line.82"></a>
+<span class="sourceLineNo">083</span>         * <a name="line.83"></a>
+<span class="sourceLineNo">084</span>         * @param elementAliases<a name="line.84"></a>
+<span class="sourceLineNo">085</span>         *            Map of fully classified class name to actual class<a name="line.85"></a>
+<span class="sourceLineNo">086</span>         * <a name="line.86"></a>
+<span class="sourceLineNo">087</span>         * @throws IOException<a name="line.87"></a>
+<span class="sourceLineNo">088</span>         *             if deserialization returns a different class or the underlying<a name="line.88"></a>
+<span class="sourceLineNo">089</span>         *             XStream library throws an {@link XStreamException} .<a name="line.89"></a>
+<span class="sourceLineNo">090</span>         */<a name="line.90"></a>
+<span class="sourceLineNo">091</span>        public static &lt;T&gt; T deserializeFromXMLWithAliases(String xml, Class&lt;T&gt; expectedClass,<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                        Map&lt;String, Class&lt;?&gt;&gt; elementAliases) throws IOException {<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                XStream xstream = new CDataAwareXStream();<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                xstream.processAnnotations(expectedClass);<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                xstream.autodetectAnnotations(true);<a name="line.95"></a>
+<span class="sourceLineNo">096</span><a name="line.96"></a>
+<span class="sourceLineNo">097</span>                for (Map.Entry&lt;String, Class&lt;?&gt;&gt; aliasEntry : elementAliases.entrySet()) {<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                        xstream.alias(aliasEntry.getKey(), aliasEntry.getValue());<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                }<a name="line.99"></a>
+<span class="sourceLineNo">100</span><a name="line.100"></a>
+<span class="sourceLineNo">101</span>                // remove any entities that are not allowed in XML 1.0 and replace with<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                // "?". In most cases where we use this code, this will not cause any<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                // problems.<a name="line.103"></a>
+<span class="sourceLineNo">104</span>                xml = INVALID_CHARACTER_ESCAPE_PATTERN.matcher(xml).replaceAll("?");<a name="line.104"></a>
 <span class="sourceLineNo">105</span><a name="line.105"></a>
-<span class="sourceLineNo">106</span>                /** Attributes that are to be encoded as CDATA. */<a name="line.106"></a>
-<span class="sourceLineNo">107</span>                private final Set&lt;String&gt; cdataAttributes;<a name="line.107"></a>
-<span class="sourceLineNo">108</span><a name="line.108"></a>
-<span class="sourceLineNo">109</span>                /** Constructor. */<a name="line.109"></a>
-<span class="sourceLineNo">110</span>                public CDataAwareXStream() {<a name="line.110"></a>
-<span class="sourceLineNo">111</span>                        this(new HashSet&lt;&gt;());<a name="line.111"></a>
-<span class="sourceLineNo">112</span>                }<a name="line.112"></a>
-<span class="sourceLineNo">113</span><a name="line.113"></a>
-<span class="sourceLineNo">114</span>                /**<a name="line.114"></a>
-<span class="sourceLineNo">115</span>                 * Constructor. This separate constructor is a trick to pass the same set to the<a name="line.115"></a>
-<span class="sourceLineNo">116</span>                 * object created for the super constructor and also hold a reference to it in<a name="line.116"></a>
-<span class="sourceLineNo">117</span>                 * an attribute. If we would construct the set at the declaration point of the<a name="line.117"></a>
-<span class="sourceLineNo">118</span>                 * attribute, this could not be passed to super, as super is called before<a name="line.118"></a>
-<span class="sourceLineNo">119</span>                 * attributes are initialized.<a name="line.119"></a>
-<span class="sourceLineNo">120</span>                 */<a name="line.120"></a>
-<span class="sourceLineNo">121</span>                private CDataAwareXStream(Set&lt;String&gt; cdataAttributes) {<a name="line.121"></a>
-<span class="sourceLineNo">122</span>                        super(new CDataAwareDomDriver(cdataAttributes));<a name="line.122"></a>
-<span class="sourceLineNo">123</span>                        this.cdataAttributes = cdataAttributes;<a name="line.123"></a>
-<span class="sourceLineNo">124</span>                        setMode(XStream.NO_REFERENCES);<a name="line.124"></a>
-<span class="sourceLineNo">125</span>                        autodetectAnnotations(true);<a name="line.125"></a>
-<span class="sourceLineNo">126</span>                        XStream.setupDefaultSecurity(this);<a name="line.126"></a>
-<span class="sourceLineNo">127</span>                        allowTypesByWildcard(WHITELISTED_PACKAGES);<a name="line.127"></a>
-<span class="sourceLineNo">128</span>                        allowTypes(WHITELISTED_CLASSES);<a name="line.128"></a>
-<span class="sourceLineNo">129</span>                }<a name="line.129"></a>
-<span class="sourceLineNo">130</span><a name="line.130"></a>
-<span class="sourceLineNo">131</span>                /**<a name="line.131"></a>
-<span class="sourceLineNo">132</span>                 * Converts the given object to XML.<a name="line.132"></a>
-<span class="sourceLineNo">133</span>                 * <a name="line.133"></a>
-<span class="sourceLineNo">134</span>                 * @param cdataAttributes<a name="line.134"></a>
-<span class="sourceLineNo">135</span>                 *            all attributes with given name are converted to CDATA instead of<a name="line.135"></a>
-<span class="sourceLineNo">136</span>                 *            "normal" strings.<a name="line.136"></a>
-<span class="sourceLineNo">137</span>                 */<a name="line.137"></a>
-<span class="sourceLineNo">138</span>                public String toXML(Object object, String[] cdataAttributes) {<a name="line.138"></a>
-<span class="sourceLineNo">139</span>                        try {<a name="line.139"></a>
-<span class="sourceLineNo">140</span>                                this.cdataAttributes.addAll(Arrays.asList(cdataAttributes));<a name="line.140"></a>
-<span class="sourceLineNo">141</span>                                return toXML(object);<a name="line.141"></a>
-<span class="sourceLineNo">142</span>                        } finally {<a name="line.142"></a>
-<span class="sourceLineNo">143</span>                                this.cdataAttributes.clear();<a name="line.143"></a>
-<span class="sourceLineNo">144</span>                        }<a name="line.144"></a>
-<span class="sourceLineNo">145</span>                }<a name="line.145"></a>
-<span class="sourceLineNo">146</span>        }<a name="line.146"></a>
-<span class="sourceLineNo">147</span><a name="line.147"></a>
-<span class="sourceLineNo">148</span>        /** A XStream driver that support CDATA output. */<a name="line.148"></a>
-<span class="sourceLineNo">149</span>        private static class CDataAwareDomDriver extends DomDriver {<a name="line.149"></a>
-<span class="sourceLineNo">150</span><a name="line.150"></a>
-<span class="sourceLineNo">151</span>                /** Attributes that are to be encoded as CDATA. */<a name="line.151"></a>
-<span class="sourceLineNo">152</span>                private final Set&lt;String&gt; cdataAttributes;<a name="line.152"></a>
-<span class="sourceLineNo">153</span><a name="line.153"></a>
-<span class="sourceLineNo">154</span>                /** Constructor. */<a name="line.154"></a>
-<span class="sourceLineNo">155</span>                public CDataAwareDomDriver(Set&lt;String&gt; cdataAttributes) {<a name="line.155"></a>
-<span class="sourceLineNo">156</span>                        this.cdataAttributes = cdataAttributes;<a name="line.156"></a>
-<span class="sourceLineNo">157</span>                }<a name="line.157"></a>
-<span class="sourceLineNo">158</span><a name="line.158"></a>
-<span class="sourceLineNo">159</span>                /** {@inheritDoc} */<a name="line.159"></a>
-<span class="sourceLineNo">160</span>                @Override<a name="line.160"></a>
-<span class="sourceLineNo">161</span>                public HierarchicalStreamWriter createWriter(Writer out) {<a name="line.161"></a>
-<span class="sourceLineNo">162</span>                        return new CDataAwarePrettyPrintWriter(out, getNameCoder(), cdataAttributes);<a name="line.162"></a>
-<span class="sourceLineNo">163</span>                }<a name="line.163"></a>
-<span class="sourceLineNo">164</span>        }<a name="line.164"></a>
-<span class="sourceLineNo">165</span><a name="line.165"></a>
-<span class="sourceLineNo">166</span>        /**<a name="line.166"></a>
-<span class="sourceLineNo">167</span>         * A pretty printer that outputs attributes that contains "JSON" as CDATA.<a name="line.167"></a>
-<span class="sourceLineNo">168</span>         */<a name="line.168"></a>
-<span class="sourceLineNo">169</span>        private static class CDataAwarePrettyPrintWriter extends PrettyPrintWriter {<a name="line.169"></a>
-<span class="sourceLineNo">170</span><a name="line.170"></a>
-<span class="sourceLineNo">171</span>                /** Flag for storing CData mode. */<a name="line.171"></a>
-<span class="sourceLineNo">172</span>                private boolean nextIsCData = false;<a name="line.172"></a>
-<span class="sourceLineNo">173</span><a name="line.173"></a>
-<span class="sourceLineNo">174</span>                /** Attributes that are to be encoded as CDATA. */<a name="line.174"></a>
-<span class="sourceLineNo">175</span>                private final Set&lt;String&gt; cdataAttributes;<a name="line.175"></a>
-<span class="sourceLineNo">176</span><a name="line.176"></a>
-<span class="sourceLineNo">177</span>                /** Constructor. */<a name="line.177"></a>
-<span class="sourceLineNo">178</span>                public CDataAwarePrettyPrintWriter(Writer out, NameCoder nameCoder, Set&lt;String&gt; cdataAttributes) {<a name="line.178"></a>
-<span class="sourceLineNo">179</span>                        super(out, nameCoder);<a name="line.179"></a>
+<span class="sourceLineNo">106</span>                try {<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                        Object result = xstream.fromXML(xml);<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                        if (result == null) {<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                                // Leave as is<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                        } else if (result instanceof List &amp;&amp; expectedClass.isArray()) {<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                                // Got a List but expected an array. Convert on the fly.<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                                List&lt;?&gt; list = (List&lt;?&gt;) result;<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                                result = list.toArray((Object[]) Array.newInstance(expectedClass.getComponentType(), list.size()));<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                        } else if (result instanceof Object[] &amp;&amp; List.class.isAssignableFrom(expectedClass)) {<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                                // Got an array but expected a List. Convert on the fly.<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                                Object[] array = (Object[]) result;<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                                result = Arrays.asList(array);<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                        }<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                        return expectedClass.cast(result);<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                } catch (ClassCastException e) {<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                        throw new IOException("Invalid class returned during deserialization. Expected " + expectedClass, e);<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                } catch (XStreamException e) {<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                        throw new IOException(e);<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                }<a name="line.124"></a>
+<span class="sourceLineNo">125</span>        }<a name="line.125"></a>
+<span class="sourceLineNo">126</span><a name="line.126"></a>
+<span class="sourceLineNo">127</span>        /** An {@link XStream} that also support CDATA encoding. */<a name="line.127"></a>
+<span class="sourceLineNo">128</span>        private static class CDataAwareXStream extends XStream {<a name="line.128"></a>
+<span class="sourceLineNo">129</span><a name="line.129"></a>
+<span class="sourceLineNo">130</span>                /** Attributes that are to be encoded as CDATA. */<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                private final Set&lt;String&gt; cdataAttributes;<a name="line.131"></a>
+<span class="sourceLineNo">132</span><a name="line.132"></a>
+<span class="sourceLineNo">133</span>                /** Constructor. */<a name="line.133"></a>
+<span class="sourceLineNo">134</span>                public CDataAwareXStream() {<a name="line.134"></a>
+<span class="sourceLineNo">135</span>                        this(new HashSet&lt;&gt;());<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                }<a name="line.136"></a>
+<span class="sourceLineNo">137</span><a name="line.137"></a>
+<span class="sourceLineNo">138</span>                /**<a name="line.138"></a>
+<span class="sourceLineNo">139</span>                 * Constructor. This separate constructor is a trick to pass the same set to the<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                 * object created for the super constructor and also hold a reference to it in<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                 * an attribute. If we would construct the set at the declaration point of the<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                 * attribute, this could not be passed to super, as super is called before<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                 * attributes are initialized.<a name="line.143"></a>
+<span class="sourceLineNo">144</span>                 */<a name="line.144"></a>
+<span class="sourceLineNo">145</span>                private CDataAwareXStream(Set&lt;String&gt; cdataAttributes) {<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                        super(new CDataAwareDomDriver(cdataAttributes));<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                        this.cdataAttributes = cdataAttributes;<a name="line.147"></a>
+<span class="sourceLineNo">148</span>                        setMode(XStream.NO_REFERENCES);<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                        autodetectAnnotations(true);<a name="line.149"></a>
+<span class="sourceLineNo">150</span>                        XStream.setupDefaultSecurity(this);<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                        allowTypesByWildcard(WHITELISTED_PACKAGES);<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                        allowTypes(WHITELISTED_CLASSES);<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                }<a name="line.153"></a>
+<span class="sourceLineNo">154</span><a name="line.154"></a>
+<span class="sourceLineNo">155</span>                /**<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                 * Converts the given object to XML.<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                 * <a name="line.157"></a>
+<span class="sourceLineNo">158</span>                 * @param cdataAttributes<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                 *            all attributes with given name are converted to CDATA instead of<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                 *            "normal" strings.<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                 */<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                public String toXML(Object object, String[] cdataAttributes) {<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                        try {<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                                this.cdataAttributes.addAll(Arrays.asList(cdataAttributes));<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                                return toXML(object);<a name="line.165"></a>
+<span class="sourceLineNo">166</span>                        } finally {<a name="line.166"></a>
+<span class="sourceLineNo">167</span>                                this.cdataAttributes.clear();<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                        }<a name="line.168"></a>
+<span class="sourceLineNo">169</span>                }<a name="line.169"></a>
+<span class="sourceLineNo">170</span>        }<a name="line.170"></a>
+<span class="sourceLineNo">171</span><a name="line.171"></a>
+<span class="sourceLineNo">172</span>        /** A XStream driver that support CDATA output. */<a name="line.172"></a>
+<span class="sourceLineNo">173</span>        private static class CDataAwareDomDriver extends DomDriver {<a name="line.173"></a>
+<span class="sourceLineNo">174</span><a name="line.174"></a>
+<span class="sourceLineNo">175</span>                /** Attributes that are to be encoded as CDATA. */<a name="line.175"></a>
+<span class="sourceLineNo">176</span>                private final Set&lt;String&gt; cdataAttributes;<a name="line.176"></a>
+<span class="sourceLineNo">177</span><a name="line.177"></a>
+<span class="sourceLineNo">178</span>                /** Constructor. */<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                public CDataAwareDomDriver(Set&lt;String&gt; cdataAttributes) {<a name="line.179"></a>
 <span class="sourceLineNo">180</span>                        this.cdataAttributes = cdataAttributes;<a name="line.180"></a>
 <span class="sourceLineNo">181</span>                }<a name="line.181"></a>
 <span class="sourceLineNo">182</span><a name="line.182"></a>
 <span class="sourceLineNo">183</span>                /** {@inheritDoc} */<a name="line.183"></a>
 <span class="sourceLineNo">184</span>                @Override<a name="line.184"></a>
-<span class="sourceLineNo">185</span>                public void startNode(String name, @SuppressWarnings("rawtypes") Class clazz) {<a name="line.185"></a>
-<span class="sourceLineNo">186</span>                        super.startNode(name, clazz);<a name="line.186"></a>
-<span class="sourceLineNo">187</span>                        nextIsCData = this.cdataAttributes.contains(name);<a name="line.187"></a>
-<span class="sourceLineNo">188</span>                }<a name="line.188"></a>
+<span class="sourceLineNo">185</span>                public HierarchicalStreamWriter createWriter(Writer out) {<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                        return new CDataAwarePrettyPrintWriter(out, getNameCoder(), cdataAttributes);<a name="line.186"></a>
+<span class="sourceLineNo">187</span>                }<a name="line.187"></a>
+<span class="sourceLineNo">188</span>        }<a name="line.188"></a>
 <span class="sourceLineNo">189</span><a name="line.189"></a>
-<span class="sourceLineNo">190</span>                /** {@inheritDoc} */<a name="line.190"></a>
-<span class="sourceLineNo">191</span>                @Override<a name="line.191"></a>
-<span class="sourceLineNo">192</span>                protected void writeText(QuickWriter writer, String text) {<a name="line.192"></a>
-<span class="sourceLineNo">193</span>                        if (nextIsCData) {<a name="line.193"></a>
-<span class="sourceLineNo">194</span>                                writer.write("&lt;![CDATA[");<a name="line.194"></a>
-<span class="sourceLineNo">195</span>                                writer.write(text);<a name="line.195"></a>
-<span class="sourceLineNo">196</span>                                writer.write("]]&gt;");<a name="line.196"></a>
-<span class="sourceLineNo">197</span>                        } else {<a name="line.197"></a>
-<span class="sourceLineNo">198</span>                                super.writeText(writer, text);<a name="line.198"></a>
-<span class="sourceLineNo">199</span>                        }<a name="line.199"></a>
-<span class="sourceLineNo">200</span>                }<a name="line.200"></a>
-<span class="sourceLineNo">201</span>        }<a name="line.201"></a>
-<span class="sourceLineNo">202</span>}<a name="line.202"></a>
+<span class="sourceLineNo">190</span>        /**<a name="line.190"></a>
+<span class="sourceLineNo">191</span>         * A pretty printer that outputs attributes that contains "JSON" as CDATA.<a name="line.191"></a>
+<span class="sourceLineNo">192</span>         */<a name="line.192"></a>
+<span class="sourceLineNo">193</span>        private static class CDataAwarePrettyPrintWriter extends PrettyPrintWriter {<a name="line.193"></a>
+<span class="sourceLineNo">194</span><a name="line.194"></a>
+<span class="sourceLineNo">195</span>                /** Flag for storing CData mode. */<a name="line.195"></a>
+<span class="sourceLineNo">196</span>                private boolean nextIsCData = false;<a name="line.196"></a>
+<span class="sourceLineNo">197</span><a name="line.197"></a>
+<span class="sourceLineNo">198</span>                /** Attributes that are to be encoded as CDATA. */<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                private final Set&lt;String&gt; cdataAttributes;<a name="line.199"></a>
+<span class="sourceLineNo">200</span><a name="line.200"></a>
+<span class="sourceLineNo">201</span>                /** Constructor. */<a name="line.201"></a>
+<span class="sourceLineNo">202</span>                public CDataAwarePrettyPrintWriter(Writer out, NameCoder nameCoder, Set&lt;String&gt; cdataAttributes) {<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                        super(out, nameCoder);<a name="line.203"></a>
+<span class="sourceLineNo">204</span>                        this.cdataAttributes = cdataAttributes;<a name="line.204"></a>
+<span class="sourceLineNo">205</span>                }<a name="line.205"></a>
+<span class="sourceLineNo">206</span><a name="line.206"></a>
+<span class="sourceLineNo">207</span>                /** {@inheritDoc} */<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                @Override<a name="line.208"></a>
+<span class="sourceLineNo">209</span>                public void startNode(String name, @SuppressWarnings("rawtypes") Class clazz) {<a name="line.209"></a>
+<span class="sourceLineNo">210</span>                        super.startNode(name, clazz);<a name="line.210"></a>
+<span class="sourceLineNo">211</span>                        nextIsCData = this.cdataAttributes.contains(name);<a name="line.211"></a>
+<span class="sourceLineNo">212</span>                }<a name="line.212"></a>
+<span class="sourceLineNo">213</span><a name="line.213"></a>
+<span class="sourceLineNo">214</span>                /** {@inheritDoc} */<a name="line.214"></a>
+<span class="sourceLineNo">215</span>                @Override<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                protected void writeText(QuickWriter writer, String text) {<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                        if (nextIsCData) {<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                                writer.write("&lt;![CDATA[");<a name="line.218"></a>
+<span class="sourceLineNo">219</span>                                writer.write(text);<a name="line.219"></a>
+<span class="sourceLineNo">220</span>                                writer.write("]]&gt;");<a name="line.220"></a>
+<span class="sourceLineNo">221</span>                        } else {<a name="line.221"></a>
+<span class="sourceLineNo">222</span>                                super.writeText(writer, text);<a name="line.222"></a>
+<span class="sourceLineNo">223</span>                        }<a name="line.223"></a>
+<span class="sourceLineNo">224</span>                }<a name="line.224"></a>
+<span class="sourceLineNo">225</span>        }<a name="line.225"></a>
+<span class="sourceLineNo">226</span>}<a name="line.226"></a>
 
 
 

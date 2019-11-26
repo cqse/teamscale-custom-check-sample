@@ -33,11 +33,11 @@
 <span class="sourceLineNo">025</span>import java.util.EnumSet;<a name="line.25"></a>
 <span class="sourceLineNo">026</span>import java.util.Set;<a name="line.26"></a>
 <span class="sourceLineNo">027</span><a name="line.27"></a>
-<span class="sourceLineNo">028</span>import org.conqat.lib.commons.region.Region;<a name="line.28"></a>
-<span class="sourceLineNo">029</span>import org.conqat.lib.commons.string.StringUtils;<a name="line.29"></a>
-<span class="sourceLineNo">030</span><a name="line.30"></a>
-<span class="sourceLineNo">031</span>import eu.cqse.check.framework.scanner.ETokenType;<a name="line.31"></a>
-<span class="sourceLineNo">032</span>import eu.cqse.check.framework.scanner.ETokenType.ETokenClass;<a name="line.32"></a>
+<span class="sourceLineNo">028</span>import eu.cqse.check.framework.scanner.ETokenType.ETokenClass;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>import org.conqat.lib.commons.region.Region;<a name="line.29"></a>
+<span class="sourceLineNo">030</span>import org.conqat.lib.commons.string.StringUtils;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>import eu.cqse.check.framework.scanner.ETokenType;<a name="line.32"></a>
 <span class="sourceLineNo">033</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.33"></a>
 <span class="sourceLineNo">034</span>import eu.cqse.check.framework.shallowparser.SubTypeNames;<a name="line.34"></a>
 <span class="sourceLineNo">035</span>import eu.cqse.check.framework.shallowparser.framework.EShallowEntityType;<a name="line.35"></a>
@@ -109,7 +109,7 @@
 <span class="sourceLineNo">101</span>        }<a name="line.101"></a>
 <span class="sourceLineNo">102</span><a name="line.102"></a>
 <span class="sourceLineNo">103</span>        /** The states used in this parser. */<a name="line.103"></a>
-<span class="sourceLineNo">104</span>        public static enum EAbapParserStates {<a name="line.104"></a>
+<span class="sourceLineNo">104</span>        public enum EAbapParserStates {<a name="line.104"></a>
 <span class="sourceLineNo">105</span><a name="line.105"></a>
 <span class="sourceLineNo">106</span>                /**<a name="line.106"></a>
 <span class="sourceLineNo">107</span>                 * Top level state used for parsing constructs that are not nested in other<a name="line.107"></a>
@@ -253,237 +253,238 @@
 <span class="sourceLineNo">245</span>                inState(DECLARATIONS).sequence(EnumSet.of(INTERFACES, ALIASES)).createNode(EShallowEntityType.META, 0)<a name="line.245"></a>
 <span class="sourceLineNo">246</span>                                .skipTo(DOT).endNode();<a name="line.246"></a>
 <span class="sourceLineNo">247</span><a name="line.247"></a>
-<span class="sourceLineNo">248</span>                inState(IN_TYPE).sequence(INCLUDE).notPreCondition(emptyRecognizer().sequence(INCLUDE_FILTER_TOKEN_TYPES))<a name="line.248"></a>
-<span class="sourceLineNo">249</span>                                .createNode(EShallowEntityType.META, 0).skipTo(DOT).endNode();<a name="line.249"></a>
-<span class="sourceLineNo">250</span>        }<a name="line.250"></a>
-<span class="sourceLineNo">251</span><a name="line.251"></a>
-<span class="sourceLineNo">252</span>        /** Rules for parsing classes, interfaces, types, and events. */<a name="line.252"></a>
-<span class="sourceLineNo">253</span>        private void createTypeRules() {<a name="line.253"></a>
-<span class="sourceLineNo">254</span><a name="line.254"></a>
-<span class="sourceLineNo">255</span>                createClassRules();<a name="line.255"></a>
-<span class="sourceLineNo">256</span><a name="line.256"></a>
-<span class="sourceLineNo">257</span>                // interfaces<a name="line.257"></a>
-<span class="sourceLineNo">258</span>                RecognizerBase&lt;EAbapParserStates&gt; interfaceAlternative = inState(TOPLEVEL, DECLARATIONS).sequence(INTERFACE,<a name="line.258"></a>
-<span class="sourceLineNo">259</span>                                IDENTIFIER);<a name="line.259"></a>
-<span class="sourceLineNo">260</span>                interfaceAlternative.sequence(EnumSet.of(LOAD, DEFERRED, LOCAL))<a name="line.260"></a>
-<span class="sourceLineNo">261</span>                                .createNode(EShallowEntityType.TYPE, SubTypeNames.INTERFACE_PUBLICATION, 1).skipTo(DOT).endNode();<a name="line.261"></a>
-<span class="sourceLineNo">262</span>                interfaceAlternative.createNode(EShallowEntityType.TYPE, SubTypeNames.INTERFACE_DEFINITION, 1).skipTo(DOT)<a name="line.262"></a>
-<span class="sourceLineNo">263</span>                                .parseUntil(DECLARATIONS).sequence(ENDINTERFACE, DOT).endNode();<a name="line.263"></a>
-<span class="sourceLineNo">264</span><a name="line.264"></a>
-<span class="sourceLineNo">265</span>        }<a name="line.265"></a>
-<span class="sourceLineNo">266</span><a name="line.266"></a>
-<span class="sourceLineNo">267</span>        /** Rules for parsing ABAP OO classes. */<a name="line.267"></a>
-<span class="sourceLineNo">268</span>        private void createClassRules() {<a name="line.268"></a>
-<span class="sourceLineNo">269</span>                RecognizerBase&lt;EAbapParserStates&gt; classDefinitionAlternative = inState(TOPLEVEL, DECLARATIONS, IN_TYPE)<a name="line.269"></a>
-<span class="sourceLineNo">270</span>                                .sequence(CLASS, IDENTIFIER, DEFINITION);<a name="line.270"></a>
-<span class="sourceLineNo">271</span>                classDefinitionAlternative.sequence(EnumSet.of(LOAD, DEFERRED, LOCAL))<a name="line.271"></a>
-<span class="sourceLineNo">272</span>                                .createNode(EShallowEntityType.TYPE, SubTypeNames.CLASS_PUBLICATION, 1).skipTo(DOT).endNode();<a name="line.272"></a>
-<span class="sourceLineNo">273</span>                classDefinitionAlternative.createNode(EShallowEntityType.TYPE, SubTypeNames.CLASS_DEFINITION, 1).skipTo(DOT)<a name="line.273"></a>
-<span class="sourceLineNo">274</span>                                .parseUntil(DECLARATIONS).sequence(ENDCLASS, DOT).endNode();<a name="line.274"></a>
-<span class="sourceLineNo">275</span><a name="line.275"></a>
-<span class="sourceLineNo">276</span>                inState(TOPLEVEL, DECLARATIONS, IN_TYPE).sequence(CLASS, IDENTIFIER, IMPLEMENTATION)<a name="line.276"></a>
-<span class="sourceLineNo">277</span>                                .createNode(EShallowEntityType.TYPE, SubTypeNames.CLASS_IMPLEMENTATION, 1).skipTo(DOT)<a name="line.277"></a>
-<span class="sourceLineNo">278</span>                                .parseUntil(DECLARATIONS).sequence(ENDCLASS, DOT).endNode();<a name="line.278"></a>
-<span class="sourceLineNo">279</span>        }<a name="line.279"></a>
-<span class="sourceLineNo">280</span><a name="line.280"></a>
-<span class="sourceLineNo">281</span>        /** Rules for parsing attributes. */<a name="line.281"></a>
-<span class="sourceLineNo">282</span>        private void createAttributeRules() {<a name="line.282"></a>
-<span class="sourceLineNo">283</span>                // Match BEGIN OF COMMON PART declarations as single entity<a name="line.283"></a>
-<span class="sourceLineNo">284</span>                inState(TOPLEVEL, DECLARATIONS, IN_TYPE).sequence(DATA, BEGIN, OF, COMMON, PART).optional(IDENTIFIER_LIKE)<a name="line.284"></a>
-<span class="sourceLineNo">285</span>                                .createNode(EShallowEntityType.ATTRIBUTE, 0, -1).skipTo(END, OF, COMMON, PART).skipTo(DOT).endNode();<a name="line.285"></a>
-<span class="sourceLineNo">286</span><a name="line.286"></a>
-<span class="sourceLineNo">287</span>                // Match record type declaration as single entity<a name="line.287"></a>
-<span class="sourceLineNo">288</span>                inState(TOPLEVEL, DECLARATIONS, IN_TYPE).sequence(EnumSet.of(TYPES, CONSTANTS, DATA, STATICS, CLASS_DATA))<a name="line.288"></a>
-<span class="sourceLineNo">289</span>                                .optional(COLON).sequence(BEGIN, OF, IDENTIFIER_LIKE).createNode(EShallowEntityType.ATTRIBUTE, 0, -1)<a name="line.289"></a>
-<span class="sourceLineNo">290</span>                                .skipTo(END, OF).skipTo(DOT).endNode();<a name="line.290"></a>
-<span class="sourceLineNo">291</span><a name="line.291"></a>
-<span class="sourceLineNo">292</span>                // types, events, class events<a name="line.292"></a>
-<span class="sourceLineNo">293</span>                inState(TOPLEVEL, DECLARATIONS, IN_TYPE).sequence(EnumSet.of(EVENTS, CLASS_EVENTS))<a name="line.293"></a>
-<span class="sourceLineNo">294</span>                                .createNode(EShallowEntityType.ATTRIBUTE, 0).skipTo(DOT).endNode();<a name="line.294"></a>
-<span class="sourceLineNo">295</span><a name="line.295"></a>
-<span class="sourceLineNo">296</span>                inState(TOPLEVEL, DECLARATIONS, IN_TYPE)<a name="line.296"></a>
-<span class="sourceLineNo">297</span>                                .sequence(EnumSet.of(CONSTANTS, NODES, STATICS, DATA, TYPES, FIELD_GROUPS, CLASS_DATA, RANGES,<a name="line.297"></a>
-<span class="sourceLineNo">298</span>                                                SELECT_OPTIONS, INFOTYPES))<a name="line.298"></a>
-<span class="sourceLineNo">299</span>                                .optional(COLON).sequence(IDENTIFIER_LIKE).createNode(EShallowEntityType.ATTRIBUTE, 0, -1).skipTo(DOT)<a name="line.299"></a>
-<span class="sourceLineNo">300</span>                                .endNode();<a name="line.300"></a>
-<span class="sourceLineNo">301</span><a name="line.301"></a>
-<span class="sourceLineNo">302</span>                inState(TOPLEVEL, DECLARATIONS, IN_TYPE).sequence(FIELD_SYMBOLS).optional(COLON).sequence(LT, IDENTIFIER_LIKE)<a name="line.302"></a>
-<span class="sourceLineNo">303</span>                                .createNode(EShallowEntityType.ATTRIBUTE, 0, -1).skipTo(DOT).endNode();<a name="line.303"></a>
-<span class="sourceLineNo">304</span><a name="line.304"></a>
-<span class="sourceLineNo">305</span>                inState(TOPLEVEL, DECLARATIONS, IN_TYPE)<a name="line.305"></a>
-<span class="sourceLineNo">306</span>                                // The "parameter" keyword is the obsolete older form of<a name="line.306"></a>
-<span class="sourceLineNo">307</span>                                // "parameters"<a name="line.307"></a>
-<span class="sourceLineNo">308</span>                                .sequence(EnumSet.of(PARAMETER, PARAMETERS)).optional(COLON).sequence(IDENTIFIER_LIKE)<a name="line.308"></a>
-<span class="sourceLineNo">309</span>                                .createNode(EShallowEntityType.ATTRIBUTE, SubTypeNames.PARAMETERS, -1).skipTo(DOT).endNode();<a name="line.309"></a>
-<span class="sourceLineNo">310</span>        }<a name="line.310"></a>
-<span class="sourceLineNo">311</span><a name="line.311"></a>
-<span class="sourceLineNo">312</span>        /**<a name="line.312"></a>
-<span class="sourceLineNo">313</span>         * Rules for parsing methods, functions, and forms.<a name="line.313"></a>
-<span class="sourceLineNo">314</span>         *<a name="line.314"></a>
-<span class="sourceLineNo">315</span>         * We handle colons here to catch method declarations like &lt;code&gt;form:<a name="line.315"></a>
-<span class="sourceLineNo">316</span>         * foo.&lt;/foo&gt; as that's a declaration for form "foo" not ":foo".<a name="line.316"></a>
-<span class="sourceLineNo">317</span>         */<a name="line.317"></a>
-<span class="sourceLineNo">318</span>        private void createMethodRules() {<a name="line.318"></a>
-<span class="sourceLineNo">319</span>                inState(DECLARATIONS).sequence(EnumSet.of(METHODS, CLASS_METHODS))<a name="line.319"></a>
-<span class="sourceLineNo">320</span>                                .skipBefore(<a name="line.320"></a>
-<span class="sourceLineNo">321</span>                                                EnumSet.of(ABSTRACT, DOT, RETURNING, IMPORTING, EXPORTING, REDEFINITION, CHANGING, EXCEPTIONS))<a name="line.321"></a>
-<span class="sourceLineNo">322</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.METHOD_DECLARATION, new Region(1, -1)).skipTo(DOT)<a name="line.322"></a>
-<span class="sourceLineNo">323</span>                                .endNode();<a name="line.323"></a>
-<span class="sourceLineNo">324</span><a name="line.324"></a>
-<span class="sourceLineNo">325</span>                inState(DECLARATIONS).sequence(METHOD).optional(COLON).markStart().skipBefore(EnumSet.of(DOT, BY))<a name="line.325"></a>
-<span class="sourceLineNo">326</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.METHOD_IMPLEMENTATION, new Region(0, -1))<a name="line.326"></a>
-<span class="sourceLineNo">327</span>                                .skipTo(DOT).parseUntil(STATEMENTS).sequence(ENDMETHOD, DOT).endNode();<a name="line.327"></a>
-<span class="sourceLineNo">328</span>                inState(TOPLEVEL, STATEMENTS).sequence(METHOD).optional(COLON).markStart().skipBefore(EnumSet.of(DOT, BY))<a name="line.328"></a>
-<span class="sourceLineNo">329</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.METHOD_IMPLEMENTATION, new Region(0, -1))<a name="line.329"></a>
-<span class="sourceLineNo">330</span>                                .skipTo(DOT).parseUntil(STATEMENTS).sequence(ENDMETHOD, DOT).endNode();<a name="line.330"></a>
-<span class="sourceLineNo">331</span>                inState(TOPLEVEL, IN_TYPE).sequence(FORM).optional(COLON).sequence(IDENTIFIER_LIKE)<a name="line.331"></a>
-<span class="sourceLineNo">332</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.FORM, -1).skipTo(DOT).parseUntil(STATEMENTS)<a name="line.332"></a>
-<span class="sourceLineNo">333</span>                                .sequence(ENDFORM, DOT).endNode();<a name="line.333"></a>
-<span class="sourceLineNo">334</span><a name="line.334"></a>
-<span class="sourceLineNo">335</span>                inState(TOPLEVEL, DECLARATIONS).sequence(FUNCTION).optional(COLON).markStart()<a name="line.335"></a>
-<span class="sourceLineNo">336</span>                                .skipBefore(EnumSet.of(DOT, IMPORTING, EXPORTING, TABLES, CHANGING, RAISING, EXCEPTIONS))<a name="line.336"></a>
-<span class="sourceLineNo">337</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.FUNCTION, new Region(0, -1)).skipTo(DOT)<a name="line.337"></a>
-<span class="sourceLineNo">338</span>                                .parseUntil(STATEMENTS).sequence(ENDFUNCTION, DOT).endNode();<a name="line.338"></a>
-<span class="sourceLineNo">339</span><a name="line.339"></a>
-<span class="sourceLineNo">340</span>                RecognizerBase&lt;EAbapParserStates&gt; toplevelStartOfSelection = inState(IN_TYPE)<a name="line.340"></a>
-<span class="sourceLineNo">341</span>                                .sequenceBefore(EnumSet.complementOf(EVENT_BLOCKS_END))<a name="line.341"></a>
-<span class="sourceLineNo">342</span>                                .sequenceBefore(EnumSet.complementOf(EnumSet.of(MODULE)))<a name="line.342"></a>
-<span class="sourceLineNo">343</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.START_OF_SELECTION, SubTypeNames.START_OF_SELECTION)<a name="line.343"></a>
-<span class="sourceLineNo">344</span>                                .parseUntilOrEof(STATEMENTS);<a name="line.344"></a>
-<span class="sourceLineNo">345</span>                endMethodEntityOnEventBlock(EVENT_BLOCKS_END, toplevelStartOfSelection);<a name="line.345"></a>
-<span class="sourceLineNo">346</span><a name="line.346"></a>
-<span class="sourceLineNo">347</span>                RecognizerBase&lt;EAbapParserStates&gt; toplevelStartOfSelectionWithModule = inState(IN_TYPE).sequenceBefore(MODULE)<a name="line.347"></a>
-<span class="sourceLineNo">348</span>                                .notPreCondition(new ModuleBlockStartRecognizer())<a name="line.348"></a>
-<span class="sourceLineNo">349</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.START_OF_SELECTION, SubTypeNames.START_OF_SELECTION)<a name="line.349"></a>
-<span class="sourceLineNo">350</span>                                .parseUntilOrEof(STATEMENTS);<a name="line.350"></a>
-<span class="sourceLineNo">351</span>                endMethodEntityOnEventBlock(EVENT_BLOCKS_END, toplevelStartOfSelectionWithModule);<a name="line.351"></a>
-<span class="sourceLineNo">352</span><a name="line.352"></a>
-<span class="sourceLineNo">353</span>        }<a name="line.353"></a>
-<span class="sourceLineNo">354</span><a name="line.354"></a>
-<span class="sourceLineNo">355</span>        /** Rules for parsing modules. */<a name="line.355"></a>
-<span class="sourceLineNo">356</span>        private void createModuleRules() {<a name="line.356"></a>
-<span class="sourceLineNo">357</span>                RecognizerBase&lt;EAbapParserStates&gt; moduleRecognizer = inState(TOPLEVEL, IN_TYPE)<a name="line.357"></a>
-<span class="sourceLineNo">358</span>                                .preCondition(new ModuleBlockStartRecognizer()).sequence(MODULE).markStart()<a name="line.358"></a>
-<span class="sourceLineNo">359</span>                                .skipBefore(EnumSet.of(INPUT, OUTPUT, DOT));<a name="line.359"></a>
-<span class="sourceLineNo">360</span>                moduleRecognizer.sequence(INPUT, DOT).createNode(EShallowEntityType.METHOD, SubTypeNames.MODULE_INPUT, 0)<a name="line.360"></a>
-<span class="sourceLineNo">361</span>                                .parseUntil(STATEMENTS).sequence(ENDMODULE, DOT).endNode();<a name="line.361"></a>
-<span class="sourceLineNo">362</span>                moduleRecognizer.sequence(OUTPUT, DOT).createNode(EShallowEntityType.METHOD, SubTypeNames.MODULE_OUTPUT, 0)<a name="line.362"></a>
-<span class="sourceLineNo">363</span>                                .parseUntil(STATEMENTS).sequence(ENDMODULE, DOT).endNode();<a name="line.363"></a>
-<span class="sourceLineNo">364</span>                moduleRecognizer.sequence(DOT).createNode(EShallowEntityType.METHOD, SubTypeNames.MODULE_INPUT, 0)<a name="line.364"></a>
-<span class="sourceLineNo">365</span>                                .parseUntil(STATEMENTS).sequence(ENDMODULE, DOT).endNode();<a name="line.365"></a>
-<span class="sourceLineNo">366</span>        }<a name="line.366"></a>
-<span class="sourceLineNo">367</span><a name="line.367"></a>
-<span class="sourceLineNo">368</span>        /** Rules for parsing statements. */<a name="line.368"></a>
-<span class="sourceLineNo">369</span>        private void createStatementRules() {<a name="line.369"></a>
-<span class="sourceLineNo">370</span><a name="line.370"></a>
-<span class="sourceLineNo">371</span>                // special rule that matches assignments to variables that have the same<a name="line.371"></a>
-<span class="sourceLineNo">372</span>                // name as keywords.<a name="line.372"></a>
-<span class="sourceLineNo">373</span>                inState(STATEMENTS).sequence(ETokenClass.KEYWORD, EQ).createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT)<a name="line.373"></a>
-<span class="sourceLineNo">374</span>                                .endNode();<a name="line.374"></a>
-<span class="sourceLineNo">375</span><a name="line.375"></a>
-<span class="sourceLineNo">376</span>                createConditionalStatementRules();<a name="line.376"></a>
-<span class="sourceLineNo">377</span><a name="line.377"></a>
-<span class="sourceLineNo">378</span>                // on change<a name="line.378"></a>
-<span class="sourceLineNo">379</span>                RecognizerBase&lt;EAbapParserStates&gt; changeAlternative = inAnyState().sequence(ON, CHANGE, OF)<a name="line.379"></a>
-<span class="sourceLineNo">380</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.ON_CHANGE).skipTo(DOT).parseUntil(STATEMENTS)<a name="line.380"></a>
-<span class="sourceLineNo">381</span>                                .sequenceBefore(EnumSet.of(ELSE, ENDON));<a name="line.381"></a>
-<span class="sourceLineNo">382</span>                changeAlternative.sequence(ENDON, DOT).endNode();<a name="line.382"></a>
-<span class="sourceLineNo">383</span>                changeAlternative.endNodeWithContinuation();<a name="line.383"></a>
-<span class="sourceLineNo">384</span>                inState(TOPLEVEL, STATEMENTS).sequence(IDENTIFIER_LIKE, ETokenType.LPAREN)<a name="line.384"></a>
-<span class="sourceLineNo">385</span>                                .createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT).endNode();<a name="line.385"></a>
-<span class="sourceLineNo">386</span><a name="line.386"></a>
-<span class="sourceLineNo">387</span>                createLoopStatementRules();<a name="line.387"></a>
-<span class="sourceLineNo">388</span><a name="line.388"></a>
-<span class="sourceLineNo">389</span>                // try/catch<a name="line.389"></a>
-<span class="sourceLineNo">390</span>                RecognizerBase&lt;EAbapParserStates&gt; tryAlternative = inState(TOPLEVEL, STATEMENTS)<a name="line.390"></a>
-<span class="sourceLineNo">391</span>                                .sequence(EnumSet.of(TRY, CATCH, CLEANUP)).createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT)<a name="line.391"></a>
-<span class="sourceLineNo">392</span>                                .parseUntil(STATEMENTS).sequenceBefore(EnumSet.of(ENDTRY, CATCH, ENDCATCH, CLEANUP));<a name="line.392"></a>
-<span class="sourceLineNo">393</span>                tryAlternative.sequence(EnumSet.of(ENDTRY, ENDCATCH), DOT).endNode();<a name="line.393"></a>
-<span class="sourceLineNo">394</span>                tryAlternative.endNodeWithContinuation();<a name="line.394"></a>
-<span class="sourceLineNo">395</span><a name="line.395"></a>
-<span class="sourceLineNo">396</span>                createSelectRules();<a name="line.396"></a>
-<span class="sourceLineNo">397</span><a name="line.397"></a>
-<span class="sourceLineNo">398</span>                // exec<a name="line.398"></a>
-<span class="sourceLineNo">399</span>                inState(TOPLEVEL, STATEMENTS).sequence(EXEC, SQL)<a name="line.399"></a>
-<span class="sourceLineNo">400</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.NATIVE_SQL).skipTo(ENDEXEC, DOT).endNode();<a name="line.400"></a>
-<span class="sourceLineNo">401</span><a name="line.401"></a>
-<span class="sourceLineNo">402</span>                // simple statements that start with a field symbol, e.g.<a name="line.402"></a>
-<span class="sourceLineNo">403</span>                // "&lt;fs&gt;-foo = 12."<a name="line.403"></a>
-<span class="sourceLineNo">404</span>                inState(TOPLEVEL, STATEMENTS).sequence(LT).createNode(EShallowEntityType.STATEMENT, new Region(0, 2))<a name="line.404"></a>
-<span class="sourceLineNo">405</span>                                .skipTo(DOT).endNode();<a name="line.405"></a>
-<span class="sourceLineNo">406</span><a name="line.406"></a>
-<span class="sourceLineNo">407</span>                // Match record type declarations as a single entity, although they<a name="line.407"></a>
-<span class="sourceLineNo">408</span>                // contain multiple dots.<a name="line.408"></a>
-<span class="sourceLineNo">409</span>                inState(TOPLEVEL, STATEMENTS).sequence(EnumSet.of(TYPES, CONSTANTS, DATA, STATICS)).optional(COLON)<a name="line.409"></a>
-<span class="sourceLineNo">410</span>                                .sequence(BEGIN, OF, IDENTIFIER_LIKE).createNode(EShallowEntityType.STATEMENT, 0, -1).skipTo(END, OF)<a name="line.410"></a>
-<span class="sourceLineNo">411</span>                                .skipTo(DOT).endNode();<a name="line.411"></a>
-<span class="sourceLineNo">412</span><a name="line.412"></a>
-<span class="sourceLineNo">413</span>                inState(TOPLEVEL, STATEMENTS).sequence(SIMPLE_STATEMENT_START_TOKENS)<a name="line.413"></a>
-<span class="sourceLineNo">414</span>                                .createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT).endNode();<a name="line.414"></a>
-<span class="sourceLineNo">415</span>        }<a name="line.415"></a>
-<span class="sourceLineNo">416</span><a name="line.416"></a>
-<span class="sourceLineNo">417</span>        /** Creates parsing rules for conditional statements. */<a name="line.417"></a>
-<span class="sourceLineNo">418</span>        private void createConditionalStatementRules() {<a name="line.418"></a>
-<span class="sourceLineNo">419</span>                // if/elseif<a name="line.419"></a>
-<span class="sourceLineNo">420</span>                RecognizerBase&lt;EAbapParserStates&gt; ifAlternative = inState(TOPLEVEL, STATEMENTS).sequence(EnumSet.of(IF, ELSEIF))<a name="line.420"></a>
-<span class="sourceLineNo">421</span>                                .sequenceBefore(EnumSet.complementOf(EnumSet.of(ARROW))).createNode(EShallowEntityType.STATEMENT, 0)<a name="line.421"></a>
-<span class="sourceLineNo">422</span>                                .skipTo(DOT).parseUntil(STATEMENTS).sequenceBefore(EnumSet.of(ELSEIF, ELSE, ENDIF));<a name="line.422"></a>
-<span class="sourceLineNo">423</span>                ifAlternative.sequence(ENDIF, DOT).endNode();<a name="line.423"></a>
-<span class="sourceLineNo">424</span>                ifAlternative.endNodeWithContinuation();<a name="line.424"></a>
-<span class="sourceLineNo">425</span><a name="line.425"></a>
-<span class="sourceLineNo">426</span>                // else<a name="line.426"></a>
-<span class="sourceLineNo">427</span>                inState(TOPLEVEL, STATEMENTS).sequence(ELSE).createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT)<a name="line.427"></a>
-<span class="sourceLineNo">428</span>                                .parseUntil(STATEMENTS).sequence(EnumSet.of(ENDIF, ENDON), DOT).endNode();<a name="line.428"></a>
-<span class="sourceLineNo">429</span><a name="line.429"></a>
-<span class="sourceLineNo">430</span>                // case/when<a name="line.430"></a>
-<span class="sourceLineNo">431</span>                inState(TOPLEVEL, STATEMENTS).sequence(CASE).createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT)<a name="line.431"></a>
-<span class="sourceLineNo">432</span>                                .parseUntil(STATEMENTS).sequence(ENDCASE, DOT).endNode();<a name="line.432"></a>
-<span class="sourceLineNo">433</span>                // we parse when as meta, so we add no additional nesting<a name="line.433"></a>
-<span class="sourceLineNo">434</span>                inState(STATEMENTS).sequence(WHEN).createNode(EShallowEntityType.META, 0).skipTo(DOT).endNode();<a name="line.434"></a>
-<span class="sourceLineNo">435</span>        }<a name="line.435"></a>
-<span class="sourceLineNo">436</span><a name="line.436"></a>
-<span class="sourceLineNo">437</span>        /** Creates parsing rules for loops and loop-like constructs. */<a name="line.437"></a>
-<span class="sourceLineNo">438</span>        private void createLoopStatementRules() {<a name="line.438"></a>
-<span class="sourceLineNo">439</span>                // loops<a name="line.439"></a>
-<span class="sourceLineNo">440</span>                inState(TOPLEVEL, STATEMENTS).sequence(LOOP).createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT)<a name="line.440"></a>
-<span class="sourceLineNo">441</span>                                .parseUntil(STATEMENTS).sequence(ENDLOOP, DOT).endNode();<a name="line.441"></a>
-<span class="sourceLineNo">442</span>                inState(TOPLEVEL, STATEMENTS).sequence(DO).createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT)<a name="line.442"></a>
-<span class="sourceLineNo">443</span>                                .parseUntil(STATEMENTS).sequence(ENDDO, DOT).endNode();<a name="line.443"></a>
-<span class="sourceLineNo">444</span>                inState(TOPLEVEL, STATEMENTS).sequence(WHILE).createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT)<a name="line.444"></a>
-<span class="sourceLineNo">445</span>                                .parseUntil(STATEMENTS).sequence(ENDWHILE, DOT).endNode();<a name="line.445"></a>
-<span class="sourceLineNo">446</span>                inState(STATEMENTS).sequence(AT).createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT).parseUntil(STATEMENTS)<a name="line.446"></a>
-<span class="sourceLineNo">447</span>                                .sequence(ENDAT, DOT).endNode();<a name="line.447"></a>
-<span class="sourceLineNo">448</span><a name="line.448"></a>
-<span class="sourceLineNo">449</span>                // loop likes<a name="line.449"></a>
-<span class="sourceLineNo">450</span>                inAnyState().sequence(PROVIDE).createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT).parseUntil(STATEMENTS)<a name="line.450"></a>
-<span class="sourceLineNo">451</span>                                .sequence(ENDPROVIDE, DOT).endNode();<a name="line.451"></a>
-<span class="sourceLineNo">452</span>                inAnyState().sequence(ENHANCEMENT).createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT)<a name="line.452"></a>
-<span class="sourceLineNo">453</span>                                .parseUntil(STATEMENTS).sequence(ENDENHANCEMENT, DOT).endNode();<a name="line.453"></a>
-<span class="sourceLineNo">454</span>                inAnyState().sequence(ENHANCEMENT_SECTION).createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT)<a name="line.454"></a>
-<span class="sourceLineNo">455</span>                                .parseUntil(STATEMENTS).sequence(END_ENHANCEMENT_SECTION, DOT).endNode();<a name="line.455"></a>
-<span class="sourceLineNo">456</span>        }<a name="line.456"></a>
-<span class="sourceLineNo">457</span><a name="line.457"></a>
-<span class="sourceLineNo">458</span>        /**<a name="line.458"></a>
-<span class="sourceLineNo">459</span>         * Creates the parsing rules for the select clause. This is tricky, because the<a name="line.459"></a>
-<span class="sourceLineNo">460</span>         * rules whether a select block or a single statement select is expected, are<a name="line.460"></a>
-<span class="sourceLineNo">461</span>         * not trivial.<a name="line.461"></a>
-<span class="sourceLineNo">462</span>         */<a name="line.462"></a>
-<span class="sourceLineNo">463</span>        private void createSelectRules() {<a name="line.463"></a>
-<span class="sourceLineNo">464</span>                RecognizerBase&lt;EAbapParserStates&gt; selectAlternative = inState(TOPLEVEL, STATEMENTS).sequence(SELECT);<a name="line.464"></a>
-<span class="sourceLineNo">465</span>                selectAlternative.sequence(LPAREN).createNode(EShallowEntityType.STATEMENT, "method call")<a name="line.465"></a>
-<span class="sourceLineNo">466</span>                                .skipToWithNesting(RPAREN, LPAREN, RPAREN).skipTo(DOT).endNode();<a name="line.466"></a>
-<span class="sourceLineNo">467</span>                selectAlternative.subRecognizer(new SingleSelectRecognizer(), 1, 1)<a name="line.467"></a>
-<span class="sourceLineNo">468</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.SINGLE_SELECT).endNode();<a name="line.468"></a>
-<span class="sourceLineNo">469</span>                selectAlternative.createNode(EShallowEntityType.STATEMENT, SubTypeNames.SELECT_BLOCK).skipTo(DOT)<a name="line.469"></a>
-<span class="sourceLineNo">470</span>                                .parseUntil(STATEMENTS).sequence(ENDSELECT, DOT).endNode();<a name="line.470"></a>
-<span class="sourceLineNo">471</span>        }<a name="line.471"></a>
-<span class="sourceLineNo">472</span><a name="line.472"></a>
-<span class="sourceLineNo">473</span>        /** {@inheritDoc} */<a name="line.473"></a>
-<span class="sourceLineNo">474</span>        @Override<a name="line.474"></a>
-<span class="sourceLineNo">475</span>        protected boolean isFilteredToken(IToken token, IToken previousToken) {<a name="line.475"></a>
-<span class="sourceLineNo">476</span>                return super.isFilteredToken(token, previousToken) || token.getType() == PRAGMA_DIRECTIVE;<a name="line.476"></a>
-<span class="sourceLineNo">477</span>        }<a name="line.477"></a>
-<span class="sourceLineNo">478</span>}<a name="line.478"></a>
+<span class="sourceLineNo">248</span>                inState(IN_TYPE).sequence(INCLUDE)<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                                .notPreCondition(createRecognizer(start -&gt; start.sequence(INCLUDE_FILTER_TOKEN_TYPES)))<a name="line.249"></a>
+<span class="sourceLineNo">250</span>                                .createNode(EShallowEntityType.META, 0).skipTo(DOT).endNode();<a name="line.250"></a>
+<span class="sourceLineNo">251</span>        }<a name="line.251"></a>
+<span class="sourceLineNo">252</span><a name="line.252"></a>
+<span class="sourceLineNo">253</span>        /** Rules for parsing classes, interfaces, types, and events. */<a name="line.253"></a>
+<span class="sourceLineNo">254</span>        private void createTypeRules() {<a name="line.254"></a>
+<span class="sourceLineNo">255</span><a name="line.255"></a>
+<span class="sourceLineNo">256</span>                createClassRules();<a name="line.256"></a>
+<span class="sourceLineNo">257</span><a name="line.257"></a>
+<span class="sourceLineNo">258</span>                // interfaces<a name="line.258"></a>
+<span class="sourceLineNo">259</span>                RecognizerBase&lt;EAbapParserStates&gt; interfaceAlternative = inState(TOPLEVEL, DECLARATIONS).sequence(INTERFACE,<a name="line.259"></a>
+<span class="sourceLineNo">260</span>                                IDENTIFIER);<a name="line.260"></a>
+<span class="sourceLineNo">261</span>                interfaceAlternative.sequence(EnumSet.of(LOAD, DEFERRED, LOCAL))<a name="line.261"></a>
+<span class="sourceLineNo">262</span>                                .createNode(EShallowEntityType.TYPE, SubTypeNames.INTERFACE_PUBLICATION, 1).skipTo(DOT).endNode();<a name="line.262"></a>
+<span class="sourceLineNo">263</span>                interfaceAlternative.createNode(EShallowEntityType.TYPE, SubTypeNames.INTERFACE_DEFINITION, 1).skipTo(DOT)<a name="line.263"></a>
+<span class="sourceLineNo">264</span>                                .parseUntil(DECLARATIONS).sequence(ENDINTERFACE, DOT).endNode();<a name="line.264"></a>
+<span class="sourceLineNo">265</span><a name="line.265"></a>
+<span class="sourceLineNo">266</span>        }<a name="line.266"></a>
+<span class="sourceLineNo">267</span><a name="line.267"></a>
+<span class="sourceLineNo">268</span>        /** Rules for parsing ABAP OO classes. */<a name="line.268"></a>
+<span class="sourceLineNo">269</span>        private void createClassRules() {<a name="line.269"></a>
+<span class="sourceLineNo">270</span>                RecognizerBase&lt;EAbapParserStates&gt; classDefinitionAlternative = inState(TOPLEVEL, DECLARATIONS, IN_TYPE)<a name="line.270"></a>
+<span class="sourceLineNo">271</span>                                .sequence(CLASS, IDENTIFIER, DEFINITION);<a name="line.271"></a>
+<span class="sourceLineNo">272</span>                classDefinitionAlternative.sequence(EnumSet.of(LOAD, DEFERRED, LOCAL))<a name="line.272"></a>
+<span class="sourceLineNo">273</span>                                .createNode(EShallowEntityType.TYPE, SubTypeNames.CLASS_PUBLICATION, 1).skipTo(DOT).endNode();<a name="line.273"></a>
+<span class="sourceLineNo">274</span>                classDefinitionAlternative.createNode(EShallowEntityType.TYPE, SubTypeNames.CLASS_DEFINITION, 1).skipTo(DOT)<a name="line.274"></a>
+<span class="sourceLineNo">275</span>                                .parseUntil(DECLARATIONS).sequence(ENDCLASS, DOT).endNode();<a name="line.275"></a>
+<span class="sourceLineNo">276</span><a name="line.276"></a>
+<span class="sourceLineNo">277</span>                inState(TOPLEVEL, DECLARATIONS, IN_TYPE).sequence(CLASS, IDENTIFIER, IMPLEMENTATION)<a name="line.277"></a>
+<span class="sourceLineNo">278</span>                                .createNode(EShallowEntityType.TYPE, SubTypeNames.CLASS_IMPLEMENTATION, 1).skipTo(DOT)<a name="line.278"></a>
+<span class="sourceLineNo">279</span>                                .parseUntil(DECLARATIONS).sequence(ENDCLASS, DOT).endNode();<a name="line.279"></a>
+<span class="sourceLineNo">280</span>        }<a name="line.280"></a>
+<span class="sourceLineNo">281</span><a name="line.281"></a>
+<span class="sourceLineNo">282</span>        /** Rules for parsing attributes. */<a name="line.282"></a>
+<span class="sourceLineNo">283</span>        private void createAttributeRules() {<a name="line.283"></a>
+<span class="sourceLineNo">284</span>                // Match BEGIN OF COMMON PART declarations as single entity<a name="line.284"></a>
+<span class="sourceLineNo">285</span>                inState(TOPLEVEL, DECLARATIONS, IN_TYPE).sequence(DATA, BEGIN, OF, COMMON, PART).optional(IDENTIFIER_LIKE)<a name="line.285"></a>
+<span class="sourceLineNo">286</span>                                .createNode(EShallowEntityType.ATTRIBUTE, 0, -1).skipTo(END, OF, COMMON, PART).skipTo(DOT).endNode();<a name="line.286"></a>
+<span class="sourceLineNo">287</span><a name="line.287"></a>
+<span class="sourceLineNo">288</span>                // Match record type declaration as single entity<a name="line.288"></a>
+<span class="sourceLineNo">289</span>                inState(TOPLEVEL, DECLARATIONS, IN_TYPE).sequence(EnumSet.of(TYPES, CONSTANTS, DATA, STATICS, CLASS_DATA))<a name="line.289"></a>
+<span class="sourceLineNo">290</span>                                .optional(COLON).sequence(BEGIN, OF, IDENTIFIER_LIKE).createNode(EShallowEntityType.ATTRIBUTE, 0, -1)<a name="line.290"></a>
+<span class="sourceLineNo">291</span>                                .skipTo(END, OF).skipTo(DOT).endNode();<a name="line.291"></a>
+<span class="sourceLineNo">292</span><a name="line.292"></a>
+<span class="sourceLineNo">293</span>                // types, events, class events<a name="line.293"></a>
+<span class="sourceLineNo">294</span>                inState(TOPLEVEL, DECLARATIONS, IN_TYPE).sequence(EnumSet.of(EVENTS, CLASS_EVENTS))<a name="line.294"></a>
+<span class="sourceLineNo">295</span>                                .createNode(EShallowEntityType.ATTRIBUTE, 0).skipTo(DOT).endNode();<a name="line.295"></a>
+<span class="sourceLineNo">296</span><a name="line.296"></a>
+<span class="sourceLineNo">297</span>                inState(TOPLEVEL, DECLARATIONS, IN_TYPE)<a name="line.297"></a>
+<span class="sourceLineNo">298</span>                                .sequence(EnumSet.of(CONSTANTS, NODES, STATICS, DATA, TYPES, FIELD_GROUPS, CLASS_DATA, RANGES,<a name="line.298"></a>
+<span class="sourceLineNo">299</span>                                                SELECT_OPTIONS, INFOTYPES))<a name="line.299"></a>
+<span class="sourceLineNo">300</span>                                .optional(COLON).sequence(IDENTIFIER_LIKE).createNode(EShallowEntityType.ATTRIBUTE, 0, -1).skipTo(DOT)<a name="line.300"></a>
+<span class="sourceLineNo">301</span>                                .endNode();<a name="line.301"></a>
+<span class="sourceLineNo">302</span><a name="line.302"></a>
+<span class="sourceLineNo">303</span>                inState(TOPLEVEL, DECLARATIONS, IN_TYPE).sequence(FIELD_SYMBOLS).optional(COLON).sequence(LT, IDENTIFIER_LIKE)<a name="line.303"></a>
+<span class="sourceLineNo">304</span>                                .createNode(EShallowEntityType.ATTRIBUTE, 0, -1).skipTo(DOT).endNode();<a name="line.304"></a>
+<span class="sourceLineNo">305</span><a name="line.305"></a>
+<span class="sourceLineNo">306</span>                inState(TOPLEVEL, DECLARATIONS, IN_TYPE)<a name="line.306"></a>
+<span class="sourceLineNo">307</span>                                // The "parameter" keyword is the obsolete older form of<a name="line.307"></a>
+<span class="sourceLineNo">308</span>                                // "parameters"<a name="line.308"></a>
+<span class="sourceLineNo">309</span>                                .sequence(EnumSet.of(PARAMETER, PARAMETERS)).optional(COLON).sequence(IDENTIFIER_LIKE)<a name="line.309"></a>
+<span class="sourceLineNo">310</span>                                .createNode(EShallowEntityType.ATTRIBUTE, SubTypeNames.PARAMETERS, -1).skipTo(DOT).endNode();<a name="line.310"></a>
+<span class="sourceLineNo">311</span>        }<a name="line.311"></a>
+<span class="sourceLineNo">312</span><a name="line.312"></a>
+<span class="sourceLineNo">313</span>        /**<a name="line.313"></a>
+<span class="sourceLineNo">314</span>         * Rules for parsing methods, functions, and forms.<a name="line.314"></a>
+<span class="sourceLineNo">315</span>         *<a name="line.315"></a>
+<span class="sourceLineNo">316</span>         * We handle colons here to catch method declarations like &lt;code&gt;form:<a name="line.316"></a>
+<span class="sourceLineNo">317</span>         * foo.&lt;/foo&gt; as that's a declaration for form "foo" not ":foo".<a name="line.317"></a>
+<span class="sourceLineNo">318</span>         */<a name="line.318"></a>
+<span class="sourceLineNo">319</span>        private void createMethodRules() {<a name="line.319"></a>
+<span class="sourceLineNo">320</span>                inState(DECLARATIONS).sequence(EnumSet.of(METHODS, CLASS_METHODS))<a name="line.320"></a>
+<span class="sourceLineNo">321</span>                                .skipBefore(<a name="line.321"></a>
+<span class="sourceLineNo">322</span>                                                EnumSet.of(ABSTRACT, DOT, RETURNING, IMPORTING, EXPORTING, REDEFINITION, CHANGING, EXCEPTIONS))<a name="line.322"></a>
+<span class="sourceLineNo">323</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.METHOD_DECLARATION, new Region(1, -1)).skipTo(DOT)<a name="line.323"></a>
+<span class="sourceLineNo">324</span>                                .endNode();<a name="line.324"></a>
+<span class="sourceLineNo">325</span><a name="line.325"></a>
+<span class="sourceLineNo">326</span>                inState(DECLARATIONS).sequence(METHOD).optional(COLON).markStart().skipBefore(EnumSet.of(DOT, BY))<a name="line.326"></a>
+<span class="sourceLineNo">327</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.METHOD_IMPLEMENTATION, new Region(0, -1))<a name="line.327"></a>
+<span class="sourceLineNo">328</span>                                .skipTo(DOT).parseUntil(STATEMENTS).sequence(ENDMETHOD, DOT).endNode();<a name="line.328"></a>
+<span class="sourceLineNo">329</span>                inState(TOPLEVEL, STATEMENTS).sequence(METHOD).optional(COLON).markStart().skipBefore(EnumSet.of(DOT, BY))<a name="line.329"></a>
+<span class="sourceLineNo">330</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.METHOD_IMPLEMENTATION, new Region(0, -1))<a name="line.330"></a>
+<span class="sourceLineNo">331</span>                                .skipTo(DOT).parseUntil(STATEMENTS).sequence(ENDMETHOD, DOT).endNode();<a name="line.331"></a>
+<span class="sourceLineNo">332</span>                inState(TOPLEVEL, IN_TYPE).sequence(FORM).optional(COLON).sequence(IDENTIFIER_LIKE)<a name="line.332"></a>
+<span class="sourceLineNo">333</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.FORM, -1).skipTo(DOT).parseUntil(STATEMENTS)<a name="line.333"></a>
+<span class="sourceLineNo">334</span>                                .sequence(ENDFORM, DOT).endNode();<a name="line.334"></a>
+<span class="sourceLineNo">335</span><a name="line.335"></a>
+<span class="sourceLineNo">336</span>                inState(TOPLEVEL, DECLARATIONS).sequence(FUNCTION).optional(COLON).markStart()<a name="line.336"></a>
+<span class="sourceLineNo">337</span>                                .skipBefore(EnumSet.of(DOT, IMPORTING, EXPORTING, TABLES, CHANGING, RAISING, EXCEPTIONS))<a name="line.337"></a>
+<span class="sourceLineNo">338</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.FUNCTION, new Region(0, -1)).skipTo(DOT)<a name="line.338"></a>
+<span class="sourceLineNo">339</span>                                .parseUntil(STATEMENTS).sequence(ENDFUNCTION, DOT).endNode();<a name="line.339"></a>
+<span class="sourceLineNo">340</span><a name="line.340"></a>
+<span class="sourceLineNo">341</span>                RecognizerBase&lt;EAbapParserStates&gt; toplevelStartOfSelection = inState(IN_TYPE)<a name="line.341"></a>
+<span class="sourceLineNo">342</span>                                .sequenceBefore(EnumSet.complementOf(EVENT_BLOCKS_END))<a name="line.342"></a>
+<span class="sourceLineNo">343</span>                                .sequenceBefore(EnumSet.complementOf(EnumSet.of(MODULE)))<a name="line.343"></a>
+<span class="sourceLineNo">344</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.START_OF_SELECTION, SubTypeNames.START_OF_SELECTION)<a name="line.344"></a>
+<span class="sourceLineNo">345</span>                                .parseUntilOrEof(STATEMENTS);<a name="line.345"></a>
+<span class="sourceLineNo">346</span>                endMethodEntityOnEventBlock(EVENT_BLOCKS_END, toplevelStartOfSelection);<a name="line.346"></a>
+<span class="sourceLineNo">347</span><a name="line.347"></a>
+<span class="sourceLineNo">348</span>                RecognizerBase&lt;EAbapParserStates&gt; toplevelStartOfSelectionWithModule = inState(IN_TYPE).sequenceBefore(MODULE)<a name="line.348"></a>
+<span class="sourceLineNo">349</span>                                .notPreCondition(new ModuleBlockStartRecognizer())<a name="line.349"></a>
+<span class="sourceLineNo">350</span>                                .createNode(EShallowEntityType.METHOD, SubTypeNames.START_OF_SELECTION, SubTypeNames.START_OF_SELECTION)<a name="line.350"></a>
+<span class="sourceLineNo">351</span>                                .parseUntilOrEof(STATEMENTS);<a name="line.351"></a>
+<span class="sourceLineNo">352</span>                endMethodEntityOnEventBlock(EVENT_BLOCKS_END, toplevelStartOfSelectionWithModule);<a name="line.352"></a>
+<span class="sourceLineNo">353</span><a name="line.353"></a>
+<span class="sourceLineNo">354</span>        }<a name="line.354"></a>
+<span class="sourceLineNo">355</span><a name="line.355"></a>
+<span class="sourceLineNo">356</span>        /** Rules for parsing modules. */<a name="line.356"></a>
+<span class="sourceLineNo">357</span>        private void createModuleRules() {<a name="line.357"></a>
+<span class="sourceLineNo">358</span>                RecognizerBase&lt;EAbapParserStates&gt; moduleRecognizer = inState(TOPLEVEL, IN_TYPE)<a name="line.358"></a>
+<span class="sourceLineNo">359</span>                                .preCondition(new ModuleBlockStartRecognizer()).sequence(MODULE).markStart()<a name="line.359"></a>
+<span class="sourceLineNo">360</span>                                .skipBefore(EnumSet.of(INPUT, OUTPUT, DOT));<a name="line.360"></a>
+<span class="sourceLineNo">361</span>                moduleRecognizer.sequence(INPUT, DOT).createNode(EShallowEntityType.METHOD, SubTypeNames.MODULE_INPUT, 0)<a name="line.361"></a>
+<span class="sourceLineNo">362</span>                                .parseUntil(STATEMENTS).sequence(ENDMODULE, DOT).endNode();<a name="line.362"></a>
+<span class="sourceLineNo">363</span>                moduleRecognizer.sequence(OUTPUT, DOT).createNode(EShallowEntityType.METHOD, SubTypeNames.MODULE_OUTPUT, 0)<a name="line.363"></a>
+<span class="sourceLineNo">364</span>                                .parseUntil(STATEMENTS).sequence(ENDMODULE, DOT).endNode();<a name="line.364"></a>
+<span class="sourceLineNo">365</span>                moduleRecognizer.sequence(DOT).createNode(EShallowEntityType.METHOD, SubTypeNames.MODULE_INPUT, 0)<a name="line.365"></a>
+<span class="sourceLineNo">366</span>                                .parseUntil(STATEMENTS).sequence(ENDMODULE, DOT).endNode();<a name="line.366"></a>
+<span class="sourceLineNo">367</span>        }<a name="line.367"></a>
+<span class="sourceLineNo">368</span><a name="line.368"></a>
+<span class="sourceLineNo">369</span>        /** Rules for parsing statements. */<a name="line.369"></a>
+<span class="sourceLineNo">370</span>        private void createStatementRules() {<a name="line.370"></a>
+<span class="sourceLineNo">371</span><a name="line.371"></a>
+<span class="sourceLineNo">372</span>                // special rule that matches assignments to variables that have the same<a name="line.372"></a>
+<span class="sourceLineNo">373</span>                // name as keywords.<a name="line.373"></a>
+<span class="sourceLineNo">374</span>                inState(STATEMENTS).sequence(ETokenClass.KEYWORD, EQ).createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT)<a name="line.374"></a>
+<span class="sourceLineNo">375</span>                                .endNode();<a name="line.375"></a>
+<span class="sourceLineNo">376</span><a name="line.376"></a>
+<span class="sourceLineNo">377</span>                createConditionalStatementRules();<a name="line.377"></a>
+<span class="sourceLineNo">378</span><a name="line.378"></a>
+<span class="sourceLineNo">379</span>                // on change<a name="line.379"></a>
+<span class="sourceLineNo">380</span>                RecognizerBase&lt;EAbapParserStates&gt; changeAlternative = inAnyState().sequence(ON, CHANGE, OF)<a name="line.380"></a>
+<span class="sourceLineNo">381</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.ON_CHANGE).skipTo(DOT).parseUntil(STATEMENTS)<a name="line.381"></a>
+<span class="sourceLineNo">382</span>                                .sequenceBefore(EnumSet.of(ELSE, ENDON));<a name="line.382"></a>
+<span class="sourceLineNo">383</span>                changeAlternative.sequence(ENDON, DOT).endNode();<a name="line.383"></a>
+<span class="sourceLineNo">384</span>                changeAlternative.endNodeWithContinuation();<a name="line.384"></a>
+<span class="sourceLineNo">385</span>                inState(TOPLEVEL, STATEMENTS).sequence(IDENTIFIER_LIKE, ETokenType.LPAREN)<a name="line.385"></a>
+<span class="sourceLineNo">386</span>                                .createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT).endNode();<a name="line.386"></a>
+<span class="sourceLineNo">387</span><a name="line.387"></a>
+<span class="sourceLineNo">388</span>                createLoopStatementRules();<a name="line.388"></a>
+<span class="sourceLineNo">389</span><a name="line.389"></a>
+<span class="sourceLineNo">390</span>                // try/catch<a name="line.390"></a>
+<span class="sourceLineNo">391</span>                RecognizerBase&lt;EAbapParserStates&gt; tryAlternative = inState(TOPLEVEL, STATEMENTS)<a name="line.391"></a>
+<span class="sourceLineNo">392</span>                                .sequence(EnumSet.of(TRY, CATCH, CLEANUP)).createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT)<a name="line.392"></a>
+<span class="sourceLineNo">393</span>                                .parseUntil(STATEMENTS).sequenceBefore(EnumSet.of(ENDTRY, CATCH, ENDCATCH, CLEANUP));<a name="line.393"></a>
+<span class="sourceLineNo">394</span>                tryAlternative.sequence(EnumSet.of(ENDTRY, ENDCATCH), DOT).endNode();<a name="line.394"></a>
+<span class="sourceLineNo">395</span>                tryAlternative.endNodeWithContinuation();<a name="line.395"></a>
+<span class="sourceLineNo">396</span><a name="line.396"></a>
+<span class="sourceLineNo">397</span>                createSelectRules();<a name="line.397"></a>
+<span class="sourceLineNo">398</span><a name="line.398"></a>
+<span class="sourceLineNo">399</span>                // exec<a name="line.399"></a>
+<span class="sourceLineNo">400</span>                inState(TOPLEVEL, STATEMENTS).sequence(EXEC, SQL)<a name="line.400"></a>
+<span class="sourceLineNo">401</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.NATIVE_SQL).skipTo(ENDEXEC, DOT).endNode();<a name="line.401"></a>
+<span class="sourceLineNo">402</span><a name="line.402"></a>
+<span class="sourceLineNo">403</span>                // simple statements that start with a field symbol, e.g.<a name="line.403"></a>
+<span class="sourceLineNo">404</span>                // "&lt;fs&gt;-foo = 12."<a name="line.404"></a>
+<span class="sourceLineNo">405</span>                inState(TOPLEVEL, STATEMENTS).sequence(LT).createNode(EShallowEntityType.STATEMENT, new Region(0, 2))<a name="line.405"></a>
+<span class="sourceLineNo">406</span>                                .skipTo(DOT).endNode();<a name="line.406"></a>
+<span class="sourceLineNo">407</span><a name="line.407"></a>
+<span class="sourceLineNo">408</span>                // Match record type declarations as a single entity, although they<a name="line.408"></a>
+<span class="sourceLineNo">409</span>                // contain multiple dots.<a name="line.409"></a>
+<span class="sourceLineNo">410</span>                inState(TOPLEVEL, STATEMENTS).sequence(EnumSet.of(TYPES, CONSTANTS, DATA, STATICS)).optional(COLON)<a name="line.410"></a>
+<span class="sourceLineNo">411</span>                                .sequence(BEGIN, OF, IDENTIFIER_LIKE).createNode(EShallowEntityType.STATEMENT, 0, -1).skipTo(END, OF)<a name="line.411"></a>
+<span class="sourceLineNo">412</span>                                .skipTo(DOT).endNode();<a name="line.412"></a>
+<span class="sourceLineNo">413</span><a name="line.413"></a>
+<span class="sourceLineNo">414</span>                inState(TOPLEVEL, STATEMENTS).sequence(SIMPLE_STATEMENT_START_TOKENS)<a name="line.414"></a>
+<span class="sourceLineNo">415</span>                                .createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT).endNode();<a name="line.415"></a>
+<span class="sourceLineNo">416</span>        }<a name="line.416"></a>
+<span class="sourceLineNo">417</span><a name="line.417"></a>
+<span class="sourceLineNo">418</span>        /** Creates parsing rules for conditional statements. */<a name="line.418"></a>
+<span class="sourceLineNo">419</span>        private void createConditionalStatementRules() {<a name="line.419"></a>
+<span class="sourceLineNo">420</span>                // if/elseif<a name="line.420"></a>
+<span class="sourceLineNo">421</span>                RecognizerBase&lt;EAbapParserStates&gt; ifAlternative = inState(TOPLEVEL, STATEMENTS).sequence(EnumSet.of(IF, ELSEIF))<a name="line.421"></a>
+<span class="sourceLineNo">422</span>                                .sequenceBefore(EnumSet.complementOf(EnumSet.of(ARROW))).createNode(EShallowEntityType.STATEMENT, 0)<a name="line.422"></a>
+<span class="sourceLineNo">423</span>                                .skipTo(DOT).parseUntil(STATEMENTS).sequenceBefore(EnumSet.of(ELSEIF, ELSE, ENDIF));<a name="line.423"></a>
+<span class="sourceLineNo">424</span>                ifAlternative.sequence(ENDIF, DOT).endNode();<a name="line.424"></a>
+<span class="sourceLineNo">425</span>                ifAlternative.endNodeWithContinuation();<a name="line.425"></a>
+<span class="sourceLineNo">426</span><a name="line.426"></a>
+<span class="sourceLineNo">427</span>                // else<a name="line.427"></a>
+<span class="sourceLineNo">428</span>                inState(TOPLEVEL, STATEMENTS).sequence(ELSE).createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT)<a name="line.428"></a>
+<span class="sourceLineNo">429</span>                                .parseUntil(STATEMENTS).sequence(EnumSet.of(ENDIF, ENDON), DOT).endNode();<a name="line.429"></a>
+<span class="sourceLineNo">430</span><a name="line.430"></a>
+<span class="sourceLineNo">431</span>                // case/when<a name="line.431"></a>
+<span class="sourceLineNo">432</span>                inState(TOPLEVEL, STATEMENTS).sequence(CASE).createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT)<a name="line.432"></a>
+<span class="sourceLineNo">433</span>                                .parseUntil(STATEMENTS).sequence(ENDCASE, DOT).endNode();<a name="line.433"></a>
+<span class="sourceLineNo">434</span>                // we parse when as meta, so we add no additional nesting<a name="line.434"></a>
+<span class="sourceLineNo">435</span>                inState(STATEMENTS).sequence(WHEN).createNode(EShallowEntityType.META, 0).skipTo(DOT).endNode();<a name="line.435"></a>
+<span class="sourceLineNo">436</span>        }<a name="line.436"></a>
+<span class="sourceLineNo">437</span><a name="line.437"></a>
+<span class="sourceLineNo">438</span>        /** Creates parsing rules for loops and loop-like constructs. */<a name="line.438"></a>
+<span class="sourceLineNo">439</span>        private void createLoopStatementRules() {<a name="line.439"></a>
+<span class="sourceLineNo">440</span>                // loops<a name="line.440"></a>
+<span class="sourceLineNo">441</span>                inState(TOPLEVEL, STATEMENTS).sequence(LOOP).createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT)<a name="line.441"></a>
+<span class="sourceLineNo">442</span>                                .parseUntil(STATEMENTS).sequence(ENDLOOP, DOT).endNode();<a name="line.442"></a>
+<span class="sourceLineNo">443</span>                inState(TOPLEVEL, STATEMENTS).sequence(DO).createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT)<a name="line.443"></a>
+<span class="sourceLineNo">444</span>                                .parseUntil(STATEMENTS).sequence(ENDDO, DOT).endNode();<a name="line.444"></a>
+<span class="sourceLineNo">445</span>                inState(TOPLEVEL, STATEMENTS).sequence(WHILE).createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT)<a name="line.445"></a>
+<span class="sourceLineNo">446</span>                                .parseUntil(STATEMENTS).sequence(ENDWHILE, DOT).endNode();<a name="line.446"></a>
+<span class="sourceLineNo">447</span>                inState(STATEMENTS).sequence(AT).createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT).parseUntil(STATEMENTS)<a name="line.447"></a>
+<span class="sourceLineNo">448</span>                                .sequence(ENDAT, DOT).endNode();<a name="line.448"></a>
+<span class="sourceLineNo">449</span><a name="line.449"></a>
+<span class="sourceLineNo">450</span>                // loop likes<a name="line.450"></a>
+<span class="sourceLineNo">451</span>                inAnyState().sequence(PROVIDE).createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT).parseUntil(STATEMENTS)<a name="line.451"></a>
+<span class="sourceLineNo">452</span>                                .sequence(ENDPROVIDE, DOT).endNode();<a name="line.452"></a>
+<span class="sourceLineNo">453</span>                inAnyState().sequence(ENHANCEMENT).createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT)<a name="line.453"></a>
+<span class="sourceLineNo">454</span>                                .parseUntil(STATEMENTS).sequence(ENDENHANCEMENT, DOT).endNode();<a name="line.454"></a>
+<span class="sourceLineNo">455</span>                inAnyState().sequence(ENHANCEMENT_SECTION).createNode(EShallowEntityType.STATEMENT, 0).skipTo(DOT)<a name="line.455"></a>
+<span class="sourceLineNo">456</span>                                .parseUntil(STATEMENTS).sequence(END_ENHANCEMENT_SECTION, DOT).endNode();<a name="line.456"></a>
+<span class="sourceLineNo">457</span>        }<a name="line.457"></a>
+<span class="sourceLineNo">458</span><a name="line.458"></a>
+<span class="sourceLineNo">459</span>        /**<a name="line.459"></a>
+<span class="sourceLineNo">460</span>         * Creates the parsing rules for the select clause. This is tricky, because the<a name="line.460"></a>
+<span class="sourceLineNo">461</span>         * rules whether a select block or a single statement select is expected, are<a name="line.461"></a>
+<span class="sourceLineNo">462</span>         * not trivial.<a name="line.462"></a>
+<span class="sourceLineNo">463</span>         */<a name="line.463"></a>
+<span class="sourceLineNo">464</span>        private void createSelectRules() {<a name="line.464"></a>
+<span class="sourceLineNo">465</span>                RecognizerBase&lt;EAbapParserStates&gt; selectAlternative = inState(TOPLEVEL, STATEMENTS).sequence(SELECT);<a name="line.465"></a>
+<span class="sourceLineNo">466</span>                selectAlternative.sequence(LPAREN).createNode(EShallowEntityType.STATEMENT, "method call")<a name="line.466"></a>
+<span class="sourceLineNo">467</span>                                .skipToWithNesting(RPAREN, LPAREN, RPAREN).skipTo(DOT).endNode();<a name="line.467"></a>
+<span class="sourceLineNo">468</span>                selectAlternative.subRecognizer(new SingleSelectRecognizer(), 1, 1)<a name="line.468"></a>
+<span class="sourceLineNo">469</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.SINGLE_SELECT).endNode();<a name="line.469"></a>
+<span class="sourceLineNo">470</span>                selectAlternative.createNode(EShallowEntityType.STATEMENT, SubTypeNames.SELECT_BLOCK).skipTo(DOT)<a name="line.470"></a>
+<span class="sourceLineNo">471</span>                                .parseUntil(STATEMENTS).sequence(ENDSELECT, DOT).endNode();<a name="line.471"></a>
+<span class="sourceLineNo">472</span>        }<a name="line.472"></a>
+<span class="sourceLineNo">473</span><a name="line.473"></a>
+<span class="sourceLineNo">474</span>        /** {@inheritDoc} */<a name="line.474"></a>
+<span class="sourceLineNo">475</span>        @Override<a name="line.475"></a>
+<span class="sourceLineNo">476</span>        protected boolean isFilteredToken(IToken token, IToken previousToken) {<a name="line.476"></a>
+<span class="sourceLineNo">477</span>                return super.isFilteredToken(token, previousToken) || token.getType() == PRAGMA_DIRECTIVE;<a name="line.477"></a>
+<span class="sourceLineNo">478</span>        }<a name="line.478"></a>
+<span class="sourceLineNo">479</span>}<a name="line.479"></a>
 
 
 

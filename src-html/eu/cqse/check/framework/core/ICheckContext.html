@@ -92,7 +92,14 @@
 <span class="sourceLineNo">084</span>        public &lt;T extends IExtractedValue&lt;D&gt;, D extends Serializable&gt; Function&lt;String, List&lt;T&gt;&gt; accessPhaseInvertedResult(<a name="line.84"></a>
 <span class="sourceLineNo">085</span>                        Class&lt;? extends IGlobalExtractionPhase&lt;T, D&gt;&gt; phaseClass);<a name="line.85"></a>
 <span class="sourceLineNo">086</span><a name="line.86"></a>
-<span class="sourceLineNo">087</span>}<a name="line.87"></a>
+<span class="sourceLineNo">087</span>        /**<a name="line.87"></a>
+<span class="sourceLineNo">088</span>         * Returns all values that have been extracted by the phase. This is potentially<a name="line.88"></a>
+<span class="sourceLineNo">089</span>         * expensive if a lot of values are expected from a phase. For phases with few<a name="line.89"></a>
+<span class="sourceLineNo">090</span>         * expected values, this can be used safely.<a name="line.90"></a>
+<span class="sourceLineNo">091</span>         */<a name="line.91"></a>
+<span class="sourceLineNo">092</span>        public &lt;T extends IExtractedValue&lt;D&gt;, D extends Serializable&gt; List&lt;String&gt; listAllPhaseValues(<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                        Class&lt;? extends IGlobalExtractionPhase&lt;T, D&gt;&gt; phaseClass);<a name="line.93"></a>
+<span class="sourceLineNo">094</span>}<a name="line.94"></a>
 
 
 

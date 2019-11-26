@@ -44,24 +44,24 @@
 <span class="sourceLineNo">036</span>public class MatcherUtils {<a name="line.36"></a>
 <span class="sourceLineNo">037</span><a name="line.37"></a>
 <span class="sourceLineNo">038</span>        /**<a name="line.38"></a>
-<span class="sourceLineNo">039</span>         * Tries to match a lambda with arrow and returns the index after the match<a name="line.39"></a>
-<span class="sourceLineNo">040</span>         * into the token stream. If it could not be matched<a name="line.40"></a>
-<span class="sourceLineNo">041</span>         * {@link RecognizerBase#NO_MATCH} is returned.<a name="line.41"></a>
+<span class="sourceLineNo">039</span>         * Tries to match a lambda with arrow and returns the index after the match into<a name="line.39"></a>
+<span class="sourceLineNo">040</span>         * the token stream. If it could not be matched {@link RecognizerBase#NO_MATCH}<a name="line.40"></a>
+<span class="sourceLineNo">041</span>         * is returned.<a name="line.41"></a>
 <span class="sourceLineNo">042</span>         */<a name="line.42"></a>
 <span class="sourceLineNo">043</span>        public static int matchesLambdaWithArrow(ParserState&lt;EGenericParserStates&gt; parserState, List&lt;IToken&gt; tokens,<a name="line.43"></a>
 <span class="sourceLineNo">044</span>                        int startOffset, ETokenType arrowType) {<a name="line.44"></a>
-<span class="sourceLineNo">045</span>                boolean hasSimpleLambda = TokenStreamUtils.tokenTypesAt(tokens, startOffset, IDENTIFIER, arrowType);<a name="line.45"></a>
+<span class="sourceLineNo">045</span>                boolean hasSimpleLambda = TokenStreamUtils.hasTokenTypeSequence(tokens, startOffset, IDENTIFIER, arrowType);<a name="line.45"></a>
 <span class="sourceLineNo">046</span>                if (hasSimpleLambda) {<a name="line.46"></a>
 <span class="sourceLineNo">047</span>                        return parserState.parse(IN_EXPRESSION, tokens, startOffset);<a name="line.47"></a>
 <span class="sourceLineNo">048</span>                }<a name="line.48"></a>
 <span class="sourceLineNo">049</span><a name="line.49"></a>
-<span class="sourceLineNo">050</span>                if (TokenStreamUtils.tokenTypesAt(tokens, startOffset, LPAREN)) {<a name="line.50"></a>
+<span class="sourceLineNo">050</span>                if (TokenStreamUtils.hasTokenTypeSequence(tokens, startOffset, LPAREN)) {<a name="line.50"></a>
 <span class="sourceLineNo">051</span>                        int closingPosition = TokenStreamUtils.findMatchingClosingToken(tokens, startOffset + 1, LPAREN, RPAREN);<a name="line.51"></a>
 <span class="sourceLineNo">052</span>                        if (closingPosition == TokenStreamUtils.NOT_FOUND) {<a name="line.52"></a>
 <span class="sourceLineNo">053</span>                                return NO_MATCH;<a name="line.53"></a>
 <span class="sourceLineNo">054</span>                        }<a name="line.54"></a>
 <span class="sourceLineNo">055</span><a name="line.55"></a>
-<span class="sourceLineNo">056</span>                        if (TokenStreamUtils.tokenTypesAt(tokens, closingPosition + 1, arrowType)) {<a name="line.56"></a>
+<span class="sourceLineNo">056</span>                        if (TokenStreamUtils.hasTokenTypeSequence(tokens, closingPosition + 1, arrowType)) {<a name="line.56"></a>
 <span class="sourceLineNo">057</span>                                return parserState.parse(IN_EXPRESSION, tokens, startOffset);<a name="line.57"></a>
 <span class="sourceLineNo">058</span>                        }<a name="line.58"></a>
 <span class="sourceLineNo">059</span>                }<a name="line.59"></a>

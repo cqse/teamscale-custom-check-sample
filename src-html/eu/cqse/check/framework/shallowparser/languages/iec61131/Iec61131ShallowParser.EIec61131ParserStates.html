@@ -320,7 +320,7 @@
 <span class="sourceLineNo">312</span>        private void createIfElseRules() {<a name="line.312"></a>
 <span class="sourceLineNo">313</span>                RecognizerBase&lt;EIec61131ParserStates&gt; ifAlternative = inStatementStates().sequence(EnumSet.of(IF, ELSIF))<a name="line.313"></a>
 <span class="sourceLineNo">314</span>                                .createNode(EShallowEntityType.STATEMENT, 0).skipTo(THEN).parseUntil(EIec61131ParserStates.IN_METHOD);<a name="line.314"></a>
-<span class="sourceLineNo">315</span>                ifAlternative.sequenceBefore(EnumSet.of(ELSE, ELSIF)).endNodeWithContinuation();<a name="line.315"></a>
+<span class="sourceLineNo">315</span>                ifAlternative.sequenceBefore(EnumSet.of(ELSE, ELSIF)).endNodeWithContinuation(EIec61131ParserStates.IN_METHOD);<a name="line.315"></a>
 <span class="sourceLineNo">316</span>                ifAlternative.sequence(END_IF).optional(SEMICOLON).endNode();<a name="line.316"></a>
 <span class="sourceLineNo">317</span><a name="line.317"></a>
 <span class="sourceLineNo">318</span>                // else is used in "if" (only use IN_METHOD here, as IN_CASE case is<a name="line.318"></a>
