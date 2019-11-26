@@ -18,7 +18,6 @@ package eu.cqse.check.sample;
 
 import eu.cqse.check.framework.checktest.CheckTestBase;
 import org.conqat.lib.commons.test.ManagedTestDataExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Main class for testing the checks in this library.
