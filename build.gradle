@@ -1,3 +1,7 @@
+import org.gradle.plugins.ide.eclipse.model.AbstractClasspathEntry
+import org.gradle.plugins.ide.eclipse.model.Library
+import org.gradle.plugins.ide.eclipse.model.internal.FileReferenceFactory
+
 plugins {
 	id 'java-library'
 	id 'eclipse'
@@ -14,7 +18,11 @@ sourceSets {
 	test {
 		java {
 			srcDir 'test-src/'
-			outputDir = file("$buildDir/build/classes/")
+			outputDir = file("$buildDir/build/test-classes/")
+		}
+		resources {
+			srcDir 'test-data/'
+			outputDir = file("$buildDir/build/test-classes/")
 		}
 	}
 
@@ -42,26 +50,55 @@ dependencies {
     implementation fileTree(dir: 'lib', exclude: '*-test-utils.jar')
 	compile 'org.apache.logging.log4j:log4j-api:2.12.0'
 	runtimeOnly 'org.apache.commons:commons-compress:1.18'
-	runtimeOnly 'com.google.guava:guava:27.1-jre'
+	runtimeOnly 'com.google.guava:guava:28.0-jre'
 	runtimeOnly 'com.thoughtworks.xstream:xstream:1.4.11.1'
-	runtimeOnly 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
-	runtimeOnly 'org.apache.httpcomponents:httpmime:4.5.8'
-	runtimeOnly 'org.eclipse.jgit:org.eclipse.jgit:5.3.1.201904271842-r'
+	runtimeOnly 'com.fasterxml.jackson.core:jackson-databind:2.9.9.3'
+	runtimeOnly 'org.apache.httpcomponents:httpmime:4.5.9'
+	runtimeOnly 'org.eclipse.jgit:org.eclipse.jgit:5.5.0.201909110433-r'
+	runtimeOnly 'org.eclipse.jgit:org.eclipse.jgit.ssh.apache:5.5.0.201909110433-r'
 	runtimeOnly 'com.jcraft:jsch:0.1.55'
 	runtimeOnly 'org.apache.commons:commons-lang3:3.9'
-	runtimeOnly 'org.apache.logging.log4j:log4j-api:2.11.2'
-	runtimeOnly 'org.apache.logging.log4j:log4j-core:2.11.2'
+	runtimeOnly 'org.apache.logging.log4j:log4j-api:2.12.0'
+	runtimeOnly 'org.apache.logging.log4j:log4j-core:2.12.0'
 	runtimeOnly 'jaxen:jaxen:1.2.0'
 
 	testImplementation fileTree(dir: 'lib', include: '*-test-utils.jar')
-	testImplementation 'org.junit.jupiter:junit-jupiter:5.4.1'
-	testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.4.1'
-	testImplementation 'org.assertj:assertj-core:3.12.2'
-	testImplementation 'nl.jqno.equalsverifier:equalsverifier:3.1.8'
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
+	testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.4.2'
+	testImplementation 'org.assertj:assertj-core:3.13.2'
+	testImplementation 'nl.jqno.equalsverifier:equalsverifier:3.1.9'
+	testImplementation 'org.junit.platform:junit-platform-launcher:1.4.2'
 }
 
 eclipse {
 	classpath {
-		defaultOutputDir = file('build/classes')
+		defaultOutputDir = file('classes')
+
+		file.whenMerged {
+			entries = entries.collect {
+				if (it in AbstractClasspathEntry) {
+					String scope = it.entryAttributes['gradle_scope']
+
+					// Gradle by default uses bin/<configuration> as output dir
+					// For now we need to have all our main code in 'classes' -> default
+					if (it.kind == 'src' && it.toString().contains('output') && scope == 'main') {
+						it.output = null
+					}
+
+					// Workaround for https://github.com/gradle/gradle/issues/4802
+					if (scope == 'test') {
+						it.entryAttributes['test'] = true
+					}
+
+					// Workaround to make eclipse accept java files in test-data resource directories
+					if (it.kind == 'src' && it.path == 'test-data') {
+						Library library = new Library(new FileReferenceFactory().fromPath(it.path))
+						library.entryAttributes['test'] = true
+						return library
+					}
+				}
+				return it
+			}
+		}
 	}
 }
