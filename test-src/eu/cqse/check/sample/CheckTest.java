@@ -22,7 +22,6 @@ import org.conqat.lib.commons.test.ManagedTestDataExtension;
 /**
  * Main class for testing the checks in this library.
  */
-@ExtendWith(ManagedTestDataExtension.class)
 public class CheckTest extends CheckTestBase {
 
 	public CheckTest() {
