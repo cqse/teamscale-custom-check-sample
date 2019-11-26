@@ -8,3 +8,6 @@ bin
 *.iws
 *.ipr
 *.iml
+.idea
+/classes/
+out/
