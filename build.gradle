@@ -12,17 +12,14 @@ sourceSets {
 	main {
 		java {
 			srcDir 'src/'
-			outputDir = file("$buildDir/build/classes/")
 		}
 	}
 	test {
 		java {
 			srcDir 'test-src/'
-			outputDir = file("$buildDir/build/test-classes/")
 		}
 		resources {
 			srcDir 'test-data/'
-			outputDir = file("$buildDir/build/test-classes/")
 		}
 	}
 
