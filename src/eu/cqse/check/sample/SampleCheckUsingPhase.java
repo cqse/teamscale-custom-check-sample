@@ -1,4 +1,4 @@
-package test.sample.check;
+package eu.cqse.check.sample;
 
 import java.util.List;
 
