@@ -25,8 +25,8 @@ public class SampleCheckWithParameter extends EntityCheckBase {
 
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	@CheckOption(name = CHECK_NAME
-			+ " - Filename exclude", description = "Regular expressions to exclude certain files.")
+	@CheckOption(name = CHECK_NAME + " - Filename exclude",
+			description = "Regular expressions to exclude certain files. Leave empty to exclude nothing.")
 	private String fileNameExclude = ".*Test.java$";
 
 	private Pattern fileNameExcludePattern;
@@ -49,7 +49,7 @@ public class SampleCheckWithParameter extends EntityCheckBase {
 	@Override
 	protected void processEntity(ShallowEntity entity) throws CheckException {
 		// Exclude entities located in files matching the file-name-exclude pattern.
-		if (fileNameExcludePattern.matcher(context.getUniformPath()).matches()) {
+		if (this.fileNameExcludePattern.matcher(this.context.getUniformPath()).matches()) {
 			LOGGER.info("Excluding entity {} (file-name-exclude pattern)", entity);
 			return;
 		}
@@ -57,6 +57,7 @@ public class SampleCheckWithParameter extends EntityCheckBase {
 		LOGGER.info("Checking entity {}", entity);
 
 		// Create a new finding on the first line of each method.
-		createFindingOnFirstLine("This is a sample finding for method " + entity.getName() + ".", entity);
+		createFindingOnFirstLine("This is a sample finding for method " + entity.getName()
+				+ ", in a file whose name doesn't match " + this.fileNameExclude + ".", entity);
 	}
 }
