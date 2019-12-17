@@ -16,7 +16,7 @@ import org.apache.logging.log4j.Logger;
  * This class is meant to demonstrate a simple custom check for Teamscale. It
  * creates a new finding for every method encountered in the system.
  */
-@Check(name = "Sample Check 1", description = "This is a simple sample check, that creates a sample finding for every method in the system.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED, languages = {
+@Check(name = "Sample Check 1", description = "This is a simple sample check that creates a sample finding for every method in the system.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED, languages = {
 		ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })
 public class SampleCheck extends EntityCheckBase {
 
