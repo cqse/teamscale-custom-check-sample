@@ -25,6 +25,9 @@ Building the checks for use with Teamscale
 - Restart Teamscale
 - You should now be able to see the sample check when creating a new JAVA analysis profile. It can be found inside the Bad Practice group.
 
+API evolution / version updates of Teamscale
+------------------------------------------
+The custom check API and thus any custom check binaries are compatible between patch releases (e.g. 5.6.0 and 5.6.1). However when updating to a new major/minor version (e.g. 5.6.x to 5.7.x) a rebuild of your custom checks against the latest customer check API is recommended.
 
 Get Help
 --------
