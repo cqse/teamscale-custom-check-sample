@@ -164,6 +164,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>${artifactId}</finalName>
 		<sourceDirectory>src</sourceDirectory>
 		<testSourceDirectory>test-src</testSourceDirectory>
 		<testResources>
