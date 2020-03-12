@@ -51,11 +51,11 @@
 <span class="sourceLineNo">043</span>        /** The states used in this parser. */<a name="line.43"></a>
 <span class="sourceLineNo">044</span>        public static enum EPlsqlParserStates {<a name="line.44"></a>
 <span class="sourceLineNo">045</span><a name="line.45"></a>
-<span class="sourceLineNo">046</span>                /** A state to recognize declarations. */<a name="line.46"></a>
-<span class="sourceLineNo">047</span>                DECLARATIONS,<a name="line.47"></a>
+<span class="sourceLineNo">046</span>        /** A state to recognize declarations. */<a name="line.46"></a>
+<span class="sourceLineNo">047</span>        DECLARATIONS,<a name="line.47"></a>
 <span class="sourceLineNo">048</span><a name="line.48"></a>
-<span class="sourceLineNo">049</span>                /** A state to recognize statements. */<a name="line.49"></a>
-<span class="sourceLineNo">050</span>                STATEMENTS<a name="line.50"></a>
+<span class="sourceLineNo">049</span>        /** A state to recognize statements. */<a name="line.49"></a>
+<span class="sourceLineNo">050</span>        STATEMENTS<a name="line.50"></a>
 <span class="sourceLineNo">051</span>        }<a name="line.51"></a>
 <span class="sourceLineNo">052</span><a name="line.52"></a>
 <span class="sourceLineNo">053</span>        /**<a name="line.53"></a>
@@ -100,8 +100,8 @@
 <span class="sourceLineNo">092</span>        }<a name="line.92"></a>
 <span class="sourceLineNo">093</span><a name="line.93"></a>
 <span class="sourceLineNo">094</span>        /**<a name="line.94"></a>
-<span class="sourceLineNo">095</span>         * Create rules for IFS preprocessor directives. Since these are interpreted<a name="line.95"></a>
-<span class="sourceLineNo">096</span>         * by the preprocessor, they do not change the parser state.<a name="line.96"></a>
+<span class="sourceLineNo">095</span>         * Create rules for IFS preprocessor directives. Since these are interpreted by<a name="line.95"></a>
+<span class="sourceLineNo">096</span>         * the preprocessor, they do not change the parser state.<a name="line.96"></a>
 <span class="sourceLineNo">097</span>         */<a name="line.97"></a>
 <span class="sourceLineNo">098</span>        private void createIfsPreprocessorRules(EPlsqlParserStates state) {<a name="line.98"></a>
 <span class="sourceLineNo">099</span>                RecognizerBase&lt;EPlsqlParserStates&gt; ifAlternative = inState(state).sequence(IFS_IF)<a name="line.99"></a>
@@ -172,8 +172,8 @@
 <span class="sourceLineNo">164</span>                                .sequence(EnumSet.of(AGGREGATE, ALTER, COMMIT, DELETE, GRANT, INSERT, LOCK, ROLLBACK, SAVEPOINT, SELECT,<a name="line.164"></a>
 <span class="sourceLineNo">165</span>                                                DROP, MERGE, UPDATE))<a name="line.165"></a>
 <span class="sourceLineNo">166</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.SQL, 0).skipTo(SEMICOLON).endNode();<a name="line.166"></a>
-<span class="sourceLineNo">167</span>                inAnyState().sequence(SET, TRANSACTION).createNode(EShallowEntityType.STATEMENT, SubTypeNames.SQL, 0).skipTo(SEMICOLON)<a name="line.167"></a>
-<span class="sourceLineNo">168</span>                                .endNode();<a name="line.168"></a>
+<span class="sourceLineNo">167</span>                inAnyState().sequence(SET, TRANSACTION).createNode(EShallowEntityType.STATEMENT, SubTypeNames.SQL, 0)<a name="line.167"></a>
+<span class="sourceLineNo">168</span>                                .skipTo(SEMICOLON).endNode();<a name="line.168"></a>
 <span class="sourceLineNo">169</span>                inAnyState().sequence(CREATE).optional(OR, REPLACE).optional(PUBLIC).sequence(SYNONYM)<a name="line.169"></a>
 <span class="sourceLineNo">170</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.SQL, 0).skipTo(SEMICOLON).endNode();<a name="line.170"></a>
 <span class="sourceLineNo">171</span><a name="line.171"></a>
@@ -233,104 +233,109 @@
 <span class="sourceLineNo">225</span>                                .skipNested(LPAREN, RPAREN).optional(RETURN, SELF, AS, RESULT)<a name="line.225"></a>
 <span class="sourceLineNo">226</span>                                .skipBefore(EnumSet.of(SEMICOLON, IS, AS, RPAREN, COMMA));<a name="line.226"></a>
 <span class="sourceLineNo">227</span>                methodStart.sequence(EnumSet.of(SEMICOLON, RPAREN, COMMA)).endNode();<a name="line.227"></a>
-<span class="sourceLineNo">228</span>                RecognizerBase&lt;EPlsqlParserStates&gt; methodStart2 = methodStart.sequence(EnumSet.of(IS, AS));<a name="line.228"></a>
-<span class="sourceLineNo">229</span>                methodStart2.sequence(EnumSet.of(LANGUAGE, EXTERNAL)).skipTo(SEMICOLON).endNode();<a name="line.229"></a>
-<span class="sourceLineNo">230</span>                methodStart2.parseUntil(DECLARATIONS).sequence(BEGIN).parseUntil(STATEMENTS).sequence(END)<a name="line.230"></a>
-<span class="sourceLineNo">231</span>                                .skipToWithNesting(EnumSet.of(SEMICOLON, RPAREN, COMMA), LPAREN, RPAREN).endNode();<a name="line.231"></a>
-<span class="sourceLineNo">232</span><a name="line.232"></a>
-<span class="sourceLineNo">233</span>                // exception declaration<a name="line.233"></a>
-<span class="sourceLineNo">234</span>                inState(DECLARATIONS).sequence(PLSQL_IDENTIFIERS, EXCEPTION, SEMICOLON)<a name="line.234"></a>
-<span class="sourceLineNo">235</span>                                .createNode(EShallowEntityType.META, "exception declaration", 0).endNode();<a name="line.235"></a>
-<span class="sourceLineNo">236</span><a name="line.236"></a>
-<span class="sourceLineNo">237</span>                // trigger<a name="line.237"></a>
-<span class="sourceLineNo">238</span>                RecognizerBase&lt;EPlsqlParserStates&gt; triggerMatch = createOrReplace().markStart().sequence(TRIGGER)<a name="line.238"></a>
-<span class="sourceLineNo">239</span>                                .repeated(PLSQL_IDENTIFIERS, DOT).sequence(PLSQL_IDENTIFIERS)<a name="line.239"></a>
-<span class="sourceLineNo">240</span>                                .createNode(EShallowEntityType.METHOD, 0, new Region(1, -1))<a name="line.240"></a>
-<span class="sourceLineNo">241</span>                                .skipBefore(EnumSet.of(SEMICOLON, DECLARE, BEGIN));<a name="line.241"></a>
-<span class="sourceLineNo">242</span>                triggerMatch.sequence(SEMICOLON).endNode();<a name="line.242"></a>
-<span class="sourceLineNo">243</span>                triggerMatch.sequence(BEGIN).parseUntil(STATEMENTS).sequence(END).skipTo(SEMICOLON).endNode();<a name="line.243"></a>
-<span class="sourceLineNo">244</span>                triggerMatch.sequence(DECLARE).parseUntil(DECLARATIONS).sequence(BEGIN).parseUntil(STATEMENTS).sequence(END)<a name="line.244"></a>
-<span class="sourceLineNo">245</span>                                .skipTo(SEMICOLON).endNode();<a name="line.245"></a>
-<span class="sourceLineNo">246</span><a name="line.246"></a>
-<span class="sourceLineNo">247</span>                // cursor declaration<a name="line.247"></a>
-<span class="sourceLineNo">248</span>                inState(DECLARATIONS).sequence(CURSOR).skipTo(SEMICOLON).createNode(EShallowEntityType.ATTRIBUTE, SubTypeNames.CURSOR, 1)<a name="line.248"></a>
-<span class="sourceLineNo">249</span>                                .endNode();<a name="line.249"></a>
-<span class="sourceLineNo">250</span><a name="line.250"></a>
-<span class="sourceLineNo">251</span>                // variables and constants<a name="line.251"></a>
-<span class="sourceLineNo">252</span>                inState(DECLARATIONS).sequence(PLSQL_IDENTIFIERS).createNode(EShallowEntityType.ATTRIBUTE, "variable", 0)<a name="line.252"></a>
-<span class="sourceLineNo">253</span>                                .skipToWithNesting(EnumSet.of(SEMICOLON, RPAREN, COMMA), LPAREN, RPAREN).endNode();<a name="line.253"></a>
-<span class="sourceLineNo">254</span>        }<a name="line.254"></a>
+<span class="sourceLineNo">228</span><a name="line.228"></a>
+<span class="sourceLineNo">229</span>                RecognizerBase&lt;EPlsqlParserStates&gt; methodStart2 = methodStart.sequence(EnumSet.of(IS, AS));<a name="line.229"></a>
+<span class="sourceLineNo">230</span>                methodStart2.sequence(EnumSet.of(LANGUAGE, EXTERNAL)).skipTo(SEMICOLON).endNode();<a name="line.230"></a>
+<span class="sourceLineNo">231</span>                methodStart2.parseUntil(DECLARATIONS).sequence(BEGIN).parseUntil(STATEMENTS).sequence(END)<a name="line.231"></a>
+<span class="sourceLineNo">232</span>                                .skipToWithNesting(EnumSet.of(SEMICOLON, RPAREN, COMMA), LPAREN, RPAREN).endNode();<a name="line.232"></a>
+<span class="sourceLineNo">233</span><a name="line.233"></a>
+<span class="sourceLineNo">234</span>                // view<a name="line.234"></a>
+<span class="sourceLineNo">235</span>                createOrReplace().markStart().sequence(VIEW, PLSQL_IDENTIFIERS, AS)<a name="line.235"></a>
+<span class="sourceLineNo">236</span>                                .createNode(EShallowEntityType.ATTRIBUTE, 0, new Region(1, -2)).skipTo(SEMICOLON).endNode();<a name="line.236"></a>
+<span class="sourceLineNo">237</span><a name="line.237"></a>
+<span class="sourceLineNo">238</span>                // exception declaration<a name="line.238"></a>
+<span class="sourceLineNo">239</span>                inState(DECLARATIONS).sequence(PLSQL_IDENTIFIERS, EXCEPTION, SEMICOLON)<a name="line.239"></a>
+<span class="sourceLineNo">240</span>                                .createNode(EShallowEntityType.META, "exception declaration", 0).endNode();<a name="line.240"></a>
+<span class="sourceLineNo">241</span><a name="line.241"></a>
+<span class="sourceLineNo">242</span>                // trigger<a name="line.242"></a>
+<span class="sourceLineNo">243</span>                RecognizerBase&lt;EPlsqlParserStates&gt; triggerMatch = createOrReplace().markStart().sequence(TRIGGER)<a name="line.243"></a>
+<span class="sourceLineNo">244</span>                                .repeated(PLSQL_IDENTIFIERS, DOT).sequence(PLSQL_IDENTIFIERS)<a name="line.244"></a>
+<span class="sourceLineNo">245</span>                                .createNode(EShallowEntityType.METHOD, 0, new Region(1, -1))<a name="line.245"></a>
+<span class="sourceLineNo">246</span>                                .skipBefore(EnumSet.of(SEMICOLON, DECLARE, BEGIN));<a name="line.246"></a>
+<span class="sourceLineNo">247</span>                triggerMatch.sequence(SEMICOLON).endNode();<a name="line.247"></a>
+<span class="sourceLineNo">248</span>                triggerMatch.sequence(BEGIN).parseUntil(STATEMENTS).sequence(END).skipTo(SEMICOLON).endNode();<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                triggerMatch.sequence(DECLARE).parseUntil(DECLARATIONS).sequence(BEGIN).parseUntil(STATEMENTS).sequence(END)<a name="line.249"></a>
+<span class="sourceLineNo">250</span>                                .skipTo(SEMICOLON).endNode();<a name="line.250"></a>
+<span class="sourceLineNo">251</span><a name="line.251"></a>
+<span class="sourceLineNo">252</span>                // cursor declaration<a name="line.252"></a>
+<span class="sourceLineNo">253</span>                inState(DECLARATIONS).sequence(CURSOR).skipTo(SEMICOLON)<a name="line.253"></a>
+<span class="sourceLineNo">254</span>                                .createNode(EShallowEntityType.ATTRIBUTE, SubTypeNames.CURSOR, 1).endNode();<a name="line.254"></a>
 <span class="sourceLineNo">255</span><a name="line.255"></a>
-<span class="sourceLineNo">256</span>        /** Matches the optional CREATE OR REPLACE clause. */<a name="line.256"></a>
-<span class="sourceLineNo">257</span>        private RecognizerBase&lt;EPlsqlParserStates&gt; createOrReplace() {<a name="line.257"></a>
-<span class="sourceLineNo">258</span>                return inState(DECLARATIONS).optional(CREATE).optional(OR, REPLACE);<a name="line.258"></a>
+<span class="sourceLineNo">256</span>                // variables and constants<a name="line.256"></a>
+<span class="sourceLineNo">257</span>                inState(DECLARATIONS).sequence(PLSQL_IDENTIFIERS).createNode(EShallowEntityType.ATTRIBUTE, "variable", 0)<a name="line.257"></a>
+<span class="sourceLineNo">258</span>                                .skipToWithNesting(EnumSet.of(SEMICOLON, RPAREN, COMMA), LPAREN, RPAREN).endNode();<a name="line.258"></a>
 <span class="sourceLineNo">259</span>        }<a name="line.259"></a>
 <span class="sourceLineNo">260</span><a name="line.260"></a>
-<span class="sourceLineNo">261</span>        /** Creates parser rules for statements. */<a name="line.261"></a>
-<span class="sourceLineNo">262</span>        private void createStatementRules() {<a name="line.262"></a>
-<span class="sourceLineNo">263</span>                // if/elseif<a name="line.263"></a>
-<span class="sourceLineNo">264</span>                RecognizerBase&lt;EPlsqlParserStates&gt; ifAlternative = inState(STATEMENTS).sequence(EnumSet.of(IF, ELSIF))<a name="line.264"></a>
-<span class="sourceLineNo">265</span>                                .createNode(EShallowEntityType.STATEMENT, 0).skipToWithNesting(THEN, CASE, END).parseUntil(STATEMENTS)<a name="line.265"></a>
-<span class="sourceLineNo">266</span>                                .sequenceBefore(EnumSet.of(ELSIF, ELSE, END));<a name="line.266"></a>
-<span class="sourceLineNo">267</span>                ifAlternative.sequence(END, IF, SEMICOLON).endNode();<a name="line.267"></a>
-<span class="sourceLineNo">268</span>                ifAlternative.endNodeWithContinuation();<a name="line.268"></a>
-<span class="sourceLineNo">269</span><a name="line.269"></a>
-<span class="sourceLineNo">270</span>                // else (both for if and case)<a name="line.270"></a>
-<span class="sourceLineNo">271</span>                RecognizerBase&lt;EPlsqlParserStates&gt; elseMatcher = inState(STATEMENTS).sequence(ELSE)<a name="line.271"></a>
-<span class="sourceLineNo">272</span>                                .createNode(EShallowEntityType.STATEMENT, 0).parseUntil(STATEMENTS);<a name="line.272"></a>
-<span class="sourceLineNo">273</span>                elseMatcher.sequence(END, IF).skipTo(SEMICOLON).endNode();<a name="line.273"></a>
-<span class="sourceLineNo">274</span>                elseMatcher.sequenceBefore(END, CASE).endNode();<a name="line.274"></a>
-<span class="sourceLineNo">275</span><a name="line.275"></a>
-<span class="sourceLineNo">276</span>                // loops<a name="line.276"></a>
-<span class="sourceLineNo">277</span>                inState(STATEMENTS).sequence(LOOP).createNode(EShallowEntityType.STATEMENT, 0).parseUntil(STATEMENTS)<a name="line.277"></a>
-<span class="sourceLineNo">278</span>                                .sequence(END, LOOP).skipTo(SEMICOLON).endNode();<a name="line.278"></a>
-<span class="sourceLineNo">279</span><a name="line.279"></a>
-<span class="sourceLineNo">280</span>                inState(STATEMENTS).sequence(EnumSet.of(WHILE, FOR)).createNode(EShallowEntityType.STATEMENT, 0).skipTo(LOOP)<a name="line.280"></a>
-<span class="sourceLineNo">281</span>                                .parseUntil(STATEMENTS).sequence(END, LOOP).skipTo(SEMICOLON).endNode();<a name="line.281"></a>
-<span class="sourceLineNo">282</span><a name="line.282"></a>
-<span class="sourceLineNo">283</span>                // blocks<a name="line.283"></a>
-<span class="sourceLineNo">284</span>                inState(STATEMENTS).sequence(DECLARE).createNode(EShallowEntityType.STATEMENT, "block").parseUntil(DECLARATIONS)<a name="line.284"></a>
-<span class="sourceLineNo">285</span>                                .sequence(BEGIN).parseUntil(STATEMENTS).sequence(END).skipTo(SEMICOLON).endNode();<a name="line.285"></a>
-<span class="sourceLineNo">286</span>                inState(STATEMENTS).sequence(BEGIN).createNode(EShallowEntityType.STATEMENT, "block").parseUntil(STATEMENTS)<a name="line.286"></a>
-<span class="sourceLineNo">287</span>                                .sequence(END).skipTo(SEMICOLON).endNode();<a name="line.287"></a>
-<span class="sourceLineNo">288</span><a name="line.288"></a>
-<span class="sourceLineNo">289</span>                // case<a name="line.289"></a>
-<span class="sourceLineNo">290</span>                inState(STATEMENTS).sequence(CASE).createNode(EShallowEntityType.STATEMENT, 0)<a name="line.290"></a>
-<span class="sourceLineNo">291</span>                                .skipBefore(EnumSet.of(WHEN, ELSE)).parseUntil(STATEMENTS).sequence(END, CASE).skipTo(SEMICOLON)<a name="line.291"></a>
-<span class="sourceLineNo">292</span>                                .endNode();<a name="line.292"></a>
+<span class="sourceLineNo">261</span>        /** Matches the optional CREATE OR REPLACE clause. */<a name="line.261"></a>
+<span class="sourceLineNo">262</span>        private RecognizerBase&lt;EPlsqlParserStates&gt; createOrReplace() {<a name="line.262"></a>
+<span class="sourceLineNo">263</span>                return inState(DECLARATIONS).optional(CREATE).optional(OR, REPLACE);<a name="line.263"></a>
+<span class="sourceLineNo">264</span>        }<a name="line.264"></a>
+<span class="sourceLineNo">265</span><a name="line.265"></a>
+<span class="sourceLineNo">266</span>        /** Creates parser rules for statements. */<a name="line.266"></a>
+<span class="sourceLineNo">267</span>        private void createStatementRules() {<a name="line.267"></a>
+<span class="sourceLineNo">268</span>                // if/elseif<a name="line.268"></a>
+<span class="sourceLineNo">269</span>                RecognizerBase&lt;EPlsqlParserStates&gt; ifAlternative = inState(STATEMENTS).sequence(EnumSet.of(IF, ELSIF))<a name="line.269"></a>
+<span class="sourceLineNo">270</span>                                .createNode(EShallowEntityType.STATEMENT, 0).skipToWithNesting(THEN, CASE, END).parseUntil(STATEMENTS)<a name="line.270"></a>
+<span class="sourceLineNo">271</span>                                .sequenceBefore(EnumSet.of(ELSIF, ELSE, END));<a name="line.271"></a>
+<span class="sourceLineNo">272</span>                ifAlternative.sequence(END, IF, SEMICOLON).endNode();<a name="line.272"></a>
+<span class="sourceLineNo">273</span>                ifAlternative.endNodeWithContinuation();<a name="line.273"></a>
+<span class="sourceLineNo">274</span><a name="line.274"></a>
+<span class="sourceLineNo">275</span>                // else (both for if and case)<a name="line.275"></a>
+<span class="sourceLineNo">276</span>                RecognizerBase&lt;EPlsqlParserStates&gt; elseMatcher = inState(STATEMENTS).sequence(ELSE)<a name="line.276"></a>
+<span class="sourceLineNo">277</span>                                .createNode(EShallowEntityType.STATEMENT, 0).parseUntil(STATEMENTS);<a name="line.277"></a>
+<span class="sourceLineNo">278</span>                elseMatcher.sequence(END, IF).skipTo(SEMICOLON).endNode();<a name="line.278"></a>
+<span class="sourceLineNo">279</span>                elseMatcher.sequenceBefore(END, CASE).endNode();<a name="line.279"></a>
+<span class="sourceLineNo">280</span><a name="line.280"></a>
+<span class="sourceLineNo">281</span>                // loops<a name="line.281"></a>
+<span class="sourceLineNo">282</span>                inState(STATEMENTS).sequence(LOOP).createNode(EShallowEntityType.STATEMENT, 0).parseUntil(STATEMENTS)<a name="line.282"></a>
+<span class="sourceLineNo">283</span>                                .sequence(END, LOOP).skipTo(SEMICOLON).endNode();<a name="line.283"></a>
+<span class="sourceLineNo">284</span><a name="line.284"></a>
+<span class="sourceLineNo">285</span>                inState(STATEMENTS).sequence(EnumSet.of(WHILE, FOR)).createNode(EShallowEntityType.STATEMENT, 0).skipTo(LOOP)<a name="line.285"></a>
+<span class="sourceLineNo">286</span>                                .parseUntil(STATEMENTS).sequence(END, LOOP).skipTo(SEMICOLON).endNode();<a name="line.286"></a>
+<span class="sourceLineNo">287</span><a name="line.287"></a>
+<span class="sourceLineNo">288</span>                // blocks<a name="line.288"></a>
+<span class="sourceLineNo">289</span>                inState(STATEMENTS).sequence(DECLARE).createNode(EShallowEntityType.STATEMENT, "block").parseUntil(DECLARATIONS)<a name="line.289"></a>
+<span class="sourceLineNo">290</span>                                .sequence(BEGIN).parseUntil(STATEMENTS).sequence(END).skipTo(SEMICOLON).endNode();<a name="line.290"></a>
+<span class="sourceLineNo">291</span>                inState(STATEMENTS).sequence(BEGIN).createNode(EShallowEntityType.STATEMENT, "block").parseUntil(STATEMENTS)<a name="line.291"></a>
+<span class="sourceLineNo">292</span>                                .sequence(END).skipTo(SEMICOLON).endNode();<a name="line.292"></a>
 <span class="sourceLineNo">293</span><a name="line.293"></a>
-<span class="sourceLineNo">294</span>                // when (in exceptions or case)<a name="line.294"></a>
-<span class="sourceLineNo">295</span>                inState(STATEMENTS).sequence(WHEN).skipTo(THEN).createNode(EShallowEntityType.META, "when", 1).endNode();<a name="line.295"></a>
-<span class="sourceLineNo">296</span><a name="line.296"></a>
-<span class="sourceLineNo">297</span>                // labels<a name="line.297"></a>
-<span class="sourceLineNo">298</span>                inState(STATEMENTS).sequence(LEFT_LABEL_BRACKET, PLSQL_IDENTIFIERS, RIGHT_LABEL_BRACKET)<a name="line.298"></a>
-<span class="sourceLineNo">299</span>                                .createNode(EShallowEntityType.META, SubTypeNames.LABEL, 1).endNode();<a name="line.299"></a>
-<span class="sourceLineNo">300</span><a name="line.300"></a>
-<span class="sourceLineNo">301</span>                // basic statement<a name="line.301"></a>
-<span class="sourceLineNo">302</span>                EnumSet&lt;ETokenType&gt; basicStatementStarts = EnumSet.copyOf(PLSQL_IDENTIFIERS);<a name="line.302"></a>
-<span class="sourceLineNo">303</span>                basicStatementStarts.addAll(Arrays.asList(SELF, RETURN, GOTO, FETCH, NULL_LITERAL));<a name="line.303"></a>
-<span class="sourceLineNo">304</span>                inState(STATEMENTS).sequence(basicStatementStarts).createNode(EShallowEntityType.STATEMENT, 0).skipTo(SEMICOLON)<a name="line.304"></a>
-<span class="sourceLineNo">305</span>                                .endNode();<a name="line.305"></a>
-<span class="sourceLineNo">306</span>        }<a name="line.306"></a>
-<span class="sourceLineNo">307</span><a name="line.307"></a>
-<span class="sourceLineNo">308</span>        /** Matcher for identifiers by a prefix. */<a name="line.308"></a>
-<span class="sourceLineNo">309</span>        private static class IdentifierPrefixMatcher implements ITokenMatcher {<a name="line.309"></a>
-<span class="sourceLineNo">310</span><a name="line.310"></a>
-<span class="sourceLineNo">311</span>                /** The prefix. */<a name="line.311"></a>
-<span class="sourceLineNo">312</span>                private final String prefix;<a name="line.312"></a>
-<span class="sourceLineNo">313</span><a name="line.313"></a>
-<span class="sourceLineNo">314</span>                /** Constructor. */<a name="line.314"></a>
-<span class="sourceLineNo">315</span>                public IdentifierPrefixMatcher(String prefix) {<a name="line.315"></a>
-<span class="sourceLineNo">316</span>                        this.prefix = prefix.toLowerCase();<a name="line.316"></a>
-<span class="sourceLineNo">317</span>                }<a name="line.317"></a>
+<span class="sourceLineNo">294</span>                // case<a name="line.294"></a>
+<span class="sourceLineNo">295</span>                inState(STATEMENTS).sequence(CASE).createNode(EShallowEntityType.STATEMENT, 0)<a name="line.295"></a>
+<span class="sourceLineNo">296</span>                                .skipBefore(EnumSet.of(WHEN, ELSE)).parseUntil(STATEMENTS).sequence(END, CASE).skipTo(SEMICOLON)<a name="line.296"></a>
+<span class="sourceLineNo">297</span>                                .endNode();<a name="line.297"></a>
+<span class="sourceLineNo">298</span><a name="line.298"></a>
+<span class="sourceLineNo">299</span>                // when (in exceptions or case)<a name="line.299"></a>
+<span class="sourceLineNo">300</span>                inState(STATEMENTS).sequence(WHEN).skipTo(THEN).createNode(EShallowEntityType.META, "when", 1).endNode();<a name="line.300"></a>
+<span class="sourceLineNo">301</span><a name="line.301"></a>
+<span class="sourceLineNo">302</span>                // labels<a name="line.302"></a>
+<span class="sourceLineNo">303</span>                inState(STATEMENTS).sequence(LEFT_LABEL_BRACKET, PLSQL_IDENTIFIERS, RIGHT_LABEL_BRACKET)<a name="line.303"></a>
+<span class="sourceLineNo">304</span>                                .createNode(EShallowEntityType.META, SubTypeNames.LABEL, 1).endNode();<a name="line.304"></a>
+<span class="sourceLineNo">305</span><a name="line.305"></a>
+<span class="sourceLineNo">306</span>                // basic statement<a name="line.306"></a>
+<span class="sourceLineNo">307</span>                EnumSet&lt;ETokenType&gt; basicStatementStarts = EnumSet.copyOf(PLSQL_IDENTIFIERS);<a name="line.307"></a>
+<span class="sourceLineNo">308</span>                basicStatementStarts.addAll(Arrays.asList(SELF, RETURN, GOTO, FETCH, NULL_LITERAL));<a name="line.308"></a>
+<span class="sourceLineNo">309</span>                inState(STATEMENTS).sequence(basicStatementStarts).createNode(EShallowEntityType.STATEMENT, 0).skipTo(SEMICOLON)<a name="line.309"></a>
+<span class="sourceLineNo">310</span>                                .endNode();<a name="line.310"></a>
+<span class="sourceLineNo">311</span>        }<a name="line.311"></a>
+<span class="sourceLineNo">312</span><a name="line.312"></a>
+<span class="sourceLineNo">313</span>        /** Matcher for identifiers by a prefix. */<a name="line.313"></a>
+<span class="sourceLineNo">314</span>        private static class IdentifierPrefixMatcher implements ITokenMatcher {<a name="line.314"></a>
+<span class="sourceLineNo">315</span><a name="line.315"></a>
+<span class="sourceLineNo">316</span>                /** The prefix. */<a name="line.316"></a>
+<span class="sourceLineNo">317</span>                private final String prefix;<a name="line.317"></a>
 <span class="sourceLineNo">318</span><a name="line.318"></a>
-<span class="sourceLineNo">319</span>                /** {@inheritDoc} */<a name="line.319"></a>
-<span class="sourceLineNo">320</span>                @Override<a name="line.320"></a>
-<span class="sourceLineNo">321</span>                public boolean matches(IToken token) {<a name="line.321"></a>
-<span class="sourceLineNo">322</span>                        return token.getType() == IDENTIFIER &amp;&amp; token.getText().toLowerCase().startsWith(prefix);<a name="line.322"></a>
-<span class="sourceLineNo">323</span>                }<a name="line.323"></a>
-<span class="sourceLineNo">324</span>        }<a name="line.324"></a>
-<span class="sourceLineNo">325</span>}<a name="line.325"></a>
+<span class="sourceLineNo">319</span>                /** Constructor. */<a name="line.319"></a>
+<span class="sourceLineNo">320</span>                public IdentifierPrefixMatcher(String prefix) {<a name="line.320"></a>
+<span class="sourceLineNo">321</span>                        this.prefix = prefix.toLowerCase();<a name="line.321"></a>
+<span class="sourceLineNo">322</span>                }<a name="line.322"></a>
+<span class="sourceLineNo">323</span><a name="line.323"></a>
+<span class="sourceLineNo">324</span>                /** {@inheritDoc} */<a name="line.324"></a>
+<span class="sourceLineNo">325</span>                @Override<a name="line.325"></a>
+<span class="sourceLineNo">326</span>                public boolean matches(IToken token) {<a name="line.326"></a>
+<span class="sourceLineNo">327</span>                        return token.getType() == IDENTIFIER &amp;&amp; token.getText().toLowerCase().startsWith(prefix);<a name="line.327"></a>
+<span class="sourceLineNo">328</span>                }<a name="line.328"></a>
+<span class="sourceLineNo">329</span>        }<a name="line.329"></a>
+<span class="sourceLineNo">330</span>}<a name="line.330"></a>
 
 
 

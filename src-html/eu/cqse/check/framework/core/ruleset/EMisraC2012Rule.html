@@ -1,0 +1,298 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*-------------------------------------------------------------------------+<a name="line.1"></a>
+<span class="sourceLineNo">002</span>|                                                                          |<a name="line.2"></a>
+<span class="sourceLineNo">003</span>| Copyright (c) 2009-2019 CQSE GmbH                                        |<a name="line.3"></a>
+<span class="sourceLineNo">004</span>|                                                                          |<a name="line.4"></a>
+<span class="sourceLineNo">005</span>+-------------------------------------------------------------------------*/<a name="line.5"></a>
+<span class="sourceLineNo">006</span>package eu.cqse.check.framework.core.ruleset;<a name="line.6"></a>
+<span class="sourceLineNo">007</span><a name="line.7"></a>
+<span class="sourceLineNo">008</span>import java.util.function.BiConsumer;<a name="line.8"></a>
+<span class="sourceLineNo">009</span><a name="line.9"></a>
+<span class="sourceLineNo">010</span>/**<a name="line.10"></a>
+<span class="sourceLineNo">011</span> * Enumeration of all rules of the Misra C:2012 standard.<a name="line.11"></a>
+<span class="sourceLineNo">012</span> * <a name="line.12"></a>
+<span class="sourceLineNo">013</span> * This list has been extracted using a script and manually corrected.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> */<a name="line.14"></a>
+<span class="sourceLineNo">015</span>public enum EMisraC2012Rule implements IRulesetRule {<a name="line.15"></a>
+<span class="sourceLineNo">016</span>        MISRA_1_1("1.1",<a name="line.16"></a>
+<span class="sourceLineNo">017</span>                        "The program shall contain no violations of the standard C syntax and constraints, and shall not exceed the implementation’s translation limits"),<a name="line.17"></a>
+<span class="sourceLineNo">018</span>        MISRA_1_2("1.2", "Language extensions should not be used"),<a name="line.18"></a>
+<span class="sourceLineNo">019</span>        MISRA_1_3("1.3", "There shall be no occurrence of undefined or critical unspecified behaviour"),<a name="line.19"></a>
+<span class="sourceLineNo">020</span>        MISRA_2_1("2.1", "A project shall not contain unreachable code"),<a name="line.20"></a>
+<span class="sourceLineNo">021</span>        MISRA_2_2("2.2", "There shall be no dead code"),<a name="line.21"></a>
+<span class="sourceLineNo">022</span>        MISRA_2_3("2.3", "A project should not contain unused type declarations"),<a name="line.22"></a>
+<span class="sourceLineNo">023</span>        MISRA_2_4("2.4", "A project should not contain unused tag declarations"),<a name="line.23"></a>
+<span class="sourceLineNo">024</span>        MISRA_2_5("2.5", "A project should not contain unused macro declarations"),<a name="line.24"></a>
+<span class="sourceLineNo">025</span>        MISRA_2_6("2.6", "A function should not contain unused label declarations"),<a name="line.25"></a>
+<span class="sourceLineNo">026</span>        MISRA_2_7("2.7", "There should be no unused parameters in functions"),<a name="line.26"></a>
+<span class="sourceLineNo">027</span>        MISRA_3_1("3.1", "The character sequences /* and // shall not be used within a comment"),<a name="line.27"></a>
+<span class="sourceLineNo">028</span>        MISRA_3_2("3.2", "Line-splicing shall not be used in // comments"),<a name="line.28"></a>
+<span class="sourceLineNo">029</span>        MISRA_4_1("4.1", "Octal and hexadecimal escape sequences shall be terminated"),<a name="line.29"></a>
+<span class="sourceLineNo">030</span>        MISRA_4_2("4.2", "Trigraphs should not be used"),<a name="line.30"></a>
+<span class="sourceLineNo">031</span>        MISRA_5_1("5.1", "External identifiers shall be distinct"),<a name="line.31"></a>
+<span class="sourceLineNo">032</span>        MISRA_5_2("5.2", "Identifiers declared in the same scope and name space shall be distinct"),<a name="line.32"></a>
+<span class="sourceLineNo">033</span>        MISRA_5_3("5.3",<a name="line.33"></a>
+<span class="sourceLineNo">034</span>                        "An identifier declared in an inner scope shall not hide an identifier declared in an outer scope"),<a name="line.34"></a>
+<span class="sourceLineNo">035</span>        MISRA_5_4("5.4", "Macro identifiers shall be distinct"),<a name="line.35"></a>
+<span class="sourceLineNo">036</span>        MISRA_5_5("5.5", "Identifiers shall be distinct from macro names"),<a name="line.36"></a>
+<span class="sourceLineNo">037</span>        MISRA_5_6("5.6", "A typedef name shall be a unique identifier"),<a name="line.37"></a>
+<span class="sourceLineNo">038</span>        MISRA_5_7("5.7", "A tag name shall be a unique identifier"),<a name="line.38"></a>
+<span class="sourceLineNo">039</span>        MISRA_5_8("5.8", "Identifiers that define objects or functions with external linkage shall beunique"),<a name="line.39"></a>
+<span class="sourceLineNo">040</span>        MISRA_5_9("5.9", "Identifiers that define objects or functions with internal linkage should be unique"),<a name="line.40"></a>
+<span class="sourceLineNo">041</span>        MISRA_6_1("6.1", "Bit-fields shall only be declared with an appropriate type"),<a name="line.41"></a>
+<span class="sourceLineNo">042</span>        MISRA_6_2("6.2", "Single-bit named bit fields shall not be of a signed type"),<a name="line.42"></a>
+<span class="sourceLineNo">043</span>        MISRA_7_1("7.1", "Octal constants shall not be used"),<a name="line.43"></a>
+<span class="sourceLineNo">044</span>        MISRA_7_2("7.2",<a name="line.44"></a>
+<span class="sourceLineNo">045</span>                        "A \"u\" or \"U\" suffix shall be applied to all integer constants that arerepresented in an unsigned type"),<a name="line.45"></a>
+<span class="sourceLineNo">046</span>        MISRA_7_3("7.3", "The lowercase character \"l\" shall not be used in a literal suffix"),<a name="line.46"></a>
+<span class="sourceLineNo">047</span>        MISRA_7_4("7.4",<a name="line.47"></a>
+<span class="sourceLineNo">048</span>                        "A string literal shall not be assigned to an object unless the object’s type is \"pointer to const-qualified char\""),<a name="line.48"></a>
+<span class="sourceLineNo">049</span>        MISRA_8_1("8.1", "Types shall be explicitly specified"),<a name="line.49"></a>
+<span class="sourceLineNo">050</span>        MISRA_8_2("8.2", "Function types shall be in prototype form with named parameters"),<a name="line.50"></a>
+<span class="sourceLineNo">051</span>        MISRA_8_3("8.3", "All declarations of an object or function shall use the same names and type qualifiers"),<a name="line.51"></a>
+<span class="sourceLineNo">052</span>        MISRA_8_4("8.4",<a name="line.52"></a>
+<span class="sourceLineNo">053</span>                        "A compatible declaration shall be visible when an object or function with external linkage is defined"),<a name="line.53"></a>
+<span class="sourceLineNo">054</span>        MISRA_8_5("8.5", "An external object or function shall be declared once in one and only one file"),<a name="line.54"></a>
+<span class="sourceLineNo">055</span>        MISRA_8_6("8.6", "An identifier with external linkage shall have exactly one external definition"),<a name="line.55"></a>
+<span class="sourceLineNo">056</span>        MISRA_8_7("8.7",<a name="line.56"></a>
+<span class="sourceLineNo">057</span>                        "Functions and objects should not be defined with external linkage if they are referenced in only one translation unit"),<a name="line.57"></a>
+<span class="sourceLineNo">058</span>        MISRA_8_8("8.8",<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                        "The static storage class specifier shall be used in all declarations of objects and functions that have internal linkage"),<a name="line.59"></a>
+<span class="sourceLineNo">060</span>        MISRA_8_9("8.9", "An object should be defined at block scope if its identifier only appears in a single function"),<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        MISRA_8_10("8.10", "An inline function shall be declared with the static storage class"),<a name="line.61"></a>
+<span class="sourceLineNo">062</span>        MISRA_8_11("8.11", "When an array with external linkage is declared, its size should be explicitly specified"),<a name="line.62"></a>
+<span class="sourceLineNo">063</span>        MISRA_8_12("8.12",<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                        "Within an enumerator list, the value of an implicitly-specified enumeration constant shall be unique"),<a name="line.64"></a>
+<span class="sourceLineNo">065</span>        MISRA_8_13("8.13", "A pointer should point to a const-qualified type whenever possible"),<a name="line.65"></a>
+<span class="sourceLineNo">066</span>        MISRA_8_14("8.14", "The restrict type qualifier shall not be used"),<a name="line.66"></a>
+<span class="sourceLineNo">067</span>        MISRA_9_1("9.1", "The value of an object with automatic storage duration shall not be read before it has been set"),<a name="line.67"></a>
+<span class="sourceLineNo">068</span>        MISRA_9_2("9.2", "The initializer for an aggregate or union shall be enclosed in braces"),<a name="line.68"></a>
+<span class="sourceLineNo">069</span>        MISRA_9_3("9.3", "Arrays shall not be partially initialized"),<a name="line.69"></a>
+<span class="sourceLineNo">070</span>        MISRA_9_4("9.4", "An element of an object shall not be initialized more than once"),<a name="line.70"></a>
+<span class="sourceLineNo">071</span>        MISRA_9_5("9.5",<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                        "Where designated initializers are used to initialize an array object the size of the array shall be specified explicitly"),<a name="line.72"></a>
+<span class="sourceLineNo">073</span>        MISRA_10_1("10.1", "Operands shall not be of an inappropriate essential type"),<a name="line.73"></a>
+<span class="sourceLineNo">074</span>        MISRA_10_2("10.2",<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                        "Expressions of essentially character type shall not be used inappropriately in addition and subtraction operations"),<a name="line.75"></a>
+<span class="sourceLineNo">076</span>        MISRA_10_3("10.3",<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                        "The value of an expression shall not be assigned to an object with a narrower essential type or of a different essential type category"),<a name="line.77"></a>
+<span class="sourceLineNo">078</span>        MISRA_10_4("10.4",<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                        "Both operands of an operator in which the usual arithmetic conversions are performed shall have the same essential type category"),<a name="line.79"></a>
+<span class="sourceLineNo">080</span>        MISRA_10_5("10.5", "The value of an expression should not be cast to an inappropriate essential type"),<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        MISRA_10_6("10.6",<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                        "The value of a composite expression shall not be assigned to an object with wider essential type"),<a name="line.82"></a>
+<span class="sourceLineNo">083</span>        MISRA_10_7("10.7",<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                        "If a composite expression is used as one operand of an operator in which the usual arithmetic conversions are performed then the other operand shall not have wider essential type"),<a name="line.84"></a>
+<span class="sourceLineNo">085</span>        MISRA_10_8("10.8",<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                        "The value of a composite expression shall not be cast to a different essential type category or a wider essential type"),<a name="line.86"></a>
+<span class="sourceLineNo">087</span>        MISRA_11_1("11.1", "Conversions shall not be performed between a pointer to a function and any other type"),<a name="line.87"></a>
+<span class="sourceLineNo">088</span>        MISRA_11_2("11.2", "Conversions shall not be performed between a pointer to an incomplete type and any other type"),<a name="line.88"></a>
+<span class="sourceLineNo">089</span>        MISRA_11_3("11.3",<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                        "A cast shall not be performed between a pointer to object type and a pointer to a different object type"),<a name="line.90"></a>
+<span class="sourceLineNo">091</span>        MISRA_11_4("11.4", "A conversion should not be performed between a pointer to object and an integer type"),<a name="line.91"></a>
+<span class="sourceLineNo">092</span>        MISRA_11_5("11.5", "A conversion should not be performed from pointer to void into pointer to object"),<a name="line.92"></a>
+<span class="sourceLineNo">093</span>        MISRA_11_6("11.6", "A cast shall not be performed between pointer to void and an arithmetic type"),<a name="line.93"></a>
+<span class="sourceLineNo">094</span>        MISRA_11_7("11.7", "A cast shall not be performed between pointer to object and a noninteger arithmetic type"),<a name="line.94"></a>
+<span class="sourceLineNo">095</span>        MISRA_11_8("11.8",<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                        "A cast shall not remove any const or volatile qualification from the type pointed to by a pointer"),<a name="line.96"></a>
+<span class="sourceLineNo">097</span>        MISRA_11_9("11.9", "The macro NULL shall be the only permitted form of integer null pointer constant"),<a name="line.97"></a>
+<span class="sourceLineNo">098</span>        MISRA_12_1("12.1", "The precedence of operators within expressions should be made explicit"),<a name="line.98"></a>
+<span class="sourceLineNo">099</span>        MISRA_12_2("12.2",<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                        "The right hand operand of a shift operator shall lie in the range zero to one less than the width in bits of the essential type of the left hand operand"),<a name="line.100"></a>
+<span class="sourceLineNo">101</span>        MISRA_12_3("12.3", "The comma operator should not be used"),<a name="line.101"></a>
+<span class="sourceLineNo">102</span>        MISRA_12_4("12.4", "Evaluation of constant expressions should not lead to unsigned integer wrap-around"),<a name="line.102"></a>
+<span class="sourceLineNo">103</span>        MISRA_13_1("13.1", "Initializer lists shall not contain persistent side effects"),<a name="line.103"></a>
+<span class="sourceLineNo">104</span>        MISRA_13_2("13.2",<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                        "The value of an expression and its persistent side effects shall be the same under all permitted evaluation orders"),<a name="line.105"></a>
+<span class="sourceLineNo">106</span>        MISRA_13_3("13.3",<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                        "A full expression containing an increment (++) or decrement (--) operator should have no other potential side effects other than that caused by the increment or decrement operator"),<a name="line.107"></a>
+<span class="sourceLineNo">108</span>        MISRA_13_4("13.4", "The result of an assignment operator should not be used"),<a name="line.108"></a>
+<span class="sourceLineNo">109</span>        MISRA_13_5("13.5",<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                        "The right hand operand of a logical &amp;&amp; or || operator shall not contain persistent side effects"),<a name="line.110"></a>
+<span class="sourceLineNo">111</span>        MISRA_13_6("13.6",<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                        "The operand of the sizeof operator shall not contain any expression which has potential side effects"),<a name="line.112"></a>
+<span class="sourceLineNo">113</span>        MISRA_14_1("14.1", "A loop counter shall not have essentially floating type"),<a name="line.113"></a>
+<span class="sourceLineNo">114</span>        MISRA_14_2("14.2", "A for loop shall be well-formed"),<a name="line.114"></a>
+<span class="sourceLineNo">115</span>        MISRA_14_3("14.3", "Controlling expressions shall not be invariant"),<a name="line.115"></a>
+<span class="sourceLineNo">116</span>        MISRA_14_4("14.4",<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                        "The controlling expression of an if statement and the controlling expression of an iteration-statement shall have essentially Boolean type"),<a name="line.117"></a>
+<span class="sourceLineNo">118</span>        MISRA_15_1("15.1", "The goto statement should not be used"),<a name="line.118"></a>
+<span class="sourceLineNo">119</span>        MISRA_15_2("15.2", "The goto statement shall jump to a label declared later in the same function"),<a name="line.119"></a>
+<span class="sourceLineNo">120</span>        MISRA_15_3("15.3",<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                        "Any label referenced by a goto statement shall be declared in the same block, or in any block enclosing the goto statement"),<a name="line.121"></a>
+<span class="sourceLineNo">122</span>        MISRA_15_4("15.4",<a name="line.122"></a>
+<span class="sourceLineNo">123</span>                        "There should be no more than one break or goto statement used to terminate any iteration statement"),<a name="line.123"></a>
+<span class="sourceLineNo">124</span>        MISRA_15_5("15.5", "A function should have a single point of exit at the end"),<a name="line.124"></a>
+<span class="sourceLineNo">125</span>        MISRA_15_6("15.6", "The body of an iteration-statement or a selection-statement shall be a compound-statement"),<a name="line.125"></a>
+<span class="sourceLineNo">126</span>        MISRA_15_7("15.7", "All if … else if constructs shall be terminated with an else statement"),<a name="line.126"></a>
+<span class="sourceLineNo">127</span>        MISRA_16_1("16.1", "All switch statements shall be well-formed"),<a name="line.127"></a>
+<span class="sourceLineNo">128</span>        MISRA_16_2("16.2",<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                        "A switch label shall only be used when the most closely-enclosing compound statement is the body of a switch statement"),<a name="line.129"></a>
+<span class="sourceLineNo">130</span>        MISRA_16_3("16.3", "An unconditional break statement shall terminate every switch-clause"),<a name="line.130"></a>
+<span class="sourceLineNo">131</span>        MISRA_16_4("16.4", "Every switch statement shall have a default label"),<a name="line.131"></a>
+<span class="sourceLineNo">132</span>        MISRA_16_5("16.5",<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                        "A default label shall appear as either the first or the last switch label of a switch statement"),<a name="line.133"></a>
+<span class="sourceLineNo">134</span>        MISRA_16_6("16.6", "Every switch statement shall have at least two switch-clauses"),<a name="line.134"></a>
+<span class="sourceLineNo">135</span>        MISRA_16_7("16.7", "A switch-expression shall not have essentially Boolean type"),<a name="line.135"></a>
+<span class="sourceLineNo">136</span>        MISRA_17_1("17.1", "The features of &lt;stdarg.h&gt; shall not be used"),<a name="line.136"></a>
+<span class="sourceLineNo">137</span>        MISRA_17_2("17.2", "Functions shall not call themselves, either directly or indirectly"),<a name="line.137"></a>
+<span class="sourceLineNo">138</span>        MISRA_17_3("17.3", "A function shall not be declared implicitly"),<a name="line.138"></a>
+<span class="sourceLineNo">139</span>        MISRA_17_4("17.4",<a name="line.139"></a>
+<span class="sourceLineNo">140</span>                        "All exit paths from a function with non-void return type shall have an explicit return statement with an expression"),<a name="line.140"></a>
+<span class="sourceLineNo">141</span>        MISRA_17_5("17.5",<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                        "The function argument corresponding to a parameter declared to have an array type shall have an appropriate number of elements"),<a name="line.142"></a>
+<span class="sourceLineNo">143</span>        MISRA_17_6("17.6", "The declaration of an array parameter shall not contain the static keyword between the [ ]"),<a name="line.143"></a>
+<span class="sourceLineNo">144</span>        MISRA_17_7("17.7", "The value returned by a function having non-void return type shall beused"),<a name="line.144"></a>
+<span class="sourceLineNo">145</span>        MISRA_17_8("17.8", "A function parameter should not be modified"),<a name="line.145"></a>
+<span class="sourceLineNo">146</span>        MISRA_18_1("18.1",<a name="line.146"></a>
+<span class="sourceLineNo">147</span>                        "A pointer resulting from arithmetic on a pointer operand shall address an element of the same array as that pointer operand"),<a name="line.147"></a>
+<span class="sourceLineNo">148</span>        MISRA_18_2("18.2",<a name="line.148"></a>
+<span class="sourceLineNo">149</span>                        "Subtraction between pointers shall only be applied to pointers that address elements of the same array"),<a name="line.149"></a>
+<span class="sourceLineNo">150</span>        MISRA_18_3("18.3",<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                        "The relational operators &gt;, &gt;=, &lt; and &lt;= shall not be applied to objects of pointer type except where they point into the same object"),<a name="line.151"></a>
+<span class="sourceLineNo">152</span>        MISRA_18_4("18.4", "The +, -, += and -= operators should not be applied to an expression of pointer type"),<a name="line.152"></a>
+<span class="sourceLineNo">153</span>        MISRA_18_5("18.5", "Declarations should contain no more than two levels of pointer nesting"),<a name="line.153"></a>
+<span class="sourceLineNo">154</span>        MISRA_18_6("18.6",<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                        "The address of an object with automatic storage shall not be copied to another object that persists after the first object has ceased to exist"),<a name="line.155"></a>
+<span class="sourceLineNo">156</span>        MISRA_18_7("18.7", "Flexible array members shall not be declared"),<a name="line.156"></a>
+<span class="sourceLineNo">157</span>        MISRA_18_8("18.8", "Variable-length array types shall not be used"),<a name="line.157"></a>
+<span class="sourceLineNo">158</span>        MISRA_19_1("19.1", "An object shall not be assigned or copied to an overlapping object"),<a name="line.158"></a>
+<span class="sourceLineNo">159</span>        MISRA_19_2("19.2", "The union keyword should not be used"),<a name="line.159"></a>
+<span class="sourceLineNo">160</span>        MISRA_20_1("20.1", "#include directives should only be preceded by preprocessor directives or comments"),<a name="line.160"></a>
+<span class="sourceLineNo">161</span>        MISRA_20_2("20.2",<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                        "The ', \" or \\ characters and the /* or // character sequences shall not occur in a header file name"),<a name="line.162"></a>
+<span class="sourceLineNo">163</span>        MISRA_20_3("20.3", "The #include directive shall be followed by either a &lt;filename&gt; or \"filename\" sequence"),<a name="line.163"></a>
+<span class="sourceLineNo">164</span>        MISRA_20_4("20.4", "A macro shall not be defined with the same name as a keyword"),<a name="line.164"></a>
+<span class="sourceLineNo">165</span>        MISRA_20_5("20.5", "#undef should not be used"),<a name="line.165"></a>
+<span class="sourceLineNo">166</span>        MISRA_20_6("20.6", "Tokens that look like a preprocessing directive shall not occur within a macro argument"),<a name="line.166"></a>
+<span class="sourceLineNo">167</span>        MISRA_20_7("20.7", "Expressions resulting from the expansion of macro parameters shall be enclosed in parentheses"),<a name="line.167"></a>
+<span class="sourceLineNo">168</span>        MISRA_20_8("20.8", "The controlling expression of a #if or #elif preprocessing directive shall evaluate to 0 or 1"),<a name="line.168"></a>
+<span class="sourceLineNo">169</span>        MISRA_20_9("20.9",<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                        "All identifiers used in the controlling expression of #if or #elif preprocessing directives shall be #define’d before evaluation"),<a name="line.170"></a>
+<span class="sourceLineNo">171</span>        MISRA_20_10("20.10", "The # and ## preprocessor operators should not be used"),<a name="line.171"></a>
+<span class="sourceLineNo">172</span>        MISRA_20_11("20.11",<a name="line.172"></a>
+<span class="sourceLineNo">173</span>                        "A macro parameter immediately following a # operator shall not immediately be followed by a ## operator"),<a name="line.173"></a>
+<span class="sourceLineNo">174</span>        MISRA_20_12("20.12",<a name="line.174"></a>
+<span class="sourceLineNo">175</span>                        "A macro parameter used as an operand to the # or ## operators, which is itself subject to further macro replacement, shall only be used as anoperand to these operators"),<a name="line.175"></a>
+<span class="sourceLineNo">176</span>        MISRA_20_13("20.13", "A line whose first token is # shall be a valid preprocessing directive"),<a name="line.176"></a>
+<span class="sourceLineNo">177</span>        MISRA_20_14("20.14",<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                        "All #else, #elif and #endif preprocessor directives shall reside in the same file as the #if, #ifdef or #ifndef directive to which they are related"),<a name="line.178"></a>
+<span class="sourceLineNo">179</span>        MISRA_21_1("21.1",<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                        "All resources obtained dynamically by means of Standard Library functions shall be explicitly released"),<a name="line.180"></a>
+<span class="sourceLineNo">181</span>        MISRA_21_2("21.2", "A reserved identifier or macro name shall not be declared"),<a name="line.181"></a>
+<span class="sourceLineNo">182</span>        MISRA_21_3("21.3", "The memory allocation and deallocation functions of &lt;stdlib.h&gt; shall not be used"),<a name="line.182"></a>
+<span class="sourceLineNo">183</span>        MISRA_21_4("21.4", "The standard header file &lt;setjmp.h&gt; shall not be used"),<a name="line.183"></a>
+<span class="sourceLineNo">184</span>        MISRA_21_5("21.5", "The standard header file &lt;signal.h&gt; shall not be used"),<a name="line.184"></a>
+<span class="sourceLineNo">185</span>        MISRA_21_6("21.6", "The Standard Library input/output functions shall not be used"),<a name="line.185"></a>
+<span class="sourceLineNo">186</span>        MISRA_21_7("21.7", "The atof, atoi, atol and atoll functions of &lt;stdlib.h&gt; shall not be used"),<a name="line.186"></a>
+<span class="sourceLineNo">187</span>        MISRA_21_8("21.8", "The library functions abort, exit, getenv and system of &lt;stdlib.h&gt; shall not be used"),<a name="line.187"></a>
+<span class="sourceLineNo">188</span>        MISRA_21_9("21.9", "The library functions bsearch and qsort of &lt;stdlib.h&gt; shall not beused"),<a name="line.188"></a>
+<span class="sourceLineNo">189</span>        MISRA_21_10("21.10", "The Standard Library time and date functions shall not be used"),<a name="line.189"></a>
+<span class="sourceLineNo">190</span>        MISRA_21_11("21.11", "The standard header file &lt;tgmath.h&gt; shall not be used"),<a name="line.190"></a>
+<span class="sourceLineNo">191</span>        MISRA_21_12("21.12", "The exception handling features of &lt;fenv.h&gt; should not be used"),<a name="line.191"></a>
+<span class="sourceLineNo">192</span>        MISRA_22_1("22.1",<a name="line.192"></a>
+<span class="sourceLineNo">193</span>                        "All resources obtained dynamically by means of Standard Library functions shall be explicitly released"),<a name="line.193"></a>
+<span class="sourceLineNo">194</span>        MISRA_22_2("22.2",<a name="line.194"></a>
+<span class="sourceLineNo">195</span>                        "A block of memory shall only be freed if it was allocated by means of a Standard Library function"),<a name="line.195"></a>
+<span class="sourceLineNo">196</span>        MISRA_22_3("22.3",<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                        "The same file shall not be open for read and write access at the same time on different streams"),<a name="line.197"></a>
+<span class="sourceLineNo">198</span>        MISRA_22_4("22.4", "There shall be no attempt to write to a stream which has been opened as read-only"),<a name="line.198"></a>
+<span class="sourceLineNo">199</span>        MISRA_22_5("22.5", "A pointer to a FILE object shall not be dereferenced"),<a name="line.199"></a>
+<span class="sourceLineNo">200</span>        MISRA_22_6("22.6",<a name="line.200"></a>
+<span class="sourceLineNo">201</span>                        "The value of a pointer to a FILE shall not be used after the associated stream has been closed");<a name="line.201"></a>
+<span class="sourceLineNo">202</span><a name="line.202"></a>
+<span class="sourceLineNo">203</span>        private final String id;<a name="line.203"></a>
+<span class="sourceLineNo">204</span><a name="line.204"></a>
+<span class="sourceLineNo">205</span>        private final String text;<a name="line.205"></a>
+<span class="sourceLineNo">206</span><a name="line.206"></a>
+<span class="sourceLineNo">207</span>        EMisraC2012Rule(String id, String name) {<a name="line.207"></a>
+<span class="sourceLineNo">208</span>                this.id = id;<a name="line.208"></a>
+<span class="sourceLineNo">209</span>                this.text = name;<a name="line.209"></a>
+<span class="sourceLineNo">210</span>        }<a name="line.210"></a>
+<span class="sourceLineNo">211</span><a name="line.211"></a>
+<span class="sourceLineNo">212</span>        @Override<a name="line.212"></a>
+<span class="sourceLineNo">213</span>        public String getRuleId() {<a name="line.213"></a>
+<span class="sourceLineNo">214</span>                return id;<a name="line.214"></a>
+<span class="sourceLineNo">215</span>        }<a name="line.215"></a>
+<span class="sourceLineNo">216</span><a name="line.216"></a>
+<span class="sourceLineNo">217</span>        @Override<a name="line.217"></a>
+<span class="sourceLineNo">218</span>        public String getRuleText() {<a name="line.218"></a>
+<span class="sourceLineNo">219</span>                return text;<a name="line.219"></a>
+<span class="sourceLineNo">220</span>        }<a name="line.220"></a>
+<span class="sourceLineNo">221</span><a name="line.221"></a>
+<span class="sourceLineNo">222</span>        @Override<a name="line.222"></a>
+<span class="sourceLineNo">223</span>        public void contributeRules(BiConsumer&lt;String, String&gt; contributor) {<a name="line.223"></a>
+<span class="sourceLineNo">224</span>                // empty<a name="line.224"></a>
+<span class="sourceLineNo">225</span>        }<a name="line.225"></a>
+<span class="sourceLineNo">226</span>}<a name="line.226"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

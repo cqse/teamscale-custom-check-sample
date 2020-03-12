@@ -29,127 +29,128 @@
 <span class="sourceLineNo">021</span>import java.util.List;<a name="line.21"></a>
 <span class="sourceLineNo">022</span>import java.util.Set;<a name="line.22"></a>
 <span class="sourceLineNo">023</span><a name="line.23"></a>
-<span class="sourceLineNo">024</span>import org.conqat.engine.commons.findings.location.LocationAdjuster;<a name="line.24"></a>
-<span class="sourceLineNo">025</span>import org.conqat.lib.commons.collections.UnmodifiableList;<a name="line.25"></a>
-<span class="sourceLineNo">026</span>import org.conqat.lib.commons.logging.ILogger;<a name="line.26"></a>
-<span class="sourceLineNo">027</span>import org.conqat.lib.commons.region.SimpleRegion;<a name="line.27"></a>
-<span class="sourceLineNo">028</span><a name="line.28"></a>
-<span class="sourceLineNo">029</span>import eu.cqse.check.framework.shallowparser.framework.EShallowEntityType;<a name="line.29"></a>
-<span class="sourceLineNo">030</span>import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;<a name="line.30"></a>
-<span class="sourceLineNo">031</span>import eu.cqse.check.framework.shallowparser.framework.ShallowEntityTraversalUtils;<a name="line.31"></a>
-<span class="sourceLineNo">032</span><a name="line.32"></a>
-<span class="sourceLineNo">033</span>/**<a name="line.33"></a>
-<span class="sourceLineNo">034</span> * Utility methods for dealing with coverage information.<a name="line.34"></a>
-<span class="sourceLineNo">035</span> */<a name="line.35"></a>
-<span class="sourceLineNo">036</span>public class TestCoverageUtils {<a name="line.36"></a>
-<span class="sourceLineNo">037</span><a name="line.37"></a>
-<span class="sourceLineNo">038</span>        /**<a name="line.38"></a>
-<span class="sourceLineNo">039</span>         * Adjusts line coverage information for a file to coverage information for a<a name="line.39"></a>
-<span class="sourceLineNo">040</span>         * changed file. The changes to the file are described by a location adjuster.<a name="line.40"></a>
-<span class="sourceLineNo">041</span>         * Due to the nature of coverage, each small change could affect the coverage<a name="line.41"></a>
-<span class="sourceLineNo">042</span>         * globally, hence this is only a rough approximation. This method is robust<a name="line.42"></a>
-<span class="sourceLineNo">043</span>         * w.r.t lines numbers that are out of the range w.r.t. the given<a name="line.43"></a>
-<span class="sourceLineNo">044</span>         * {@link LocationAdjuster}. Such invalid lines are logged as error to the given<a name="line.44"></a>
-<span class="sourceLineNo">045</span>         * logger.<a name="line.45"></a>
-<span class="sourceLineNo">046</span>         * <a name="line.46"></a>
-<span class="sourceLineNo">047</span>         * @param coverageInfo<a name="line.47"></a>
-<span class="sourceLineNo">048</span>         *            this may be null and then the result is null as well.<a name="line.48"></a>
-<span class="sourceLineNo">049</span>         */<a name="line.49"></a>
-<span class="sourceLineNo">050</span>        public static LineCoverageInfo adjustCoverageInfo(LineCoverageInfo coverageInfo, LocationAdjuster adjuster,<a name="line.50"></a>
-<span class="sourceLineNo">051</span>                        ILogger logger, String appendToErrorMessage) {<a name="line.51"></a>
-<span class="sourceLineNo">052</span>                if (coverageInfo == null) {<a name="line.52"></a>
-<span class="sourceLineNo">053</span>                        return null;<a name="line.53"></a>
-<span class="sourceLineNo">054</span>                }<a name="line.54"></a>
-<span class="sourceLineNo">055</span><a name="line.55"></a>
-<span class="sourceLineNo">056</span>                LineCoverageInfo adjustedCoverageInfo = new LineCoverageInfo(coverageInfo.getTimestamp(),<a name="line.56"></a>
-<span class="sourceLineNo">057</span>                                coverageInfo.isMethodAccurate());<a name="line.57"></a>
-<span class="sourceLineNo">058</span><a name="line.58"></a>
-<span class="sourceLineNo">059</span>                for (ELineCoverage lineCoverageType : ELineCoverage.values()) {<a name="line.59"></a>
-<span class="sourceLineNo">060</span>                        List&lt;Integer&gt; relevantLines = lineCoverageType.getRelevantLines(coverageInfo);<a name="line.60"></a>
-<span class="sourceLineNo">061</span>                        adjustLines(relevantLines, lineCoverageType, adjustedCoverageInfo, adjuster, logger, appendToErrorMessage);<a name="line.61"></a>
-<span class="sourceLineNo">062</span>                }<a name="line.62"></a>
-<span class="sourceLineNo">063</span><a name="line.63"></a>
-<span class="sourceLineNo">064</span>                return adjustedCoverageInfo;<a name="line.64"></a>
-<span class="sourceLineNo">065</span>        }<a name="line.65"></a>
-<span class="sourceLineNo">066</span><a name="line.66"></a>
-<span class="sourceLineNo">067</span>        /**<a name="line.67"></a>
-<span class="sourceLineNo">068</span>         * Adjusts the given lines using a location adjuster and fills them into the<a name="line.68"></a>
-<span class="sourceLineNo">069</span>         * provided coverage info. Invalid lines, i.e. lines numbers that are out of<a name="line.69"></a>
-<span class="sourceLineNo">070</span>         * range w.r.t the given {@link LocationAdjuster} are logged as error to the<a name="line.70"></a>
-<span class="sourceLineNo">071</span>         * given logger.<a name="line.71"></a>
-<span class="sourceLineNo">072</span>         * <a name="line.72"></a>
-<span class="sourceLineNo">073</span>         * @param lines<a name="line.73"></a>
-<span class="sourceLineNo">074</span>         *            the line numbers (one-based)<a name="line.74"></a>
-<span class="sourceLineNo">075</span>         */<a name="line.75"></a>
-<span class="sourceLineNo">076</span>        private static void adjustLines(List&lt;Integer&gt; lines, ELineCoverage coverageType,<a name="line.76"></a>
-<span class="sourceLineNo">077</span>                        LineCoverageInfo adjustedCoverageInfo, LocationAdjuster adjuster, ILogger logger,<a name="line.77"></a>
-<span class="sourceLineNo">078</span>                        String appendToErrorMessage) {<a name="line.78"></a>
-<span class="sourceLineNo">079</span>                Set&lt;Integer&gt; invalidLines = new HashSet&lt;&gt;();<a name="line.79"></a>
-<span class="sourceLineNo">080</span>                for (int line : lines) {<a name="line.80"></a>
-<span class="sourceLineNo">081</span>                        SimpleRegion adjustedLines = adjuster.adjustLine(line, invalidLines);<a name="line.81"></a>
-<span class="sourceLineNo">082</span>                        if (adjustedLines == null) {<a name="line.82"></a>
-<span class="sourceLineNo">083</span>                                continue;<a name="line.83"></a>
-<span class="sourceLineNo">084</span>                        }<a name="line.84"></a>
-<span class="sourceLineNo">085</span>                        for (int adjustedLine = adjustedLines.getStart(); adjustedLine &lt;= adjustedLines.getEnd(); ++adjustedLine) {<a name="line.85"></a>
-<span class="sourceLineNo">086</span>                                adjustedCoverageInfo.addLineCoverage(adjustedLine, coverageType);<a name="line.86"></a>
-<span class="sourceLineNo">087</span>                        }<a name="line.87"></a>
-<span class="sourceLineNo">088</span>                }<a name="line.88"></a>
-<span class="sourceLineNo">089</span>                reportInvalidLines(logger, appendToErrorMessage, invalidLines, adjuster);<a name="line.89"></a>
-<span class="sourceLineNo">090</span>        }<a name="line.90"></a>
-<span class="sourceLineNo">091</span><a name="line.91"></a>
-<span class="sourceLineNo">092</span>        private static void reportInvalidLines(ILogger logger, String appendToErrorMessage, Set&lt;Integer&gt; invalidLines,<a name="line.92"></a>
-<span class="sourceLineNo">093</span>                        LocationAdjuster adjuster) {<a name="line.93"></a>
-<span class="sourceLineNo">094</span>                if (!invalidLines.isEmpty()) {<a name="line.94"></a>
-<span class="sourceLineNo">095</span>                        logger.error("Encountered invalid lines: " + invalidLines + ". Line count: "<a name="line.95"></a>
-<span class="sourceLineNo">096</span>                                        + adjuster.getOriginalLineCount() + ". " + appendToErrorMessage);<a name="line.96"></a>
-<span class="sourceLineNo">097</span>                }<a name="line.97"></a>
-<span class="sourceLineNo">098</span>        }<a name="line.98"></a>
-<span class="sourceLineNo">099</span><a name="line.99"></a>
-<span class="sourceLineNo">100</span>        /**<a name="line.100"></a>
-<span class="sourceLineNo">101</span>         * Adjusts the line information of the given probole coverage using the<a name="line.101"></a>
-<span class="sourceLineNo">102</span>         * specified location adjuster.<a name="line.102"></a>
-<span class="sourceLineNo">103</span>         */<a name="line.103"></a>
-<span class="sourceLineNo">104</span>        public static void adjustProbeBasedCoverage(ProbeCoverageInfo probeCoverageInfo, LocationAdjuster adjuster,<a name="line.104"></a>
-<span class="sourceLineNo">105</span>                        ILogger logger, String appendToErrorMessage) {<a name="line.105"></a>
-<span class="sourceLineNo">106</span>                if (probeCoverageInfo == null) {<a name="line.106"></a>
-<span class="sourceLineNo">107</span>                        return;<a name="line.107"></a>
-<span class="sourceLineNo">108</span>                }<a name="line.108"></a>
-<span class="sourceLineNo">109</span>                Set&lt;Integer&gt; invalidLines = new HashSet&lt;&gt;();<a name="line.109"></a>
-<span class="sourceLineNo">110</span>                UnmodifiableList&lt;CoverageProbeBase&gt; probes = probeCoverageInfo.getProbes();<a name="line.110"></a>
-<span class="sourceLineNo">111</span>                List&lt;CoverageProbeBase&gt; validProbes = new ArrayList&lt;&gt;();<a name="line.111"></a>
-<span class="sourceLineNo">112</span>                for (CoverageProbeBase probe : probes) {<a name="line.112"></a>
-<span class="sourceLineNo">113</span>                        SimpleRegion adjustedRegion = adjuster.adjustLine(probe.getLine(), invalidLines);<a name="line.113"></a>
-<span class="sourceLineNo">114</span>                        if (adjustedRegion != null) {<a name="line.114"></a>
-<span class="sourceLineNo">115</span>                                validProbes.add(probe);<a name="line.115"></a>
-<span class="sourceLineNo">116</span>                                probe.setLine(adjustedRegion.getStart());<a name="line.116"></a>
-<span class="sourceLineNo">117</span>                        }<a name="line.117"></a>
-<span class="sourceLineNo">118</span>                }<a name="line.118"></a>
-<span class="sourceLineNo">119</span>                reportInvalidLines(logger, appendToErrorMessage, invalidLines, adjuster);<a name="line.119"></a>
-<span class="sourceLineNo">120</span>                probeCoverageInfo.setProbes(validProbes);<a name="line.120"></a>
-<span class="sourceLineNo">121</span>        }<a name="line.121"></a>
-<span class="sourceLineNo">122</span><a name="line.122"></a>
-<span class="sourceLineNo">123</span>        /**<a name="line.123"></a>
-<span class="sourceLineNo">124</span>         * Adjust the line-coverage to expand to full statements (= shallow entity start<a name="line.124"></a>
-<span class="sourceLineNo">125</span>         * and end)<a name="line.125"></a>
-<span class="sourceLineNo">126</span>         */<a name="line.126"></a>
-<span class="sourceLineNo">127</span>        public static void adjustCoverageToStatements(LineCoverageInfo coverage, List&lt;ShallowEntity&gt; entities) {<a name="line.127"></a>
-<span class="sourceLineNo">128</span>                for (ShallowEntity shallowEntity : ShallowEntityTraversalUtils.listEntitiesOfType(entities,<a name="line.128"></a>
-<span class="sourceLineNo">129</span>                                EShallowEntityType.STATEMENT)) {<a name="line.129"></a>
-<span class="sourceLineNo">130</span>                        int startLine = shallowEntity.getStartLine();<a name="line.130"></a>
-<span class="sourceLineNo">131</span>                        int endLine = shallowEntity.getEndLine();<a name="line.131"></a>
-<span class="sourceLineNo">132</span>                        ELineCoverage lineCoverage = coverage.getLineCoverage(startLine);<a name="line.132"></a>
-<span class="sourceLineNo">133</span><a name="line.133"></a>
-<span class="sourceLineNo">134</span>                        if (shallowEntity.hasChildren() || startLine == endLine || lineCoverage == null<a name="line.134"></a>
-<span class="sourceLineNo">135</span>                                        || lineCoverage == ELineCoverage.NOT_COVERED) {<a name="line.135"></a>
-<span class="sourceLineNo">136</span>                                continue;<a name="line.136"></a>
-<span class="sourceLineNo">137</span>                        }<a name="line.137"></a>
-<span class="sourceLineNo">138</span><a name="line.138"></a>
-<span class="sourceLineNo">139</span>                        for (int i = startLine + 1; i &lt;= endLine; i++) {<a name="line.139"></a>
-<span class="sourceLineNo">140</span>                                coverage.addLineCoverage(i, lineCoverage);<a name="line.140"></a>
-<span class="sourceLineNo">141</span>                        }<a name="line.141"></a>
-<span class="sourceLineNo">142</span>                }<a name="line.142"></a>
-<span class="sourceLineNo">143</span>        }<a name="line.143"></a>
-<span class="sourceLineNo">144</span>}<a name="line.144"></a>
+<span class="sourceLineNo">024</span>import org.conqat.engine.commons.findings.location.ILineAdjuster;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import org.conqat.engine.commons.findings.location.LocationAdjuster;<a name="line.25"></a>
+<span class="sourceLineNo">026</span>import org.conqat.lib.commons.collections.UnmodifiableList;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import org.conqat.lib.commons.logging.ILogger;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import org.conqat.lib.commons.region.SimpleRegion;<a name="line.28"></a>
+<span class="sourceLineNo">029</span><a name="line.29"></a>
+<span class="sourceLineNo">030</span>import eu.cqse.check.framework.shallowparser.framework.EShallowEntityType;<a name="line.30"></a>
+<span class="sourceLineNo">031</span>import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;<a name="line.31"></a>
+<span class="sourceLineNo">032</span>import eu.cqse.check.framework.shallowparser.framework.ShallowEntityTraversalUtils;<a name="line.32"></a>
+<span class="sourceLineNo">033</span><a name="line.33"></a>
+<span class="sourceLineNo">034</span>/**<a name="line.34"></a>
+<span class="sourceLineNo">035</span> * Utility methods for dealing with coverage information.<a name="line.35"></a>
+<span class="sourceLineNo">036</span> */<a name="line.36"></a>
+<span class="sourceLineNo">037</span>public class TestCoverageUtils {<a name="line.37"></a>
+<span class="sourceLineNo">038</span><a name="line.38"></a>
+<span class="sourceLineNo">039</span>        /**<a name="line.39"></a>
+<span class="sourceLineNo">040</span>         * Adjusts line coverage information for a file to coverage information for a<a name="line.40"></a>
+<span class="sourceLineNo">041</span>         * changed file. The changes to the file are described by a location adjuster.<a name="line.41"></a>
+<span class="sourceLineNo">042</span>         * Due to the nature of coverage, each small change could affect the coverage<a name="line.42"></a>
+<span class="sourceLineNo">043</span>         * globally, hence this is only a rough approximation. This method is robust<a name="line.43"></a>
+<span class="sourceLineNo">044</span>         * w.r.t lines numbers that are out of the range w.r.t. the given<a name="line.44"></a>
+<span class="sourceLineNo">045</span>         * {@link LocationAdjuster}. Such invalid lines are logged as error to the given<a name="line.45"></a>
+<span class="sourceLineNo">046</span>         * logger.<a name="line.46"></a>
+<span class="sourceLineNo">047</span>         * <a name="line.47"></a>
+<span class="sourceLineNo">048</span>         * @param coverageInfo<a name="line.48"></a>
+<span class="sourceLineNo">049</span>         *            this may be null and then the result is null as well.<a name="line.49"></a>
+<span class="sourceLineNo">050</span>         */<a name="line.50"></a>
+<span class="sourceLineNo">051</span>        public static LineCoverageInfo adjustCoverageInfo(LineCoverageInfo coverageInfo, ILineAdjuster adjuster,<a name="line.51"></a>
+<span class="sourceLineNo">052</span>                        ILogger logger, String appendToErrorMessage) {<a name="line.52"></a>
+<span class="sourceLineNo">053</span>                if (coverageInfo == null) {<a name="line.53"></a>
+<span class="sourceLineNo">054</span>                        return null;<a name="line.54"></a>
+<span class="sourceLineNo">055</span>                }<a name="line.55"></a>
+<span class="sourceLineNo">056</span><a name="line.56"></a>
+<span class="sourceLineNo">057</span>                LineCoverageInfo adjustedCoverageInfo = new LineCoverageInfo(coverageInfo.getTimestamp(),<a name="line.57"></a>
+<span class="sourceLineNo">058</span>                                coverageInfo.isMethodAccurate());<a name="line.58"></a>
+<span class="sourceLineNo">059</span><a name="line.59"></a>
+<span class="sourceLineNo">060</span>                for (ELineCoverage lineCoverageType : ELineCoverage.values()) {<a name="line.60"></a>
+<span class="sourceLineNo">061</span>                        List&lt;Integer&gt; relevantLines = lineCoverageType.getRelevantLines(coverageInfo);<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                        adjustLines(relevantLines, lineCoverageType, adjustedCoverageInfo, adjuster, logger, appendToErrorMessage);<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                }<a name="line.63"></a>
+<span class="sourceLineNo">064</span><a name="line.64"></a>
+<span class="sourceLineNo">065</span>                return adjustedCoverageInfo;<a name="line.65"></a>
+<span class="sourceLineNo">066</span>        }<a name="line.66"></a>
+<span class="sourceLineNo">067</span><a name="line.67"></a>
+<span class="sourceLineNo">068</span>        /**<a name="line.68"></a>
+<span class="sourceLineNo">069</span>         * Adjusts the given lines using a location adjuster and fills them into the<a name="line.69"></a>
+<span class="sourceLineNo">070</span>         * provided coverage info. Invalid lines, i.e. lines numbers that are out of<a name="line.70"></a>
+<span class="sourceLineNo">071</span>         * range w.r.t the given {@link LocationAdjuster} are logged as error to the<a name="line.71"></a>
+<span class="sourceLineNo">072</span>         * given logger.<a name="line.72"></a>
+<span class="sourceLineNo">073</span>         * <a name="line.73"></a>
+<span class="sourceLineNo">074</span>         * @param lines<a name="line.74"></a>
+<span class="sourceLineNo">075</span>         *            the line numbers (one-based)<a name="line.75"></a>
+<span class="sourceLineNo">076</span>         */<a name="line.76"></a>
+<span class="sourceLineNo">077</span>        private static void adjustLines(List&lt;Integer&gt; lines, ELineCoverage coverageType,<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                        LineCoverageInfo adjustedCoverageInfo, ILineAdjuster adjuster, ILogger logger,<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                        String appendToErrorMessage) {<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                Set&lt;Integer&gt; invalidLines = new HashSet&lt;&gt;();<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                for (int line : lines) {<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                        SimpleRegion adjustedLines = adjuster.adjustLine(line, invalidLines);<a name="line.82"></a>
+<span class="sourceLineNo">083</span>                        if (adjustedLines == null) {<a name="line.83"></a>
+<span class="sourceLineNo">084</span>                                continue;<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                        }<a name="line.85"></a>
+<span class="sourceLineNo">086</span>                        for (int adjustedLine = adjustedLines.getStart(); adjustedLine &lt;= adjustedLines.getEnd(); ++adjustedLine) {<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                                adjustedCoverageInfo.addLineCoverage(adjustedLine, coverageType);<a name="line.87"></a>
+<span class="sourceLineNo">088</span>                        }<a name="line.88"></a>
+<span class="sourceLineNo">089</span>                }<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                reportInvalidLines(logger, appendToErrorMessage, invalidLines, adjuster);<a name="line.90"></a>
+<span class="sourceLineNo">091</span>        }<a name="line.91"></a>
+<span class="sourceLineNo">092</span><a name="line.92"></a>
+<span class="sourceLineNo">093</span>        private static void reportInvalidLines(ILogger logger, String appendToErrorMessage, Set&lt;Integer&gt; invalidLines,<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                        ILineAdjuster adjuster) {<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                if (!invalidLines.isEmpty()) {<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                        logger.error("Encountered invalid lines: " + invalidLines + ". Line count: "<a name="line.96"></a>
+<span class="sourceLineNo">097</span>                                        + adjuster.getOriginalLineCount() + ". " + appendToErrorMessage);<a name="line.97"></a>
+<span class="sourceLineNo">098</span>                }<a name="line.98"></a>
+<span class="sourceLineNo">099</span>        }<a name="line.99"></a>
+<span class="sourceLineNo">100</span><a name="line.100"></a>
+<span class="sourceLineNo">101</span>        /**<a name="line.101"></a>
+<span class="sourceLineNo">102</span>         * Adjusts the line information of the given probole coverage using the<a name="line.102"></a>
+<span class="sourceLineNo">103</span>         * specified location adjuster.<a name="line.103"></a>
+<span class="sourceLineNo">104</span>         */<a name="line.104"></a>
+<span class="sourceLineNo">105</span>        public static void adjustProbeBasedCoverage(ProbeCoverageInfo probeCoverageInfo, LocationAdjuster adjuster,<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                        ILogger logger, String appendToErrorMessage) {<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                if (probeCoverageInfo == null) {<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                        return;<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                }<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                Set&lt;Integer&gt; invalidLines = new HashSet&lt;&gt;();<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                UnmodifiableList&lt;CoverageProbeBase&gt; probes = probeCoverageInfo.getProbes();<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                List&lt;CoverageProbeBase&gt; validProbes = new ArrayList&lt;&gt;();<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                for (CoverageProbeBase probe : probes) {<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                        SimpleRegion adjustedRegion = adjuster.adjustLine(probe.getLine(), invalidLines);<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                        if (adjustedRegion != null) {<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                                validProbes.add(probe);<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                                probe.setLine(adjustedRegion.getStart());<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                        }<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                }<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                reportInvalidLines(logger, appendToErrorMessage, invalidLines, adjuster);<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                probeCoverageInfo.setProbes(validProbes);<a name="line.121"></a>
+<span class="sourceLineNo">122</span>        }<a name="line.122"></a>
+<span class="sourceLineNo">123</span><a name="line.123"></a>
+<span class="sourceLineNo">124</span>        /**<a name="line.124"></a>
+<span class="sourceLineNo">125</span>         * Adjust the line-coverage to expand to full statements (= shallow entity start<a name="line.125"></a>
+<span class="sourceLineNo">126</span>         * and end)<a name="line.126"></a>
+<span class="sourceLineNo">127</span>         */<a name="line.127"></a>
+<span class="sourceLineNo">128</span>        public static void adjustCoverageToStatements(LineCoverageInfo coverage, List&lt;ShallowEntity&gt; entities) {<a name="line.128"></a>
+<span class="sourceLineNo">129</span>                for (ShallowEntity shallowEntity : ShallowEntityTraversalUtils.listEntitiesOfType(entities,<a name="line.129"></a>
+<span class="sourceLineNo">130</span>                                EShallowEntityType.STATEMENT)) {<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                        int startLine = shallowEntity.getStartLine();<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                        int endLine = shallowEntity.getEndLine();<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                        ELineCoverage lineCoverage = coverage.getLineCoverage(startLine);<a name="line.133"></a>
+<span class="sourceLineNo">134</span><a name="line.134"></a>
+<span class="sourceLineNo">135</span>                        if (shallowEntity.hasChildren() || startLine == endLine || lineCoverage == null<a name="line.135"></a>
+<span class="sourceLineNo">136</span>                                        || lineCoverage == ELineCoverage.NOT_COVERED) {<a name="line.136"></a>
+<span class="sourceLineNo">137</span>                                continue;<a name="line.137"></a>
+<span class="sourceLineNo">138</span>                        }<a name="line.138"></a>
+<span class="sourceLineNo">139</span><a name="line.139"></a>
+<span class="sourceLineNo">140</span>                        for (int i = startLine + 1; i &lt;= endLine; i++) {<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                                coverage.addLineCoverage(i, lineCoverage);<a name="line.141"></a>
+<span class="sourceLineNo">142</span>                        }<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                }<a name="line.143"></a>
+<span class="sourceLineNo">144</span>        }<a name="line.144"></a>
+<span class="sourceLineNo">145</span>}<a name="line.145"></a>
 
 
 

@@ -45,367 +45,378 @@
 <span class="sourceLineNo">037</span>import static eu.cqse.check.framework.scanner.ETokenType.LBRACK;<a name="line.37"></a>
 <span class="sourceLineNo">038</span>import static eu.cqse.check.framework.scanner.ETokenType.LITERALS;<a name="line.38"></a>
 <span class="sourceLineNo">039</span>import static eu.cqse.check.framework.scanner.ETokenType.LPAREN;<a name="line.39"></a>
-<span class="sourceLineNo">040</span>import static eu.cqse.check.framework.scanner.ETokenType.MULT;<a name="line.40"></a>
-<span class="sourceLineNo">041</span>import static eu.cqse.check.framework.scanner.ETokenType.NOT;<a name="line.41"></a>
-<span class="sourceLineNo">042</span>import static eu.cqse.check.framework.scanner.ETokenType.NOTEQ;<a name="line.42"></a>
-<span class="sourceLineNo">043</span>import static eu.cqse.check.framework.scanner.ETokenType.OR;<a name="line.43"></a>
-<span class="sourceLineNo">044</span>import static eu.cqse.check.framework.scanner.ETokenType.OREQ;<a name="line.44"></a>
-<span class="sourceLineNo">045</span>import static eu.cqse.check.framework.scanner.ETokenType.OROR;<a name="line.45"></a>
-<span class="sourceLineNo">046</span>import static eu.cqse.check.framework.scanner.ETokenType.RBRACE;<a name="line.46"></a>
-<span class="sourceLineNo">047</span>import static eu.cqse.check.framework.scanner.ETokenType.RBRACK;<a name="line.47"></a>
-<span class="sourceLineNo">048</span>import static eu.cqse.check.framework.scanner.ETokenType.RPAREN;<a name="line.48"></a>
-<span class="sourceLineNo">049</span>import static eu.cqse.check.framework.scanner.ETokenType.SEMICOLON;<a name="line.49"></a>
-<span class="sourceLineNo">050</span>import static eu.cqse.check.framework.scanner.ETokenType.TRY;<a name="line.50"></a>
-<span class="sourceLineNo">051</span>import static eu.cqse.check.framework.scanner.ETokenType.TYPEDEF;<a name="line.51"></a>
-<span class="sourceLineNo">052</span>import static eu.cqse.check.framework.scanner.ETokenType.UNION;<a name="line.52"></a>
-<span class="sourceLineNo">053</span>import static eu.cqse.check.framework.scanner.ETokenType.WHILE;<a name="line.53"></a>
-<span class="sourceLineNo">054</span>import static eu.cqse.check.framework.scanner.ETokenType.XOR;<a name="line.54"></a>
-<span class="sourceLineNo">055</span>import static eu.cqse.check.framework.scanner.ETokenType.XOREQ;<a name="line.55"></a>
-<span class="sourceLineNo">056</span>import static eu.cqse.check.framework.shallowparser.languages.base.EGenericParserStates.IN_EXPRESSION;<a name="line.56"></a>
-<span class="sourceLineNo">057</span>import static eu.cqse.check.framework.shallowparser.languages.base.EGenericParserStates.IN_METHOD;<a name="line.57"></a>
-<span class="sourceLineNo">058</span>import static eu.cqse.check.framework.shallowparser.languages.base.EGenericParserStates.IN_TYPE;<a name="line.58"></a>
-<span class="sourceLineNo">059</span>import static eu.cqse.check.framework.shallowparser.languages.base.EGenericParserStates.TOP_LEVEL;<a name="line.59"></a>
-<span class="sourceLineNo">060</span><a name="line.60"></a>
-<span class="sourceLineNo">061</span>import java.util.Arrays;<a name="line.61"></a>
-<span class="sourceLineNo">062</span>import java.util.EnumSet;<a name="line.62"></a>
-<span class="sourceLineNo">063</span>import java.util.HashSet;<a name="line.63"></a>
-<span class="sourceLineNo">064</span>import java.util.List;<a name="line.64"></a>
-<span class="sourceLineNo">065</span><a name="line.65"></a>
-<span class="sourceLineNo">066</span>import org.conqat.lib.commons.region.Region;<a name="line.66"></a>
-<span class="sourceLineNo">067</span><a name="line.67"></a>
-<span class="sourceLineNo">068</span>import eu.cqse.check.framework.scanner.ETokenType;<a name="line.68"></a>
-<span class="sourceLineNo">069</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.69"></a>
-<span class="sourceLineNo">070</span>import eu.cqse.check.framework.shallowparser.SubTypeNames;<a name="line.70"></a>
-<span class="sourceLineNo">071</span>import eu.cqse.check.framework.shallowparser.TokenStreamUtils;<a name="line.71"></a>
-<span class="sourceLineNo">072</span>import eu.cqse.check.framework.shallowparser.framework.EShallowEntityType;<a name="line.72"></a>
-<span class="sourceLineNo">073</span>import eu.cqse.check.framework.shallowparser.framework.RecognizerBase;<a name="line.73"></a>
-<span class="sourceLineNo">074</span>import eu.cqse.check.framework.shallowparser.framework.ShallowParserBase;<a name="line.74"></a>
-<span class="sourceLineNo">075</span><a name="line.75"></a>
-<span class="sourceLineNo">076</span>/**<a name="line.76"></a>
-<span class="sourceLineNo">077</span> * Base class for C-style languages (C++, Java, C#).<a name="line.77"></a>
-<span class="sourceLineNo">078</span> */<a name="line.78"></a>
-<span class="sourceLineNo">079</span>public abstract class CStyleShallowParserBase extends ShallowParserBase&lt;EGenericParserStates&gt; {<a name="line.79"></a>
-<span class="sourceLineNo">080</span><a name="line.80"></a>
-<span class="sourceLineNo">081</span>        /** C++ operators that have an alternative (string) representations. */<a name="line.81"></a>
-<span class="sourceLineNo">082</span>        protected static final EnumSet&lt;ETokenType&gt; OPERATORS_WITH_ALTERNATIVE_REPRESENTATION = EnumSet.of(NOT, COMP, NOTEQ,<a name="line.82"></a>
-<span class="sourceLineNo">083</span>                        ANDAND, OROR, AND, OR, XOR, ANDEQ, OREQ, XOREQ);<a name="line.83"></a>
+<span class="sourceLineNo">040</span>import static eu.cqse.check.framework.scanner.ETokenType.MINUS;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>import static eu.cqse.check.framework.scanner.ETokenType.MULT;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>import static eu.cqse.check.framework.scanner.ETokenType.NOT;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>import static eu.cqse.check.framework.scanner.ETokenType.NOTEQ;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>import static eu.cqse.check.framework.scanner.ETokenType.OR;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>import static eu.cqse.check.framework.scanner.ETokenType.OREQ;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>import static eu.cqse.check.framework.scanner.ETokenType.OROR;<a name="line.46"></a>
+<span class="sourceLineNo">047</span>import static eu.cqse.check.framework.scanner.ETokenType.PLUS;<a name="line.47"></a>
+<span class="sourceLineNo">048</span>import static eu.cqse.check.framework.scanner.ETokenType.RBRACE;<a name="line.48"></a>
+<span class="sourceLineNo">049</span>import static eu.cqse.check.framework.scanner.ETokenType.RBRACK;<a name="line.49"></a>
+<span class="sourceLineNo">050</span>import static eu.cqse.check.framework.scanner.ETokenType.RPAREN;<a name="line.50"></a>
+<span class="sourceLineNo">051</span>import static eu.cqse.check.framework.scanner.ETokenType.SEMICOLON;<a name="line.51"></a>
+<span class="sourceLineNo">052</span>import static eu.cqse.check.framework.scanner.ETokenType.TRY;<a name="line.52"></a>
+<span class="sourceLineNo">053</span>import static eu.cqse.check.framework.scanner.ETokenType.TYPEDEF;<a name="line.53"></a>
+<span class="sourceLineNo">054</span>import static eu.cqse.check.framework.scanner.ETokenType.UNION;<a name="line.54"></a>
+<span class="sourceLineNo">055</span>import static eu.cqse.check.framework.scanner.ETokenType.USING;<a name="line.55"></a>
+<span class="sourceLineNo">056</span>import static eu.cqse.check.framework.scanner.ETokenType.VAR;<a name="line.56"></a>
+<span class="sourceLineNo">057</span>import static eu.cqse.check.framework.scanner.ETokenType.WHILE;<a name="line.57"></a>
+<span class="sourceLineNo">058</span>import static eu.cqse.check.framework.scanner.ETokenType.XOR;<a name="line.58"></a>
+<span class="sourceLineNo">059</span>import static eu.cqse.check.framework.scanner.ETokenType.XOREQ;<a name="line.59"></a>
+<span class="sourceLineNo">060</span>import static eu.cqse.check.framework.shallowparser.languages.base.EGenericParserStates.IN_EXPRESSION;<a name="line.60"></a>
+<span class="sourceLineNo">061</span>import static eu.cqse.check.framework.shallowparser.languages.base.EGenericParserStates.IN_METHOD;<a name="line.61"></a>
+<span class="sourceLineNo">062</span>import static eu.cqse.check.framework.shallowparser.languages.base.EGenericParserStates.IN_TYPE;<a name="line.62"></a>
+<span class="sourceLineNo">063</span>import static eu.cqse.check.framework.shallowparser.languages.base.EGenericParserStates.TOP_LEVEL;<a name="line.63"></a>
+<span class="sourceLineNo">064</span><a name="line.64"></a>
+<span class="sourceLineNo">065</span>import java.util.Arrays;<a name="line.65"></a>
+<span class="sourceLineNo">066</span>import java.util.EnumSet;<a name="line.66"></a>
+<span class="sourceLineNo">067</span>import java.util.HashSet;<a name="line.67"></a>
+<span class="sourceLineNo">068</span>import java.util.List;<a name="line.68"></a>
+<span class="sourceLineNo">069</span><a name="line.69"></a>
+<span class="sourceLineNo">070</span>import org.conqat.lib.commons.region.Region;<a name="line.70"></a>
+<span class="sourceLineNo">071</span><a name="line.71"></a>
+<span class="sourceLineNo">072</span>import eu.cqse.check.framework.scanner.ETokenType;<a name="line.72"></a>
+<span class="sourceLineNo">073</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.73"></a>
+<span class="sourceLineNo">074</span>import eu.cqse.check.framework.shallowparser.SubTypeNames;<a name="line.74"></a>
+<span class="sourceLineNo">075</span>import eu.cqse.check.framework.shallowparser.TokenStreamUtils;<a name="line.75"></a>
+<span class="sourceLineNo">076</span>import eu.cqse.check.framework.shallowparser.framework.EShallowEntityType;<a name="line.76"></a>
+<span class="sourceLineNo">077</span>import eu.cqse.check.framework.shallowparser.framework.RecognizerBase;<a name="line.77"></a>
+<span class="sourceLineNo">078</span>import eu.cqse.check.framework.shallowparser.framework.ShallowParserBase;<a name="line.78"></a>
+<span class="sourceLineNo">079</span><a name="line.79"></a>
+<span class="sourceLineNo">080</span>/**<a name="line.80"></a>
+<span class="sourceLineNo">081</span> * Base class for C-style languages (C++, Java, C#).<a name="line.81"></a>
+<span class="sourceLineNo">082</span> */<a name="line.82"></a>
+<span class="sourceLineNo">083</span>public abstract class CStyleShallowParserBase extends ShallowParserBase&lt;EGenericParserStates&gt; {<a name="line.83"></a>
 <span class="sourceLineNo">084</span><a name="line.84"></a>
-<span class="sourceLineNo">085</span>        /** Constructor. */<a name="line.85"></a>
-<span class="sourceLineNo">086</span>        protected CStyleShallowParserBase() {<a name="line.86"></a>
-<span class="sourceLineNo">087</span>                super(EGenericParserStates.class, EGenericParserStates.TOP_LEVEL);<a name="line.87"></a>
-<span class="sourceLineNo">088</span>                createMetaRules();<a name="line.88"></a>
-<span class="sourceLineNo">089</span>                createTypeRules();<a name="line.89"></a>
-<span class="sourceLineNo">090</span>                createClassElementsRules();<a name="line.90"></a>
-<span class="sourceLineNo">091</span>                createStatementRules();<a name="line.91"></a>
-<span class="sourceLineNo">092</span>                createSubExpressionRules();<a name="line.92"></a>
-<span class="sourceLineNo">093</span>        }<a name="line.93"></a>
-<span class="sourceLineNo">094</span><a name="line.94"></a>
-<span class="sourceLineNo">095</span>        /** Creates rules for meta elements. */<a name="line.95"></a>
-<span class="sourceLineNo">096</span>        protected void createMetaRules() {<a name="line.96"></a>
-<span class="sourceLineNo">097</span>                // deal with dangling closing braces by inserting broken node (endNode<a name="line.97"></a>
-<span class="sourceLineNo">098</span>                // intentionally omitted)<a name="line.98"></a>
-<span class="sourceLineNo">099</span>                inAnyState().sequence(RBRACE).createNode(EShallowEntityType.META, "dangling closing brace");<a name="line.99"></a>
-<span class="sourceLineNo">100</span>        }<a name="line.100"></a>
-<span class="sourceLineNo">101</span><a name="line.101"></a>
-<span class="sourceLineNo">102</span>        /** Parser rules for module/namespace and type creation. */<a name="line.102"></a>
-<span class="sourceLineNo">103</span>        protected void createTypeRules() {<a name="line.103"></a>
-<span class="sourceLineNo">104</span>                // types; we have to ensure when skipping to the LBRACE, that there is<a name="line.104"></a>
-<span class="sourceLineNo">105</span>                // no earlier SEMICOLON<a name="line.105"></a>
-<span class="sourceLineNo">106</span>                inAnyState().repeated(getTypeModifier()).markStart().sequence(getTypeKeywords(), getValidIdentifiers())<a name="line.106"></a>
-<span class="sourceLineNo">107</span>                                .skipBefore(EnumSet.of(SEMICOLON, LBRACE)).sequence(LBRACE).createNode(EShallowEntityType.TYPE, 0, 1)<a name="line.107"></a>
-<span class="sourceLineNo">108</span>                                .parseUntil(IN_TYPE).sequence(RBRACE).endNode();<a name="line.108"></a>
-<span class="sourceLineNo">109</span>        }<a name="line.109"></a>
-<span class="sourceLineNo">110</span><a name="line.110"></a>
-<span class="sourceLineNo">111</span>        /** Creates rules for C style typedef */<a name="line.111"></a>
-<span class="sourceLineNo">112</span>        protected void createTypedefRules() {<a name="line.112"></a>
-<span class="sourceLineNo">113</span>                RecognizerBase&lt;EGenericParserStates&gt; typeInTypedefAlternative = inAnyState().sequence(TYPEDEF).optional(CONST);<a name="line.113"></a>
-<span class="sourceLineNo">114</span>                typeInTypedefAlternative.sequenceBefore(getTypeKeywords(), IDENTIFIER, LBRACE)<a name="line.114"></a>
-<span class="sourceLineNo">115</span>                                .createNode(EShallowEntityType.TYPE, 0).parseOnce(TOP_LEVEL).skipTo(IDENTIFIER, SEMICOLON)<a name="line.115"></a>
-<span class="sourceLineNo">116</span>                                .endNodeWithName(-2);<a name="line.116"></a>
-<span class="sourceLineNo">117</span>                typeInTypedefAlternative.sequenceBefore(getTypeKeywords(), LBRACE).createNode(EShallowEntityType.TYPE, 0)<a name="line.117"></a>
-<span class="sourceLineNo">118</span>                                .parseOnce(TOP_LEVEL).skipTo(IDENTIFIER, SEMICOLON).endNodeWithName(-2);<a name="line.118"></a>
-<span class="sourceLineNo">119</span><a name="line.119"></a>
-<span class="sourceLineNo">120</span>                // skips to the name identifier (skips anything enclosed in &lt;...&gt;)<a name="line.120"></a>
-<span class="sourceLineNo">121</span>                RecognizerBase&lt;EGenericParserStates&gt; simpleTypedefAlternative = inAnyState().sequence(TYPEDEF)<a name="line.121"></a>
-<span class="sourceLineNo">122</span>                                .createNode(EShallowEntityType.TYPE, 0)<a name="line.122"></a>
-<span class="sourceLineNo">123</span>                                .skipBeforeWithNesting(Arrays.asList(IDENTIFIER, EnumSet.of(SEMICOLON, RPAREN, LBRACK)),<a name="line.123"></a>
-<span class="sourceLineNo">124</span>                                                Arrays.asList(ETokenType.LT), Arrays.asList(ETokenType.GT), null);<a name="line.124"></a>
-<span class="sourceLineNo">125</span><a name="line.125"></a>
-<span class="sourceLineNo">126</span>                // array types such as "typedef foo &lt;COMPLEX STUFF&gt; name [COMPLEX STUFF];"<a name="line.126"></a>
-<span class="sourceLineNo">127</span>                simpleTypedefAlternative.markStart().sequenceBefore(IDENTIFIER, EnumSet.of(SEMICOLON, LBRACK))<a name="line.127"></a>
-<span class="sourceLineNo">128</span>                                .skipToWithNesting(SEMICOLON, LBRACK, RBRACK).endNodeWithName(0);<a name="line.128"></a>
-<span class="sourceLineNo">129</span>                simpleTypedefAlternative.markStart().sequence(IDENTIFIER, RPAREN).skipTo(SEMICOLON).endNodeWithName(0);<a name="line.129"></a>
-<span class="sourceLineNo">130</span>        }<a name="line.130"></a>
-<span class="sourceLineNo">131</span><a name="line.131"></a>
-<span class="sourceLineNo">132</span>        /**<a name="line.132"></a>
-<span class="sourceLineNo">133</span>         * Returns the valid type modifiers for the language. Default implementation<a name="line.133"></a>
-<span class="sourceLineNo">134</span>         * returns empty set. Override to use correct modifiers.<a name="line.134"></a>
-<span class="sourceLineNo">135</span>         */<a name="line.135"></a>
-<span class="sourceLineNo">136</span>        protected EnumSet&lt;ETokenType&gt; getTypeModifier() {<a name="line.136"></a>
-<span class="sourceLineNo">137</span>                return EnumSet.noneOf(ETokenType.class);<a name="line.137"></a>
-<span class="sourceLineNo">138</span>        }<a name="line.138"></a>
-<span class="sourceLineNo">139</span><a name="line.139"></a>
-<span class="sourceLineNo">140</span>        /** Returns the set of keywords that start a type. */<a name="line.140"></a>
-<span class="sourceLineNo">141</span>        protected abstract EnumSet&lt;ETokenType&gt; getTypeKeywords();<a name="line.141"></a>
-<span class="sourceLineNo">142</span><a name="line.142"></a>
-<span class="sourceLineNo">143</span>        /** Parser rules for both attributes and methods. */<a name="line.143"></a>
-<span class="sourceLineNo">144</span>        protected abstract void createClassElementsRules();<a name="line.144"></a>
-<span class="sourceLineNo">145</span><a name="line.145"></a>
-<span class="sourceLineNo">146</span>        /** Creates parser rules for statements. */<a name="line.146"></a>
-<span class="sourceLineNo">147</span>        protected void createStatementRules() {<a name="line.147"></a>
-<span class="sourceLineNo">148</span>                createEmptyStatementRule();<a name="line.148"></a>
-<span class="sourceLineNo">149</span>                createLabelRule();<a name="line.149"></a>
-<span class="sourceLineNo">150</span>                createElseIfRule();<a name="line.150"></a>
-<span class="sourceLineNo">151</span>                createBasicBlockRules();<a name="line.151"></a>
-<span class="sourceLineNo">152</span>                createCaseRule();<a name="line.152"></a>
-<span class="sourceLineNo">153</span>                createDoWhileRule();<a name="line.153"></a>
-<span class="sourceLineNo">154</span>                createGenericBlockRule();<a name="line.154"></a>
-<span class="sourceLineNo">155</span>                createSimpleStatementRule();<a name="line.155"></a>
-<span class="sourceLineNo">156</span>        }<a name="line.156"></a>
-<span class="sourceLineNo">157</span><a name="line.157"></a>
-<span class="sourceLineNo">158</span>        /** The empty statement. */<a name="line.158"></a>
-<span class="sourceLineNo">159</span>        private void createEmptyStatementRule() {<a name="line.159"></a>
-<span class="sourceLineNo">160</span>                inState(IN_METHOD).sequence(SEMICOLON).createNode(EShallowEntityType.STATEMENT, SubTypeNames.EMPTY_STATEMENT)<a name="line.160"></a>
-<span class="sourceLineNo">161</span>                                .endNode();<a name="line.161"></a>
-<span class="sourceLineNo">162</span>        }<a name="line.162"></a>
-<span class="sourceLineNo">163</span><a name="line.163"></a>
-<span class="sourceLineNo">164</span>        /** Matches labels. */<a name="line.164"></a>
-<span class="sourceLineNo">165</span>        private void createLabelRule() {<a name="line.165"></a>
-<span class="sourceLineNo">166</span>                // filter out labels as meta as they do not increase statement count<a name="line.166"></a>
-<span class="sourceLineNo">167</span>                inState(IN_METHOD).sequence(getValidIdentifiers(), COLON)<a name="line.167"></a>
-<span class="sourceLineNo">168</span>                                .createNode(EShallowEntityType.META, SubTypeNames.LABEL, 0).endNode();<a name="line.168"></a>
-<span class="sourceLineNo">169</span>        }<a name="line.169"></a>
-<span class="sourceLineNo">170</span><a name="line.170"></a>
-<span class="sourceLineNo">171</span>        /** Special rule for else-if. */<a name="line.171"></a>
-<span class="sourceLineNo">172</span>        protected void createElseIfRule() {<a name="line.172"></a>
-<span class="sourceLineNo">173</span>                RecognizerBase&lt;EGenericParserStates&gt; elseIfAlternative = inState(IN_METHOD).sequence(ELSE, IF)<a name="line.173"></a>
-<span class="sourceLineNo">174</span>                                .createNode(EShallowEntityType.STATEMENT, new int[] { 0, 1 })<a name="line.174"></a>
-<span class="sourceLineNo">175</span>                                .skipNested(LPAREN, RPAREN, getSubExpressionRecognizer());<a name="line.175"></a>
-<span class="sourceLineNo">176</span>                endWithPossibleContinuation(elseIfAlternative.sequence(LBRACE).parseUntil(IN_METHOD).sequence(RBRACE),<a name="line.176"></a>
-<span class="sourceLineNo">177</span>                                EnumSet.of(ELSE));<a name="line.177"></a>
-<span class="sourceLineNo">178</span>                endWithPossibleContinuation(elseIfAlternative.parseOnce(IN_METHOD), EnumSet.of(ELSE));<a name="line.178"></a>
-<span class="sourceLineNo">179</span>        }<a name="line.179"></a>
-<span class="sourceLineNo">180</span><a name="line.180"></a>
-<span class="sourceLineNo">181</span>        /**<a name="line.181"></a>
-<span class="sourceLineNo">182</span>         * Block constructs, such as if/else, while/for/switch, try/catch/finally,<a name="line.182"></a>
-<span class="sourceLineNo">183</span>         * synchronized (only in some languages).<a name="line.183"></a>
-<span class="sourceLineNo">184</span>         */<a name="line.184"></a>
-<span class="sourceLineNo">185</span>        protected void createBasicBlockRules() {<a name="line.185"></a>
-<span class="sourceLineNo">186</span>                createBlockRuleWithContinuation(getSimpleBlockKeywordsWithParentheses(), null, true, false);<a name="line.186"></a>
-<span class="sourceLineNo">187</span>                createBlockRuleWithContinuation(getSimpleBlockKeywordsWithoutParentheses(), null, false, false);<a name="line.187"></a>
-<span class="sourceLineNo">188</span>                createBlockRuleWithContinuation(EnumSet.of(IF), EnumSet.of(ELSE), true, false);<a name="line.188"></a>
-<span class="sourceLineNo">189</span>                createBlockRuleWithContinuation(EnumSet.of(TRY, CATCH), EnumSet.of(CATCH, FINALLY), true, true);<a name="line.189"></a>
-<span class="sourceLineNo">190</span>        }<a name="line.190"></a>
-<span class="sourceLineNo">191</span><a name="line.191"></a>
-<span class="sourceLineNo">192</span>        /**<a name="line.192"></a>
-<span class="sourceLineNo">193</span>         * Case statement is parsed as meta, as it is hardly a statement on its own.<a name="line.193"></a>
-<span class="sourceLineNo">194</span>         */<a name="line.194"></a>
-<span class="sourceLineNo">195</span>        protected void createCaseRule() {<a name="line.195"></a>
-<span class="sourceLineNo">196</span>                HashSet&lt;ETokenType&gt; literalsAndIdentifiers = new HashSet&lt;&gt;(LITERALS);<a name="line.196"></a>
-<span class="sourceLineNo">197</span>                literalsAndIdentifiers.addAll(getValidIdentifiers());<a name="line.197"></a>
-<span class="sourceLineNo">198</span>                inState(IN_METHOD).sequence(CASE).optional(ETokenType.MINUS).sequence(literalsAndIdentifiers, COLON)<a name="line.198"></a>
-<span class="sourceLineNo">199</span>                                .createNode(EShallowEntityType.META, 0, 1).endNode();<a name="line.199"></a>
-<span class="sourceLineNo">200</span>                inState(IN_METHOD).sequence(CASE, LPAREN).skipToWithNesting(RPAREN, LPAREN, RPAREN).sequence(COLON)<a name="line.200"></a>
-<span class="sourceLineNo">201</span>                                .createNode(EShallowEntityType.META, 0, new Region(1, -2)).endNode();<a name="line.201"></a>
-<span class="sourceLineNo">202</span><a name="line.202"></a>
-<span class="sourceLineNo">203</span>                inState(IN_METHOD).sequence(DEFAULT, COLON).createNode(EShallowEntityType.META, 0).endNode();<a name="line.203"></a>
-<span class="sourceLineNo">204</span>        }<a name="line.204"></a>
-<span class="sourceLineNo">205</span><a name="line.205"></a>
-<span class="sourceLineNo">206</span>        /** Creates the do-while rule. */<a name="line.206"></a>
-<span class="sourceLineNo">207</span>        protected void createDoWhileRule() {<a name="line.207"></a>
-<span class="sourceLineNo">208</span>                RecognizerBase&lt;EGenericParserStates&gt; doWhileAlternative = inState(IN_METHOD).sequence(DO)<a name="line.208"></a>
-<span class="sourceLineNo">209</span>                                .createNode(EShallowEntityType.STATEMENT, 0);<a name="line.209"></a>
-<span class="sourceLineNo">210</span>                doWhileAlternative.sequence(LBRACE).parseUntil(IN_METHOD).sequence(RBRACE, WHILE)<a name="line.210"></a>
-<span class="sourceLineNo">211</span>                                .skipNested(LPAREN, RPAREN, getSubExpressionRecognizer()).optional(ETokenType.SEMICOLON).endNode();<a name="line.211"></a>
-<span class="sourceLineNo">212</span>                doWhileAlternative.parseOnce(IN_METHOD).sequence(WHILE).skipNested(LPAREN, RPAREN, getSubExpressionRecognizer())<a name="line.212"></a>
-<span class="sourceLineNo">213</span>                                .optional(ETokenType.SEMICOLON).endNode();<a name="line.213"></a>
-<span class="sourceLineNo">214</span>        }<a name="line.214"></a>
-<span class="sourceLineNo">215</span><a name="line.215"></a>
-<span class="sourceLineNo">216</span>        /** Generic block. */<a name="line.216"></a>
-<span class="sourceLineNo">217</span>        private void createGenericBlockRule() {<a name="line.217"></a>
-<span class="sourceLineNo">218</span>                inState(IN_METHOD).sequence(LBRACE).createNode(EShallowEntityType.STATEMENT, SubTypeNames.ANONYMOUS_BLOCK)<a name="line.218"></a>
-<span class="sourceLineNo">219</span>                                .parseUntil(IN_METHOD).sequence(RBRACE).endNode();<a name="line.219"></a>
-<span class="sourceLineNo">220</span>        }<a name="line.220"></a>
-<span class="sourceLineNo">221</span><a name="line.221"></a>
-<span class="sourceLineNo">222</span>        /**<a name="line.222"></a>
-<span class="sourceLineNo">223</span>         * Contributes rules for detecting simple statements (local variable<a name="line.223"></a>
-<span class="sourceLineNo">224</span>         * declarations, assignments, etc.) inside methods.<a name="line.224"></a>
-<span class="sourceLineNo">225</span>         */<a name="line.225"></a>
-<span class="sourceLineNo">226</span>        protected void contributeSimpleStatementRules(EnumSet&lt;ETokenType&gt; localVariableIdentifiers,<a name="line.226"></a>
-<span class="sourceLineNo">227</span>                        EnumSet&lt;ETokenType&gt; statementStartTokens) {<a name="line.227"></a>
-<span class="sourceLineNo">228</span><a name="line.228"></a>
-<span class="sourceLineNo">229</span>                // heuristic for detecting local variables<a name="line.229"></a>
-<span class="sourceLineNo">230</span>                completeSimpleStatement(<a name="line.230"></a>
-<span class="sourceLineNo">231</span>                                typePatternInState(IN_METHOD).skipNested(LBRACE, RBRACE).markStart()<a name="line.231"></a>
-<span class="sourceLineNo">232</span>                                                .sequenceBefore(localVariableIdentifiers, EnumSet.of(COMMA, EQ, SEMICOLON, LBRACK)),<a name="line.232"></a>
-<span class="sourceLineNo">233</span>                                SubTypeNames.LOCAL_VARIABLE);<a name="line.233"></a>
-<span class="sourceLineNo">234</span><a name="line.234"></a>
-<span class="sourceLineNo">235</span>                // enum and union local variables<a name="line.235"></a>
-<span class="sourceLineNo">236</span>                completeSimpleStatement(inState(IN_METHOD).sequence(EnumSet.of(ENUM, UNION)).skipNested(LBRACE, RBRACE)<a name="line.236"></a>
-<span class="sourceLineNo">237</span>                                .markStart().sequenceBefore(localVariableIdentifiers, SEMICOLON), SubTypeNames.LOCAL_VARIABLE);<a name="line.237"></a>
-<span class="sourceLineNo">238</span><a name="line.238"></a>
-<span class="sourceLineNo">239</span>                // function pointer local variables<a name="line.239"></a>
-<span class="sourceLineNo">240</span>                completeSimpleStatement(typePatternInState(IN_METHOD).repeated(LPAREN).sequence(MULT).markStart()<a name="line.240"></a>
-<span class="sourceLineNo">241</span>                                .sequenceBefore(localVariableIdentifiers, RPAREN), SubTypeNames.LOCAL_VARIABLE);<a name="line.241"></a>
-<span class="sourceLineNo">242</span><a name="line.242"></a>
-<span class="sourceLineNo">243</span>                completeSimpleStatement(inState(IN_METHOD).sequence(LPAREN).markStart().sequence(IDENTIFIER));<a name="line.243"></a>
-<span class="sourceLineNo">244</span>                completeSimpleStatement(inState(IN_METHOD).sequence(statementStartTokens));<a name="line.244"></a>
-<span class="sourceLineNo">245</span>                completeSimpleStatement(typePatternInState(IN_METHOD));<a name="line.245"></a>
-<span class="sourceLineNo">246</span>                completeSimpleStatement(inState(IN_METHOD).sequence(LITERALS));<a name="line.246"></a>
-<span class="sourceLineNo">247</span>        }<a name="line.247"></a>
-<span class="sourceLineNo">248</span><a name="line.248"></a>
-<span class="sourceLineNo">249</span>        /** Simple statement. */<a name="line.249"></a>
-<span class="sourceLineNo">250</span>        protected void createSimpleStatementRule() {<a name="line.250"></a>
-<span class="sourceLineNo">251</span>                contributeSimpleStatementRules(getValidIdentifiers(), getStatementStartTokens());<a name="line.251"></a>
-<span class="sourceLineNo">252</span>        }<a name="line.252"></a>
-<span class="sourceLineNo">253</span><a name="line.253"></a>
-<span class="sourceLineNo">254</span>        /**<a name="line.254"></a>
-<span class="sourceLineNo">255</span>         * Creates rules for dealing with constructs in subexpressions, such as<a name="line.255"></a>
-<span class="sourceLineNo">256</span>         * anonymous classes, lambdas, etc.<a name="line.256"></a>
-<span class="sourceLineNo">257</span>         */<a name="line.257"></a>
-<span class="sourceLineNo">258</span>        protected void createSubExpressionRules() {<a name="line.258"></a>
-<span class="sourceLineNo">259</span>                // default implementation does nothing<a name="line.259"></a>
+<span class="sourceLineNo">085</span>        /** C++ operators that have an alternative (string) representations. */<a name="line.85"></a>
+<span class="sourceLineNo">086</span>        protected static final EnumSet&lt;ETokenType&gt; OPERATORS_WITH_ALTERNATIVE_REPRESENTATION = EnumSet.of(NOT, COMP, NOTEQ,<a name="line.86"></a>
+<span class="sourceLineNo">087</span>                        ANDAND, OROR, AND, OR, XOR, ANDEQ, OREQ, XOREQ);<a name="line.87"></a>
+<span class="sourceLineNo">088</span><a name="line.88"></a>
+<span class="sourceLineNo">089</span>        /** Constructor. */<a name="line.89"></a>
+<span class="sourceLineNo">090</span>        protected CStyleShallowParserBase() {<a name="line.90"></a>
+<span class="sourceLineNo">091</span>                super(EGenericParserStates.class, EGenericParserStates.TOP_LEVEL);<a name="line.91"></a>
+<span class="sourceLineNo">092</span>                createMetaRules();<a name="line.92"></a>
+<span class="sourceLineNo">093</span>                createTypeRules();<a name="line.93"></a>
+<span class="sourceLineNo">094</span>                createClassElementsRules();<a name="line.94"></a>
+<span class="sourceLineNo">095</span>                createStatementRules();<a name="line.95"></a>
+<span class="sourceLineNo">096</span>                createSubExpressionRules();<a name="line.96"></a>
+<span class="sourceLineNo">097</span>        }<a name="line.97"></a>
+<span class="sourceLineNo">098</span><a name="line.98"></a>
+<span class="sourceLineNo">099</span>        /** Creates rules for meta elements. */<a name="line.99"></a>
+<span class="sourceLineNo">100</span>        protected void createMetaRules() {<a name="line.100"></a>
+<span class="sourceLineNo">101</span>                // deal with dangling closing braces by inserting broken node (endNode<a name="line.101"></a>
+<span class="sourceLineNo">102</span>                // intentionally omitted)<a name="line.102"></a>
+<span class="sourceLineNo">103</span>                inAnyState().sequence(RBRACE).createNode(EShallowEntityType.META, "dangling closing brace");<a name="line.103"></a>
+<span class="sourceLineNo">104</span>        }<a name="line.104"></a>
+<span class="sourceLineNo">105</span><a name="line.105"></a>
+<span class="sourceLineNo">106</span>        /** Parser rules for module/namespace and type creation. */<a name="line.106"></a>
+<span class="sourceLineNo">107</span>        protected void createTypeRules() {<a name="line.107"></a>
+<span class="sourceLineNo">108</span>                // types; we have to ensure when skipping to the LBRACE, that there is<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                // no earlier SEMICOLON<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                inAnyState().repeated(getTypeModifier()).markStart().sequence(getTypeKeywords(), getValidIdentifiers())<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                                .skipBefore(EnumSet.of(SEMICOLON, LBRACE)).sequence(LBRACE).createNode(EShallowEntityType.TYPE, 0, 1)<a name="line.111"></a>
+<span class="sourceLineNo">112</span>                                .parseUntil(IN_TYPE).sequence(RBRACE).endNode();<a name="line.112"></a>
+<span class="sourceLineNo">113</span>        }<a name="line.113"></a>
+<span class="sourceLineNo">114</span><a name="line.114"></a>
+<span class="sourceLineNo">115</span>        /** Creates rules for C style typedef */<a name="line.115"></a>
+<span class="sourceLineNo">116</span>        protected void createTypedefRules() {<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                RecognizerBase&lt;EGenericParserStates&gt; typeInTypedefAlternative = inAnyState().sequence(TYPEDEF).optional(CONST);<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                typeInTypedefAlternative.sequenceBefore(getTypeKeywords(), IDENTIFIER, LBRACE)<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                                .createNode(EShallowEntityType.TYPE, 0).parseOnce(TOP_LEVEL).skipTo(IDENTIFIER, SEMICOLON)<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                                .endNodeWithName(-2);<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                typeInTypedefAlternative.sequenceBefore(getTypeKeywords(), LBRACE).createNode(EShallowEntityType.TYPE, 0)<a name="line.121"></a>
+<span class="sourceLineNo">122</span>                                .parseOnce(TOP_LEVEL).skipTo(IDENTIFIER, SEMICOLON).endNodeWithName(-2);<a name="line.122"></a>
+<span class="sourceLineNo">123</span><a name="line.123"></a>
+<span class="sourceLineNo">124</span>                // skips to the name identifier (skips anything enclosed in &lt;...&gt;)<a name="line.124"></a>
+<span class="sourceLineNo">125</span>                RecognizerBase&lt;EGenericParserStates&gt; simpleTypedefAlternative = inAnyState().sequence(TYPEDEF)<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                                .createNode(EShallowEntityType.TYPE, 0)<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                                .skipBeforeWithNesting(Arrays.asList(IDENTIFIER, EnumSet.of(SEMICOLON, RPAREN, LBRACK)),<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                                                Arrays.asList(ETokenType.LT), Arrays.asList(ETokenType.GT), null);<a name="line.128"></a>
+<span class="sourceLineNo">129</span><a name="line.129"></a>
+<span class="sourceLineNo">130</span>                // array types such as "typedef foo &lt;COMPLEX STUFF&gt; name [COMPLEX STUFF];"<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                simpleTypedefAlternative.markStart().sequenceBefore(IDENTIFIER, EnumSet.of(SEMICOLON, LBRACK))<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                                .skipToWithNesting(SEMICOLON, LBRACK, RBRACK).endNodeWithName(0);<a name="line.132"></a>
+<span class="sourceLineNo">133</span>                simpleTypedefAlternative.markStart().sequence(IDENTIFIER, RPAREN).skipTo(SEMICOLON).endNodeWithName(0);<a name="line.133"></a>
+<span class="sourceLineNo">134</span>        }<a name="line.134"></a>
+<span class="sourceLineNo">135</span><a name="line.135"></a>
+<span class="sourceLineNo">136</span>        /**<a name="line.136"></a>
+<span class="sourceLineNo">137</span>         * Returns the valid type modifiers for the language. Default implementation<a name="line.137"></a>
+<span class="sourceLineNo">138</span>         * returns empty set. Override to use correct modifiers.<a name="line.138"></a>
+<span class="sourceLineNo">139</span>         */<a name="line.139"></a>
+<span class="sourceLineNo">140</span>        protected EnumSet&lt;ETokenType&gt; getTypeModifier() {<a name="line.140"></a>
+<span class="sourceLineNo">141</span>                return EnumSet.noneOf(ETokenType.class);<a name="line.141"></a>
+<span class="sourceLineNo">142</span>        }<a name="line.142"></a>
+<span class="sourceLineNo">143</span><a name="line.143"></a>
+<span class="sourceLineNo">144</span>        /** Returns the set of keywords that start a type. */<a name="line.144"></a>
+<span class="sourceLineNo">145</span>        protected abstract EnumSet&lt;ETokenType&gt; getTypeKeywords();<a name="line.145"></a>
+<span class="sourceLineNo">146</span><a name="line.146"></a>
+<span class="sourceLineNo">147</span>        /** Parser rules for both attributes and methods. */<a name="line.147"></a>
+<span class="sourceLineNo">148</span>        protected abstract void createClassElementsRules();<a name="line.148"></a>
+<span class="sourceLineNo">149</span><a name="line.149"></a>
+<span class="sourceLineNo">150</span>        /** Creates parser rules for statements. */<a name="line.150"></a>
+<span class="sourceLineNo">151</span>        protected void createStatementRules() {<a name="line.151"></a>
+<span class="sourceLineNo">152</span>                createEmptyStatementRule();<a name="line.152"></a>
+<span class="sourceLineNo">153</span>                createLabelRule();<a name="line.153"></a>
+<span class="sourceLineNo">154</span>                createElseIfRule();<a name="line.154"></a>
+<span class="sourceLineNo">155</span>                createBasicBlockRules();<a name="line.155"></a>
+<span class="sourceLineNo">156</span>                createCaseRule();<a name="line.156"></a>
+<span class="sourceLineNo">157</span>                createDoWhileRule();<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                createGenericBlockRule();<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                createSimpleStatementRule();<a name="line.159"></a>
+<span class="sourceLineNo">160</span>        }<a name="line.160"></a>
+<span class="sourceLineNo">161</span><a name="line.161"></a>
+<span class="sourceLineNo">162</span>        /** The empty statement. */<a name="line.162"></a>
+<span class="sourceLineNo">163</span>        private void createEmptyStatementRule() {<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                inState(IN_METHOD).sequence(SEMICOLON).createNode(EShallowEntityType.STATEMENT, SubTypeNames.EMPTY_STATEMENT)<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                                .endNode();<a name="line.165"></a>
+<span class="sourceLineNo">166</span>        }<a name="line.166"></a>
+<span class="sourceLineNo">167</span><a name="line.167"></a>
+<span class="sourceLineNo">168</span>        /** Matches labels. */<a name="line.168"></a>
+<span class="sourceLineNo">169</span>        private void createLabelRule() {<a name="line.169"></a>
+<span class="sourceLineNo">170</span>                // filter out labels as meta as they do not increase statement count<a name="line.170"></a>
+<span class="sourceLineNo">171</span>                inState(IN_METHOD).sequence(getValidIdentifiers(), COLON)<a name="line.171"></a>
+<span class="sourceLineNo">172</span>                                .createNode(EShallowEntityType.META, SubTypeNames.LABEL, 0).endNode();<a name="line.172"></a>
+<span class="sourceLineNo">173</span>        }<a name="line.173"></a>
+<span class="sourceLineNo">174</span><a name="line.174"></a>
+<span class="sourceLineNo">175</span>        /** Special rule for else-if. */<a name="line.175"></a>
+<span class="sourceLineNo">176</span>        protected void createElseIfRule() {<a name="line.176"></a>
+<span class="sourceLineNo">177</span>                RecognizerBase&lt;EGenericParserStates&gt; elseIfAlternative = inState(IN_METHOD).sequence(ELSE, IF)<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                                .createNode(EShallowEntityType.STATEMENT, new int[] { 0, 1 })<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                                .skipNested(LPAREN, RPAREN, getSubExpressionRecognizer());<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                endWithPossibleContinuation(elseIfAlternative.sequence(LBRACE).parseUntil(IN_METHOD).sequence(RBRACE),<a name="line.180"></a>
+<span class="sourceLineNo">181</span>                                EnumSet.of(ELSE));<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                endWithPossibleContinuation(elseIfAlternative.parseOnce(IN_METHOD), EnumSet.of(ELSE));<a name="line.182"></a>
+<span class="sourceLineNo">183</span>        }<a name="line.183"></a>
+<span class="sourceLineNo">184</span><a name="line.184"></a>
+<span class="sourceLineNo">185</span>        /**<a name="line.185"></a>
+<span class="sourceLineNo">186</span>         * Block constructs, such as if/else, while/for/switch, try/catch/finally,<a name="line.186"></a>
+<span class="sourceLineNo">187</span>         * synchronized (only in some languages).<a name="line.187"></a>
+<span class="sourceLineNo">188</span>         */<a name="line.188"></a>
+<span class="sourceLineNo">189</span>        protected void createBasicBlockRules() {<a name="line.189"></a>
+<span class="sourceLineNo">190</span>                createBlockRuleWithContinuation(getSimpleBlockKeywordsWithParentheses(), null, true, false);<a name="line.190"></a>
+<span class="sourceLineNo">191</span>                createBlockRuleWithContinuation(getSimpleBlockKeywordsWithoutParentheses(), null, false, false);<a name="line.191"></a>
+<span class="sourceLineNo">192</span>                createBlockRuleWithContinuation(EnumSet.of(IF), EnumSet.of(ELSE), true, false);<a name="line.192"></a>
+<span class="sourceLineNo">193</span>                createBlockRuleWithContinuation(EnumSet.of(TRY, CATCH), EnumSet.of(CATCH, FINALLY), true, true);<a name="line.193"></a>
+<span class="sourceLineNo">194</span>        }<a name="line.194"></a>
+<span class="sourceLineNo">195</span><a name="line.195"></a>
+<span class="sourceLineNo">196</span>        /**<a name="line.196"></a>
+<span class="sourceLineNo">197</span>         * Case statement is parsed as meta, as it is hardly a statement on its own.<a name="line.197"></a>
+<span class="sourceLineNo">198</span>         */<a name="line.198"></a>
+<span class="sourceLineNo">199</span>        protected void createCaseRule() {<a name="line.199"></a>
+<span class="sourceLineNo">200</span>                HashSet&lt;ETokenType&gt; literalsAndIdentifiers = new HashSet&lt;&gt;(LITERALS);<a name="line.200"></a>
+<span class="sourceLineNo">201</span>                literalsAndIdentifiers.addAll(getValidIdentifiers());<a name="line.201"></a>
+<span class="sourceLineNo">202</span>                inState(IN_METHOD).sequence(CASE).optional(MINUS).sequence(literalsAndIdentifiers)<a name="line.202"></a>
+<span class="sourceLineNo">203</span>                                .optional(PLUS, literalsAndIdentifiers).sequence(COLON).createNode(EShallowEntityType.META, 0, 1)<a name="line.203"></a>
+<span class="sourceLineNo">204</span>                                .endNode();<a name="line.204"></a>
+<span class="sourceLineNo">205</span>                inState(IN_METHOD).sequence(CASE, LPAREN).skipToWithNesting(RPAREN, LPAREN, RPAREN).sequence(COLON)<a name="line.205"></a>
+<span class="sourceLineNo">206</span>                                .createNode(EShallowEntityType.META, 0, new Region(1, -2)).endNode();<a name="line.206"></a>
+<span class="sourceLineNo">207</span><a name="line.207"></a>
+<span class="sourceLineNo">208</span>                inState(IN_METHOD).sequence(DEFAULT, COLON).createNode(EShallowEntityType.META, 0).endNode();<a name="line.208"></a>
+<span class="sourceLineNo">209</span>        }<a name="line.209"></a>
+<span class="sourceLineNo">210</span><a name="line.210"></a>
+<span class="sourceLineNo">211</span>        /** Creates the do-while rule. */<a name="line.211"></a>
+<span class="sourceLineNo">212</span>        protected void createDoWhileRule() {<a name="line.212"></a>
+<span class="sourceLineNo">213</span>                RecognizerBase&lt;EGenericParserStates&gt; doWhileAlternative = inState(IN_METHOD).sequence(DO)<a name="line.213"></a>
+<span class="sourceLineNo">214</span>                                .createNode(EShallowEntityType.STATEMENT, 0);<a name="line.214"></a>
+<span class="sourceLineNo">215</span>                doWhileAlternative.sequence(LBRACE).parseUntil(IN_METHOD).sequence(RBRACE, WHILE)<a name="line.215"></a>
+<span class="sourceLineNo">216</span>                                .skipNested(LPAREN, RPAREN, getSubExpressionRecognizer()).optional(ETokenType.SEMICOLON).endNode();<a name="line.216"></a>
+<span class="sourceLineNo">217</span>                doWhileAlternative.parseOnce(IN_METHOD).sequence(WHILE).skipNested(LPAREN, RPAREN, getSubExpressionRecognizer())<a name="line.217"></a>
+<span class="sourceLineNo">218</span>                                .optional(ETokenType.SEMICOLON).endNode();<a name="line.218"></a>
+<span class="sourceLineNo">219</span>        }<a name="line.219"></a>
+<span class="sourceLineNo">220</span><a name="line.220"></a>
+<span class="sourceLineNo">221</span>        /** Generic block. */<a name="line.221"></a>
+<span class="sourceLineNo">222</span>        private void createGenericBlockRule() {<a name="line.222"></a>
+<span class="sourceLineNo">223</span>                inState(IN_METHOD).sequence(LBRACE).createNode(EShallowEntityType.STATEMENT, SubTypeNames.ANONYMOUS_BLOCK)<a name="line.223"></a>
+<span class="sourceLineNo">224</span>                                .parseUntil(IN_METHOD).sequence(RBRACE).endNode();<a name="line.224"></a>
+<span class="sourceLineNo">225</span>        }<a name="line.225"></a>
+<span class="sourceLineNo">226</span><a name="line.226"></a>
+<span class="sourceLineNo">227</span>        /**<a name="line.227"></a>
+<span class="sourceLineNo">228</span>         * Contributes rules for detecting simple statements (local variable<a name="line.228"></a>
+<span class="sourceLineNo">229</span>         * declarations, assignments, etc.) inside methods.<a name="line.229"></a>
+<span class="sourceLineNo">230</span>         */<a name="line.230"></a>
+<span class="sourceLineNo">231</span>        protected void contributeSimpleStatementRules(EnumSet&lt;ETokenType&gt; localVariableIdentifiers,<a name="line.231"></a>
+<span class="sourceLineNo">232</span>                        EnumSet&lt;ETokenType&gt; statementStartTokens) {<a name="line.232"></a>
+<span class="sourceLineNo">233</span><a name="line.233"></a>
+<span class="sourceLineNo">234</span>                // heuristic for detecting local variables<a name="line.234"></a>
+<span class="sourceLineNo">235</span>                completeSimpleStatement(<a name="line.235"></a>
+<span class="sourceLineNo">236</span>                                typePatternInState(IN_METHOD).skipNested(LBRACE, RBRACE).markStart()<a name="line.236"></a>
+<span class="sourceLineNo">237</span>                                                .sequenceBefore(localVariableIdentifiers, EnumSet.of(COMMA, EQ, SEMICOLON, LBRACK)),<a name="line.237"></a>
+<span class="sourceLineNo">238</span>                                SubTypeNames.LOCAL_VARIABLE);<a name="line.238"></a>
+<span class="sourceLineNo">239</span><a name="line.239"></a>
+<span class="sourceLineNo">240</span>                // enum and union local variables<a name="line.240"></a>
+<span class="sourceLineNo">241</span>                completeSimpleStatement(inState(IN_METHOD).sequence(EnumSet.of(ENUM, UNION)).skipNested(LBRACE, RBRACE)<a name="line.241"></a>
+<span class="sourceLineNo">242</span>                                .markStart().sequenceBefore(localVariableIdentifiers, SEMICOLON), SubTypeNames.LOCAL_VARIABLE);<a name="line.242"></a>
+<span class="sourceLineNo">243</span><a name="line.243"></a>
+<span class="sourceLineNo">244</span>                // function pointer local variables<a name="line.244"></a>
+<span class="sourceLineNo">245</span>                completeSimpleStatement(typePatternInState(IN_METHOD).repeated(LPAREN).sequence(MULT).markStart()<a name="line.245"></a>
+<span class="sourceLineNo">246</span>                                .sequenceBefore(localVariableIdentifiers, RPAREN), SubTypeNames.LOCAL_VARIABLE);<a name="line.246"></a>
+<span class="sourceLineNo">247</span><a name="line.247"></a>
+<span class="sourceLineNo">248</span>                // C#8 using declaration<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                completeSimpleStatement(inState(IN_METHOD).sequence(USING).optional(VAR).markStart().sequence(IDENTIFIER));<a name="line.249"></a>
+<span class="sourceLineNo">250</span><a name="line.250"></a>
+<span class="sourceLineNo">251</span>                completeSimpleStatement(inState(IN_METHOD).sequence(LPAREN).markStart().sequence(IDENTIFIER));<a name="line.251"></a>
+<span class="sourceLineNo">252</span>                completeSimpleStatement(inState(IN_METHOD).sequence(statementStartTokens));<a name="line.252"></a>
+<span class="sourceLineNo">253</span>                completeSimpleStatement(typePatternInState(IN_METHOD));<a name="line.253"></a>
+<span class="sourceLineNo">254</span>                completeSimpleStatement(inState(IN_METHOD).sequence(LITERALS));<a name="line.254"></a>
+<span class="sourceLineNo">255</span>        }<a name="line.255"></a>
+<span class="sourceLineNo">256</span><a name="line.256"></a>
+<span class="sourceLineNo">257</span>        /** Simple statement. */<a name="line.257"></a>
+<span class="sourceLineNo">258</span>        protected void createSimpleStatementRule() {<a name="line.258"></a>
+<span class="sourceLineNo">259</span>                contributeSimpleStatementRules(getValidIdentifiers(), getStatementStartTokens());<a name="line.259"></a>
 <span class="sourceLineNo">260</span>        }<a name="line.260"></a>
 <span class="sourceLineNo">261</span><a name="line.261"></a>
 <span class="sourceLineNo">262</span>        /**<a name="line.262"></a>
-<span class="sourceLineNo">263</span>         * Returns a recognizer used for detecting sub expressions (anonymous classes,<a name="line.263"></a>
-<span class="sourceLineNo">264</span>         * lambdas, etc.) within expressions. This may return null (which is done by the<a name="line.264"></a>
-<span class="sourceLineNo">265</span>         * default implementation).<a name="line.265"></a>
-<span class="sourceLineNo">266</span>         */<a name="line.266"></a>
-<span class="sourceLineNo">267</span>        protected RecognizerBase&lt;EGenericParserStates&gt; getSubExpressionRecognizer() {<a name="line.267"></a>
-<span class="sourceLineNo">268</span>                return null;<a name="line.268"></a>
-<span class="sourceLineNo">269</span>        }<a name="line.269"></a>
-<span class="sourceLineNo">270</span><a name="line.270"></a>
-<span class="sourceLineNo">271</span>        /**<a name="line.271"></a>
-<span class="sourceLineNo">272</span>         * Returns the set of all valid identifiers, i.e. token types that can be used<a name="line.272"></a>
-<span class="sourceLineNo">273</span>         * to name elements in the language.<a name="line.273"></a>
+<span class="sourceLineNo">263</span>         * Creates rules for dealing with constructs in subexpressions, such as<a name="line.263"></a>
+<span class="sourceLineNo">264</span>         * anonymous classes, lambdas, etc.<a name="line.264"></a>
+<span class="sourceLineNo">265</span>         */<a name="line.265"></a>
+<span class="sourceLineNo">266</span>        protected void createSubExpressionRules() {<a name="line.266"></a>
+<span class="sourceLineNo">267</span>                // default implementation does nothing<a name="line.267"></a>
+<span class="sourceLineNo">268</span>        }<a name="line.268"></a>
+<span class="sourceLineNo">269</span><a name="line.269"></a>
+<span class="sourceLineNo">270</span>        /**<a name="line.270"></a>
+<span class="sourceLineNo">271</span>         * Returns a recognizer used for detecting sub expressions (anonymous classes,<a name="line.271"></a>
+<span class="sourceLineNo">272</span>         * lambdas, etc.) within expressions. This may return null (which is done by the<a name="line.272"></a>
+<span class="sourceLineNo">273</span>         * default implementation).<a name="line.273"></a>
 <span class="sourceLineNo">274</span>         */<a name="line.274"></a>
-<span class="sourceLineNo">275</span>        protected EnumSet&lt;ETokenType&gt; getValidIdentifiers() {<a name="line.275"></a>
-<span class="sourceLineNo">276</span>                return EnumSet.of(IDENTIFIER);<a name="line.276"></a>
+<span class="sourceLineNo">275</span>        protected RecognizerBase&lt;EGenericParserStates&gt; getSubExpressionRecognizer() {<a name="line.275"></a>
+<span class="sourceLineNo">276</span>                return null;<a name="line.276"></a>
 <span class="sourceLineNo">277</span>        }<a name="line.277"></a>
 <span class="sourceLineNo">278</span><a name="line.278"></a>
 <span class="sourceLineNo">279</span>        /**<a name="line.279"></a>
-<span class="sourceLineNo">280</span>         * Returns the set of all keywords that start a simple block with optional<a name="line.280"></a>
-<span class="sourceLineNo">281</span>         * parentheses (see implementers for examples).<a name="line.281"></a>
+<span class="sourceLineNo">280</span>         * Returns the set of all valid identifiers, i.e. token types that can be used<a name="line.280"></a>
+<span class="sourceLineNo">281</span>         * to name elements in the language.<a name="line.281"></a>
 <span class="sourceLineNo">282</span>         */<a name="line.282"></a>
-<span class="sourceLineNo">283</span>        protected abstract EnumSet&lt;ETokenType&gt; getSimpleBlockKeywordsWithParentheses();<a name="line.283"></a>
-<span class="sourceLineNo">284</span><a name="line.284"></a>
-<span class="sourceLineNo">285</span>        /**<a name="line.285"></a>
-<span class="sourceLineNo">286</span>         * Returns the set of all keywords that start a simple block but are never<a name="line.286"></a>
-<span class="sourceLineNo">287</span>         * followed by parentheses (see implementers for examples).<a name="line.287"></a>
-<span class="sourceLineNo">288</span>         */<a name="line.288"></a>
-<span class="sourceLineNo">289</span>        protected abstract EnumSet&lt;ETokenType&gt; getSimpleBlockKeywordsWithoutParentheses();<a name="line.289"></a>
-<span class="sourceLineNo">290</span><a name="line.290"></a>
-<span class="sourceLineNo">291</span>        /**<a name="line.291"></a>
-<span class="sourceLineNo">292</span>         * Returns a set of all tokens that can start a statement, besides a type (see<a name="line.292"></a>
-<span class="sourceLineNo">293</span>         * {@link #typePatternInState(EGenericParserStates...)} and a literal.<a name="line.293"></a>
-<span class="sourceLineNo">294</span>         */<a name="line.294"></a>
-<span class="sourceLineNo">295</span>        protected abstract EnumSet&lt;ETokenType&gt; getStatementStartTokens();<a name="line.295"></a>
-<span class="sourceLineNo">296</span><a name="line.296"></a>
-<span class="sourceLineNo">297</span>        /** Creates a recognizer that matches all valid types. */<a name="line.297"></a>
-<span class="sourceLineNo">298</span>        protected abstract RecognizerBase&lt;EGenericParserStates&gt; typePattern(<a name="line.298"></a>
-<span class="sourceLineNo">299</span>                        RecognizerBase&lt;EGenericParserStates&gt; currentState);<a name="line.299"></a>
-<span class="sourceLineNo">300</span><a name="line.300"></a>
-<span class="sourceLineNo">301</span>        /**<a name="line.301"></a>
-<span class="sourceLineNo">302</span>         * Creates a recognizer that matches all valid types, starting from the given<a name="line.302"></a>
-<span class="sourceLineNo">303</span>         * state.<a name="line.303"></a>
-<span class="sourceLineNo">304</span>         */<a name="line.304"></a>
-<span class="sourceLineNo">305</span>        protected RecognizerBase&lt;EGenericParserStates&gt; typePatternInState(EGenericParserStates... states) {<a name="line.305"></a>
-<span class="sourceLineNo">306</span>                return typePattern(inState(states));<a name="line.306"></a>
-<span class="sourceLineNo">307</span>        }<a name="line.307"></a>
+<span class="sourceLineNo">283</span>        protected EnumSet&lt;ETokenType&gt; getValidIdentifiers() {<a name="line.283"></a>
+<span class="sourceLineNo">284</span>                return EnumSet.of(IDENTIFIER);<a name="line.284"></a>
+<span class="sourceLineNo">285</span>        }<a name="line.285"></a>
+<span class="sourceLineNo">286</span><a name="line.286"></a>
+<span class="sourceLineNo">287</span>        /**<a name="line.287"></a>
+<span class="sourceLineNo">288</span>         * Returns the set of all keywords that start a simple block with optional<a name="line.288"></a>
+<span class="sourceLineNo">289</span>         * parentheses (see implementers for examples).<a name="line.289"></a>
+<span class="sourceLineNo">290</span>         */<a name="line.290"></a>
+<span class="sourceLineNo">291</span>        protected abstract EnumSet&lt;ETokenType&gt; getSimpleBlockKeywordsWithParentheses();<a name="line.291"></a>
+<span class="sourceLineNo">292</span><a name="line.292"></a>
+<span class="sourceLineNo">293</span>        /**<a name="line.293"></a>
+<span class="sourceLineNo">294</span>         * Returns the set of all keywords that start a simple block but are never<a name="line.294"></a>
+<span class="sourceLineNo">295</span>         * followed by parentheses (see implementers for examples).<a name="line.295"></a>
+<span class="sourceLineNo">296</span>         */<a name="line.296"></a>
+<span class="sourceLineNo">297</span>        protected abstract EnumSet&lt;ETokenType&gt; getSimpleBlockKeywordsWithoutParentheses();<a name="line.297"></a>
+<span class="sourceLineNo">298</span><a name="line.298"></a>
+<span class="sourceLineNo">299</span>        /**<a name="line.299"></a>
+<span class="sourceLineNo">300</span>         * Returns a set of all tokens that can start a statement, besides a type (see<a name="line.300"></a>
+<span class="sourceLineNo">301</span>         * {@link #typePatternInState(EGenericParserStates...)} and a literal.<a name="line.301"></a>
+<span class="sourceLineNo">302</span>         */<a name="line.302"></a>
+<span class="sourceLineNo">303</span>        protected abstract EnumSet&lt;ETokenType&gt; getStatementStartTokens();<a name="line.303"></a>
+<span class="sourceLineNo">304</span><a name="line.304"></a>
+<span class="sourceLineNo">305</span>        /** Creates a recognizer that matches all valid types. */<a name="line.305"></a>
+<span class="sourceLineNo">306</span>        protected abstract RecognizerBase&lt;EGenericParserStates&gt; typePattern(<a name="line.306"></a>
+<span class="sourceLineNo">307</span>                        RecognizerBase&lt;EGenericParserStates&gt; currentState);<a name="line.307"></a>
 <span class="sourceLineNo">308</span><a name="line.308"></a>
 <span class="sourceLineNo">309</span>        /**<a name="line.309"></a>
-<span class="sourceLineNo">310</span>         * Creates a rule for recognizing a statement starting with a single keyword,<a name="line.310"></a>
-<span class="sourceLineNo">311</span>         * optionally followed by an expression in parentheses, and followed by a block<a name="line.311"></a>
-<span class="sourceLineNo">312</span>         * or a single statement.<a name="line.312"></a>
-<span class="sourceLineNo">313</span>         * <a name="line.313"></a>
-<span class="sourceLineNo">314</span>         * @param continuationTokens<a name="line.314"></a>
-<span class="sourceLineNo">315</span>         *            list of tokens that indicate a continued statement if encountered<a name="line.315"></a>
-<span class="sourceLineNo">316</span>         *            after the block. May be null.<a name="line.316"></a>
-<span class="sourceLineNo">317</span>         */<a name="line.317"></a>
-<span class="sourceLineNo">318</span>        protected void createBlockRuleWithContinuation(EnumSet&lt;ETokenType&gt; startTokens,<a name="line.318"></a>
-<span class="sourceLineNo">319</span>                        EnumSet&lt;ETokenType&gt; continuationTokens, boolean canBeFollowedByParentheses, boolean alwaysBraces) {<a name="line.319"></a>
-<span class="sourceLineNo">320</span>                RecognizerBase&lt;EGenericParserStates&gt; alternative = inState(IN_METHOD).sequence(startTokens)<a name="line.320"></a>
-<span class="sourceLineNo">321</span>                                .createNode(EShallowEntityType.STATEMENT, 0);<a name="line.321"></a>
-<span class="sourceLineNo">322</span>                if (canBeFollowedByParentheses) {<a name="line.322"></a>
-<span class="sourceLineNo">323</span>                        alternative = alternative.skipNested(LPAREN, RPAREN, getSubExpressionRecognizer());<a name="line.323"></a>
-<span class="sourceLineNo">324</span>                }<a name="line.324"></a>
-<span class="sourceLineNo">325</span><a name="line.325"></a>
-<span class="sourceLineNo">326</span>                if (alwaysBraces) {<a name="line.326"></a>
-<span class="sourceLineNo">327</span>                        alternative = alternative.skipBefore(LBRACE);<a name="line.327"></a>
-<span class="sourceLineNo">328</span>                }<a name="line.328"></a>
-<span class="sourceLineNo">329</span><a name="line.329"></a>
-<span class="sourceLineNo">330</span>                endWithPossibleContinuation(alternative.sequence(LBRACE).parseUntil(IN_METHOD).sequence(RBRACE),<a name="line.330"></a>
-<span class="sourceLineNo">331</span>                                continuationTokens);<a name="line.331"></a>
-<span class="sourceLineNo">332</span>                endWithPossibleContinuation(alternative.parseOnce(IN_METHOD), continuationTokens);<a name="line.332"></a>
-<span class="sourceLineNo">333</span>        }<a name="line.333"></a>
-<span class="sourceLineNo">334</span><a name="line.334"></a>
-<span class="sourceLineNo">335</span>        /** Completes a recognizer for a simple statement. */<a name="line.335"></a>
-<span class="sourceLineNo">336</span>        protected void completeSimpleStatement(RecognizerBase&lt;EGenericParserStates&gt; baseRecognizer) {<a name="line.336"></a>
-<span class="sourceLineNo">337</span>                completeSimpleStatement(baseRecognizer, SubTypeNames.SIMPLE_STATEMENT);<a name="line.337"></a>
-<span class="sourceLineNo">338</span>        }<a name="line.338"></a>
-<span class="sourceLineNo">339</span><a name="line.339"></a>
-<span class="sourceLineNo">340</span>        /** Completes a recognizer for a simple statement. */<a name="line.340"></a>
-<span class="sourceLineNo">341</span>        protected void completeSimpleStatement(RecognizerBase&lt;EGenericParserStates&gt; baseRecognizer, String subtype) {<a name="line.341"></a>
-<span class="sourceLineNo">342</span>                RecognizerBase&lt;EGenericParserStates&gt; alternative = baseRecognizer<a name="line.342"></a>
-<span class="sourceLineNo">343</span>                                .createNode(EShallowEntityType.STATEMENT, subtype, 0).skipBeforeWithNesting(<a name="line.343"></a>
-<span class="sourceLineNo">344</span>                                                EnumSet.of(SEMICOLON, RBRACE), LBRACE, RBRACE, LPAREN, RPAREN, getSubExpressionRecognizer());<a name="line.344"></a>
+<span class="sourceLineNo">310</span>         * Creates a recognizer that matches all valid types, starting from the given<a name="line.310"></a>
+<span class="sourceLineNo">311</span>         * state.<a name="line.311"></a>
+<span class="sourceLineNo">312</span>         */<a name="line.312"></a>
+<span class="sourceLineNo">313</span>        protected RecognizerBase&lt;EGenericParserStates&gt; typePatternInState(EGenericParserStates... states) {<a name="line.313"></a>
+<span class="sourceLineNo">314</span>                return typePattern(inState(states));<a name="line.314"></a>
+<span class="sourceLineNo">315</span>        }<a name="line.315"></a>
+<span class="sourceLineNo">316</span><a name="line.316"></a>
+<span class="sourceLineNo">317</span>        /**<a name="line.317"></a>
+<span class="sourceLineNo">318</span>         * Creates a rule for recognizing a statement starting with a single keyword,<a name="line.318"></a>
+<span class="sourceLineNo">319</span>         * optionally followed by an expression in parentheses, and followed by a block<a name="line.319"></a>
+<span class="sourceLineNo">320</span>         * or a single statement.<a name="line.320"></a>
+<span class="sourceLineNo">321</span>         * <a name="line.321"></a>
+<span class="sourceLineNo">322</span>         * @param continuationTokens<a name="line.322"></a>
+<span class="sourceLineNo">323</span>         *            list of tokens that indicate a continued statement if encountered<a name="line.323"></a>
+<span class="sourceLineNo">324</span>         *            after the block. May be null.<a name="line.324"></a>
+<span class="sourceLineNo">325</span>         */<a name="line.325"></a>
+<span class="sourceLineNo">326</span>        protected void createBlockRuleWithContinuation(EnumSet&lt;ETokenType&gt; startTokens,<a name="line.326"></a>
+<span class="sourceLineNo">327</span>                        EnumSet&lt;ETokenType&gt; continuationTokens, boolean canBeFollowedByParentheses, boolean alwaysBraces) {<a name="line.327"></a>
+<span class="sourceLineNo">328</span>                RecognizerBase&lt;EGenericParserStates&gt; alternative = inState(IN_METHOD).sequence(startTokens)<a name="line.328"></a>
+<span class="sourceLineNo">329</span>                                // The `var` keyword can be only used for variable declarations and not for<a name="line.329"></a>
+<span class="sourceLineNo">330</span>                                // statement declarations.<a name="line.330"></a>
+<span class="sourceLineNo">331</span>                                .notPreCondition(createRecognizer(start -&gt; start.sequence(ETokenType.VAR)))<a name="line.331"></a>
+<span class="sourceLineNo">332</span>                                .createNode(EShallowEntityType.STATEMENT, 0);<a name="line.332"></a>
+<span class="sourceLineNo">333</span>                if (canBeFollowedByParentheses) {<a name="line.333"></a>
+<span class="sourceLineNo">334</span>                        alternative = alternative.skipNested(LPAREN, RPAREN, getSubExpressionRecognizer());<a name="line.334"></a>
+<span class="sourceLineNo">335</span>                }<a name="line.335"></a>
+<span class="sourceLineNo">336</span><a name="line.336"></a>
+<span class="sourceLineNo">337</span>                if (alwaysBraces) {<a name="line.337"></a>
+<span class="sourceLineNo">338</span>                        alternative = alternative.skipBefore(LBRACE);<a name="line.338"></a>
+<span class="sourceLineNo">339</span>                }<a name="line.339"></a>
+<span class="sourceLineNo">340</span><a name="line.340"></a>
+<span class="sourceLineNo">341</span>                endWithPossibleContinuation(alternative.sequence(LBRACE).parseUntil(IN_METHOD).sequence(RBRACE),<a name="line.341"></a>
+<span class="sourceLineNo">342</span>                                continuationTokens);<a name="line.342"></a>
+<span class="sourceLineNo">343</span>                endWithPossibleContinuation(alternative.parseOnce(IN_METHOD), continuationTokens);<a name="line.343"></a>
+<span class="sourceLineNo">344</span>        }<a name="line.344"></a>
 <span class="sourceLineNo">345</span><a name="line.345"></a>
-<span class="sourceLineNo">346</span>                alternative.sequence(SEMICOLON).endNode();<a name="line.346"></a>
-<span class="sourceLineNo">347</span><a name="line.347"></a>
-<span class="sourceLineNo">348</span>                // this (empty) alternative captures the case where a statement is not<a name="line.348"></a>
-<span class="sourceLineNo">349</span>                // closed by a semicolon, so we deliberately leave it open. While in<a name="line.349"></a>
-<span class="sourceLineNo">350</span>                // most languages this is an error (and then this rule helps us to<a name="line.350"></a>
-<span class="sourceLineNo">351</span>                // continue parsing), in C++ you can construct valid statements without<a name="line.351"></a>
-<span class="sourceLineNo">352</span>                // semicolon using macros (although it is discouraged).<a name="line.352"></a>
-<span class="sourceLineNo">353</span>                alternative.sequence();<a name="line.353"></a>
-<span class="sourceLineNo">354</span>        }<a name="line.354"></a>
-<span class="sourceLineNo">355</span><a name="line.355"></a>
-<span class="sourceLineNo">356</span>        /** Creates rules for parsing lambdas with arrows like in Java or C#. */<a name="line.356"></a>
-<span class="sourceLineNo">357</span>        protected void createLambdaWithArrowRules(ETokenType arrowType) {<a name="line.357"></a>
-<span class="sourceLineNo">358</span>                // lambda expressions<a name="line.358"></a>
-<span class="sourceLineNo">359</span>                completeLambda(inState(IN_EXPRESSION).sequence(getValidIdentifiers()), arrowType);<a name="line.359"></a>
-<span class="sourceLineNo">360</span>                completeLambda(inState(IN_EXPRESSION).sequence(LPAREN).skipTo(RPAREN), arrowType);<a name="line.360"></a>
-<span class="sourceLineNo">361</span><a name="line.361"></a>
-<span class="sourceLineNo">362</span>                // additional rule for parsing lambda expressions (without braces). see<a name="line.362"></a>
-<span class="sourceLineNo">363</span>                // completeLambda() for details<a name="line.363"></a>
-<span class="sourceLineNo">364</span>                // the node start is moved one token to the right so the shallow<a name="line.364"></a>
-<span class="sourceLineNo">365</span>                // entities produced by this rule don't include the arrow (instead it<a name="line.365"></a>
-<span class="sourceLineNo">366</span>                // will be included in the parent entity)<a name="line.366"></a>
-<span class="sourceLineNo">367</span>                inState(IN_EXPRESSION).sequence(arrowType)<a name="line.367"></a>
-<span class="sourceLineNo">368</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.LAMBDA_EXPRESSION, null, 1)<a name="line.368"></a>
-<span class="sourceLineNo">369</span>                                .skipBeforeWithNesting(EnumSet.of(RPAREN, SEMICOLON, RBRACE, COMMA), LPAREN, RPAREN, LBRACE, RBRACE)<a name="line.369"></a>
-<span class="sourceLineNo">370</span>                                .endNode();<a name="line.370"></a>
-<span class="sourceLineNo">371</span>        }<a name="line.371"></a>
+<span class="sourceLineNo">346</span>        /** Completes a recognizer for a simple statement. */<a name="line.346"></a>
+<span class="sourceLineNo">347</span>        protected void completeSimpleStatement(RecognizerBase&lt;EGenericParserStates&gt; baseRecognizer) {<a name="line.347"></a>
+<span class="sourceLineNo">348</span>                completeSimpleStatement(baseRecognizer, SubTypeNames.SIMPLE_STATEMENT);<a name="line.348"></a>
+<span class="sourceLineNo">349</span>        }<a name="line.349"></a>
+<span class="sourceLineNo">350</span><a name="line.350"></a>
+<span class="sourceLineNo">351</span>        /** Completes a recognizer for a simple statement. */<a name="line.351"></a>
+<span class="sourceLineNo">352</span>        protected void completeSimpleStatement(RecognizerBase&lt;EGenericParserStates&gt; baseRecognizer, String subtype) {<a name="line.352"></a>
+<span class="sourceLineNo">353</span>                RecognizerBase&lt;EGenericParserStates&gt; alternative = baseRecognizer<a name="line.353"></a>
+<span class="sourceLineNo">354</span>                                .createNode(EShallowEntityType.STATEMENT, subtype, 0).skipBeforeWithNesting(<a name="line.354"></a>
+<span class="sourceLineNo">355</span>                                                EnumSet.of(SEMICOLON, RBRACE), LBRACE, RBRACE, LPAREN, RPAREN, getSubExpressionRecognizer());<a name="line.355"></a>
+<span class="sourceLineNo">356</span><a name="line.356"></a>
+<span class="sourceLineNo">357</span>                alternative.sequence(SEMICOLON).endNode();<a name="line.357"></a>
+<span class="sourceLineNo">358</span><a name="line.358"></a>
+<span class="sourceLineNo">359</span>                // this (empty) alternative captures the case where a statement is not<a name="line.359"></a>
+<span class="sourceLineNo">360</span>                // closed by a semicolon, so we deliberately leave it open. While in<a name="line.360"></a>
+<span class="sourceLineNo">361</span>                // most languages this is an error (and then this rule helps us to<a name="line.361"></a>
+<span class="sourceLineNo">362</span>                // continue parsing), in C++ you can construct valid statements without<a name="line.362"></a>
+<span class="sourceLineNo">363</span>                // semicolon using macros (although it is discouraged).<a name="line.363"></a>
+<span class="sourceLineNo">364</span>                alternative.sequence();<a name="line.364"></a>
+<span class="sourceLineNo">365</span>        }<a name="line.365"></a>
+<span class="sourceLineNo">366</span><a name="line.366"></a>
+<span class="sourceLineNo">367</span>        /** Creates rules for parsing lambdas with arrows like in Java or C#. */<a name="line.367"></a>
+<span class="sourceLineNo">368</span>        protected void createLambdaWithArrowRules(ETokenType arrowType) {<a name="line.368"></a>
+<span class="sourceLineNo">369</span>                // lambda expressions<a name="line.369"></a>
+<span class="sourceLineNo">370</span>                completeLambda(inState(IN_EXPRESSION).sequence(getValidIdentifiers()), arrowType);<a name="line.370"></a>
+<span class="sourceLineNo">371</span>                completeLambda(inState(IN_EXPRESSION).sequence(LPAREN).skipTo(RPAREN), arrowType);<a name="line.371"></a>
 <span class="sourceLineNo">372</span><a name="line.372"></a>
-<span class="sourceLineNo">373</span>        /** Completes a rule for parsing lambda expressions. */<a name="line.373"></a>
-<span class="sourceLineNo">374</span>        private static void completeLambda(RecognizerBase&lt;EGenericParserStates&gt; ruleStart, ETokenType arrowType) {<a name="line.374"></a>
-<span class="sourceLineNo">375</span>                RecognizerBase&lt;EGenericParserStates&gt; lambdaAlternative = ruleStart.createNode(EShallowEntityType.METHOD,<a name="line.375"></a>
-<span class="sourceLineNo">376</span>                                SubTypeNames.LAMBDA);<a name="line.376"></a>
-<span class="sourceLineNo">377</span>                lambdaAlternative.sequence(arrowType, LBRACE).parseUntil(IN_METHOD).sequence(RBRACE).endNode();<a name="line.377"></a>
-<span class="sourceLineNo">378</span><a name="line.378"></a>
-<span class="sourceLineNo">379</span>                // we start parsing before the arrow as this allows our special<a name="line.379"></a>
-<span class="sourceLineNo">380</span>                // statement rule to capture this case. This is required, as this kind<a name="line.380"></a>
-<span class="sourceLineNo">381</span>                // of expression is not terminated by a semicolon.<a name="line.381"></a>
-<span class="sourceLineNo">382</span>                lambdaAlternative.sequenceBefore(arrowType).parseOnce(IN_EXPRESSION).endNode();<a name="line.382"></a>
-<span class="sourceLineNo">383</span>        }<a name="line.383"></a>
-<span class="sourceLineNo">384</span><a name="line.384"></a>
-<span class="sourceLineNo">385</span>        /**<a name="line.385"></a>
-<span class="sourceLineNo">386</span>         * Skips over the optional parameters and returns the new offset or<a name="line.386"></a>
-<span class="sourceLineNo">387</span>         * {@link RecognizerBase#NO_MATCH} if it is malformed.<a name="line.387"></a>
-<span class="sourceLineNo">388</span>         */<a name="line.388"></a>
-<span class="sourceLineNo">389</span>        public static int skipOptionalParameters(List&lt;IToken&gt; tokens, int currentOffset) {<a name="line.389"></a>
-<span class="sourceLineNo">390</span>                if (!TokenStreamUtils.hasTokenTypeSequence(tokens, currentOffset, LPAREN)) {<a name="line.390"></a>
-<span class="sourceLineNo">391</span>                        return currentOffset;<a name="line.391"></a>
-<span class="sourceLineNo">392</span>                }<a name="line.392"></a>
-<span class="sourceLineNo">393</span><a name="line.393"></a>
-<span class="sourceLineNo">394</span>                int closingParenthesis = TokenStreamUtils.findMatchingClosingToken(tokens, currentOffset + 1, LPAREN, RPAREN);<a name="line.394"></a>
-<span class="sourceLineNo">395</span>                if (closingParenthesis == TokenStreamUtils.NOT_FOUND) {<a name="line.395"></a>
-<span class="sourceLineNo">396</span>                        return RecognizerBase.NO_MATCH;<a name="line.396"></a>
-<span class="sourceLineNo">397</span>                }<a name="line.397"></a>
-<span class="sourceLineNo">398</span>                return closingParenthesis + 1;<a name="line.398"></a>
-<span class="sourceLineNo">399</span>        }<a name="line.399"></a>
-<span class="sourceLineNo">400</span>}<a name="line.400"></a>
+<span class="sourceLineNo">373</span>                // additional rule for parsing lambda expressions (without braces). see<a name="line.373"></a>
+<span class="sourceLineNo">374</span>                // completeLambda() for details<a name="line.374"></a>
+<span class="sourceLineNo">375</span>                // the node start is moved one token to the right so the shallow<a name="line.375"></a>
+<span class="sourceLineNo">376</span>                // entities produced by this rule don't include the arrow (instead it<a name="line.376"></a>
+<span class="sourceLineNo">377</span>                // will be included in the parent entity)<a name="line.377"></a>
+<span class="sourceLineNo">378</span>                inState(IN_EXPRESSION).sequence(arrowType)<a name="line.378"></a>
+<span class="sourceLineNo">379</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.LAMBDA_EXPRESSION, null, 1)<a name="line.379"></a>
+<span class="sourceLineNo">380</span>                                .skipBeforeWithNesting(EnumSet.of(RPAREN, SEMICOLON, RBRACE, COMMA), LPAREN, RPAREN, LBRACE, RBRACE)<a name="line.380"></a>
+<span class="sourceLineNo">381</span>                                .endNode();<a name="line.381"></a>
+<span class="sourceLineNo">382</span>        }<a name="line.382"></a>
+<span class="sourceLineNo">383</span><a name="line.383"></a>
+<span class="sourceLineNo">384</span>        /** Completes a rule for parsing lambda expressions. */<a name="line.384"></a>
+<span class="sourceLineNo">385</span>        private static void completeLambda(RecognizerBase&lt;EGenericParserStates&gt; ruleStart, ETokenType arrowType) {<a name="line.385"></a>
+<span class="sourceLineNo">386</span>                RecognizerBase&lt;EGenericParserStates&gt; lambdaAlternative = ruleStart.createNode(EShallowEntityType.METHOD,<a name="line.386"></a>
+<span class="sourceLineNo">387</span>                                SubTypeNames.LAMBDA);<a name="line.387"></a>
+<span class="sourceLineNo">388</span>                lambdaAlternative.sequence(arrowType, LBRACE).parseUntil(IN_METHOD).sequence(RBRACE).endNode();<a name="line.388"></a>
+<span class="sourceLineNo">389</span><a name="line.389"></a>
+<span class="sourceLineNo">390</span>                // we start parsing before the arrow as this allows our special<a name="line.390"></a>
+<span class="sourceLineNo">391</span>                // statement rule to capture this case. This is required, as this kind<a name="line.391"></a>
+<span class="sourceLineNo">392</span>                // of expression is not terminated by a semicolon.<a name="line.392"></a>
+<span class="sourceLineNo">393</span>                lambdaAlternative.sequenceBefore(arrowType).parseOnce(IN_EXPRESSION).endNode();<a name="line.393"></a>
+<span class="sourceLineNo">394</span>        }<a name="line.394"></a>
+<span class="sourceLineNo">395</span><a name="line.395"></a>
+<span class="sourceLineNo">396</span>        /**<a name="line.396"></a>
+<span class="sourceLineNo">397</span>         * Skips over the optional parameters and returns the new offset or<a name="line.397"></a>
+<span class="sourceLineNo">398</span>         * {@link RecognizerBase#NO_MATCH} if it is malformed.<a name="line.398"></a>
+<span class="sourceLineNo">399</span>         */<a name="line.399"></a>
+<span class="sourceLineNo">400</span>        public static int skipOptionalParameters(List&lt;IToken&gt; tokens, int currentOffset) {<a name="line.400"></a>
+<span class="sourceLineNo">401</span>                if (!TokenStreamUtils.hasTokenTypeSequence(tokens, currentOffset, LPAREN)) {<a name="line.401"></a>
+<span class="sourceLineNo">402</span>                        return currentOffset;<a name="line.402"></a>
+<span class="sourceLineNo">403</span>                }<a name="line.403"></a>
+<span class="sourceLineNo">404</span><a name="line.404"></a>
+<span class="sourceLineNo">405</span>                int closingParenthesis = TokenStreamUtils.findMatchingClosingToken(tokens, currentOffset + 1, LPAREN, RPAREN);<a name="line.405"></a>
+<span class="sourceLineNo">406</span>                if (closingParenthesis == TokenStreamUtils.NOT_FOUND) {<a name="line.406"></a>
+<span class="sourceLineNo">407</span>                        return RecognizerBase.NO_MATCH;<a name="line.407"></a>
+<span class="sourceLineNo">408</span>                }<a name="line.408"></a>
+<span class="sourceLineNo">409</span>                return closingParenthesis + 1;<a name="line.409"></a>
+<span class="sourceLineNo">410</span>        }<a name="line.410"></a>
+<span class="sourceLineNo">411</span>}<a name="line.411"></a>
 
 
 

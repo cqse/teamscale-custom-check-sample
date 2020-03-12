@@ -9,15 +9,15 @@
 <pre><span class="sourceLineNo">001</span>package eu.cqse.check.framework.core;<a name="line.1"></a>
 <span class="sourceLineNo">002</span><a name="line.2"></a>
 <span class="sourceLineNo">003</span>import org.conqat.lib.commons.assertion.CCSMAssert;<a name="line.3"></a>
-<span class="sourceLineNo">004</span>import org.conqat.lib.commons.logging.ILogger;<a name="line.4"></a>
-<span class="sourceLineNo">005</span>import org.conqat.lib.commons.reflect.ReflectionUtils;<a name="line.5"></a>
-<span class="sourceLineNo">006</span><a name="line.6"></a>
-<span class="sourceLineNo">007</span>import eu.cqse.check.framework.core.option.CheckOptionWrapper;<a name="line.7"></a>
-<span class="sourceLineNo">008</span><a name="line.8"></a>
-<span class="sourceLineNo">009</span>/**<a name="line.9"></a>
-<span class="sourceLineNo">010</span> * A instance of a custom check. Multiple {@link CheckInstance}s of one<a name="line.10"></a>
-<span class="sourceLineNo">011</span> * {@link CheckImplementationBase} can exist in order to be executed in parallel<a name="line.11"></a>
-<span class="sourceLineNo">012</span> * by multiple worker threads.<a name="line.12"></a>
+<span class="sourceLineNo">004</span>import org.conqat.lib.commons.reflect.ReflectionUtils;<a name="line.4"></a>
+<span class="sourceLineNo">005</span><a name="line.5"></a>
+<span class="sourceLineNo">006</span>import eu.cqse.check.framework.core.option.CheckOptionWrapper;<a name="line.6"></a>
+<span class="sourceLineNo">007</span><a name="line.7"></a>
+<span class="sourceLineNo">008</span>/**<a name="line.8"></a>
+<span class="sourceLineNo">009</span> * A instance of a custom check. Multiple {@link CheckInstance}s of one<a name="line.9"></a>
+<span class="sourceLineNo">010</span> * {@link CheckImplementationBase} subtype can exist in order to be executed in<a name="line.10"></a>
+<span class="sourceLineNo">011</span> * parallel by multiple worker threads (each {@link CheckInstance} is backed by<a name="line.11"></a>
+<span class="sourceLineNo">012</span> * a separate instance of the {@link CheckImplementationBase} subtype).<a name="line.12"></a>
 <span class="sourceLineNo">013</span> */<a name="line.13"></a>
 <span class="sourceLineNo">014</span>public class CheckInstance {<a name="line.14"></a>
 <span class="sourceLineNo">015</span><a name="line.15"></a>
@@ -31,10 +31,10 @@
 <span class="sourceLineNo">023</span>         * Creates a new check instance with the given check info. This given check info<a name="line.23"></a>
 <span class="sourceLineNo">024</span>         * must not be null.<a name="line.24"></a>
 <span class="sourceLineNo">025</span>         */<a name="line.25"></a>
-<span class="sourceLineNo">026</span>        public CheckInstance(CheckInfo checkInfo, ILogger logger) throws CheckException {<a name="line.26"></a>
+<span class="sourceLineNo">026</span>        public CheckInstance(CheckInfo checkInfo) throws CheckException {<a name="line.26"></a>
 <span class="sourceLineNo">027</span>                CCSMAssert.isNotNull(checkInfo);<a name="line.27"></a>
 <span class="sourceLineNo">028</span>                this.checkInfo = checkInfo;<a name="line.28"></a>
-<span class="sourceLineNo">029</span>                this.checkImplementation = checkInfo.instantiateCheckImplementation(logger);<a name="line.29"></a>
+<span class="sourceLineNo">029</span>                checkImplementation = checkInfo.instantiateCheckImplementation();<a name="line.29"></a>
 <span class="sourceLineNo">030</span>        }<a name="line.30"></a>
 <span class="sourceLineNo">031</span><a name="line.31"></a>
 <span class="sourceLineNo">032</span>        /** Initializes the check. */<a name="line.32"></a>
@@ -58,26 +58,38 @@
 <span class="sourceLineNo">050</span>        }<a name="line.50"></a>
 <span class="sourceLineNo">051</span><a name="line.51"></a>
 <span class="sourceLineNo">052</span>        /**<a name="line.52"></a>
-<span class="sourceLineNo">053</span>         * Sets the check context of the underlying check implementation to the given<a name="line.53"></a>
-<span class="sourceLineNo">054</span>         * one.<a name="line.54"></a>
-<span class="sourceLineNo">055</span>         */<a name="line.55"></a>
-<span class="sourceLineNo">056</span>        public void setContext(ICheckContext context) {<a name="line.56"></a>
-<span class="sourceLineNo">057</span>                CCSMAssert.isNotNull(context);<a name="line.57"></a>
-<span class="sourceLineNo">058</span>                checkImplementation.setContext(context);<a name="line.58"></a>
-<span class="sourceLineNo">059</span>        }<a name="line.59"></a>
-<span class="sourceLineNo">060</span><a name="line.60"></a>
-<span class="sourceLineNo">061</span>        /** Sets the option with the given name to the given value. */<a name="line.61"></a>
-<span class="sourceLineNo">062</span>        public &lt;T&gt; void setOption(String name, T value) {<a name="line.62"></a>
-<span class="sourceLineNo">063</span>                CheckOptionWrapper&lt;?&gt; option = checkInfo.getOptions().get(name);<a name="line.63"></a>
-<span class="sourceLineNo">064</span>                if (option != null) {<a name="line.64"></a>
-<span class="sourceLineNo">065</span>                        CCSMAssert.isTrue(ReflectionUtils.isAssignable(value.getClass(), option.getType()),<a name="line.65"></a>
-<span class="sourceLineNo">066</span>                                        "The given value must have the same type as the option to set.");<a name="line.66"></a>
-<span class="sourceLineNo">067</span>                        @SuppressWarnings("unchecked")<a name="line.67"></a>
-<span class="sourceLineNo">068</span>                        CheckOptionWrapper&lt;T&gt; castedOption = (CheckOptionWrapper&lt;T&gt;) option;<a name="line.68"></a>
-<span class="sourceLineNo">069</span>                        castedOption.setOption(checkImplementation, value);<a name="line.69"></a>
-<span class="sourceLineNo">070</span>                }<a name="line.70"></a>
+<span class="sourceLineNo">053</span>         * Initializes the underlying check implementation (calls<a name="line.53"></a>
+<span class="sourceLineNo">054</span>         * {@link CheckImplementationBase#initialize()}) and then sets the check context<a name="line.54"></a>
+<span class="sourceLineNo">055</span>         * of the underlying check implementation to the given one.<a name="line.55"></a>
+<span class="sourceLineNo">056</span>         */<a name="line.56"></a>
+<span class="sourceLineNo">057</span>        public void initializeAndSetContext(ICheckContext context) throws CheckException {<a name="line.57"></a>
+<span class="sourceLineNo">058</span>                CCSMAssert.isNotNull(context);<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                checkImplementation.setContext(null); // ensure that initialize does not use old context info<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                initialize();<a name="line.60"></a>
+<span class="sourceLineNo">061</span>                /*<a name="line.61"></a>
+<span class="sourceLineNo">062</span>                 * initialize(); must be called while no context is set. This ensures that<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                 * implementations of the CheckImplementationBase#initialize method can't access<a name="line.63"></a>
+<span class="sourceLineNo">064</span>                 * check-phase results (e.g., via context#accessPhaseResult). Initialization is<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                 * done only once for a batch of analyzed files but we store dependencies on<a name="line.65"></a>
+<span class="sourceLineNo">066</span>                 * check-phase results on single-file granularity. Therefore, accessing<a name="line.66"></a>
+<span class="sourceLineNo">067</span>                 * check-phase results from initialize() would mess up the information stored in<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                 * CheckPhaseResultDependencyIndex.<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                 */<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                checkImplementation.setContext(context);<a name="line.70"></a>
 <span class="sourceLineNo">071</span>        }<a name="line.71"></a>
-<span class="sourceLineNo">072</span>}<a name="line.72"></a>
+<span class="sourceLineNo">072</span><a name="line.72"></a>
+<span class="sourceLineNo">073</span>        /** Sets the option with the given name to the given value. */<a name="line.73"></a>
+<span class="sourceLineNo">074</span>        public &lt;T&gt; void setOption(String name, T value) {<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                CheckOptionWrapper&lt;?&gt; option = checkInfo.getOptions().get(name);<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                if (option != null) {<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                        CCSMAssert.isTrue(ReflectionUtils.isAssignable(value.getClass(), option.getType()),<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                                        "The given value must have the same type as the option to set.");<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                        @SuppressWarnings("unchecked")<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                        CheckOptionWrapper&lt;T&gt; castedOption = (CheckOptionWrapper&lt;T&gt;) option;<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                        castedOption.setOption(checkImplementation, value);<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                }<a name="line.82"></a>
+<span class="sourceLineNo">083</span>        }<a name="line.83"></a>
+<span class="sourceLineNo">084</span>}<a name="line.84"></a>
 
 
 

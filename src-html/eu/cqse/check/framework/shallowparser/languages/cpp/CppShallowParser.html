@@ -351,7 +351,7 @@
 <span class="sourceLineNo">343</span><a name="line.343"></a>
 <span class="sourceLineNo">344</span>                inState(IN_METHOD).sequence(new UppercaseIdentifierMatcher()).skipNested(LPAREN, RPAREN)<a name="line.344"></a>
 <span class="sourceLineNo">345</span>                                .optional(PREPROCESSOR_DIRECTIVE).sequenceBefore(separators)<a name="line.345"></a>
-<span class="sourceLineNo">346</span>                                .createNode(EShallowEntityType.STATEMENT, "Expanded macro", 0).endNode();<a name="line.346"></a>
+<span class="sourceLineNo">346</span>                                .createNode(EShallowEntityType.STATEMENT, SubTypeNames.EXPANDED_MACRO, 0).endNode();<a name="line.346"></a>
 <span class="sourceLineNo">347</span>        }<a name="line.347"></a>
 <span class="sourceLineNo">348</span><a name="line.348"></a>
 <span class="sourceLineNo">349</span>        @Override<a name="line.349"></a>

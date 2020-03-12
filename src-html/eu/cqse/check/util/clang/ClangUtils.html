@@ -236,40 +236,45 @@
 <span class="sourceLineNo">228</span>                List&lt;CXCursor&gt; matches = new ArrayList&lt;&gt;();<a name="line.228"></a>
 <span class="sourceLineNo">229</span>                ClangBinding.visitChildren(rootCursor, (childCursor, parent) -&gt; {<a name="line.229"></a>
 <span class="sourceLineNo">230</span>                        CXSourceRange extent = Clang.clang_getCursorExtent(childCursor);<a name="line.230"></a>
-<span class="sourceLineNo">231</span>                        int cursorStartOffset = ClangBinding.getSpellingLocationProperties(Clang.clang_getRangeStart(extent))<a name="line.231"></a>
-<span class="sourceLineNo">232</span>                                        .getOffset();<a name="line.232"></a>
-<span class="sourceLineNo">233</span>                        int cursorEndOffset = ClangBinding.getSpellingLocationProperties(Clang.clang_getRangeEnd(extent))<a name="line.233"></a>
-<span class="sourceLineNo">234</span>                                        .getOffset();<a name="line.234"></a>
-<span class="sourceLineNo">235</span><a name="line.235"></a>
-<span class="sourceLineNo">236</span>                        if (cursorStartOffset &gt; inclusiveStartOffset) {<a name="line.236"></a>
-<span class="sourceLineNo">237</span>                                return CXChildVisitResult.CXChildVisit_Break;<a name="line.237"></a>
-<span class="sourceLineNo">238</span>                        }<a name="line.238"></a>
-<span class="sourceLineNo">239</span>                        if (cursorEndOffset &lt; exclusiveEndOffset) {<a name="line.239"></a>
-<span class="sourceLineNo">240</span>                                return CXChildVisitResult.CXChildVisit_Continue;<a name="line.240"></a>
-<span class="sourceLineNo">241</span>                        }<a name="line.241"></a>
-<span class="sourceLineNo">242</span>                        if (cursorStartOffset &lt; inclusiveStartOffset || cursorEndOffset &gt; exclusiveEndOffset) {<a name="line.242"></a>
-<span class="sourceLineNo">243</span>                                return CXChildVisitResult.CXChildVisit_Recurse;<a name="line.243"></a>
-<span class="sourceLineNo">244</span>                        }<a name="line.244"></a>
-<span class="sourceLineNo">245</span><a name="line.245"></a>
-<span class="sourceLineNo">246</span>                        matches.add(childCursor);<a name="line.246"></a>
-<span class="sourceLineNo">247</span>                        return CXChildVisitResult.CXChildVisit_Break;<a name="line.247"></a>
-<span class="sourceLineNo">248</span>                });<a name="line.248"></a>
-<span class="sourceLineNo">249</span>                return matches.stream().findAny();<a name="line.249"></a>
-<span class="sourceLineNo">250</span>        }<a name="line.250"></a>
-<span class="sourceLineNo">251</span><a name="line.251"></a>
-<span class="sourceLineNo">252</span>        /**<a name="line.252"></a>
-<span class="sourceLineNo">253</span>         * Returns true if the this is a {@link CXCursor} for a<a name="line.253"></a>
-<span class="sourceLineNo">254</span>         * {@link CXCursorKind#CXCursor_BinaryOperator} (e.g. +, -, = etc.) or a<a name="line.254"></a>
-<span class="sourceLineNo">255</span>         * {@link CXCursorKind#CXCursor_CompoundAssignOperator} (e.g. +=, -= etc.).<a name="line.255"></a>
-<span class="sourceLineNo">256</span>         * Since both have a left hand- and right hand side with the operator in the<a name="line.256"></a>
-<span class="sourceLineNo">257</span>         * middle, these operands are handled together for convenience.<a name="line.257"></a>
-<span class="sourceLineNo">258</span>         */<a name="line.258"></a>
-<span class="sourceLineNo">259</span>        public static boolean isBinaryOperatorOrCompoundAssignment(CXCursor cursor) {<a name="line.259"></a>
-<span class="sourceLineNo">260</span>                CXCursorKind cursorKind = Clang.clang_getCursorKind(cursor);<a name="line.260"></a>
-<span class="sourceLineNo">261</span>                return cursorKind == CXCursorKind.CXCursor_BinaryOperator<a name="line.261"></a>
-<span class="sourceLineNo">262</span>                                || cursorKind == CXCursorKind.CXCursor_CompoundAssignOperator;<a name="line.262"></a>
-<span class="sourceLineNo">263</span>        }<a name="line.263"></a>
-<span class="sourceLineNo">264</span>}<a name="line.264"></a>
+<span class="sourceLineNo">231</span>                        try {<a name="line.231"></a>
+<span class="sourceLineNo">232</span>                                int cursorStartOffset = ClangBinding.getSpellingLocationProperties(Clang.clang_getRangeStart(extent))<a name="line.232"></a>
+<span class="sourceLineNo">233</span>                                                .getOffset();<a name="line.233"></a>
+<span class="sourceLineNo">234</span>                                int cursorEndOffset = ClangBinding.getSpellingLocationProperties(Clang.clang_getRangeEnd(extent))<a name="line.234"></a>
+<span class="sourceLineNo">235</span>                                                .getOffset();<a name="line.235"></a>
+<span class="sourceLineNo">236</span><a name="line.236"></a>
+<span class="sourceLineNo">237</span>                                if (cursorStartOffset &gt; inclusiveStartOffset) {<a name="line.237"></a>
+<span class="sourceLineNo">238</span>                                        return CXChildVisitResult.CXChildVisit_Break;<a name="line.238"></a>
+<span class="sourceLineNo">239</span>                                }<a name="line.239"></a>
+<span class="sourceLineNo">240</span>                                if (cursorEndOffset &lt; exclusiveEndOffset) {<a name="line.240"></a>
+<span class="sourceLineNo">241</span>                                        return CXChildVisitResult.CXChildVisit_Continue;<a name="line.241"></a>
+<span class="sourceLineNo">242</span>                                }<a name="line.242"></a>
+<span class="sourceLineNo">243</span>                                if (cursorStartOffset &lt; inclusiveStartOffset || cursorEndOffset &gt; exclusiveEndOffset) {<a name="line.243"></a>
+<span class="sourceLineNo">244</span>                                        return CXChildVisitResult.CXChildVisit_Recurse;<a name="line.244"></a>
+<span class="sourceLineNo">245</span>                                }<a name="line.245"></a>
+<span class="sourceLineNo">246</span><a name="line.246"></a>
+<span class="sourceLineNo">247</span>                                matches.add(childCursor);<a name="line.247"></a>
+<span class="sourceLineNo">248</span>                                return CXChildVisitResult.CXChildVisit_Break;<a name="line.248"></a>
+<span class="sourceLineNo">249</span>                        } catch (RuntimeException e) {<a name="line.249"></a>
+<span class="sourceLineNo">250</span>                                // this happens when we recurse into headers<a name="line.250"></a>
+<span class="sourceLineNo">251</span>                                return CXChildVisitResult.CXChildVisit_Break;<a name="line.251"></a>
+<span class="sourceLineNo">252</span>                        }<a name="line.252"></a>
+<span class="sourceLineNo">253</span>                });<a name="line.253"></a>
+<span class="sourceLineNo">254</span>                return matches.stream().findAny();<a name="line.254"></a>
+<span class="sourceLineNo">255</span>        }<a name="line.255"></a>
+<span class="sourceLineNo">256</span><a name="line.256"></a>
+<span class="sourceLineNo">257</span>        /**<a name="line.257"></a>
+<span class="sourceLineNo">258</span>         * Returns true if the this is a {@link CXCursor} for a<a name="line.258"></a>
+<span class="sourceLineNo">259</span>         * {@link CXCursorKind#CXCursor_BinaryOperator} (e.g. +, -, = etc.) or a<a name="line.259"></a>
+<span class="sourceLineNo">260</span>         * {@link CXCursorKind#CXCursor_CompoundAssignOperator} (e.g. +=, -= etc.).<a name="line.260"></a>
+<span class="sourceLineNo">261</span>         * Since both have a left hand- and right hand side with the operator in the<a name="line.261"></a>
+<span class="sourceLineNo">262</span>         * middle, these operands are handled together for convenience.<a name="line.262"></a>
+<span class="sourceLineNo">263</span>         */<a name="line.263"></a>
+<span class="sourceLineNo">264</span>        public static boolean isBinaryOperatorOrCompoundAssignment(CXCursor cursor) {<a name="line.264"></a>
+<span class="sourceLineNo">265</span>                CXCursorKind cursorKind = Clang.clang_getCursorKind(cursor);<a name="line.265"></a>
+<span class="sourceLineNo">266</span>                return cursorKind == CXCursorKind.CXCursor_BinaryOperator<a name="line.266"></a>
+<span class="sourceLineNo">267</span>                                || cursorKind == CXCursorKind.CXCursor_CompoundAssignOperator;<a name="line.267"></a>
+<span class="sourceLineNo">268</span>        }<a name="line.268"></a>
+<span class="sourceLineNo">269</span>}<a name="line.269"></a>
 
 
 

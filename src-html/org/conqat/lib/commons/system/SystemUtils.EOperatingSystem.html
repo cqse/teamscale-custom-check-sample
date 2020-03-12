@@ -118,9 +118,9 @@
 <span class="sourceLineNo">110</span>         */<a name="line.110"></a>
 <span class="sourceLineNo">111</span>        public static String getVisualStudioRuntimeErrorMessage(String libraryName) {<a name="line.111"></a>
 <span class="sourceLineNo">112</span>                if (isWindows()) {<a name="line.112"></a>
-<span class="sourceLineNo">113</span>                        return "Failed to load " + libraryName + " native library. Likely the required Visual C++ "<a name="line.113"></a>
-<span class="sourceLineNo">114</span>                                        + "Redistributable for Visual Studio 2015 is missing. Please download and install it from here: "<a name="line.114"></a>
-<span class="sourceLineNo">115</span>                                        + "https://www.microsoft.com/en-us/download/details.aspx?id=48145.";<a name="line.115"></a>
+<span class="sourceLineNo">113</span>                        return "Failed to load " + libraryName + " native library. As of Teamscale 5.6, the 'Microsoft Visual C++ "<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                                        + "Redistributable for Visual Studio 2015 - 2019' have to be installed and may be missing. "<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                                        + "Please download and install it from here: http://cqse.eu/cpp-redistributables";<a name="line.115"></a>
 <span class="sourceLineNo">116</span>                }<a name="line.116"></a>
 <span class="sourceLineNo">117</span>                return "Failed to load " + libraryName + " native library.";<a name="line.117"></a>
 <span class="sourceLineNo">118</span>        }<a name="line.118"></a>

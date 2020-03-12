@@ -1,12 +1,15 @@
+com.teamscale.commons
 com.teamscale.commons.annotation
+com.teamscale.commons.commit
 com.teamscale.commons.lang
+com.teamscale.commons.links
 com.teamscale.core.migration
-com.teamscale.index.utils
 eu.cqse.check
 eu.cqse.check.abap
 eu.cqse.check.base
 eu.cqse.check.clike
 eu.cqse.check.cpp
+eu.cqse.check.framework.checktest
 eu.cqse.check.framework.core
 eu.cqse.check.framework.core.option
 eu.cqse.check.framework.core.phase
@@ -19,6 +22,7 @@ eu.cqse.check.framework.postprocessor.cobol
 eu.cqse.check.framework.preprocessor
 eu.cqse.check.framework.preprocessor.abap
 eu.cqse.check.framework.preprocessor.c
+eu.cqse.check.framework.preprocessor.c.new_c_preprocessor
 eu.cqse.check.framework.preprocessor.iec61131
 eu.cqse.check.framework.scanner
 eu.cqse.check.framework.scanner.highlighting
@@ -32,6 +36,7 @@ eu.cqse.check.framework.shallowparser.languages.cpp
 eu.cqse.check.framework.shallowparser.languages.cs
 eu.cqse.check.framework.shallowparser.languages.delphi
 eu.cqse.check.framework.shallowparser.languages.fortran
+eu.cqse.check.framework.shallowparser.languages.go
 eu.cqse.check.framework.shallowparser.languages.gosu
 eu.cqse.check.framework.shallowparser.languages.groovy
 eu.cqse.check.framework.shallowparser.languages.hanasqlscript
@@ -99,7 +104,6 @@ org.conqat.lib.commons.assertion
 org.conqat.lib.commons.assessment
 org.conqat.lib.commons.cache4j
 org.conqat.lib.commons.cache4j.backend
-org.conqat.lib.commons.clone
 org.conqat.lib.commons.collections
 org.conqat.lib.commons.color
 org.conqat.lib.commons.concurrent
@@ -136,6 +140,8 @@ org.conqat.lib.commons.serialization.utils
 org.conqat.lib.commons.string
 org.conqat.lib.commons.system
 org.conqat.lib.commons.test
+org.conqat.lib.commons.test.mockserver
+org.conqat.lib.commons.test.tags
 org.conqat.lib.commons.tree
 org.conqat.lib.commons.treemap
 org.conqat.lib.commons.uniformpath

@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>package eu.cqse.check.framework.preprocessor.c.new_c_preprocessor;<a name="line.1"></a>
+<span class="sourceLineNo">002</span><a name="line.2"></a>
+<span class="sourceLineNo">003</span>import java.util.Collections;<a name="line.3"></a>
+<span class="sourceLineNo">004</span>import java.util.List;<a name="line.4"></a>
+<span class="sourceLineNo">005</span><a name="line.5"></a>
+<span class="sourceLineNo">006</span>import org.conqat.lib.commons.collections.UnmodifiableList;<a name="line.6"></a>
+<span class="sourceLineNo">007</span><a name="line.7"></a>
+<span class="sourceLineNo">008</span>import eu.cqse.check.framework.scanner.IToken;<a name="line.8"></a>
+<span class="sourceLineNo">009</span><a name="line.9"></a>
+<span class="sourceLineNo">010</span>/**<a name="line.10"></a>
+<span class="sourceLineNo">011</span> * {@link PreprocessorTokenReplacement} that also contains information about one<a name="line.11"></a>
+<span class="sourceLineNo">012</span> * or more errors encountered during preprocessing (e.g., too few parameters for<a name="line.12"></a>
+<span class="sourceLineNo">013</span> * a function macro).<a name="line.13"></a>
+<span class="sourceLineNo">014</span> */<a name="line.14"></a>
+<span class="sourceLineNo">015</span>public class PreprocessorErrorTokenReplacement extends PreprocessorTokenReplacement {<a name="line.15"></a>
+<span class="sourceLineNo">016</span>        /**<a name="line.16"></a>
+<span class="sourceLineNo">017</span>         * A message that explains why we generate an error replacement.<a name="line.17"></a>
+<span class="sourceLineNo">018</span>         */<a name="line.18"></a>
+<span class="sourceLineNo">019</span>        public final String errorMessage;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>        /**<a name="line.20"></a>
+<span class="sourceLineNo">021</span>         * The hierarchy of #include statements that were currently processed when this<a name="line.21"></a>
+<span class="sourceLineNo">022</span>         * error occurred.<a name="line.22"></a>
+<span class="sourceLineNo">023</span>         */<a name="line.23"></a>
+<span class="sourceLineNo">024</span>        public final UnmodifiableList&lt;String&gt; includeHierarchy;<a name="line.24"></a>
+<span class="sourceLineNo">025</span><a name="line.25"></a>
+<span class="sourceLineNo">026</span>        /* package */ PreprocessorErrorTokenReplacement(String errorMessage, UnmodifiableList&lt;String&gt; includeHierarchy,<a name="line.26"></a>
+<span class="sourceLineNo">027</span>                        List&lt;IToken&gt; replacementTokens, int originalTokensStartIndex, int originalTokensEndIndex,<a name="line.27"></a>
+<span class="sourceLineNo">028</span>                        NewCPreprocessor.PreprocessorUsageInformation preprocessorUsageInformation) {<a name="line.28"></a>
+<span class="sourceLineNo">029</span>                super(replacementTokens, originalTokensStartIndex, originalTokensEndIndex, preprocessorUsageInformation);<a name="line.29"></a>
+<span class="sourceLineNo">030</span>                this.errorMessage = errorMessage;<a name="line.30"></a>
+<span class="sourceLineNo">031</span>                this.includeHierarchy = includeHierarchy;<a name="line.31"></a>
+<span class="sourceLineNo">032</span>        }<a name="line.32"></a>
+<span class="sourceLineNo">033</span><a name="line.33"></a>
+<span class="sourceLineNo">034</span>        /* package */ static PreprocessorErrorTokenReplacement createSingleTokenRemoval(String errorMessage,<a name="line.34"></a>
+<span class="sourceLineNo">035</span>                        UnmodifiableList&lt;String&gt; includeHierarchy, int tokenIndex,<a name="line.35"></a>
+<span class="sourceLineNo">036</span>                        NewCPreprocessor.PreprocessorUsageInformation preprocessorUsageInformation) {<a name="line.36"></a>
+<span class="sourceLineNo">037</span>                return new PreprocessorErrorTokenReplacement(errorMessage, includeHierarchy, Collections.emptyList(),<a name="line.37"></a>
+<span class="sourceLineNo">038</span>                                tokenIndex, tokenIndex + 1, preprocessorUsageInformation);<a name="line.38"></a>
+<span class="sourceLineNo">039</span>        }<a name="line.39"></a>
+<span class="sourceLineNo">040</span>}<a name="line.40"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

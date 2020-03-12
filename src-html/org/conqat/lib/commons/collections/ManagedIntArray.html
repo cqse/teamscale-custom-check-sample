@@ -26,44 +26,48 @@
 <span class="sourceLineNo">018</span><a name="line.18"></a>
 <span class="sourceLineNo">019</span>import java.io.Serializable;<a name="line.19"></a>
 <span class="sourceLineNo">020</span><a name="line.20"></a>
-<span class="sourceLineNo">021</span>/**<a name="line.21"></a>
-<span class="sourceLineNo">022</span> * A class containing an int array that is managed in the sense that it can grow<a name="line.22"></a>
-<span class="sourceLineNo">023</span> * dynamically (using exponential growth). It is useful for cases where an<a name="line.23"></a>
-<span class="sourceLineNo">024</span> * ArrayList&lt;Integer&gt; seems like overkill due to the high memory footprint of<a name="line.24"></a>
-<span class="sourceLineNo">025</span> * the Integer objects and the amount of work performed for auto (un)boxing.<a name="line.25"></a>
-<span class="sourceLineNo">026</span> * Note however, that a subclass has full access to the internals and thus might<a name="line.26"></a>
-<span class="sourceLineNo">027</span> * cause chaos.<a name="line.27"></a>
-<span class="sourceLineNo">028</span> */<a name="line.28"></a>
-<span class="sourceLineNo">029</span>public class ManagedIntArray implements Serializable {<a name="line.29"></a>
-<span class="sourceLineNo">030</span><a name="line.30"></a>
-<span class="sourceLineNo">031</span>        private static final long serialVersionUID = 1L;<a name="line.31"></a>
+<span class="sourceLineNo">021</span>import com.fasterxml.jackson.annotation.JsonProperty;<a name="line.21"></a>
+<span class="sourceLineNo">022</span><a name="line.22"></a>
+<span class="sourceLineNo">023</span>/**<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * A class containing an int array that is managed in the sense that it can grow<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * dynamically (using exponential growth). It is useful for cases where an<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * ArrayList&lt;Integer&gt; seems like overkill due to the high memory footprint of<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * the Integer objects and the amount of work performed for auto (un)boxing.<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * Note however, that a subclass has full access to the internals and thus might<a name="line.28"></a>
+<span class="sourceLineNo">029</span> * cause chaos.<a name="line.29"></a>
+<span class="sourceLineNo">030</span> */<a name="line.30"></a>
+<span class="sourceLineNo">031</span>public class ManagedIntArray implements Serializable {<a name="line.31"></a>
 <span class="sourceLineNo">032</span><a name="line.32"></a>
-<span class="sourceLineNo">033</span>        /** The current size of the array. */<a name="line.33"></a>
-<span class="sourceLineNo">034</span>        protected int size = 0;<a name="line.34"></a>
-<span class="sourceLineNo">035</span><a name="line.35"></a>
-<span class="sourceLineNo">036</span>        /** The actual array. */<a name="line.36"></a>
-<span class="sourceLineNo">037</span>        protected int[] array = new int[8];<a name="line.37"></a>
+<span class="sourceLineNo">033</span>        private static final long serialVersionUID = 1L;<a name="line.33"></a>
+<span class="sourceLineNo">034</span><a name="line.34"></a>
+<span class="sourceLineNo">035</span>        /** The current size of the array. */<a name="line.35"></a>
+<span class="sourceLineNo">036</span>        @JsonProperty("size")<a name="line.36"></a>
+<span class="sourceLineNo">037</span>        protected int size = 0;<a name="line.37"></a>
 <span class="sourceLineNo">038</span><a name="line.38"></a>
-<span class="sourceLineNo">039</span>        /** Add space for a single element to the end of the array. */<a name="line.39"></a>
-<span class="sourceLineNo">040</span>        protected void addArrayElement() {<a name="line.40"></a>
-<span class="sourceLineNo">041</span>                addArrayElements(1);<a name="line.41"></a>
-<span class="sourceLineNo">042</span>        }<a name="line.42"></a>
-<span class="sourceLineNo">043</span><a name="line.43"></a>
-<span class="sourceLineNo">044</span>        /** Add space for multiple elements to the end of the array. */<a name="line.44"></a>
-<span class="sourceLineNo">045</span>        protected void addArrayElements(int count) {<a name="line.45"></a>
-<span class="sourceLineNo">046</span>                if (size + count &gt;= array.length) {<a name="line.46"></a>
-<span class="sourceLineNo">047</span>                        int newSize = 2 * array.length;<a name="line.47"></a>
-<span class="sourceLineNo">048</span>                        while (newSize &lt;= size + count) {<a name="line.48"></a>
-<span class="sourceLineNo">049</span>                                newSize *= 2;<a name="line.49"></a>
-<span class="sourceLineNo">050</span>                        }<a name="line.50"></a>
-<span class="sourceLineNo">051</span><a name="line.51"></a>
-<span class="sourceLineNo">052</span>                        int[] oldArray = array;<a name="line.52"></a>
-<span class="sourceLineNo">053</span>                        array = new int[newSize];<a name="line.53"></a>
-<span class="sourceLineNo">054</span>                        System.arraycopy(oldArray, 0, array, 0, size);<a name="line.54"></a>
-<span class="sourceLineNo">055</span>                }<a name="line.55"></a>
-<span class="sourceLineNo">056</span>                size += count;<a name="line.56"></a>
-<span class="sourceLineNo">057</span>        }<a name="line.57"></a>
-<span class="sourceLineNo">058</span>}<a name="line.58"></a>
+<span class="sourceLineNo">039</span>        /** The actual array. */<a name="line.39"></a>
+<span class="sourceLineNo">040</span>        @JsonProperty("array")<a name="line.40"></a>
+<span class="sourceLineNo">041</span>        protected int[] array = new int[8];<a name="line.41"></a>
+<span class="sourceLineNo">042</span><a name="line.42"></a>
+<span class="sourceLineNo">043</span>        /** Add space for a single element to the end of the array. */<a name="line.43"></a>
+<span class="sourceLineNo">044</span>        protected void addArrayElement() {<a name="line.44"></a>
+<span class="sourceLineNo">045</span>                addArrayElements(1);<a name="line.45"></a>
+<span class="sourceLineNo">046</span>        }<a name="line.46"></a>
+<span class="sourceLineNo">047</span><a name="line.47"></a>
+<span class="sourceLineNo">048</span>        /** Add space for multiple elements to the end of the array. */<a name="line.48"></a>
+<span class="sourceLineNo">049</span>        protected void addArrayElements(int count) {<a name="line.49"></a>
+<span class="sourceLineNo">050</span>                if (size + count &gt;= array.length) {<a name="line.50"></a>
+<span class="sourceLineNo">051</span>                        int newSize = 2 * array.length;<a name="line.51"></a>
+<span class="sourceLineNo">052</span>                        while (newSize &lt;= size + count) {<a name="line.52"></a>
+<span class="sourceLineNo">053</span>                                newSize *= 2;<a name="line.53"></a>
+<span class="sourceLineNo">054</span>                        }<a name="line.54"></a>
+<span class="sourceLineNo">055</span><a name="line.55"></a>
+<span class="sourceLineNo">056</span>                        int[] oldArray = array;<a name="line.56"></a>
+<span class="sourceLineNo">057</span>                        array = new int[newSize];<a name="line.57"></a>
+<span class="sourceLineNo">058</span>                        System.arraycopy(oldArray, 0, array, 0, size);<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                }<a name="line.59"></a>
+<span class="sourceLineNo">060</span>                size += count;<a name="line.60"></a>
+<span class="sourceLineNo">061</span>        }<a name="line.61"></a>
+<span class="sourceLineNo">062</span>}<a name="line.62"></a>
 
 
 

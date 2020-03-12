@@ -43,54 +43,53 @@
 <span class="sourceLineNo">035</span>        String getText();<a name="line.35"></a>
 <span class="sourceLineNo">036</span><a name="line.36"></a>
 <span class="sourceLineNo">037</span>        /**<a name="line.37"></a>
-<span class="sourceLineNo">038</span>         * Returns the list of children of this node. This usually is a readonly<a name="line.38"></a>
-<span class="sourceLineNo">039</span>         * list.<a name="line.39"></a>
-<span class="sourceLineNo">040</span>         */<a name="line.40"></a>
-<span class="sourceLineNo">041</span>        List&lt;ITreeMapNode&lt;T&gt;&gt; getChildren();<a name="line.41"></a>
-<span class="sourceLineNo">042</span><a name="line.42"></a>
-<span class="sourceLineNo">043</span>        /** Returns the area of this node including all subnodes. */<a name="line.43"></a>
-<span class="sourceLineNo">044</span>        double getArea();<a name="line.44"></a>
-<span class="sourceLineNo">045</span><a name="line.45"></a>
-<span class="sourceLineNo">046</span>        /** Returns the base color used for drawing this node. */<a name="line.46"></a>
-<span class="sourceLineNo">047</span>        Color getColor();<a name="line.47"></a>
-<span class="sourceLineNo">048</span><a name="line.48"></a>
-<span class="sourceLineNo">049</span>        /** Returns the color used for drawing the pattern (if any) of this node. */<a name="line.49"></a>
-<span class="sourceLineNo">050</span>        Color getPatternColor();<a name="line.50"></a>
-<span class="sourceLineNo">051</span><a name="line.51"></a>
-<span class="sourceLineNo">052</span>        /**<a name="line.52"></a>
-<span class="sourceLineNo">053</span>         * Returns the pattern used for drawing the node (may be &lt;code&gt;null&lt;/code&gt;<a name="line.53"></a>
-<span class="sourceLineNo">054</span>         * to use no pattern).<a name="line.54"></a>
-<span class="sourceLineNo">055</span>         */<a name="line.55"></a>
-<span class="sourceLineNo">056</span>        IDrawingPattern getDrawingPattern();<a name="line.56"></a>
-<span class="sourceLineNo">057</span><a name="line.57"></a>
-<span class="sourceLineNo">058</span>        /**<a name="line.58"></a>
-<span class="sourceLineNo">059</span>         * Returns the rectangle this node was layouted into. If the tree was not<a name="line.59"></a>
-<span class="sourceLineNo">060</span>         * yet layouted, this may be null, otherwise it should be the value set by<a name="line.60"></a>
-<span class="sourceLineNo">061</span>         * {@link #setLayoutRectangle(Rectangle2D)}.<a name="line.61"></a>
-<span class="sourceLineNo">062</span>         */<a name="line.62"></a>
-<span class="sourceLineNo">063</span>        Rectangle2D getLayoutRectangle();<a name="line.63"></a>
-<span class="sourceLineNo">064</span><a name="line.64"></a>
-<span class="sourceLineNo">065</span>        /** Sets the rectangle this node should be layouted into. */<a name="line.65"></a>
-<span class="sourceLineNo">066</span>        void setLayoutRectangle(Rectangle2D rect);<a name="line.66"></a>
-<span class="sourceLineNo">067</span><a name="line.67"></a>
-<span class="sourceLineNo">068</span>        /** Get displayable name of the node. */<a name="line.68"></a>
-<span class="sourceLineNo">069</span>        String getTooltipId();<a name="line.69"></a>
-<span class="sourceLineNo">070</span><a name="line.70"></a>
-<span class="sourceLineNo">071</span>        /** Returns keys for structured displayable data. */<a name="line.71"></a>
-<span class="sourceLineNo">072</span>        List&lt;String&gt; getTooltipKeys();<a name="line.72"></a>
-<span class="sourceLineNo">073</span><a name="line.73"></a>
-<span class="sourceLineNo">074</span>        /** Returns the value to be displayed for a single key. */<a name="line.74"></a>
-<span class="sourceLineNo">075</span>        Object getTooltipValue(String key);<a name="line.75"></a>
-<span class="sourceLineNo">076</span><a name="line.76"></a>
-<span class="sourceLineNo">077</span>        /**<a name="line.77"></a>
-<span class="sourceLineNo">078</span>         * Re-calculates the aggregated area for this node and for all of its<a name="line.78"></a>
-<span class="sourceLineNo">079</span>         * children. This is required after filtering treemap nodes.<a name="line.79"></a>
-<span class="sourceLineNo">080</span>         * <a name="line.80"></a>
-<span class="sourceLineNo">081</span>         * @return the new area for this node.<a name="line.81"></a>
-<span class="sourceLineNo">082</span>         */<a name="line.82"></a>
-<span class="sourceLineNo">083</span>        double recalculateAreaAggregates();<a name="line.83"></a>
-<span class="sourceLineNo">084</span><a name="line.84"></a>
-<span class="sourceLineNo">085</span>}<a name="line.85"></a>
+<span class="sourceLineNo">038</span>         * Returns the list of children of this node. This usually is a readonly list.<a name="line.38"></a>
+<span class="sourceLineNo">039</span>         */<a name="line.39"></a>
+<span class="sourceLineNo">040</span>        List&lt;ITreeMapNode&lt;T&gt;&gt; getChildren();<a name="line.40"></a>
+<span class="sourceLineNo">041</span><a name="line.41"></a>
+<span class="sourceLineNo">042</span>        /** Returns the area of this node including all subnodes. */<a name="line.42"></a>
+<span class="sourceLineNo">043</span>        double getArea();<a name="line.43"></a>
+<span class="sourceLineNo">044</span><a name="line.44"></a>
+<span class="sourceLineNo">045</span>        /** Returns the base color used for drawing this node. */<a name="line.45"></a>
+<span class="sourceLineNo">046</span>        Color getColor();<a name="line.46"></a>
+<span class="sourceLineNo">047</span><a name="line.47"></a>
+<span class="sourceLineNo">048</span>        /** Returns the color used for drawing the pattern (if any) of this node. */<a name="line.48"></a>
+<span class="sourceLineNo">049</span>        Color getPatternColor();<a name="line.49"></a>
+<span class="sourceLineNo">050</span><a name="line.50"></a>
+<span class="sourceLineNo">051</span>        /**<a name="line.51"></a>
+<span class="sourceLineNo">052</span>         * Returns the pattern used for drawing the node (may be &lt;code&gt;null&lt;/code&gt; to<a name="line.52"></a>
+<span class="sourceLineNo">053</span>         * use no pattern).<a name="line.53"></a>
+<span class="sourceLineNo">054</span>         */<a name="line.54"></a>
+<span class="sourceLineNo">055</span>        IDrawingPattern getDrawingPattern();<a name="line.55"></a>
+<span class="sourceLineNo">056</span><a name="line.56"></a>
+<span class="sourceLineNo">057</span>        /**<a name="line.57"></a>
+<span class="sourceLineNo">058</span>         * Returns the rectangle this node was layouted into. If the tree was not yet<a name="line.58"></a>
+<span class="sourceLineNo">059</span>         * layouted, this may be null, otherwise it should be the value set by<a name="line.59"></a>
+<span class="sourceLineNo">060</span>         * {@link #setLayoutRectangle(Rectangle2D)}.<a name="line.60"></a>
+<span class="sourceLineNo">061</span>         */<a name="line.61"></a>
+<span class="sourceLineNo">062</span>        Rectangle2D getLayoutRectangle();<a name="line.62"></a>
+<span class="sourceLineNo">063</span><a name="line.63"></a>
+<span class="sourceLineNo">064</span>        /** Sets the rectangle this node should be layouted into. */<a name="line.64"></a>
+<span class="sourceLineNo">065</span>        void setLayoutRectangle(Rectangle2D rect);<a name="line.65"></a>
+<span class="sourceLineNo">066</span><a name="line.66"></a>
+<span class="sourceLineNo">067</span>        /** Get displayable name of the node. */<a name="line.67"></a>
+<span class="sourceLineNo">068</span>        String getTooltipId();<a name="line.68"></a>
+<span class="sourceLineNo">069</span><a name="line.69"></a>
+<span class="sourceLineNo">070</span>        /** Returns keys for structured displayable data. */<a name="line.70"></a>
+<span class="sourceLineNo">071</span>        List&lt;String&gt; getTooltipKeys();<a name="line.71"></a>
+<span class="sourceLineNo">072</span><a name="line.72"></a>
+<span class="sourceLineNo">073</span>        /** Returns the value to be displayed for a single key. */<a name="line.73"></a>
+<span class="sourceLineNo">074</span>        Object getTooltipValue(String key);<a name="line.74"></a>
+<span class="sourceLineNo">075</span><a name="line.75"></a>
+<span class="sourceLineNo">076</span>        /**<a name="line.76"></a>
+<span class="sourceLineNo">077</span>         * Re-calculates the aggregated area for this node and for all of its children.<a name="line.77"></a>
+<span class="sourceLineNo">078</span>         * This is required after filtering treemap nodes.<a name="line.78"></a>
+<span class="sourceLineNo">079</span>         * <a name="line.79"></a>
+<span class="sourceLineNo">080</span>         * @return the new area for this node.<a name="line.80"></a>
+<span class="sourceLineNo">081</span>         */<a name="line.81"></a>
+<span class="sourceLineNo">082</span>        double recalculateAreaAggregates();<a name="line.82"></a>
+<span class="sourceLineNo">083</span><a name="line.83"></a>
+<span class="sourceLineNo">084</span>}<a name="line.84"></a>
 
 
 

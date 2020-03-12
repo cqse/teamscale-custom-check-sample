@@ -16,76 +16,88 @@
 <span class="sourceLineNo">008</span>import java.io.Serializable;<a name="line.8"></a>
 <span class="sourceLineNo">009</span>import java.util.Objects;<a name="line.9"></a>
 <span class="sourceLineNo">010</span><a name="line.10"></a>
-<span class="sourceLineNo">011</span>import com.fasterxml.jackson.annotation.JsonProperty;<a name="line.11"></a>
-<span class="sourceLineNo">012</span><a name="line.12"></a>
-<span class="sourceLineNo">013</span>/**<a name="line.13"></a>
-<span class="sourceLineNo">014</span> * DTO containing all required information of the server concerning server<a name="line.14"></a>
-<span class="sourceLineNo">015</span> * limits<a name="line.15"></a>
-<span class="sourceLineNo">016</span> *<a name="line.16"></a>
-<span class="sourceLineNo">017</span> * &lt;strong&gt;This class is used for communication with IDE clients (via the<a name="line.17"></a>
-<span class="sourceLineNo">018</span> * {@link org.conqat.engine.service.shared.client.IdeServiceClient}), so special<a name="line.18"></a>
-<span class="sourceLineNo">019</span> * care has to be taken when changing its signature!&lt;/strong&gt;<a name="line.19"></a>
-<span class="sourceLineNo">020</span> */<a name="line.20"></a>
-<span class="sourceLineNo">021</span>public class PreCommitServerLimits implements Serializable {<a name="line.21"></a>
-<span class="sourceLineNo">022</span><a name="line.22"></a>
-<span class="sourceLineNo">023</span>        private static final long serialVersionUID = 1;<a name="line.23"></a>
+<span class="sourceLineNo">011</span>import com.fasterxml.jackson.annotation.JsonCreator;<a name="line.11"></a>
+<span class="sourceLineNo">012</span>import com.fasterxml.jackson.annotation.JsonProperty;<a name="line.12"></a>
+<span class="sourceLineNo">013</span>import com.teamscale.commons.lang.ToStringHelpers;<a name="line.13"></a>
+<span class="sourceLineNo">014</span><a name="line.14"></a>
+<span class="sourceLineNo">015</span>/**<a name="line.15"></a>
+<span class="sourceLineNo">016</span> * DTO containing all required information of the server concerning server<a name="line.16"></a>
+<span class="sourceLineNo">017</span> * limits<a name="line.17"></a>
+<span class="sourceLineNo">018</span> *<a name="line.18"></a>
+<span class="sourceLineNo">019</span> * &lt;strong&gt;This class is used for communication with IDE clients (via the<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * {@link org.conqat.engine.service.shared.client.IdeServiceClient}), so special<a name="line.20"></a>
+<span class="sourceLineNo">021</span> * care has to be taken when changing its signature!&lt;/strong&gt;<a name="line.21"></a>
+<span class="sourceLineNo">022</span> */<a name="line.22"></a>
+<span class="sourceLineNo">023</span>public final class PreCommitServerLimits implements Serializable {<a name="line.23"></a>
 <span class="sourceLineNo">024</span><a name="line.24"></a>
-<span class="sourceLineNo">025</span>        @JsonProperty("timeLimitInSeconds")<a name="line.25"></a>
-<span class="sourceLineNo">026</span>        private final int timeLimitInSeconds;<a name="line.26"></a>
-<span class="sourceLineNo">027</span><a name="line.27"></a>
-<span class="sourceLineNo">028</span>        @JsonProperty("fileSizeLimitInBytes")<a name="line.28"></a>
-<span class="sourceLineNo">029</span>        private final long fileSizeLimitInBytes;<a name="line.29"></a>
-<span class="sourceLineNo">030</span><a name="line.30"></a>
-<span class="sourceLineNo">031</span>        @JsonProperty("fileCountLimit")<a name="line.31"></a>
-<span class="sourceLineNo">032</span>        private final int fileCountLimit;<a name="line.32"></a>
-<span class="sourceLineNo">033</span><a name="line.33"></a>
-<span class="sourceLineNo">034</span>        public PreCommitServerLimits(int fileCountLimit, long sizeLimitInBytes, int timeLimitInSeconds) {<a name="line.34"></a>
-<span class="sourceLineNo">035</span>                this.fileCountLimit = fileCountLimit;<a name="line.35"></a>
-<span class="sourceLineNo">036</span>                this.fileSizeLimitInBytes = sizeLimitInBytes;<a name="line.36"></a>
-<span class="sourceLineNo">037</span>                this.timeLimitInSeconds = timeLimitInSeconds;<a name="line.37"></a>
-<span class="sourceLineNo">038</span>        }<a name="line.38"></a>
-<span class="sourceLineNo">039</span><a name="line.39"></a>
-<span class="sourceLineNo">040</span>        public int getTimeLimitInSeconds() {<a name="line.40"></a>
-<span class="sourceLineNo">041</span>                return timeLimitInSeconds;<a name="line.41"></a>
-<span class="sourceLineNo">042</span>        }<a name="line.42"></a>
-<span class="sourceLineNo">043</span><a name="line.43"></a>
-<span class="sourceLineNo">044</span>        public long getFileSizeLimitInBytes() {<a name="line.44"></a>
-<span class="sourceLineNo">045</span>                return fileSizeLimitInBytes;<a name="line.45"></a>
-<span class="sourceLineNo">046</span>        }<a name="line.46"></a>
-<span class="sourceLineNo">047</span><a name="line.47"></a>
-<span class="sourceLineNo">048</span>        public int getFileCountLimit() {<a name="line.48"></a>
-<span class="sourceLineNo">049</span>                return fileCountLimit;<a name="line.49"></a>
-<span class="sourceLineNo">050</span>        }<a name="line.50"></a>
-<span class="sourceLineNo">051</span><a name="line.51"></a>
-<span class="sourceLineNo">052</span>        @Override<a name="line.52"></a>
-<span class="sourceLineNo">053</span>        public boolean equals(Object other) {<a name="line.53"></a>
-<span class="sourceLineNo">054</span>                if (this == other) {<a name="line.54"></a>
-<span class="sourceLineNo">055</span>                        return true;<a name="line.55"></a>
-<span class="sourceLineNo">056</span>                }<a name="line.56"></a>
-<span class="sourceLineNo">057</span>                if (other == null) {<a name="line.57"></a>
-<span class="sourceLineNo">058</span>                        return false;<a name="line.58"></a>
-<span class="sourceLineNo">059</span>                }<a name="line.59"></a>
-<span class="sourceLineNo">060</span>                if (getClass() != other.getClass()) {<a name="line.60"></a>
-<span class="sourceLineNo">061</span>                        return false;<a name="line.61"></a>
-<span class="sourceLineNo">062</span>                }<a name="line.62"></a>
-<span class="sourceLineNo">063</span>                PreCommitServerLimits that = (PreCommitServerLimits) other;<a name="line.63"></a>
-<span class="sourceLineNo">064</span>                return Objects.equals(this.timeLimitInSeconds, that.timeLimitInSeconds)<a name="line.64"></a>
-<span class="sourceLineNo">065</span>                                &amp;&amp; Objects.equals(this.fileSizeLimitInBytes, that.fileSizeLimitInBytes)<a name="line.65"></a>
-<span class="sourceLineNo">066</span>                                &amp;&amp; Objects.equals(this.fileCountLimit, that.fileCountLimit);<a name="line.66"></a>
-<span class="sourceLineNo">067</span>        }<a name="line.67"></a>
-<span class="sourceLineNo">068</span><a name="line.68"></a>
-<span class="sourceLineNo">069</span>        @Override<a name="line.69"></a>
-<span class="sourceLineNo">070</span>        public int hashCode() {<a name="line.70"></a>
-<span class="sourceLineNo">071</span>                return Objects.hash(timeLimitInSeconds, fileSizeLimitInBytes, fileCountLimit);<a name="line.71"></a>
-<span class="sourceLineNo">072</span>        }<a name="line.72"></a>
-<span class="sourceLineNo">073</span><a name="line.73"></a>
-<span class="sourceLineNo">074</span>        @Override<a name="line.74"></a>
-<span class="sourceLineNo">075</span>        public String toString() {<a name="line.75"></a>
-<span class="sourceLineNo">076</span>                return new StringBuilder("PreCommit server limits: fileCount=").append(fileCountLimit).append(", fileSize=")<a name="line.76"></a>
-<span class="sourceLineNo">077</span>                                .append(fileSizeLimitInBytes).append(" bytes, timeLimit=").append(timeLimitInSeconds)<a name="line.77"></a>
-<span class="sourceLineNo">078</span>                                .append(" seconds.").toString();<a name="line.78"></a>
-<span class="sourceLineNo">079</span>        }<a name="line.79"></a>
-<span class="sourceLineNo">080</span>}<a name="line.80"></a>
+<span class="sourceLineNo">025</span>        private static final long serialVersionUID = 1;<a name="line.25"></a>
+<span class="sourceLineNo">026</span><a name="line.26"></a>
+<span class="sourceLineNo">027</span>        /** The name of the JSON property name for {@link #timeLimitInSeconds}. */<a name="line.27"></a>
+<span class="sourceLineNo">028</span>        private static final String TIME_LIMIT_IN_SECONDS_PROPERTY = "timeLimitInSeconds";<a name="line.28"></a>
+<span class="sourceLineNo">029</span><a name="line.29"></a>
+<span class="sourceLineNo">030</span>        /** The name of the JSON property name for {@link #fileSizeLimitInBytes}. */<a name="line.30"></a>
+<span class="sourceLineNo">031</span>        private static final String FILE_SIZE_LIMIT_IN_BYTES_PROPERTY = "fileSizeLimitInBytes";<a name="line.31"></a>
+<span class="sourceLineNo">032</span><a name="line.32"></a>
+<span class="sourceLineNo">033</span>        /** The name of the JSON property name for {@link #fileCountLimit}. */<a name="line.33"></a>
+<span class="sourceLineNo">034</span>        private static final String FILE_COUNT_LIMIT_PROPERTY = "fileCountLimit";<a name="line.34"></a>
+<span class="sourceLineNo">035</span><a name="line.35"></a>
+<span class="sourceLineNo">036</span>        @JsonProperty(TIME_LIMIT_IN_SECONDS_PROPERTY)<a name="line.36"></a>
+<span class="sourceLineNo">037</span>        private final int timeLimitInSeconds;<a name="line.37"></a>
+<span class="sourceLineNo">038</span><a name="line.38"></a>
+<span class="sourceLineNo">039</span>        @JsonProperty(FILE_SIZE_LIMIT_IN_BYTES_PROPERTY)<a name="line.39"></a>
+<span class="sourceLineNo">040</span>        private final long fileSizeLimitInBytes;<a name="line.40"></a>
+<span class="sourceLineNo">041</span><a name="line.41"></a>
+<span class="sourceLineNo">042</span>        @JsonProperty(FILE_COUNT_LIMIT_PROPERTY)<a name="line.42"></a>
+<span class="sourceLineNo">043</span>        private final int fileCountLimit;<a name="line.43"></a>
+<span class="sourceLineNo">044</span><a name="line.44"></a>
+<span class="sourceLineNo">045</span>        @JsonCreator<a name="line.45"></a>
+<span class="sourceLineNo">046</span>        public PreCommitServerLimits(@JsonProperty(FILE_COUNT_LIMIT_PROPERTY) int fileCountLimit,<a name="line.46"></a>
+<span class="sourceLineNo">047</span>                        @JsonProperty(FILE_SIZE_LIMIT_IN_BYTES_PROPERTY) long fileSizeLimitInBytes,<a name="line.47"></a>
+<span class="sourceLineNo">048</span>                        @JsonProperty(TIME_LIMIT_IN_SECONDS_PROPERTY) int timeLimitInSeconds) {<a name="line.48"></a>
+<span class="sourceLineNo">049</span>                this.fileCountLimit = fileCountLimit;<a name="line.49"></a>
+<span class="sourceLineNo">050</span>                this.fileSizeLimitInBytes = fileSizeLimitInBytes;<a name="line.50"></a>
+<span class="sourceLineNo">051</span>                this.timeLimitInSeconds = timeLimitInSeconds;<a name="line.51"></a>
+<span class="sourceLineNo">052</span>        }<a name="line.52"></a>
+<span class="sourceLineNo">053</span><a name="line.53"></a>
+<span class="sourceLineNo">054</span>        public int getTimeLimitInSeconds() {<a name="line.54"></a>
+<span class="sourceLineNo">055</span>                return timeLimitInSeconds;<a name="line.55"></a>
+<span class="sourceLineNo">056</span>        }<a name="line.56"></a>
+<span class="sourceLineNo">057</span><a name="line.57"></a>
+<span class="sourceLineNo">058</span>        public long getFileSizeLimitInBytes() {<a name="line.58"></a>
+<span class="sourceLineNo">059</span>                return fileSizeLimitInBytes;<a name="line.59"></a>
+<span class="sourceLineNo">060</span>        }<a name="line.60"></a>
+<span class="sourceLineNo">061</span><a name="line.61"></a>
+<span class="sourceLineNo">062</span>        public int getFileCountLimit() {<a name="line.62"></a>
+<span class="sourceLineNo">063</span>                return fileCountLimit;<a name="line.63"></a>
+<span class="sourceLineNo">064</span>        }<a name="line.64"></a>
+<span class="sourceLineNo">065</span><a name="line.65"></a>
+<span class="sourceLineNo">066</span>        @Override<a name="line.66"></a>
+<span class="sourceLineNo">067</span>        public boolean equals(Object other) {<a name="line.67"></a>
+<span class="sourceLineNo">068</span>                if (this == other) {<a name="line.68"></a>
+<span class="sourceLineNo">069</span>                        return true;<a name="line.69"></a>
+<span class="sourceLineNo">070</span>                }<a name="line.70"></a>
+<span class="sourceLineNo">071</span>                if (other == null) {<a name="line.71"></a>
+<span class="sourceLineNo">072</span>                        return false;<a name="line.72"></a>
+<span class="sourceLineNo">073</span>                }<a name="line.73"></a>
+<span class="sourceLineNo">074</span>                if (getClass() != other.getClass()) {<a name="line.74"></a>
+<span class="sourceLineNo">075</span>                        return false;<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                }<a name="line.76"></a>
+<span class="sourceLineNo">077</span>                PreCommitServerLimits that = (PreCommitServerLimits) other;<a name="line.77"></a>
+<span class="sourceLineNo">078</span>                return Objects.equals(timeLimitInSeconds, that.timeLimitInSeconds)<a name="line.78"></a>
+<span class="sourceLineNo">079</span>                                &amp;&amp; Objects.equals(fileSizeLimitInBytes, that.fileSizeLimitInBytes)<a name="line.79"></a>
+<span class="sourceLineNo">080</span>                                &amp;&amp; Objects.equals(fileCountLimit, that.fileCountLimit);<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        }<a name="line.81"></a>
+<span class="sourceLineNo">082</span><a name="line.82"></a>
+<span class="sourceLineNo">083</span>        @Override<a name="line.83"></a>
+<span class="sourceLineNo">084</span>        public int hashCode() {<a name="line.84"></a>
+<span class="sourceLineNo">085</span>                return Objects.hash(timeLimitInSeconds, fileSizeLimitInBytes, fileCountLimit);<a name="line.85"></a>
+<span class="sourceLineNo">086</span>        }<a name="line.86"></a>
+<span class="sourceLineNo">087</span><a name="line.87"></a>
+<span class="sourceLineNo">088</span>        @Override<a name="line.88"></a>
+<span class="sourceLineNo">089</span>        public String toString() {<a name="line.89"></a>
+<span class="sourceLineNo">090</span>                return ToStringHelpers.toReflectiveStringHelper(this).toString();<a name="line.90"></a>
+<span class="sourceLineNo">091</span>        }<a name="line.91"></a>
+<span class="sourceLineNo">092</span>}<a name="line.92"></a>
 
 
 
