@@ -26,7 +26,7 @@ sourceSets {
 }
 
  jar {
-     exclude ("**/CheckTest*")
+	exclude ("**/CheckTest*")
  }
 
 test {
@@ -44,7 +44,7 @@ repositories {
 }
 
 dependencies {
-    implementation fileTree(dir: 'lib', exclude: '*-test-utils.jar')
+	implementation fileTree(dir: 'lib', exclude: '*-test-utils.jar')
 	compile 'org.apache.logging.log4j:log4j-api:2.12.0'
 	runtimeOnly 'org.apache.commons:commons-compress:1.18'
 	runtimeOnly 'com.google.guava:guava:28.0-jre'
@@ -55,7 +55,6 @@ dependencies {
 	runtimeOnly 'org.eclipse.jgit:org.eclipse.jgit.ssh.apache:5.5.0.201909110433-r'
 	runtimeOnly 'com.jcraft:jsch:0.1.55'
 	runtimeOnly 'org.apache.commons:commons-lang3:3.9'
-	runtimeOnly 'org.apache.logging.log4j:log4j-api:2.12.0'
 	runtimeOnly 'org.apache.logging.log4j:log4j-core:2.12.0'
 	runtimeOnly 'jaxen:jaxen:1.2.0'
 
