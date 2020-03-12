@@ -10,7 +10,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<teamscaleApiVersion>5.5</teamscaleApiVersion>
+		<teamscaleApiVersion>5.7</teamscaleApiVersion>
 	</properties>
 
 	<dependencies>
@@ -36,20 +36,27 @@
 			<systemPath>${basedir}/lib/org.conqat.lib.commons-${teamscaleApiVersion}.jar</systemPath>
 		</dependency>
 		<dependency>
+			<groupId>com.teamscale</groupId>
+			<artifactId>clang-jni</artifactId>
+			<version>9.0.1</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/clang-jni-9.0.1.jar</systemPath>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
-			<version>2.12.0</version>
+			<version>2.12.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-compress</artifactId>
-			<version>1.18</version>
+			<version>1.19</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>28.0-jre</version>
+			<version>28.1-jre</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -61,25 +68,25 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.9.9.3</version>
+			<version>2.10.1</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpmime</artifactId>
-			<version>4.5.9</version>
+			<version>4.5.10</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit</artifactId>
-			<version>5.5.0.201909110433-r</version>
+			<version>5.5.1.201910021850-r</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit.ssh.apache</artifactId>
-			<version>5.5.0.201909110433-r</version>
+			<version>5.5.1.201910021850-r</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -97,7 +104,7 @@
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
-			<version>2.12.0</version>
+			<version>2.12.1</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -111,36 +118,36 @@
 			<groupId>com.teamscale</groupId>
 			<artifactId>eu.cqse.check</artifactId>
 			<version>${teamscaleApiVersion}</version>
-			<classifier>test-utils</classifier>
+			<classifier>test-fixtures</classifier>
 			<scope>system</scope>
-			<systemPath>${basedir}/lib/eu.cqse.check-${teamscaleApiVersion}-test-utils.jar</systemPath>
+			<systemPath>${basedir}/lib/eu.cqse.check-${teamscaleApiVersion}-test-fixtures.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.teamscale</groupId>
 			<artifactId>com.teamscale.commons</artifactId>
 			<version>${teamscaleApiVersion}</version>
-			<classifier>test-utils</classifier>
+			<classifier>test-fixtures</classifier>
 			<scope>system</scope>
-			<systemPath>${basedir}/lib/com.teamscale.commons-${teamscaleApiVersion}-test-utils.jar</systemPath>
+			<systemPath>${basedir}/lib/com.teamscale.commons-${teamscaleApiVersion}-test-fixtures.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.teamscale</groupId>
 			<artifactId>org.conqat.lib.commons</artifactId>
 			<version>${teamscaleApiVersion}</version>
-			<classifier>test-utils</classifier>
+			<classifier>test-fixtures</classifier>
 			<scope>system</scope>
-			<systemPath>${basedir}/lib/org.conqat.lib.commons-${teamscaleApiVersion}-test-utils.jar</systemPath>
+			<systemPath>${basedir}/lib/org.conqat.lib.commons-${teamscaleApiVersion}-test-fixtures.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter</artifactId>
-			<version>5.4.2</version>
+			<version>5.5.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.4.2</version>
+			<version>5.5.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -152,13 +159,13 @@
 		<dependency>
 			<groupId>nl.jqno.equalsverifier</groupId>
 			<artifactId>equalsverifier</artifactId>
-			<version>3.1.9</version>
+			<version>3.1.10</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.platform</groupId>
 			<artifactId>junit-platform-launcher</artifactId>
-			<version>1.4.2</version>
+			<version>1.5.2</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

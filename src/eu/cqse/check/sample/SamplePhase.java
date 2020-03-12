@@ -1,14 +1,14 @@
 package eu.cqse.check.sample;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
 import org.conqat.lib.commons.collections.CollectionUtils;
 
 import eu.cqse.check.CheckTextRegionLocation;
 import eu.cqse.check.framework.core.CheckException;
+import eu.cqse.check.framework.core.ECheckParameter;
 import eu.cqse.check.framework.core.phase.ECodeViewOption;
 import eu.cqse.check.framework.core.phase.IExtractedValue;
 import eu.cqse.check.framework.core.phase.IGlobalExtractionPhase;
@@ -43,9 +43,16 @@ import eu.cqse.check.framework.shallowparser.framework.ShallowEntityTraversalUti
 public class SamplePhase implements IGlobalExtractionPhase<SamplePhase.ClassDeclarationInfo, CheckTextRegionLocation> {
 
 	@Override
-	public Set<ELanguage> getLanguages() {
+	public EnumSet<ELanguage> getLanguages() {
 		// The phase should be executed for Java files only.
-		return Collections.singleton(ELanguage.JAVA);
+		return EnumSet.of(ELanguage.JAVA);
+	}
+
+	@Override
+	public EnumSet<ECheckParameter> getRequiredContextParameters() {
+		// this phase requires that the abstract syntax tree is prepared since it calls
+		// context.getAbstractSyntaxTree(..)
+		return EnumSet.of(ECheckParameter.ABSTRACT_SYNTAX_TREE);
 	}
 
 	@Override
@@ -60,9 +67,9 @@ public class SamplePhase implements IGlobalExtractionPhase<SamplePhase.ClassDecl
 	}
 
 	@Override
-	public List<ClassDeclarationInfo> extract(ITokenElementContext element) throws CheckException {
+	public List<ClassDeclarationInfo> extract(ITokenElementContext context) throws CheckException {
 		List<ClassDeclarationInfo> results = new ArrayList<>();
-		List<ShallowEntity> entities = element.getAbstractSyntaxTree(ECodeViewOption.FILTERED);
+		List<ShallowEntity> entities = context.getAbstractSyntaxTree(ECodeViewOption.FILTERED);
 		// traverse all TYPE entities in code that is not filtered by text filters (can
 		// be configured in project settings)
 		for (ShallowEntity entity : ShallowEntityTraversalUtils.listEntitiesOfType(entities, EShallowEntityType.TYPE)) {
@@ -72,7 +79,7 @@ public class SamplePhase implements IGlobalExtractionPhase<SamplePhase.ClassDecl
 			}
 			IToken startToken = entity.ownStartTokens().get(0);
 			IToken endToken = CollectionUtils.getLast(entity.ownStartTokens());
-			CheckTextRegionLocation location = new CheckTextRegionLocation(element.getUniformPath(),
+			CheckTextRegionLocation location = new CheckTextRegionLocation(context.getUniformPath(),
 					startToken.getOffset(), endToken.getOffset(), startToken.getLineNumber(), endToken.getLineNumber());
 			// add a new ClassDeclarationInfo with the location of the current type
 			results.add(new ClassDeclarationInfo(entity.getName(), location));
