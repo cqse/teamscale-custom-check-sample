@@ -6,7 +6,7 @@ You can build your custom checks using either Gradle or Maven.
 ## Build with Gradle
 
 - Clone this repository.
-- Run `gradlew jar` (Linux/macOS) or `gradlew.bat jar` (Windows).
+- Run `./gradlew jar` (Linux/macOS) or `gradlew.bat jar` (Windows).
 - Copy the JAR from `build/libs/custom-checks.jar` to the `custom-checks/` folder in your Teamscale installation root.
 - Restart Teamscale.
 - You should now be able to see the sample check when creating a new _Java_ analysis profile. It can be found inside the _Bad Practice_ group.
