@@ -12,28 +12,9 @@ ext {
 	teamscaleVersion = '5.9.0-rc3'
 }
 
-sourceSets {
-	main {
-		java {
-			srcDir 'src/'
-		}
-	}
-	test {
-		java {
-			srcDir 'test-src/'
-		}
-		resources {
-			srcDir 'test-data/'
-		}
-	}
-}
-
- jar {
-	exclude ("**/CheckTest*")
- }
-
 test {
 	useJUnitPlatform()
+
 	testLogging {
 		// It's sometimes useful to see the stdout during testing
 		showStandardStreams = true
@@ -43,6 +24,7 @@ test {
 
 repositories {
 	mavenCentral()
+
 	maven {
 		url "https://share.cqse.eu/svn/artifacts/maven"
 	}

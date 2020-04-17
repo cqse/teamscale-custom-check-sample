@@ -57,14 +57,7 @@
 	</repositories>
 
 	<build>
-		<sourceDirectory>src</sourceDirectory>
-		<testSourceDirectory>test-src</testSourceDirectory>
 		<finalName>${project.artifactId}</finalName>
-		<testResources>
-			<testResource>
-				<directory>test-data</directory>
-			</testResource>
-		</testResources>
 		<pluginManagement>
 			<plugins>
 				<plugin>
