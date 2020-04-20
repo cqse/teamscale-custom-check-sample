@@ -43,33 +43,19 @@ dependencies {
 
 eclipse {
 	classpath {
-		defaultOutputDir = file('classes')
-
 		file.whenMerged {
 			entries = entries.collect {
-				if (it in AbstractClasspathEntry) {
-					String scope = it.entryAttributes['gradle_scope']
-
-					// Gradle by default uses bin/<configuration> as output dir
-					// For now we need to have all our main code in 'classes' -> default
-					if (it.kind == 'src' && it.toString().contains('output') && scope == 'main') {
-						it.output = null
-					}
-
-					// Workaround for https://github.com/gradle/gradle/issues/4802
-					if (scope == 'test') {
-						it.entryAttributes['test'] = true
-					}
-
-					// Workaround to make eclipse accept java files in test-data resource directories
-					if (it.kind == 'src' && it.path == 'test-data') {
-						Library library = new Library(new FileReferenceFactory().fromPath(it.path))
+				if (it in AbstractClasspathEntry && it.kind == 'src' && file(it.path).name == 'resources') {
+					// Workaround to make Eclipse accept Java files in resource directories
+					Library library = new Library(new FileReferenceFactory().fromPath(it.path))
+					if (file(it.path).parentFile.name == 'test') {
 						library.entryAttributes['test'] = true
-						return library
 					}
+					return library
 				}
 				return it
 			}
 		}
 	}
 }
+
