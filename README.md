@@ -27,7 +27,7 @@ When the import is finished, you will find the sample custom check (`SampleCheck
 ## Build with Maven
 
 - Clone this repository.
-- Run `mvn clean verify`.
+- Run `./mvnw clean verify`.
 - Copy the JAR from `target/teamscale-custom-check-sample.jar` to the `custom-checks/` folder in your Teamscale installation root.
 - Restart Teamscale.
 - You should now be able to see the sample check when creating a new _Java_ analysis profile.
