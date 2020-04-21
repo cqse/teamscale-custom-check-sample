@@ -1,7 +1,7 @@
 # The Teamscale Custom-Check Sample Repository
 
-This repository is meant to serve as a starting point for developing custom checks for [Teamscale](https://www.teamscale.com).
-You can build your custom checks using either Gradle or Maven.
+This repository is meant to serve as a starting point for developing custom checks for [Teamscale](https://www.teamscale.com/).
+You can build your custom checks using either [Gradle](https://gradle.org/) or [Maven](https://maven.apache.org/).
 
 ## Build with Gradle
 
@@ -14,14 +14,15 @@ You can build your custom checks using either Gradle or Maven.
 
 ### Developing Custom Checks with IntelliJ IDEA
 
-Use `./gradlew openIdea` (Linux/macOS) or `gradlew.bat openIdea` (Windows) to create the IntelliJ module definition files and open the project in IntelliJ IDEA.
-You will then find the sample custom check (`SampleCheck`) in the `src/main/java` directory.
+You can import the project into IntelliJ IDEA using _File_ > _Open_.
+Then, when asked, select _Open as:_ _Gradle Project_.
+When the import is finished, you will find the sample custom check (`SampleCheck`) in the `src/main/java` directory.
 
 ### Developing Custom Checks with Eclipse
 
 Use `./gradlew eclipse` (Linux/macOS) or `gradlew.bat eclipse` (Windows) to create Eclipse project files.
-Afterwards, you can easily import the project into Eclipse using _File_ > _Import_ > _General_ > _Existing Projects into Workspace_.
-You will then find the sample custom check (`SampleCheck`) in the `src/main/java` directory.
+You can then import the project into Eclipse using _File_ > _Import_ > _General_ > _Existing Projects into Workspace_.
+When the import is finished, you will find the sample custom check (`SampleCheck`) in the `src/main/java` directory.
 
 ## Build with Maven
 
@@ -34,13 +35,14 @@ You will then find the sample custom check (`SampleCheck`) in the `src/main/java
 
 ### Developing Custom Checks with IntelliJ IDEA
 
-Open the project in IntelliJ IDEA.
-You will then find the sample custom check (`SampleCheck`) in the `src/main/java` directory.
+You can import the project into IntelliJ IDEA using _File_ > _Open_.
+Then, when asked, select _Open as:_ _Maven Project_.
+When the import is finished, you will find the sample custom check (`SampleCheck`) in the `src/main/java` directory.
 
 ### Developing Custom Checks with Eclipse
 
 You can import the project into Eclipse using _File_ > _Import_ > _Maven_ > _Existing Maven projects_.
-You will then find the sample custom check (`SampleCheck`) in the `src/main/java` directory.
+When the import is finished, you will find the sample custom check (`SampleCheck`) in the `src/main/java` directory.
 
 ## Documentation
 

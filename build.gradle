@@ -5,7 +5,6 @@ import org.gradle.plugins.ide.eclipse.model.internal.FileReferenceFactory
 plugins {
 	id 'java-library'
 	id 'eclipse'
-	id 'idea'
 }
 
 ext {
@@ -16,7 +15,7 @@ test {
 	useJUnitPlatform()
 
 	testLogging {
-		// It's sometimes useful to see the stdout during testing
+		// It's sometimes useful to see the System.out/err during testing
 		showStandardStreams = true
 		exceptionFormat = 'full'
 	}
