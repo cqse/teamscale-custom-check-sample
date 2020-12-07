@@ -1,0 +1,2 @@
+Lines 5-5: This is a sample finding for method foo, in a file whose name doesn't match .*Test.java$.
+Lines 8-8: This is a sample finding for method bar, in a file whose name doesn't match .*Test.java$.
