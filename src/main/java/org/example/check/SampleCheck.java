@@ -13,10 +13,15 @@ import org.apache.logging.log4j.Logger;
 
 
 /**
- * This class is meant to demonstrate a simple custom check for Teamscale. It
- * creates a new finding for every method encountered in the system.
+ * This class is meant to demonstrate a simple custom check for Teamscale. The
+ * description of a check can be defined in the Check annotation, or a separate
+ * Markdown file can be created with the name of the check in the
+ * 'resources/check-descriptions' folder. This check has its description at
+ * 'resources/check-descriptions/Sample Check 1.md'.
+ *
+ * This check creates a new finding for every method encountered in the system.
  */
-@Check(name = "Sample Check 1", description = "This is a simple sample check that creates a sample finding for every method in the system.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED, languages = {
+@Check(name = "Sample Check 1", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED, languages = {
 		ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })
 public class SampleCheck extends EntityCheckBase {
 

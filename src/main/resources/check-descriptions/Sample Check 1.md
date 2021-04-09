@@ -1,0 +1,1 @@
+This is a simple sample check that creates a sample finding for every method in the system.
