@@ -14,10 +14,11 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * This class is meant to demonstrate a simple custom check for Teamscale. The
- * description of a check can be defined in the Check annotation, or a separate
- * Markdown file can be created with the name of the check in the
- * 'resources/check-descriptions' folder. This check has its description at
- * 'resources/check-descriptions/Sample Check 1.md'.
+ * description of a check is defined in `src/main/resources/check-descriptions/Sample Check 1.md`.
+ * The name of the file has to match the name of the check, except a few special characters (:\/*"?|<>').
+ * Those have to be replaced by a dash (-), as they would result in an invalid file name on Windows.
+ *
+ * Alternatively the description can also be given as `description` attribute in the `@Check` annotation.
  *
  * This check creates a new finding for every method encountered in the system.
  */
