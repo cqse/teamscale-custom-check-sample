@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.conqat.engine.commons.findings.location.TextRegionLocation;
 import org.conqat.lib.commons.collections.CollectionUtils;
 
-import eu.cqse.check.CheckTextRegionLocation;
 import eu.cqse.check.framework.core.CheckException;
 import eu.cqse.check.framework.core.ECheckParameter;
 import eu.cqse.check.framework.core.phase.ECodeViewOption;
@@ -40,7 +40,7 @@ import eu.cqse.check.framework.shallowparser.framework.ShallowEntityTraversalUti
  * {@link #needsAccessUniformPathByValue()} must be overwritten and must return
  * true.
  */
-public class SamplePhase implements IGlobalExtractionPhase<SamplePhase.ClassDeclarationInfo, CheckTextRegionLocation> {
+public class SamplePhase implements IGlobalExtractionPhase<SamplePhase.ClassDeclarationInfo, TextRegionLocation> {
 
 	@Override
 	public EnumSet<ELanguage> getLanguages() {
@@ -79,7 +79,7 @@ public class SamplePhase implements IGlobalExtractionPhase<SamplePhase.ClassDecl
 			}
 			IToken startToken = entity.ownStartTokens().get(0);
 			IToken endToken = CollectionUtils.getLast(entity.ownStartTokens());
-			CheckTextRegionLocation location = new CheckTextRegionLocation(context.getUniformPath(),
+			TextRegionLocation location = new TextRegionLocation(context.getUniformPath(), context.getUniformPath(),
 					startToken.getOffset(), endToken.getOffset(), startToken.getLineNumber(), endToken.getLineNumber());
 			// add a new ClassDeclarationInfo with the location of the current type
 			results.add(new ClassDeclarationInfo(entity.getName(), location));
@@ -89,7 +89,7 @@ public class SamplePhase implements IGlobalExtractionPhase<SamplePhase.ClassDecl
 
 	@Override
 	public ClassDeclarationInfo createValue(String uniformPath, String value,
-			CheckTextRegionLocation additionalInformation) {
+			TextRegionLocation additionalInformation) {
 		return new ClassDeclarationInfo(value, additionalInformation);
 	}
 
@@ -100,7 +100,7 @@ public class SamplePhase implements IGlobalExtractionPhase<SamplePhase.ClassDecl
 	 * The result of a check phase are a list of such {@link IExtractedValue}
 	 * objects which are stored associated with the currently analyzed file.
 	 */
-	public static class ClassDeclarationInfo implements IExtractedValue<CheckTextRegionLocation> {
+	public static class ClassDeclarationInfo implements IExtractedValue<TextRegionLocation> {
 
 		/**
 		 * Simple name of the declared class.
@@ -110,15 +110,15 @@ public class SamplePhase implements IGlobalExtractionPhase<SamplePhase.ClassDecl
 		/**
 		 * Location of the class declaration (contains uniform path, line, and offset)
 		 */
-		private final CheckTextRegionLocation location;
+		private final TextRegionLocation location;
 
-		public ClassDeclarationInfo(String className, CheckTextRegionLocation location) {
+		public ClassDeclarationInfo(String className, TextRegionLocation location) {
 			this.className = className;
 			this.location = location;
 		}
 
 		@Override
-		public CheckTextRegionLocation getAdditionalInformation() {
+		public TextRegionLocation getAdditionalInformation() {
 			// You can store any (serializable) object that can't be encoded in the uniform
 			// path or in getValue() here. In this example, we need only
 			// the declaration's location.
@@ -129,7 +129,7 @@ public class SamplePhase implements IGlobalExtractionPhase<SamplePhase.ClassDecl
 		public String getUniformPath() {
 			// this is the uniform path that can be used to access phase results in
 			// <code>context.accessPhaseResult(SamplePhase.class).apply("inner")</code>.
-			return location.uniformPath;
+			return location.getUniformPath();
 		}
 
 		@Override

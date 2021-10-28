@@ -61,7 +61,7 @@ public class SampleCheckUsingPhase extends CheckImplementationBase {
 					.accessPhaseInvertedResult(SamplePhase.class).apply(entity.getName());
 			// remove declarations from the current file from the list
 			otherDeclarations = CollectionUtils.filter(otherDeclarations,
-					declaration -> !declaration.getAdditionalInformation().uniformPath
+					declaration -> !declaration.getAdditionalInformation().getUniformPath()
 							.equals(context.getUniformPath()));
 			if (!otherDeclarations.isEmpty()) {
 				String otherUniformPaths = org.conqat.lib.commons.string.StringUtils.concat(
