@@ -32,7 +32,7 @@ import eu.cqse.check.framework.shallowparser.framework.ShallowEntityTraversalUti
  * requires access to results from the given phase (and the phase must be
  * executed before the check).
  */
-@Check(name = "Sample Check with phase", description = "", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED, languages = {
+@Check(name = "Sample Check with phase", description = "This is a simple sample check that depends on a custom phase.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED, languages = {
 		ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE }, phases = {
 				/*
 				 * This check requires that SamplePhase has been executed and accesses results
@@ -40,6 +40,7 @@ import eu.cqse.check.framework.shallowparser.framework.ShallowEntityTraversalUti
 				 */
 				SamplePhase.class })
 public class SampleCheckUsingPhase extends CheckImplementationBase {
+
 	@Override
 	public void execute() throws CheckException {
 		List<ShallowEntity> entities = context.getAbstractSyntaxTree(ECodeViewOption.FILTERED);

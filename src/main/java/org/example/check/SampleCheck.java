@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * This class is meant to demonstrate a simple custom check for Teamscale. The
- * description of a check is defined in `src/main/resources/check-descriptions/Sample Check 1.md`.
+ * description of a check is defined in `src/main/resources/check-descriptions/Sample Check.md`.
  * The name of the file has to match the name of the check, except a few special characters (:\/*"?|<>').
  * Those have to be replaced by a dash (-), as they would result in an invalid file name on Windows.
  *
@@ -22,7 +22,7 @@ import org.apache.logging.log4j.Logger;
  *
  * This check creates a new finding for every method encountered in the system.
  */
-@Check(name = "Sample Check 1", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED, languages = {
+@Check(name = "Sample Check", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED, languages = {
 		ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })
 public class SampleCheck extends EntityCheckBase {
 
