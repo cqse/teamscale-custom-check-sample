@@ -35,7 +35,7 @@ dependencies {
 	implementation 'com.teamscale:teamscale-check-api'
 	implementation 'com.teamscale:teamscale-commons'
 	implementation 'com.teamscale:teamscale-lib-commons'
-	compile 'org.apache.logging.log4j:log4j-api:2.16.0'
+	compile 'org.apache.logging.log4j:log4j-api:2.17.0'
 
 	testImplementation 'com.teamscale:teamscale-check-api-test-fixtures'
 }
