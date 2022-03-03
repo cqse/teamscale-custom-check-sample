@@ -1,11 +1,7 @@
 package org.example.check;
 
 import eu.cqse.check.base.EntityCheckBase;
-import eu.cqse.check.framework.core.Check;
-import eu.cqse.check.framework.core.CheckException;
-import eu.cqse.check.framework.core.CheckGroupNames;
-import eu.cqse.check.framework.core.ECheckParameter;
-import eu.cqse.check.framework.core.EFindingEnablement;
+import eu.cqse.check.framework.core.*;
 import eu.cqse.check.framework.scanner.ELanguage;
 import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;
 import org.apache.logging.log4j.LogManager;
@@ -22,7 +18,7 @@ import org.apache.logging.log4j.Logger;
  *
  * This check creates a new finding for every method encountered in the system.
  */
-@Check(name = "Sample Check", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED, languages = {
+@Check(name = "Sample Check", groupName = QualityModel.Groups.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED, languages = {
 		ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })
 public class SampleCheck extends EntityCheckBase {
 

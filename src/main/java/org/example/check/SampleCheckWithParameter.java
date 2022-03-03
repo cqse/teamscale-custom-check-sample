@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
  */
 @Check(name = SampleCheckWithParameter.CHECK_NAME,
 		description = "This is a simple sample check that uses a custom parameter.",
-		groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED,
+		groupName = QualityModel.Groups.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED,
 		languages = { ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })
 public class SampleCheckWithParameter extends EntityCheckBase {
 	static final String CHECK_NAME = "Sample Check with parameter";

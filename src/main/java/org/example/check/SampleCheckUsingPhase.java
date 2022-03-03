@@ -2,14 +2,9 @@ package org.example.check;
 
 import java.util.List;
 
+import eu.cqse.check.framework.core.*;
 import org.conqat.lib.commons.collections.CollectionUtils;
 
-import eu.cqse.check.framework.core.Check;
-import eu.cqse.check.framework.core.CheckException;
-import eu.cqse.check.framework.core.CheckGroupNames;
-import eu.cqse.check.framework.core.CheckImplementationBase;
-import eu.cqse.check.framework.core.ECheckParameter;
-import eu.cqse.check.framework.core.EFindingEnablement;
 import eu.cqse.check.framework.core.phase.ECodeViewOption;
 import eu.cqse.check.framework.scanner.ELanguage;
 import eu.cqse.check.framework.shallowparser.SubTypeNames;
@@ -32,7 +27,7 @@ import eu.cqse.check.framework.shallowparser.framework.ShallowEntityTraversalUti
  * requires access to results from the given phase (and the phase must be
  * executed before the check).
  */
-@Check(name = "Sample Check with phase", description = "This is a simple sample check that depends on a custom phase.", groupName = CheckGroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED, languages = {
+@Check(name = "Sample Check with phase", description = "This is a simple sample check that depends on a custom phase.", groupName = QualityModel.Groups.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED, languages = {
 		ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE }, phases = {
 				/*
 				 * This check requires that SamplePhase has been executed and accesses results
