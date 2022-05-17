@@ -79,7 +79,7 @@ public class SamplePhase implements IGlobalExtractionPhase<SamplePhase.ClassDecl
 			}
 			IToken startToken = entity.ownStartTokens().get(0);
 			IToken endToken = CollectionUtils.getLast(entity.ownStartTokens());
-			TextRegionLocation location = new TextRegionLocation(context.getUniformPath(), context.getUniformPath(),
+			TextRegionLocation location = new TextRegionLocation(context.getUniformPath(),
 					startToken.getOffset(), endToken.getOffset(), startToken.getLineNumber(), endToken.getLineNumber());
 			// add a new ClassDeclarationInfo with the location of the current type
 			results.add(new ClassDeclarationInfo(entity.getName(), location));
