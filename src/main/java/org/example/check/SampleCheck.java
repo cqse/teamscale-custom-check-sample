@@ -36,6 +36,6 @@ public class SampleCheck extends EntityCheckBase {
 	protected void processEntity(ShallowEntity entity) throws CheckException {
 		LOGGER.info("Checking entity {}", entity);
 		// Create a new finding on the first line of each method.
-		createFindingOnFirstLine("This is a sample finding for method " + entity.getName() + ".", entity);
+		buildFinding("This is a sample finding for method " + entity.getName() + ".", buildLocation().forEntityFirstLine(entity)).createAndStore();
 	}
 }

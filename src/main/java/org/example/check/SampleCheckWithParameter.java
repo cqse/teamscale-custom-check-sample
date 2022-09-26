@@ -57,7 +57,7 @@ public class SampleCheckWithParameter extends EntityCheckBase {
 		LOGGER.info("Checking entity {}", entity);
 
 		// Create a new finding on the first line of each method.
-		createFindingOnFirstLine("This is a sample finding for method " + entity.getName()
-				+ ", in a file whose name doesn't match " + this.fileNameExclude + ".", entity);
+		buildFinding("This is a sample finding for method " + entity.getName()
+				+ ", in a file whose name doesn't match " + this.fileNameExclude + ".", buildLocation().forEntityFirstLine(entity)).createAndStore();
 	}
 }
