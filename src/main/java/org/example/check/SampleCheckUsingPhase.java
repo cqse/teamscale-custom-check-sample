@@ -64,7 +64,7 @@ public class SampleCheckUsingPhase extends CheckImplementationBase {
 						CollectionUtils.map(otherDeclarations, SamplePhase.ClassDeclarationInfo::getUniformPath), ", ");
 				// we could include the other uniform paths in the finding message, but that
 				// would make testing this example more complex
-				createFinding("found another type with same name", entity);
+				buildFinding("found another type with same name", buildLocation().forEntity(entity)).createAndStore();
 			}
 		}
 	}
