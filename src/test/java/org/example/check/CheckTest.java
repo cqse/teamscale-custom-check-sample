@@ -23,7 +23,4 @@ import eu.cqse.check.framework.checktest.CheckTestBase;
  */
 public class CheckTest extends CheckTestBase {
 
-	public CheckTest() {
-		super(SampleCheck.class);
-	}
 }
