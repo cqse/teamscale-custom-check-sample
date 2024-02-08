@@ -58,7 +58,11 @@
 	<repositories>
 		<repository>
 			<id>cqse-share</id>
-			<url>https://share.cqse.eu/svn/artifacts/maven</url>
+			<url>https://storage.googleapis.com/teamscale-public-build-artifacts/maven</url>
+		</repository>
+		<repository>
+			<id>OpenSaml</id>
+			<url>https://build.shibboleth.net/maven/releases</url>
 		</repository>
 	</repositories>
 
