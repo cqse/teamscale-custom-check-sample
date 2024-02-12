@@ -22,11 +22,19 @@ test {
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 
-	maven {
-		url "https://share.cqse.eu/svn/artifacts/maven"
-	}
+    maven {
+        url = "https://storage.googleapis.com/teamscale-public-build-artifacts/maven"
+    }
+
+    maven {
+        url = "https://build.shibboleth.net/maven/releases"
+        content {
+            includeGroup("org.opensaml")
+            includeGroup("net.shibboleth")
+        }
+    }
 }
 
 dependencies {
