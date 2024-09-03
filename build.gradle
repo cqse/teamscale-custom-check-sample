@@ -8,7 +8,7 @@ plugins {
 }
 
 ext {
-	teamscaleVersion = '9.9.0'
+	teamscaleVersion = '2024.7.0'
 }
 
 test {
