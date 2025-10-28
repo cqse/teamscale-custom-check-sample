@@ -10,7 +10,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
-		<teamscaleVersion>2025.7.0</teamscaleVersion>
+		<teamscaleVersion>2025.8.0</teamscaleVersion>
 	</properties>
 
 	<dependencyManagement>
