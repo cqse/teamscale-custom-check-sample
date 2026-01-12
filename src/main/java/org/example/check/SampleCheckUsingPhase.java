@@ -1,37 +1,32 @@
 package org.example.check;
 
-import java.util.List;
-
 import eu.cqse.check.framework.core.*;
-import org.conqat.lib.commons.collections.CollectionUtils;
-
 import eu.cqse.check.framework.core.phase.ECodeViewOption;
 import eu.cqse.check.framework.scanner.ELanguage;
 import eu.cqse.check.framework.shallowparser.SubTypeNames;
 import eu.cqse.check.framework.shallowparser.framework.EShallowEntityType;
 import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;
 import eu.cqse.check.framework.shallowparser.framework.ShallowEntityTraversalUtils;
+import org.conqat.lib.commons.collections.CollectionUtils;
+
+import java.util.List;
 
 /**
- * This class implements an example custom check that demonstrates how to use
- * custom check phases.
+ * This class implements an example custom check that demonstrates how to use custom check phases.
  * 
- * The check generates findings for class names that are equal to class names in
- * other files. For example, if ClassA.java has an inner class myClass and
- * ClassB.java also has an inner class myClass, this check generates two
- * findings (on the myClass declarations).
+ * The check generates findings for class names that are equal to class names in other files. For
+ * example, if ClassA.java has an inner class myClass and ClassB.java also has an inner class
+ * myClass, this check generates two findings (on the myClass declarations).
  * 
  * By specifying an implementation of
- * {@link eu.cqse.check.framework.core.phase.IGlobalExtractionPhase} in the
- * phases property of the {@link Check} annotation, we specify that this check
- * requires access to results from the given phase (and the phase must be
- * executed before the check).
+ * {@link eu.cqse.check.framework.core.phase.IGlobalExtractionPhase} in the phases property of the
+ * {@link Check} annotation, we specify that this check requires access to results from the given
+ * phase (and the phase must be executed before the check).
  */
-@Check(name = "Sample Check with phase", description = "This is a simple sample check that depends on a custom phase.", groupName = QualityModel.Groups.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED, languages = {
+@Check(name = "Sample Check with phase", groupName = QualityModel.Groups.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED, languages = {
 		ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE }, phases = {
 				/*
-				 * This check requires that SamplePhase has been executed and accesses results
-				 * from that phase.
+				 * This check requires that SamplePhase has been executed and accesses results from that phase.
 				 */
 				SamplePhase.class })
 public class SampleCheckUsingPhase extends CheckImplementationBase {
@@ -44,21 +39,18 @@ public class SampleCheckUsingPhase extends CheckImplementationBase {
 				continue;
 			}
 			/*
-			 * Retrieve all declarations (including from this file) of classes that have the
-			 * same name as the current class. This accesses the results computed by
-			 * SamplePhase.
+			 * Retrieve all declarations (including from this file) of classes that have the same name as the
+			 * current class. This accesses the results computed by SamplePhase.
 			 * 
-			 * It also "registers" this check for this file for re-execution once the value
-			 * of <code>context
-			 * .accessPhaseInvertedResult(SamplePhase.class).apply(entity.getName())</code>
-			 * changes (e.g., because of changes in other files in future commits).
+			 * It also "registers" this check for this file for re-execution once the value of <code>context
+			 * .accessPhaseInvertedResult(SamplePhase.class).apply(entity.getName())</code> changes (e.g.,
+			 * because of changes in other files in future commits).
 			 */
 			List<SamplePhase.ClassDeclarationInfo> otherDeclarations = context
 					.accessPhaseInvertedResult(SamplePhase.class).apply(entity.getName());
 			// remove declarations from the current file from the list
-			otherDeclarations = CollectionUtils.filter(otherDeclarations,
-					declaration -> !declaration.getAdditionalInformation().getUniformPath()
-							.equals(context.getUniformPath()));
+			otherDeclarations = CollectionUtils.filter(otherDeclarations, declaration -> !declaration
+					.getAdditionalInformation().uniformPath().equals(context.getUniformPath()));
 			if (!otherDeclarations.isEmpty()) {
 				String otherUniformPaths = org.conqat.lib.commons.string.StringUtils.concat(
 						CollectionUtils.map(otherDeclarations, SamplePhase.ClassDeclarationInfo::getUniformPath), ", ");
