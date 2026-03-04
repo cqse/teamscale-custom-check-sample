@@ -1,24 +1,30 @@
 package org.example.check;
 
-import eu.cqse.check.framework.core.*;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import eu.cqse.check.framework.core.Check;
+import eu.cqse.check.framework.core.CheckException;
+import eu.cqse.check.framework.core.CheckImplementationBase;
+import eu.cqse.check.framework.core.ECheckParameter;
+import eu.cqse.check.framework.core.EFindingEnablement;
+import eu.cqse.check.framework.core.QualityModel;
 import eu.cqse.check.framework.core.option.CheckOption;
 import eu.cqse.check.framework.scanner.ELanguage;
 import eu.cqse.check.framework.shallowparser.framework.EShallowEntityType;
 import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;
 import eu.cqse.check.framework.shallowparser.framework.ShallowEntityTraversalUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * This class is meant to demonstrate a custom check with option for Teamscale. It creates a new
  * finding for every method encountered in the system, unless the file containing the code is
  * excluded by the regular expression provided via the option.
  */
-@Check(name = SampleCheckWithOption.CHECK_NAME, groupName = QualityModel.Groups.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED, languages = {
+@Check(name = SampleCheckWithOption.CHECK_NAME, description = "This is a simple sample check that uses a custom option.", groupName = QualityModel.Groups.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED, languages = {
 		ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })
 public class SampleCheckWithOption extends CheckImplementationBase {
 

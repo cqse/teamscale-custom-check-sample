@@ -1,15 +1,21 @@
 package org.example.check;
 
-import eu.cqse.check.framework.core.*;
+import java.util.List;
+
+import org.conqat.lib.commons.collections.CollectionUtils;
+
+import eu.cqse.check.framework.core.Check;
+import eu.cqse.check.framework.core.CheckException;
+import eu.cqse.check.framework.core.CheckImplementationBase;
+import eu.cqse.check.framework.core.ECheckParameter;
+import eu.cqse.check.framework.core.EFindingEnablement;
+import eu.cqse.check.framework.core.QualityModel;
 import eu.cqse.check.framework.core.phase.ECodeViewOption;
 import eu.cqse.check.framework.scanner.ELanguage;
 import eu.cqse.check.framework.shallowparser.SubTypeNames;
 import eu.cqse.check.framework.shallowparser.framework.EShallowEntityType;
 import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;
 import eu.cqse.check.framework.shallowparser.framework.ShallowEntityTraversalUtils;
-import org.conqat.lib.commons.collections.CollectionUtils;
-
-import java.util.List;
 
 /**
  * This class implements an example custom check that demonstrates how to use custom check phases.

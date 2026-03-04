@@ -1,5 +1,11 @@
 package org.example.check;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+
 import eu.cqse.check.framework.core.CheckException;
 import eu.cqse.check.framework.core.ECheckParameter;
 import eu.cqse.check.framework.core.phase.ECodeViewOption;
@@ -11,12 +17,6 @@ import eu.cqse.check.framework.shallowparser.SubTypeNames;
 import eu.cqse.check.framework.shallowparser.framework.EShallowEntityType;
 import eu.cqse.check.framework.shallowparser.framework.ShallowEntity;
 import eu.cqse.check.framework.shallowparser.framework.ShallowEntityTraversalUtils;
-
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
 
 /**
  * This custom check phase scans all java code files and extracts class declarations (including

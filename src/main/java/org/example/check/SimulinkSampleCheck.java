@@ -1,12 +1,13 @@
 package org.example.check;
 
+import org.conqat.lib.simulink.model.SimulinkBlock;
+import org.conqat.lib.simulink.model.SimulinkModel;
+import org.conqat.lib.simulink.util.SimulinkUtils;
+
 import eu.cqse.check.framework.core.Check;
 import eu.cqse.check.framework.core.CheckImplementationBase;
 import eu.cqse.check.framework.core.EFindingEnablement;
 import eu.cqse.check.framework.scanner.ELanguage;
-import org.conqat.lib.simulink.model.SimulinkBlock;
-import org.conqat.lib.simulink.model.SimulinkModel;
-import org.conqat.lib.simulink.util.SimulinkUtils;
 
 /**
  * Sample check on simulink model, for testing purposes.
