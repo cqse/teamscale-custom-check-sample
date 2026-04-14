@@ -7,7 +7,7 @@ import eu.cqse.check.framework.checktest.CheckTestBase;
  */
 class SampleCheckTest extends CheckTestBase {
 
-    SampleCheckTest() {
-        super(SampleCheck.class);
-    }
+	SampleCheckTest() {
+		super(SampleCheck.class);
+	}
 }
