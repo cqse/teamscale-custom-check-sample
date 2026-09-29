@@ -22,16 +22,16 @@ import eu.cqse.check.framework.shallowparser.framework.ShallowEntityTraversalUti
  * This custom check phase scans all java code files and extracts class declarations (including
  * inner classes). The declarations are persisted in a teamscale-internal database for later access
  * in a custom check.
- * 
+ *
  * The stored entries look like this:
- * 
+ *
  * <pre>
  * "uniformPathOfFileA.java" -> "A" (ClassDeclarationInfo1)
  * "uniformPathOfFileA.java" -> "inner" (ClassDeclarationInfo2)
  * "uniformPathOfFileB.java" -> "B" (ClassDeclarationInfo3)
  * "uniformPathOfFileB.java" -> "inner" (ClassDeclarationInfo4)
  * </pre>
- * 
+ *
  * The information can be accessed "by uniform path" (returns all declaration objects for a given
  * uniform path) or "by value" (returns all declaration objects for e.g., "inner"). For the second
  * access pattern, {@link #needsAccessByValue()} must be overwritten and must return true.
@@ -87,7 +87,7 @@ public class SamplePhase
 	/**
 	 * "Transport object" that stores the name and location of a class declaration (might declare an
 	 * inner class).
-	 * 
+	 *
 	 * The result of a check phase are a list of such {@link IExtractedValue} objects which are stored
 	 * associated with the currently analyzed file.
 	 */
@@ -133,7 +133,7 @@ public class SamplePhase
 
 	/**
 	 * Location resolved by this phase.
-	 * 
+	 *
 	 * @param uniformPath
 	 */
 	// This should be a custom class, to verify the (de)serialization (TS-41465)

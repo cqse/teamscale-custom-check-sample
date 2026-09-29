@@ -19,11 +19,11 @@ import eu.cqse.check.framework.shallowparser.framework.ShallowEntityTraversalUti
 
 /**
  * This class implements an example custom check that demonstrates how to use custom check phases.
- * 
+ *
  * The check generates findings for class names that are equal to class names in other files. For
  * example, if ClassA.java has an inner class myClass and ClassB.java also has an inner class
  * myClass, this check generates two findings (on the myClass declarations).
- * 
+ *
  * By specifying an implementation of
  * {@link eu.cqse.check.framework.core.phase.IGlobalExtractionPhase} in the phases property of the
  * {@link Check} annotation, we specify that this check requires access to results from the given
@@ -47,7 +47,7 @@ public class SampleCheckUsingPhase extends CheckImplementationBase {
 			/*
 			 * Retrieve all declarations (including from this file) of classes that have the same name as the
 			 * current class. This accesses the results computed by SamplePhase.
-			 * 
+			 *
 			 * It also "registers" this check for this file for re-execution once the value of <code>context
 			 * .accessPhaseInvertedResult(SamplePhase.class).apply(entity.getName())</code> changes (e.g.,
 			 * because of changes in other files in future commits).
