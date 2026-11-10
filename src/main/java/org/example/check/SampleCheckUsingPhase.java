@@ -29,7 +29,7 @@ import eu.cqse.check.framework.shallowparser.framework.ShallowEntityTraversalUti
  * {@link Check} annotation, we specify that this check requires access to results from the given
  * phase (and the phase must be executed before the check).
  */
-@Check(name = "Sample Check with phase", groupName = QualityModel.Groups.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED, languages = {
+@Check(name = "Sample Check with phase", groupName = QualityModel.GroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED, languages = {
 		ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE }, phases = {
 				/*
 				 * This check requires that SamplePhase has been executed and accesses results from that phase.

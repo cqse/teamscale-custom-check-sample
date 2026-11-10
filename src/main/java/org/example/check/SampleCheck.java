@@ -17,7 +17,7 @@ import eu.cqse.check.framework.shallowparser.framework.ShallowEntityTraversalUti
 /**
  * Sample check for testing purposes
  */
-@Check(name = "Sample Check", groupName = QualityModel.Groups.BAD_PRACTICE, defaultEnablement = EFindingEnablement.OFF, languages = {
+@Check(name = "Sample Check", groupName = QualityModel.GroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.OFF, languages = {
 		ELanguage.CS, ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })
 public class SampleCheck extends CheckImplementationBase {
 

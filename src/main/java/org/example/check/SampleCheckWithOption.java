@@ -24,7 +24,7 @@ import eu.cqse.check.framework.shallowparser.framework.ShallowEntityTraversalUti
  * finding for every method encountered in the system, unless the file containing the code is
  * excluded by the regular expression provided via the option.
  */
-@Check(name = SampleCheckWithOption.CHECK_NAME, description = "This is a simple sample check that uses a custom option.", groupName = QualityModel.Groups.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED, languages = {
+@Check(name = SampleCheckWithOption.CHECK_NAME, description = "This is a simple sample check that uses a custom option.", groupName = QualityModel.GroupNames.BAD_PRACTICE, defaultEnablement = EFindingEnablement.RED, languages = {
 		ELanguage.JAVA }, parameters = { ECheckParameter.ABSTRACT_SYNTAX_TREE })
 public class SampleCheckWithOption extends CheckImplementationBase {
 
